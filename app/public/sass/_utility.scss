@@ -1,0 +1,51 @@
+/*
+    Created on : 2015.09.27., 15:00:20
+    Author     : Horváth Norbert
+*/
+
+$bg-color-body: #8b8b8b;
+$bg-color-container: #f0f0f0;
+$bg-color-content: #fafcff;
+$color-text: #2a2a2a;
+$color-subtitle: #404040;
+
+$color-form-border: #888888;
+$color-text-border: #909090;
+
+$font-verdana: Verdana, Arial, Helvetica, sans-serif;
+$font-arial: Arial, Helvetica, sans-serif;
+
+@mixin transform-skewX($angle){
+	-moz-transform: skewX($angle);
+	-webkit-transform: skewX($angle);
+	-o-transform: skewX($angle);
+	-ms-transform: skewX($angle);
+	transform: skewX($angle);
+}
+
+@mixin cross($width, $height, $thick, $top, $borderRadius, $backgroundColor){
+	display: inline-block;
+	position: relative;
+	width: $width;
+	height: $height;
+
+	&%beforeafter {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: $top;
+		border-radius: $borderRadius;
+		width: $width;
+		height: $thick;
+		background-color: $backgroundColor;
+	}
+
+	&::before {
+		@extend %beforeafter;
+		transform: rotate(45deg);
+	}
+	&::after {
+		@extend %beforeafter;
+		transform: rotate(-45deg);
+	}
+}

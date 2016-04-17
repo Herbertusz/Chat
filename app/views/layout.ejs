@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/png" href="/favicon.png" />
+		<link rel="stylesheet" href="/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="/css/jqueryuithemes/jquery-ui.css" />
+		<link rel="stylesheet" href="/css/jqueryuithemes/jquery-ui.structure.css" />
+		<link rel="stylesheet" href="/css/jqueryuithemes/jquery-ui.theme.css" />
+		<link rel="stylesheet" href="/css/common.css" />
+		<link rel="stylesheet" href="/css/layout.css" />
+		<link rel="stylesheet" href="/css/index.css" />
+		<script>
+			var DOMAIN = '<%- layout.DOMAIN %>';
+			var WSPORT = '<%- layout.WSPORT %>';
+			var userData = {
+				id : Number('<%- userId ? userId : 0 %>'),
+				name : '<%- userName %>'
+			};
+		</script>
+		<script src="/js/jquery.min.js"></script>
+		<script src="/js/jquery-ui.min.js"></script>
+		<script src="/js/hd/hd.js"></script>
+		<script src="/js/hd/hd.utility.js"></script>
+		<script src="/js/hd/hd.math.js"></script>
+		<script src="/js/hd/hd.site.js"></script>
+		<script src="/js/hd/hd.datetime.js"></script>
+		<script src="/js/hd/hd.datetime.timer.js"></script>
+		<% if (page === 'chat'){ %>
+			<link rel="stylesheet" href="/css/chat.css" />
+			<script src="/js/jquery.idle-timer.js"></script>
+			<script src="/socket.io/socket.io.js"></script>
+			<script src="/js/compress/lzma_worker-min.js"></script>
+			<script src="/js/chat/config.js"></script>
+			<script src="/js/chat/utility.js"></script>
+			<script src="/js/chat/methods.js"></script>
+			<script src="/js/chat/events.js"></script>
+			<script src="/js/chat/controller.js"></script>
+		<% } %>
+		<title>Amőba</title>
+	</head>
+	<body>
+
+		<div id="container">
+
+			<header>
+				<nav>
+					<ul>
+						<% layout.menu.forEach(function(menupoint){ %>
+							<li><a href="<%- menupoint.url %>"><%- menupoint.text %></a></li>
+						<% }); %>
+					</ul>
+				</nav>
+				<div class="clearfix"></div>
+			</header>
+
+			<h1 class="game">Amőba</h1>
+
+			<% if (!login){ %>
+				<div class="login">
+					<form method="post" action="/login">
+						<% if (loginMessage){ %>
+							<label class="error"><%- loginMessage %></label>
+						<% } %>
+						<label>
+							<span>Felhasználónév:</span>
+							<input type="text" name="username" value="" />
+						</label>
+						<label>
+							<span>Jelszó:</span>
+							<input type="password" name="password" value="" />
+						</label>
+						<input class="submit" type="submit" name="submit" value="Belépés" />
+					</form>
+					<div class="clear"></div>
+				</div>
+			<% }else{ %>
+				<div class="login">
+					Üdvözöljük, <strong><%- userName %></strong>
+					<a href="/logout">Kijelentkezés</a>
+				</div>
+			<% } %>
+
+			<%- include(page) %>
+
+			<footer><!--
+				<a class="html5logo" href="http://www.w3.org/html/logo/">
+					<img src="http://www.w3.org/html/logo/badge/html5-badge-h-css3-graphics-multimedia-semantics.png" width="229" height="64" alt="HTML5 Powered with CSS3 / Styling, Graphics, 3D &amp; Effects, Multimedia, and Semantics" title="HTML5 Powered with CSS3 / Styling, Graphics, 3D &amp; Effects, Multimedia, and Semantics">
+				</a>
+			--></footer>
+
+		</div>
+
+	</body>
+</html>

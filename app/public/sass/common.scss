@@ -1,0 +1,79 @@
+/*
+    Created on : 2015.09.24.
+    Author     : Horváth Norbert
+    Description:
+        Tartalmi rész általános stílusai
+*/
+
+@import "_utility.scss";
+
+.hidden-weak {
+	display: none;
+}
+.nowrap {
+	white-space: nowrap;
+}
+.cloneable {
+	display: none;
+}
+.dialog {
+	display: none;
+}
+.resizeable {
+	resize: vertical;
+}
+.overlay {
+	display: none;
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 20;
+	margin: 0;
+	padding: 0;
+	background: transparent;
+}
+.spacer {
+	height: 10px;
+}
+.spacer-inline {
+	padding-left: 10px;
+}
+
+.censored {
+	background-color: #2a2a2a !important;
+}
+
+h1 {
+	color: #505050;
+	font-size: 1.2em;
+	font-weight: bold;
+}
+
+a {
+	text-decoration: none;
+	color: #006CD9;
+
+	&:hover {
+		text-decoration: none;
+		color: #000000;
+	}
+}
+
+p {
+	margin: 0 0 15px 0;
+	text-align: justify;
+	font-size: 0.9em;
+	line-height: 1.3em;
+
+	&.text-left {
+		text-align: left;
+	}
+	&.text-right {
+		text-align: right;
+	}
+	&.text-center {
+		text-align: center;
+	}
+}

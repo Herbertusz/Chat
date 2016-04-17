@@ -1,0 +1,62 @@
+<div style="margin: 20px 0;">
+	<% if (login){ %>
+		<aside class="online" data-connected-users="">
+			<ul>
+				<li data-id="<%- userId %>" data-name="<%= userName %>" class="self">
+					<label>
+						<span class="status on"></span> <%= userName %>
+						<select class="status-change">
+							<option value="on" selected>Elérhető</option>
+							<option value="busy">Elfoglalt</option>
+							<option value="inv">Lopakodó</option>
+						</select>
+					</label>
+				</li>
+				<% users.forEach(function(user){ %>
+					<% if (userId !== user.id){ %>
+						<li data-id="<%- user.id %>" data-name="<%= user.username %>" class="<% if (userId === user.id){ %>hidden-weak<% } %>">
+							<label>
+								<input class="user-select" type="checkbox" value="<%- user.id %>" />
+								<span class="status off"></span> <%= user.username %>
+							</label>
+						</li>
+					<% } %>
+				<% }); %>
+			</ul>
+			<button class="start">Chat</button>
+		</aside>
+		<section class="chatcontainer">
+			<div class="chat cloneable" data-room="">
+				<div class="bar">
+					<span class="users">
+						<span class="user-item cloneable" data-id="">
+							<span class="status"></span>
+							<span class="name"></span>
+							<span class="throw" title="Kidobás"></span>
+						</span>
+					</span>
+					<span class="close" title="Kilépés"></span>
+					<button class="add-user hidden-weak">Hozzáadás</button>
+				</div>
+				<ul class="list drop-file"></ul>
+				<div class="form">
+					<div class="indicator"></div>
+					<textarea class="message" placeholder="Üzenet"></textarea>
+					<div class="fileuploader">
+						<input type="file" class="file" />
+						<span class="trigger">
+							<span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
+						</span>
+					</div>
+					<div class="submitmode">
+						<label><input class="send-switch" type="checkbox" value="1" checked /> Küldés enter megnyomására</label>
+						<button class="send hidden-weak">Küldés</button>
+					</div>
+				</div>
+			</div>
+		</section>
+		<div class="clearfix"></div>
+	<% }else{ %>
+		Jelentkezzé be!
+	<% } %>
+</div>

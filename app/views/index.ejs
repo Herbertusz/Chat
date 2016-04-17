@@ -1,0 +1,11 @@
+<section class="preroom">
+	<h2>Előszoba</h2>
+	<div class="list">
+		<% users.forEach(function(element){ %>
+			<hr />
+			<% for (var i in element){ %>
+				<%- i %>: <%- element[i] %><br />
+			<% } %>
+		<% }); %>
+	</div>
+</section>

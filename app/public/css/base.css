@@ -1,0 +1,50 @@
+/*
+    Document   : base
+    Created on : 2011.07.14., 19:22:42
+    Author     : Horváth Norbert
+    Description:
+        Általános class-ok
+*/
+
+.clear  { clear: both; }
+.left   { float: left; }
+.right  { float: right; }
+.hidden { display: none; }
+.block  { display: block; }
+.inline { display: inline; }
+.spacer { height: 10px; }
+.spacer-inline { padding-left: 10px; }
+
+.nowrap     { white-space: nowrap; }
+.h-first    { margin-left: 0px !important; }
+.h-last     { margin-right: 0px !important; }
+.v-first    { margin-top: 0px !important; }
+.v-last     { margin-bottom: 0px !important; }
+.stretch    { height: auto !important; }
+.resizeable { resize: vertical; }
+
+.p-left    { text-align: left; }
+.p-right   { text-align: right; }
+.p-center  { text-align: center; }
+.p-justify { text-align: justify; }
+
+.bold   { font-weight: bold; }
+.italic { font-style: italic; }
+
+input, select {
+	outline-width: 0px;
+}
+textarea {
+	resize: none;
+}
+img {
+	border-width: 0px;
+}
+a {
+	padding: 0;
+	text-decoration: none;
+	color: #000000;
+}
+a:hover {
+	text-decoration: none;
+}
