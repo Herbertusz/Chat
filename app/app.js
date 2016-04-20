@@ -1,5 +1,6 @@
 'use strict';
 
+var io;
 var path = require('path');
 var http = require('http');
 var express = require('express');
@@ -42,7 +43,7 @@ require(appRoot + '/app/layout.js')(app);
 
 // Websocket
 server = http.createServer(app);
-var io = require(appRoot + '/app/websocket.js')(server, session);
+io = require(appRoot + '/app/websocket.js')(server, session);
 app.set('io', io);
 
 // Route

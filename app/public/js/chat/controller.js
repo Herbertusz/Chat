@@ -4,6 +4,8 @@ var CHAT = window.CHAT || {};
 
 $(document).ready(function(){
 
+	var func;
+
 	// Csatorna létrehozása
 	$(CHAT.DOM.start).click(function(){
 		CHAT.Events.Client.createRoom();
@@ -137,7 +139,7 @@ $(document).ready(function(){
 
 
 	// Szerver által küldött események lekezelése
-	for (var func in CHAT.Events.Server){
+	for (func in CHAT.Events.Server){
 		CHAT.socket.on(func, CHAT.Events.Server[func]);
 	}
 
