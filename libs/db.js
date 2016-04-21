@@ -77,13 +77,13 @@ var DB = {
 
 		this.connection.config.queryFormat = function(query, values){
 			if (!values) return query;
-			query = query.replace(/\:\:(\w+)/g, function(txt, key){
+			query = query.replace(/::(\w+)/g, function(txt, key){
 				if (values.hasOwnProperty(key)){
 					return this.escapeId(values[key]);
 				}
 				return txt;
 			}.bind(this));
-			query = query.replace(/\:(\w+)/g, function(txt, key){
+			query = query.replace(/:(\w+)/g, function(txt, key){
 				if (values.hasOwnProperty(key)){
 					return this.escape(values[key]);
 				}
@@ -259,18 +259,19 @@ var DB = {
 	 * @returns {String} nyers lekérdezés
 	 */
 	insert : function(table, data, callback){
+		var sql;
 		var args = new Args(arguments);
 		callback = args.callback;
 
-		var sql = "\
-			INSERT INTO\
-				`" + table + "`\
-			(\
-				`" + Object.keys(data).join("`,`") + "`\
-			) VALUE (\
-				:" + Object.keys(data).join(",:") + "\
-			)\
-		";
+		sql = `
+			INSERT INTO
+				\`${table}\`
+			(
+				\`` + Object.keys(data).join("`,`") + `\`
+			) VALUE (
+				:` + Object.keys(data).join(",:") + `
+			)
+		`;
 		return this.query(sql, data, callback);
 	},
 
@@ -284,22 +285,22 @@ var DB = {
 	 * @returns {String} nyers lekérdezés
 	 */
 	update : function(table, data, where, binds, callback){
+		var rows = [], sql;
 		var args = new Args(arguments);
 		binds = (typeof args.all[2] !== "undefined") ? args.all[2] : {};
 		callback = args.callback;
 
-		var rows = [], sql;
 		data.forEach(function(value, col){
 			rows.push("`" + col + "` = :" + col);
 		});
-		sql = "\
-			UPDATE\
-				`" + table + "`\
-			SET\
-				" + rows.join(",") + "\
-			WHERE\
-				" + where + "\
-		";
+		sql = `
+			UPDATE
+				\`${table}\`
+			SET
+				` + rows.join(",") + `
+			WHERE
+				${where}
+		`;
 		return this.query(sql, Object.assign(data, binds), callback);
 	},
 
@@ -312,16 +313,17 @@ var DB = {
 	 * @returns {String} nyers lekérdezés
 	 */
 	delete : function(table, where, binds, callback){
+		var sql;
 		var args = new Args(arguments);
 		binds = (typeof args.all[2] !== "undefined") ? args.all[2] : {};
 		callback = args.callback;
 
-		var sql = "\
-			DELETE FROM\
-				`" + table + "`\
-			WHERE\
-				" + where + "\
-		";
+		sql = `
+			DELETE FROM
+				\`${table}\`
+			WHERE
+				${where}
+		`;
 		return this.query(sql, binds, callback);
 	},
 
@@ -349,6 +351,7 @@ var DB = {
 	 */
 	query : function(sql, binds, run, preserve, callback){
 
+		var temp_sql, temp_command;
 		var args = new Args(arguments);
 		sql = args.all[0];
 		binds = (typeof args.all[1] !== "undefined") ? args.all[1] : {};
@@ -356,7 +359,6 @@ var DB = {
 		preserve = (typeof args.all[3] !== "undefined") ? args.all[3] : false;
 		callback = args.callback;
 
-		var sql, temp_sql, temp_command;
 
 		if (preserve){
 			temp_sql = this.sql;

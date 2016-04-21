@@ -1,5 +1,7 @@
 'use strict';
 
+/* global appRoot */
+
 var DB = require(appRoot + '/libs/db.js');
 
 DB.connect({

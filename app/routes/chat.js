@@ -1,13 +1,15 @@
 'use strict';
 
+/* global appRoot */
+
 var express = require('express');
 var router = express.Router();
-var session = require('express-session');
+//var session = require('express-session');
 var fs = require('fs');
 var Model = require(appRoot + '/app/models/chat.js');
 var HD = require(appRoot + '/libs/hd/hd.math.js');
 
-router.get('/', function(req, res, next){
+router.get('/', function(req, res){
 
 	Model.getUsers(function(users){
 		res.render('layout', {
@@ -22,7 +24,7 @@ router.get('/', function(req, res, next){
 
 });
 
-router.post('/getroommessages', function(req, res, next){
+router.post('/getroommessages', function(req, res){
 
 	Model.getRoomMessages(req.body.roomName, function(messages){
 		res.send({
@@ -32,7 +34,7 @@ router.post('/getroommessages', function(req, res, next){
 
 });
 
-router.post('/uploadfile', function(req, res, next){
+router.post('/uploadfile', function(req, res){
 
 	var data, fileName, fileStream, uploadedSize;
 	var io = req.app.get('io');

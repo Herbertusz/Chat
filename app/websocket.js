@@ -1,11 +1,12 @@
 'use strict';
 
-var fs = require('fs');
-var ioSession = require('socket.io-express-session');
+/* global appRoot */
+
+var ioExpressSession = require('socket.io-express-session');
 var Model = require(appRoot + '/app/models/chat.js');
 var HD = require(appRoot + '/libs/hd/hd.math.js');
 
-module.exports = function(server, session){
+module.exports = function(server, ioSession){
 
 	/**
 	 * Chat-be belépett userek
@@ -104,7 +105,7 @@ module.exports = function(server, session){
 	};
 
 	var io = require('socket.io')(server);
-	io.of('/chat').use(ioSession(session));
+	io.of('/chat').use(ioExpressSession(ioSession));
 
 	// Belépés a chat-be
 	io.of('/chat').on('connection', function(socket){
@@ -138,12 +139,12 @@ module.exports = function(server, session){
 
 		// Csatlakozás bontása
 		socket.on('disconnect', function(){
-			var userData = connectedUsers[socket.id];
-			if (userData){
+			var discUserData = connectedUsers[socket.id];
+			if (discUserData){
 				delete connectedUsers[socket.id];
-				roomUpdate('remove', null, userData.id);
+				roomUpdate('remove', null, discUserData.id);
 				io.of('/chat').emit('statusChanged', connectedUsers);
-				io.of('/chat').emit('disconnect', userData);
+				io.of('/chat').emit('disconnect', discUserData);
 			}
 		});
 
@@ -228,7 +229,7 @@ module.exports = function(server, session){
 			socket.broadcast.to(data.roomName).emit('typeMessage', data);
 		});
 	});
-	
+
 	return io;
 
 };
