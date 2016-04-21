@@ -128,7 +128,6 @@ CHAT.Events = {
 		 */
 		sendFile : function($box, files){
 			var store = CHAT.Config.fileTransfer.store;
-			var types = CHAT.Config.fileTransfer.types;
 			var extensions = CHAT.Config.fileTransfer.extensions;
 			var allowedTypes = CHAT.Config.fileTransfer.allowedTypes;
 			var maxSize = CHAT.Config.fileTransfer.maxSize;
@@ -169,18 +168,13 @@ CHAT.Events = {
 				}
 
 				if (errors.length === 0){
-					let mainType, element, reader;
-					mainType = (data.type === "image") ? "image" : "file";
-					element = document.createElement(types[mainType].tag);
+					let reader;
 					reader = new FileReader();
 					reader.onload = (function(data){
 						return function(){
-							let base64 = reader.result;
-							element[types[mainType].attr] = base64;
-
 							if (store === 'base64'){
 								// base64 tárolása db-ben
-								data.file = base64;
+								data.file = reader.result;
 								CHAT.Method.appendFile($box, data, true);
 								CHAT.socket.emit('sendFile', data);
 							}
@@ -210,7 +204,7 @@ CHAT.Events = {
 							}
 							else if (store === 'zip'){
 								// tömörített base64 tárolása db-ben
-								CHAT.lzma.compress(base64, 1, function(result, error){
+								CHAT.lzma.compress(reader.result, 1, function(result, error){
 									if (error){
 										console.log(error);
 									}

@@ -21,10 +21,10 @@ CHAT.Method = {
 	 * }
 	 */
 	appendUserMessage : function($box, data, highlighted){
-		highlighted = HD.Misc.funcParam(highlighted, false);
 		var time = HD.DateTime.format('H:i:s', data.time);
 		var $list = $box.find(CHAT.DOM.list);
 		var userName = CHAT.Method.getUserName(data.id);
+		highlighted = HD.Misc.funcParam(highlighted, false);
 		$list.append(`
 			<li>
 				<span class="time">${time}</span>
@@ -87,12 +87,12 @@ CHAT.Method = {
 	 * }
 	 */
 	appendFile : function($box, data, highlighted){
-		highlighted = HD.Misc.funcParam(highlighted, false);
-		var $element, tpl, img, imgSrc;
+		var $element, $listItem, tpl, img, imgSrc;
 		var time = HD.DateTime.format('H:i:s', data.time);
 		var $list = $box.find(CHAT.DOM.list);
 		var userName = CHAT.Method.getUserName(data.id);
-		var $listItem = $(`
+		highlighted = HD.Misc.funcParam(highlighted, false);
+		$listItem = $(`
 			<li>
 				<span class="time">${time}</span>
 				<strong class="${highlighted ? "self" : ""}">${CHAT.Util.escapeHtml(userName)}</strong>:
@@ -128,10 +128,11 @@ CHAT.Method = {
 	},
 
 	progressbar : function($box, data, direction, percent, newBar){
-		newBar = HD.Misc.funcParam(newBar, false);
+		var tpl;
 		var $list = $box.find(CHAT.DOM.list);
 		var label = direction === "send" ? 'Fájlküldés' : 'Fájlfogadás';
-		var tpl = `
+		newBar = HD.Misc.funcParam(newBar, false);
+		tpl = `
 			<li>
 				<div class="progressbar">
 					<span class="label">${label}...</span>

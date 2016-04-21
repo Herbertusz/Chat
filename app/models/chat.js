@@ -6,16 +6,16 @@ var DB = require(appRoot + '/app/models/dbconnect.js');
 var Model = {
 
 	getUsers : function(callback){
-		DB.query("\
-			SELECT\
-				*\
+		DB.query(`
+			SELECT
+				*
 			FROM\
-				`chat_users`\
+				chat_users
 			WHERE\
-				`active` = 1\
+				active = 1
 			ORDER BY\
-				`username` ASC\
-		", function(error, rows, fields){
+				username ASC
+		`, function(error, rows, fields){
 			if (error) throw error;
 			rows.forEach(function(row, i){
 				rows[i].created = HD.DateTime.format('Y-m-d H:i:s', Math.floor(Date.parse(row.created) / 1000));
@@ -25,16 +25,16 @@ var Model = {
 	},
 
 	getMessages : function(callback){
-		DB.query("\
-			SELECT\
-				`cm`.*,\
-				`cu`.`username`\
-			FROM\
-				`chat_messages` `cm`\
-				LEFT JOIN `chat_users` `cu` ON `cm`.`user_id` = `cu`.`id`\
-			ORDER BY\
-				`cm`.`created` ASC\
-		", function(error, rows, fields){
+		DB.query(`
+			SELECT
+				cm.*,
+				cu.username
+			FROM
+				chat_messages cm
+				LEFT JOIN chat_users cu ON cm.user_id = cu.id
+			ORDER BY
+				cm.created ASC
+		`, function(error, rows, fields){
 			if (error) throw error;
 			rows.forEach(function(row, i){
 				rows[i].created = HD.DateTime.format('Y-m-d H:i:s', Math.floor(Date.parse(row.created) / 1000));

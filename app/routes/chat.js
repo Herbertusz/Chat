@@ -34,13 +34,14 @@ router.post('/getroommessages', function(req, res, next){
 
 router.post('/uploadfile', function(req, res, next){
 
+	var data, fileName, fileStream, uploadedSize;
 	var io = req.app.get('io');
 
 	if (req.xhr){
-		var data = JSON.parse(decodeURIComponent(req.header('X-File-Data')));
-		var fileName = Date.now().toString() + '-' + HD.Math.rand(100, 999) + '.' + data.fileData.name.split('.').pop();
-		var fileStream = fs.createWriteStream(appRoot + '/app/public/upload/' + fileName);
-		var uploadedSize = 0;
+		data = JSON.parse(decodeURIComponent(req.header('X-File-Data')));
+		fileName = Date.now().toString() + '-' + HD.Math.rand(100, 999) + '.' + data.fileData.name.split('.').pop();
+		fileStream = fs.createWriteStream(appRoot + '/app/public/upload/' + fileName);
+		uploadedSize = 0;
 
 		req.on('data', function(file){
 			var first = (uploadedSize === 0);
