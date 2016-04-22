@@ -1,5 +1,7 @@
 "use strict";
 
+/* global HD, DOMAIN, WSPORT, userData, io, LZMA */
+
 var CHAT = window.CHAT || {};
 
 /**

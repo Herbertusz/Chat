@@ -1,5 +1,7 @@
 'use strict';
 
+/* global appRoot */
+
 var HD = require(appRoot + '/libs/hd/hd.datetime.js');
 var DB = require(appRoot + '/app/models/dbconnect.js');
 
@@ -15,7 +17,7 @@ var Model = {
 				active = 1
 			ORDER BY\
 				username ASC
-		`, function(error, rows, fields){
+		`, function(error, rows){
 			if (error) throw error;
 			rows.forEach(function(row, i){
 				rows[i].created = HD.DateTime.format('Y-m-d H:i:s', Math.floor(Date.parse(row.created) / 1000));
@@ -34,7 +36,7 @@ var Model = {
 				LEFT JOIN chat_users cu ON cm.user_id = cu.id
 			ORDER BY
 				cm.created ASC
-		`, function(error, rows, fields){
+		`, function(error, rows){
 			if (error) throw error;
 			rows.forEach(function(row, i){
 				rows[i].created = HD.DateTime.format('Y-m-d H:i:s', Math.floor(Date.parse(row.created) / 1000));
@@ -71,7 +73,7 @@ var Model = {
 				cm.created ASC
 		`, {
 			roomName : roomName
-		}, function(error, rows, fields){
+		}, function(error, rows){
 			if (error) throw error;
 			rows.forEach(function(row, i){
 				rows[i].created = HD.DateTime.format('Y-m-d H:i:s', Math.floor(Date.parse(row.created) / 1000));

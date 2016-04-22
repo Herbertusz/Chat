@@ -1,5 +1,7 @@
 "use strict";
 
+/* global HD */
+
 var CHAT = window.CHAT || {};
 
 $(document).ready(function(){

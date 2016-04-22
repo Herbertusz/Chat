@@ -9,10 +9,8 @@ module.exports = function(app){
 			{
 				text : 'Előszoba',
 				url : '/'
-			}, {
-				text : 'Amőba',
-				url : '/game'
-			}, {
+			},
+			{
 				text : 'Chat',
 				url : '/chat'
 			}

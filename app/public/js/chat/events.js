@@ -140,7 +140,7 @@ CHAT.Events = {
 
 			files.forEach(function(rawFile){
 				let i, errors = [];
-				let data = {
+				let _data = {
 					id : CHAT.USER.id,
 					fileData : {
 						name : rawFile.name,
@@ -159,11 +159,11 @@ CHAT.Events = {
 				}
 				for (i in extensions){
 					if (extensions[i].test(rawFile.type)){
-						data.type = i;
+						_data.type = i;
 						break;
 					}
 				}
-				if (allowedTypes.indexOf(data.type) === -1){
+				if (allowedTypes.indexOf(_data.type) === -1){
 					errors.push("type");
 				}
 
@@ -218,7 +218,7 @@ CHAT.Events = {
 								});
 							}
 						};
-					})(data);
+					})(_data);
 					reader.readAsDataURL(rawFile);
 				}
 				else{
@@ -456,7 +456,7 @@ CHAT.Events = {
 				CHAT.Method.appendFile($box, data);
 			}
 			else if (data.store === 'zip'){
-				LZMA.decompress(data.file, function(result, error){
+				CHAT.lzma.decompress(data.file, function(result, error){
 					if (error){
 						console.log(error);
 					}
