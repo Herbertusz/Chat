@@ -17,7 +17,7 @@ CHAT.USER = {
  * Socket objektum
  * @type Object
  */
-CHAT.socket = io.connect('http://' + DOMAIN + ':' + WSPORT + '/chat');
+CHAT.socket = io.connect(`http://${DOMAIN}:${WSPORT}/chat`);
 
 /**
  * Tömörítés

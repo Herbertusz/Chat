@@ -49,22 +49,34 @@ CHAT.Method = {
 		var userName = CHAT.Method.getUserName(userId);
 		var otherUserName = CHAT.Method.getUserName(otherUserId);
 		if (type === 'join'){
-			$list.append(`<li class="highlighted">${userName} csatlakozott!</li>`);
+			$list.append(`
+				<li class="highlighted">${userName} csatlakozott!</li>
+			`);
 		}
 		else if (type === 'leave'){
-			$list.append(`<li class="highlighted">${userName} kilépett!</li>`);
+			$list.append(`
+				<li class="highlighted">${userName} kilépett!</li>
+			`);
 		}
 		else if (type === 'forcejoinyou'){
-			$list.append(`<li class="highlighted">${userName} hozzáadott ehhez a csatornához!</li>`);
+			$list.append(`
+				<li class="highlighted">${userName} hozzáadott ehhez a csatornához!</li>
+			`);
 		}
 		else if (type === 'forcejoinother'){
-			$list.append(`<li class="highlighted">${userName} hozzáadta ${otherUserName} felhasználót ehhez a csatornához!</li>`);
+			$list.append(`
+				<li class="highlighted">${userName} hozzáadta ${otherUserName} felhasználót ehhez a csatornához!</li>
+			`);
 		}
 		else if (type === 'forceleaveyou'){
-			$list.append(`<li class="highlighted">${userName} kidobott!</li>`);
+			$list.append(`
+				<li class="highlighted">${userName} kidobott!</li>
+			`);
 		}
 		else if (type === 'forceleaveother'){
-			$list.append(`<li class="highlighted">${userName} kidobta ${otherUserName} felhasználót!</li>`);
+			$list.append(`
+				<li class="highlighted">${userName} kidobta ${otherUserName} felhasználót!</li>
+			`);
 		}
 		CHAT.Util.scrollToBottom($box);
 	},
@@ -110,7 +122,7 @@ CHAT.Method = {
 				</a>
 			`;
 		}
-		else{
+		else {
 			imgSrc = `/images/extensions/${data.type}.gif`;
 			tpl = `
 				<a href="${data.file}" target="_blank">
@@ -129,7 +141,14 @@ CHAT.Method = {
 		img.src = imgSrc;
 	},
 
-	progressbar : function($box, data, direction, percent, newBar){
+	/**
+	 *
+	 * @param $box
+	 * @param direction
+	 * @param percent
+	 * @param newBar
+	 */
+	progressbar : function($box, direction, percent, newBar){
 		var tpl;
 		var $list = $box.find(CHAT.DOM.list);
 		var label = direction === "send" ? 'Fájlküldés' : 'Fájlfogadás';
@@ -149,14 +168,14 @@ CHAT.Method = {
 			$list.append(tpl);
 			CHAT.Util.scrollToBottom($box);
 		}
-		else{
-			let $progressbar = $list.find('.progressbar').last();
+		else {
+			const $progressbar = $list.find('.progressbar').last();
 			if (percent === 100){
 				$progressbar.find('.label').html(`${label} befejeződött`);
 				$progressbar.find('.line').addClass('finished');
 			}
-			$progressbar.find('.line').css("width", percent.toString() + "%");
-			$progressbar.find('.numeric').html(percent.toString() + "%");
+			$progressbar.find('.line').css("width", `${percent}%`);
+			$progressbar.find('.numeric').html(`${percent}%`);
 		}
 	},
 
@@ -181,7 +200,7 @@ CHAT.Method = {
 		if (message.trim().length > 0){
 			$box.find(CHAT.DOM.indicator).html(`${userName} szöveget írt be`);
 		}
-		else{
+		else {
 			$box.find(CHAT.DOM.indicator).html('');
 		}
 	},
@@ -204,7 +223,7 @@ CHAT.Method = {
 	 * @returns {String}
 	 */
 	getUserName : function(id){
-		var $element = $(CHAT.DOM.onlineListItems).filter('[data-id="' + id + '"]');
+		var $element = $(CHAT.DOM.onlineListItems).filter(`[data-id="${id}"]`);
 		return $element.data("name");
 	},
 
@@ -244,7 +263,7 @@ CHAT.Method = {
 		if (status === "idle"){
 			$statusElem.addClass("idle");
 		}
-		else{
+		else {
 			$statusElem.removeClass("idle");
 			for (n = 0; n < statuses.length; n++){
 				$statusElem.removeClass(statuses[n]);
@@ -288,7 +307,7 @@ CHAT.Method = {
 			if (typeof onlineUserStatuses[currentId] !== "undefined"){
 				CHAT.Method.setStatus($this, onlineUserStatuses[currentId]);
 			}
-			else{
+			else {
 				CHAT.Method.setStatus($this, "off");
 			}
 		});
@@ -306,7 +325,8 @@ CHAT.Method = {
 	 * @returns {Object}
 	 */
 	changeCurrentStatus : function(newStatus){
-		var thisSocket = null, socketId;
+		var socketId;
+		var thisSocket = null;
 		var connectedUsers = $(CHAT.DOM.online).data("connectedUsers");
 		for (socketId in connectedUsers){
 			if (connectedUsers[socketId].id === CHAT.USER.id){
@@ -321,7 +341,7 @@ CHAT.Method = {
 			else if (newStatus === "notidle"){
 				connectedUsers[thisSocket].isIdle = false;
 			}
-			else{
+			else {
 				connectedUsers[thisSocket].isIdle = false;
 				connectedUsers[thisSocket].status = newStatus;
 			}
@@ -383,7 +403,7 @@ CHAT.Method = {
 							roomName : roomName
 						});
 					}
-					else{
+					else {
 						data = {
 							id : msgData.userId,
 							fileData : {
@@ -414,7 +434,7 @@ CHAT.Method = {
 								if (error){
 									console.log(error);
 								}
-								else{
+								else {
 									data.file = file;
 									CHAT.Method.appendFile($box, data);
 								}
