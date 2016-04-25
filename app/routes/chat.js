@@ -6,8 +6,8 @@ var express = require('express');
 var router = express.Router();
 // var session = require('express-session');
 var fs = require('fs');
-var Model = require(appRoot + '/app/models/chat.js');
-var HD = require(appRoot + '/libs/hd/hd.math.js');
+var Model = require(`${appRoot}/app/models/chat.js`);
+var HD = require(`${appRoot}/libs/hd/hd.math.js`);
 
 router.get('/', function(req, res){
 

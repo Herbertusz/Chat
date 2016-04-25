@@ -3,8 +3,8 @@
 /* global appRoot */
 
 var ioExpressSession = require('socket.io-express-session');
-var Model = require(appRoot + '/app/models/chat.js');
-var HD = require(appRoot + '/libs/hd/hd.math.js');
+var Model = require(`${appRoot}/app/models/chat.js`);
+var HD = require(`${appRoot}/libs/hd/hd.math.js`);
 
 module.exports = function(server, ioSession){
 
@@ -143,7 +143,7 @@ module.exports = function(server, ioSession){
 		socket.on('disconnect', function(){
 			var discUserData = connectedUsers[socket.id];
 			if (discUserData){
-				delete connectedUsers[socket.id];
+				Reflect.defineProperty(connectedUsers, socket.id); // delete connectedUsers[socket.id];
 				roomUpdate('remove', null, discUserData.id);
 				io.of('/chat').emit('statusChanged', connectedUsers);
 				io.of('/chat').emit('disconnect', discUserData);

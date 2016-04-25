@@ -2,8 +2,8 @@
 
 /* global appRoot */
 
-var HD = require(appRoot + '/libs/hd/hd.datetime.js');
-var DB = require(appRoot + '/app/models/dbconnect.js');
+var HD = require(`${appRoot}/libs/hd/hd.datetime.js`);
+var DB = require(`${appRoot}/app/models/dbconnect.js`);
 
 var Model = {
 
@@ -11,11 +11,11 @@ var Model = {
 		DB.query(`
 			SELECT
 				*
-			FROM\
+			FROM
 				chat_users
-			WHERE\
+			WHERE
 				active = 1
-			ORDER BY\
+			ORDER BY
 				username ASC
 		`, function(error, rows){
 			if (error) throw error;

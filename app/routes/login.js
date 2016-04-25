@@ -4,8 +4,8 @@
 
 var express = require('express');
 var router = express.Router();
-//var session = require('express-session');
-var DB = require(appRoot + '/app/models/dbconnect.js');
+// var session = require('express-session');
+var DB = require(`${appRoot}/app/models/dbconnect.js`);
 
 router.post('/', function(req, res){
 	var username, password;
@@ -28,7 +28,7 @@ router.post('/', function(req, res){
 					error : null
 				};
 			}
-			else{
+			else {
 				req.session.login.error = 'Nem jó!!!';
 			}
 			res.redirect('/');

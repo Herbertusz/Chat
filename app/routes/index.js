@@ -4,9 +4,9 @@
 
 var express = require('express');
 var router = express.Router();
-//var session = require('express-session');
-var HD = require(appRoot + '/libs/hd/hd.datetime.js');
-var DB = require(appRoot + '/app/models/dbconnect.js');
+// var session = require('express-session');
+var HD = require(`${appRoot}/libs/hd/hd.datetime.js`);
+var DB = require(`${appRoot}/app/models/dbconnect.js`);
 
 router.get('/', function(req, res){
 	var message;

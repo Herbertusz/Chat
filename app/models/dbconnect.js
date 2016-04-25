@@ -2,7 +2,7 @@
 
 /* global appRoot */
 
-var DB = require(appRoot + '/libs/db.js');
+var DB = require(`${appRoot}/libs/db.js`);
 
 DB.connect({
 	host     : process.env.OPENSHIFT_MYSQL_DB_HOST || 'localhost',

@@ -6,8 +6,8 @@
 'use strict';
 
 var app;
-//var http = require('http');
-//var debug = require('debug')('nodeapp:server');
+// var http = require('http');
+// var debug = require('debug')('nodeapp:server');
 
 /**
  * Normalize a port into a number, string, or false
@@ -43,5 +43,5 @@ app.set('port', global.PORT);
 
 // Port figyelése
 app.httpServer.listen(global.PORT, global.IPADDRESS, function(){
-	console.log('Listening ' + global.IPADDRESS + ':' + global.PORT);
+	console.log(`Listening ${global.IPADDRESS}:${global.PORT}`);
 });

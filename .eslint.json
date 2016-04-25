@@ -166,7 +166,7 @@
         "throw": {"before": true}
       }
     }], // enforce consistent spacing before and after keywords
-    "linebreak-style": ["warn", "unix"], // enforce consistent linebreak style
+    "linebreak-style": "off", // enforce consistent linebreak style
     "lines-around-comment": "off", // require empty lines around comments
     "max-depth": ["warn", {"max": 8}], // enforce a maximum depth that blocks can be nested
     "max-len": ["warn", {"code": 120, "tabWidth": 4, "ignoreUrls": true}], // enforce a maximum line length
@@ -217,7 +217,7 @@
     "space-in-parens": ["warn", "never"], // enforce consistent spacing inside parentheses
     "space-infix-ops": ["warn"], // require spacing around operators
     "space-unary-ops": ["warn", {"words": true, "nonwords": false}], // enforce consistent spacing before or after unary operators
-    "spaced-comment": ["warn", "always"], // enforce consistent spacing after the // or /* in a comment
+    "spaced-comment": ["warn", "always", {"markers": ["!"]}], // enforce consistent spacing after the // or /* in a comment
     "wrap-regex": "off", // require parenthesis around regex literals
 
     // ECMAScript 6
@@ -239,7 +239,7 @@
     "object-shorthand": ["warn", "never"], // require or disallow method and property shorthand syntax for object literals
     "prefer-arrow-callback": "off", // require arrow functions as callbacks
     "prefer-const": "warn", // require const declarations for variables that are never reassigned after declared
-    "prefer-reflect": "off", // require Reflect methods where applicable TODO: ES6 Reflect API
+    "prefer-reflect": "warn", // require Reflect methods where applicable
     "prefer-rest-params": "off", // require rest parameters instead of arguments TODO: Node5 flag
     "prefer-spread": "warn", // require spread operators instead of .apply()
     "prefer-template": "warn", // require template literals instead of string concatenation
