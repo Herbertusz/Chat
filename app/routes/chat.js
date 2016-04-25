@@ -4,7 +4,7 @@
 
 var express = require('express');
 var router = express.Router();
-//var session = require('express-session');
+// var session = require('express-session');
 var fs = require('fs');
 var Model = require(appRoot + '/app/models/chat.js');
 var HD = require(appRoot + '/libs/hd/hd.math.js');
@@ -41,8 +41,8 @@ router.post('/uploadfile', function(req, res){
 
 	if (req.xhr){
 		data = JSON.parse(decodeURIComponent(req.header('X-File-Data')));
-		fileName = Date.now().toString() + '-' + HD.Math.rand(100, 999) + '.' + data.fileData.name.split('.').pop();
-		fileStream = fs.createWriteStream(appRoot + '/app/public/upload/' + fileName);
+		fileName = `${Date.now()}-${HD.Math.rand(100, 999)}.${data.fileData.name.split('.').pop()}`;
+		fileStream = fs.createWriteStream(`${appRoot}/app/public/upload/${fileName}`);
 		uploadedSize = 0;
 
 		req.on('data', function(file){
@@ -59,7 +59,7 @@ router.post('/uploadfile', function(req, res){
 		});
 		req.on('end', function(){
 			res.send({
-				filePath : 'upload/' + fileName
+				filePath : `upload/${fileName}`
 			});
 		});
 	}

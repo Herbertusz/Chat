@@ -120,7 +120,7 @@ module.exports = function(server, ioSession){
 				isIdle : false
 			};
 		}
-		else{
+		else {
 			// vendég generálása
 			// ...
 		}
@@ -132,7 +132,9 @@ module.exports = function(server, ioSession){
 			rooms.forEach(function(roomData){
 				if (roomData.userIds.indexOf(userData.id) > -1){
 					socket.join(roomData.name);
-					io.of('/chat').to(roomData.name).emit('roomJoined', Object.assign(roomData, {joinedUserId : userData.id}));
+					io.of('/chat').to(roomData.name).emit(
+						'roomJoined', Object.assign(roomData, {joinedUserId : userData.id})
+					);
 				}
 			});
 		}
@@ -169,14 +171,14 @@ module.exports = function(server, ioSession){
 		// Kilépés csatornából
 		socket.on('roomLeave', function(data){
 			if (!data.silent){
-				let roomData = getRoom(data.roomName);
+				const roomData = getRoom(data.roomName);
 				socket.broadcast.emit('roomLeaved', {
 					userId : data.userId,
 					roomData : roomData
 				});
 			}
 			roomUpdate('remove', data.roomName, data.userId);
-			socket.leave(data.roomName);
+			socket.leave(data.roomName, () => {});
 		});
 
 		// Hozzáadás csatornához emitter

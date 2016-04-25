@@ -141,101 +141,110 @@
     "no-sync": "off", // disallow synchronous methods
 
     // Stylistic Issues
-    "array-bracket-spacing": "off", // enforce consistent spacing inside array brackets
-    "block-spacing": "off", // enforce consistent spacing inside single-line blocks
-    "brace-style": "off", // enforce consistent brace style for blocks
+    "array-bracket-spacing": ["warn", "never"], // enforce consistent spacing inside array brackets
+    "block-spacing": ["warn", "always"], // enforce consistent spacing inside single-line blocks
+    "brace-style": ["warn", "stroustrup", {"allowSingleLine": true}], // enforce consistent brace style for blocks
     "camelcase": "off", // enforce camelcase naming convention
-    "comma-spacing": "off", // enforce consistent spacing before and after commas
-    "comma-style": "off", // enforce consistent comma style
-    "computed-property-spacing": "off", // enforce consistent spacing inside computed property brackets
-    "consistent-this": "off", // enforce consistent naming when capturing the current execution context
-    "eol-last": "off", // enforce at least one newline at the end of files
+    "comma-spacing": ["warn", {"before": false, "after": true}], // enforce consistent spacing before and after commas
+    "comma-style": ["warn", "last"], // enforce consistent comma style
+    "computed-property-spacing": ["warn", "never"], // enforce consistent spacing inside computed property brackets
+    "consistent-this": ["warn", "This"], // enforce consistent naming when capturing the current execution context
+    "eol-last": ["warn", "unix"], // enforce at least one newline at the end of files
     "func-names": "off", // enforce named function expressions
-    "func-style": "off", // enforce the consistent use of either function declarations or expressions
+    "func-style": ["warn", "expression", {"allowArrowFunctions": true}], // enforce the consistent use of either function declarations or expressions
     "id-blacklist": "off", // disallow specified identifiers
     "id-length": "off", // enforce minimum and maximum identifier lengths
     "id-match": "off", // require identifiers to match a specified regular expression
-    "indent": "off", // enforce consistent indentation
+    "indent": ["warn", "tab"], // enforce consistent indentation
     "jsx-quotes": "off", // enforce the consistent use of either double or single quotes in JSX attributes
-    "key-spacing": "off", // enforce consistent spacing between keys and values in object literal properties
-    "keyword-spacing": "off", // enforce consistent spacing before and after keywords
-    "linebreak-style": "off", // enforce consistent linebreak style
+    "key-spacing": ["warn", {"beforeColon": true, "afterColon": true, "mode": "minimum"}], // enforce consistent spacing between keys and values in object literal properties
+    "keyword-spacing": ["warn", {
+      "before": false,
+      "after": true,
+      "overrides": {
+        "return": {"before": true},
+        "throw": {"before": true}
+      }
+    }], // enforce consistent spacing before and after keywords
+    "linebreak-style": ["warn", "unix"], // enforce consistent linebreak style
     "lines-around-comment": "off", // require empty lines around comments
-    "max-depth": "off", // enforce a maximum depth that blocks can be nested
-    "max-len": "off", // enforce a maximum line length
-    "max-nested-callbacks": "off", // enforce a maximum depth that callbacks can be nested
-    "max-params": "off", // enforce a maximum number of parameters in function definitions
+    "max-depth": ["warn", {"max": 8}], // enforce a maximum depth that blocks can be nested
+    "max-len": ["warn", {"code": 120, "tabWidth": 4, "ignoreUrls": true}], // enforce a maximum line length
+    "max-nested-callbacks": ["error", 3], // enforce a maximum depth that callbacks can be nested
+    "max-params": ["warn", 4], // enforce a maximum number of parameters in function definitions
     "max-statements": "off", // enforce a maximum number of statements allowed in function blocks
-    "max-statements-per-line": "off", // enforce a maximum number of statements allowed per line
-    "new-cap": "off", // require constructor function names to begin with a capital letter
-    "new-parens": "off", // require parentheses when invoking a constructor with no arguments
+    "max-statements-per-line": ["warn", {"max": 2}], // enforce a maximum number of statements allowed per line
+    "new-cap": ["warn", {"newIsCap": true, "capIsNew": false}], // require constructor function names to begin with a capital letter
+    "new-parens": "warn", // require parentheses when invoking a constructor with no arguments
     "newline-after-var": "off", // require or disallow an empty line after var declarations
     "newline-before-return": "off", // require an empty line before return statements
-    "newline-per-chained-call": "off", // require a newline after each call in a method chain
-    "no-array-constructor": "off", // disallow Array constructors
-    "no-bitwise": "off", // disallow bitwise operators
+    "newline-per-chained-call": ["warn", {"ignoreChainWithDepth": 4}], // require a newline after each call in a method chain
+    "no-array-constructor": "warn", // disallow Array constructors
+    "no-bitwise": ["warn", {"allow": ["~"]}], // disallow bitwise operators
     "no-continue": "off", // disallow continue statements
     "no-inline-comments": "off", // disallow inline comments after code
-    "no-lonely-if": "off", // disallow if statements as the only statement in else blocks
-    "no-mixed-spaces-and-tabs": "off", // disallow mixed spaces and tabs for indentation
-    "no-multiple-empty-lines": "off", // disallow multiple empty lines
+    "no-lonely-if": "warn", // disallow if statements as the only statement in else blocks
+    "no-mixed-spaces-and-tabs": "warn", // disallow mixed spaces and tabs for indentation
+    "no-multiple-empty-lines": ["error", {"max": 2, "maxEOF": 1, "maxBOF": 0}], // disallow multiple empty lines
     "no-negated-condition": "off", // disallow negated conditions
-    "no-nested-ternary": "off", // disallow nested ternary expressions
-    "no-new-object": "off", // disallow Object constructors
+    "no-nested-ternary": "warn", // disallow nested ternary expressions
+    "no-new-object": "warn", // disallow Object constructors
     "no-plusplus": "off", // disallow the unary operators ++ and --
-    "no-restricted-syntax": "off", // disallow specified syntax
-    "no-spaced-func": "off", // disallow spacing between function identifiers and their applications
+    "no-restricted-syntax": [
+      "error", "ClassDeclaration", "ClassExpression", "DoWhileStatement", "LabeledStatement", "SwitchStatement", "WithStatement"
+    ], // disallow specified syntax
+    "no-spaced-func": "warn", // disallow spacing between function identifiers and their applications
     "no-ternary": "off", // disallow ternary operators
-    "no-trailing-spaces": "off", // disallow trailing whitespace at the end of lines
+    "no-trailing-spaces": "warn", // disallow trailing whitespace at the end of lines
     "no-underscore-dangle": "off", // disallow dangling underscores in identifiers
-    "no-unneeded-ternary": "off", // disallow ternary operators when simpler alternatives exist
-    "no-whitespace-before-property": "off", // disallow whitespace before properties
-    "object-curly-spacing": "off", // enforce consistent spacing inside braces
+    "no-unneeded-ternary": "warn", // disallow ternary operators when simpler alternatives exist
+    "no-whitespace-before-property": "warn", // disallow whitespace before properties
+    "object-curly-spacing": ["warn", "never"], // enforce consistent spacing inside braces
     "one-var": "off", // enforce variables to be declared either together or separately in functions
-    "one-var-declaration-per-line": "off", // require or disallow newlines around var declarations
+    "one-var-declaration-per-line": ["warn", "initializations"], // require or disallow newlines around var declarations
     "operator-assignment": "off", // require or disallow assignment operator shorthand where possible
-    "operator-linebreak": "off", // enforce consistent linebreak style for operators
+    "operator-linebreak": ["warn", "after", {"overrides": {"||": "ignore", "&&": "ignore"}}], // enforce consistent linebreak style for operators
     "padded-blocks": "off", // require or disallow padding within blocks
     "quote-props": "off", // require quotes around object literal property names
-    "quotes": "off", // enforce the consistent use of either backticks, double, or single quotes
-    "require-jsdoc": "off", // require JSDoc comments
-    "semi": "off", // require or disallow semicolons instead of ASI
-    "semi-spacing": "off", // enforce consistent spacing before and after semicolons
+    "quotes": "off", // enforce the consistent use of either backticks, double, or single quotes TODO: el kellene dönteni
+    "require-jsdoc": ["warn", {"require": {"FunctionDeclaration": true, "MethodDefinition": true}}], // require JSDoc comments
+    "semi": ["error", "always"], // require or disallow semicolons instead of ASI
+    "semi-spacing": ["warn", {"before": false, "after": true}], // enforce consistent spacing before and after semicolons
     "sort-imports": "off", // enforce sorted import declarations within module
     "sort-vars": "off", // require variables within the same declaration block to be sorted
-    "space-before-blocks": "off", // enforce consistent spacing before blocks
-    "space-before-function-paren": "off", // enforce consistent spacing before function definition opening parenthesis
-    "space-in-parens": "off", // enforce consistent spacing inside parentheses
-    "space-infix-ops": "off", // require spacing around operators
-    "space-unary-ops": "off", // enforce consistent spacing before or after unary operators
-    "spaced-comment": "off", // enforce consistent spacing after the // or /* in a comment
+    "space-before-blocks": ["warn", {"functions": "never", "keywords": "never", "classes": "always"}], // enforce consistent spacing before blocks
+    "space-before-function-paren": ["warn", "never"], // enforce consistent spacing before function definition opening parenthesis
+    "space-in-parens": ["warn", "never"], // enforce consistent spacing inside parentheses
+    "space-infix-ops": ["warn"], // require spacing around operators
+    "space-unary-ops": ["warn", {"words": true, "nonwords": false}], // enforce consistent spacing before or after unary operators
+    "spaced-comment": ["warn", "always"], // enforce consistent spacing after the // or /* in a comment
     "wrap-regex": "off", // require parenthesis around regex literals
 
     // ECMAScript 6
     "arrow-body-style": "off", // require braces around arrow function bodies
-    "arrow-parens": "off", // require parentheses around arrow function arguments
-    "arrow-spacing": "off", // enforce consistent spacing before and after the arrow in arrow functions
+    "arrow-parens": "warn", // require parentheses around arrow function arguments
+    "arrow-spacing": ["warn", {"before": true, "after": true}], // enforce consistent spacing before and after the arrow in arrow functions
     "constructor-super": "off", // require super() calls in constructors
-    "generator-star-spacing": "off", // enforce consistent spacing around * operators in generator functions
-    "no-class-assign": "off", // disallow reassigning class members
-    "no-confusing-arrow": "off", // disallow arrow functions where they could be confused with comparisons
-    "no-const-assign": "off", // disallow reassigning const variables
-    "no-dupe-class-members": "off", // disallow duplicate class members
-    "no-duplicate-imports": "off", // disallow duplicate module imports
-    "no-new-symbol": "off", // disallow new operators with the Symbol object
+    "generator-star-spacing": ["warn", {"before": false, "after": true}], // enforce consistent spacing around * operators in generator functions
+    "no-class-assign": "warn", // disallow reassigning class members
+    "no-confusing-arrow": ["warn", {"allowParens": true}], // disallow arrow functions where they could be confused with comparisons
+    "no-const-assign": "error", // disallow reassigning const variables
+    "no-dupe-class-members": "error", // disallow duplicate class members
+    "no-duplicate-imports": "warn", // disallow duplicate module imports
+    "no-new-symbol": "error", // disallow new operators with the Symbol object
     "no-restricted-imports": "off", // disallow specified modules when loaded by import
-    "no-this-before-super": "off", // disallow this/super before calling super() in constructors
+    "no-this-before-super": "error", // disallow this/super before calling super() in constructors
     "no-useless-constructor": "off", // disallow unnecessary constructors
     "no-var": "off", // require let or const instead of var
-    "object-shorthand": "off", // require or disallow method and property shorthand syntax for object literals
+    "object-shorthand": ["warn", "never"], // require or disallow method and property shorthand syntax for object literals
     "prefer-arrow-callback": "off", // require arrow functions as callbacks
-    "prefer-const": "off", // require const declarations for variables that are never reassigned after declared
-    "prefer-reflect": "off", // require Reflect methods where applicable
-    "prefer-rest-params": "off", // require rest parameters instead of arguments
-    "prefer-spread": "off", // require spread operators instead of .apply()
-    "prefer-template": "off", // require template literals instead of string concatenation
-    "require-yield": "off", // require generator functions to contain yield
-    "template-curly-spacing": "off", // require or disallow spacing around embedded expressions of template strings
-    "yield-star-spacing": "off" // require or disallow spacing around the * in yield* expressions
+    "prefer-const": "warn", // require const declarations for variables that are never reassigned after declared
+    "prefer-reflect": "off", // require Reflect methods where applicable TODO: ES6 Reflect API
+    "prefer-rest-params": "off", // require rest parameters instead of arguments TODO: Node5 flag
+    "prefer-spread": "warn", // require spread operators instead of .apply()
+    "prefer-template": "warn", // require template literals instead of string concatenation
+    "require-yield": "warn", // require generator functions to contain yield
+    "template-curly-spacing": ["warn", "never"], // require or disallow spacing around embedded expressions of template strings
+    "yield-star-spacing": ["warn", {"before": false, "after": true}] // require or disallow spacing around the * in yield* expressions
   }
 }

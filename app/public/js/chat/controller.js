@@ -24,7 +24,7 @@ $(document).ready(function(){
 		if ($(CHAT.DOM.selectedUsers).length > 0){
 			$(CHAT.DOM.box).find(CHAT.DOM.addUser).show();
 		}
-		else{
+		else {
 			$(CHAT.DOM.box).find(CHAT.DOM.addUser).hide();
 		}
 	});
@@ -90,13 +90,16 @@ $(document).ready(function(){
 		}
 	});
 	$(CHAT.DOM.box).on('click', 'a.notredirect', function(event){
-		//event.preventDefault();
+		// event.preventDefault();
 	});
 
-	$(CHAT.DOM.box).find(CHAT.DOM.dropFile).on('drag dragstart dragend dragover dragenter dragleave drop', function(event){
-		event.preventDefault();
-		event.stopPropagation();
-	})
+	$(CHAT.DOM.box).find(CHAT.DOM.dropFile).on(
+		'drag dragstart dragend dragover dragenter dragleave drop',
+		function(event){
+			event.preventDefault();
+			event.stopPropagation();
+		}
+	)
 	.on('dragover dragenter', function(){
 		$(this).addClass('active');
 	})

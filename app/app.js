@@ -7,52 +7,52 @@ var path = require('path');
 var http = require('http');
 var express = require('express');
 var favicon = require('serve-favicon');
-//var logger = require('morgan');
+// var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var sessionModule = require('express-session');
-var fileStore = require('session-file-store')(sessionModule);
+var FileStore = require('session-file-store')(sessionModule);
 
 var app, server, routes, session;
 
-global.appRoot = path.resolve(__dirname + '/..');
+global.appRoot = path.resolve(`${__dirname}/..`);
 
 app = express();
 
-app.set('views', __dirname + '/views');
+app.set('views', `${__dirname}/views`);
 app.set('view engine', 'ejs');
 
-app.use(favicon(__dirname + '/public/favicon.png'));
-//app.use(logger('dev'));
+app.use(favicon(`${__dirname}/public/favicon.png`));
+// app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : false}));
 app.use(cookieParser());
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(`${__dirname}/public`));
 
 session = sessionModule({
 	secret : "Kh5Cwxpe8wCXNaWJ075g",
 	resave : false,
 	saveUninitialized : false,
 	reapInterval : -1,
-	store : new fileStore({
-		path : appRoot + '/tmp'
+	store : new FileStore({
+		path : `${appRoot}/tmp`
 	})
 });
 app.use(session);
 
 // Layout
-require(appRoot + '/app/layout.js')(app);
+require(`${appRoot}/app/layout.js`)(app);
 
 // Websocket
 server = http.createServer(app);
-io = require(appRoot + '/app/websocket.js')(server, session);
+io = require(`${appRoot}/app/websocket.js`)(server, session);
 app.set('io', io);
 
 // Route
 routes = [
-	['/'      , require('./routes/index') ],
-	['/chat'  , require('./routes/chat')  ],
-	['/login' , require('./routes/login') ],
+	['/', require('./routes/index')],
+	['/chat', require('./routes/chat')],
+	['/login', require('./routes/login')],
 	['/logout', require('./routes/logout')]
 ];
 routes.forEach(function(route){
@@ -72,8 +72,8 @@ if (app.get('env') === 'development'){
 	app.use(function(err, req, res){
 		res.status(err.status || 500);
 		res.render('error', {
-			message: err.message,
-			error: err
+			message : err.message,
+			error : err
 		});
 	});
 }
@@ -81,8 +81,8 @@ if (app.get('env') === 'development'){
 app.use(function(err, req, res){
 	res.status(err.status || 500);
 	res.render('error', {
-		message: err.message,
-		error: {}
+		message : err.message,
+		error : {}
 	});
 });
 

@@ -26,6 +26,7 @@ var Model = {
 		});
 	},
 
+	/*
 	getMessages : function(callback){
 		DB.query(`
 			SELECT
@@ -44,6 +45,7 @@ var Model = {
 			callback.call(this, rows);
 		});
 	},
+	*/
 
 	getRoomMessages : function(roomName, callback){
 		DB.query(`

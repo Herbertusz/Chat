@@ -31,7 +31,7 @@ CHAT.Events = {
 				roomData.userIds.push(userId);
 			});
 			CHAT.Method.generateUserList($users, roomData.userIds);
-			roomData.name = 'room-' + roomData.starter.toString() + '-' + Date.now().toString();
+			roomData.name = `room-${roomData.starter}-${Date.now()}`;
 			$box.attr("data-room", roomData.name);
 			CHAT.socket.emit('roomCreated', roomData);
 		},
@@ -134,13 +134,14 @@ CHAT.Events = {
 			if (!CHAT.Config.fileTransfer.multiple){
 				files = [files[0]];
 			}
-			else{
+			else {
 				files = Array.prototype.slice.call(files);
 			}
 
 			files.forEach(function(rawFile){
-				let i, errors = [];
-				let _data = {
+				let i;
+				const errors = [];
+				const _data = {
 					id : CHAT.USER.id,
 					fileData : {
 						name : rawFile.name,
@@ -168,8 +169,7 @@ CHAT.Events = {
 				}
 
 				if (errors.length === 0){
-					let reader;
-					reader = new FileReader();
+					const reader = new FileReader();
 					reader.onload = (function(data){
 						return function(){
 							if (store === 'base64'){
@@ -180,23 +180,23 @@ CHAT.Events = {
 							}
 							else if (store === 'upload'){
 								// fájlfeltöltés, url tárolása db-ben
-								let fileData = JSON.stringify(data);
-								let xhr = new XMLHttpRequest();
+								const fileData = JSON.stringify(data);
+								const xhr = new XMLHttpRequest();
 								xhr.open("POST", "/chat/uploadfile");
 								xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 								xhr.setRequestHeader('X-File-Data', encodeURIComponent(fileData));
 								xhr.setRequestHeader('Content-Type', 'application/octet-stream');
-								CHAT.Method.progressbar($box, data, "send", 0, true);
+								CHAT.Method.progressbar($box, "send", 0, true);
 								xhr.upload.onprogress = function(event){
 									if (event.lengthComputable){
-										let percent = event.loaded / event.total;
-										CHAT.Method.progressbar($box, data, "send", Math.round(percent * 100));
+										const percent = event.loaded / event.total;
+										CHAT.Method.progressbar($box, "send", Math.round(percent * 100));
 									}
 								};
 								xhr.onload = function(){
-									let response = JSON.parse(xhr.responseText);
+									const response = JSON.parse(xhr.responseText);
 									data.file = response.filePath;
-									CHAT.Method.progressbar($box, data, "send", 100);
+									CHAT.Method.progressbar($box, "send", 100);
 									CHAT.Method.appendFile($box, data, true);
 									CHAT.socket.emit('sendFile', data);
 								};
@@ -208,7 +208,7 @@ CHAT.Events = {
 									if (error){
 										console.log(error);
 									}
-									else{
+									else {
 										data.file = result;
 									}
 									CHAT.Method.appendFile($box, data, true);
@@ -221,7 +221,7 @@ CHAT.Events = {
 					})(_data);
 					reader.readAsDataURL(rawFile);
 				}
-				else{
+				else {
 					CHAT.Method.showError($box, errors);
 				}
 			});
@@ -269,7 +269,7 @@ CHAT.Events = {
 		 * @param {type} data
 		 */
 		userConnected : function(data){
-			//CHAT.Method.appendSystemMessage($box, 'connect', data.id);
+			// CHAT.Method.appendSystemMessage($box, 'connect', data.id);
 		},
 
 		/**
@@ -279,9 +279,9 @@ CHAT.Events = {
 		disconnect : function(data){
 			$(CHAT.DOM.box).filter(':not(.cloneable)').each(function(){
 				var $box = $(this);
-				if ($box.find(CHAT.DOM.userItems).filter('[data-id="' + data.id + '"]').length > 0){
+				if ($box.find(CHAT.DOM.userItems).filter(`[data-id="${data.id}"]`).length > 0){
 					CHAT.Method.appendSystemMessage($box, 'leave', data.id);
-					$box.find('[data-id="' + data.id + '"]').remove();
+					$box.find(`[data-id="${data.id}"]`).remove();
 				}
 			});
 		},
@@ -328,7 +328,7 @@ CHAT.Events = {
 			}
 			else {
 				// Csatlakozott a csatornához
-				$box = $(CHAT.DOM.box).filter('[data-room="' + roomData.name + '"]');
+				$box = $(CHAT.DOM.box).filter(`[data-room="${roomData.name}"]`);
 				$users = $box.find(CHAT.DOM.users);
 				CHAT.Method.appendSystemMessage($box, 'join', roomData.joinedUserId);
 				CHAT.Method.generateUserList($users, roomData.userIds, true);
@@ -346,9 +346,9 @@ CHAT.Events = {
 		roomLeaved : function(extData){
 			var $box;
 			if (extData.roomData){
-				$box = $(CHAT.DOM.box).filter('[data-room="' + extData.roomData.name + '"]');
+				$box = $(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
 				CHAT.Method.appendSystemMessage($box, 'leave', extData.userId);
-				$box.find('[data-id="' + extData.userId + '"]').remove();
+				$box.find(`[data-id="${extData.userId}"]`).remove();
 			}
 		},
 
@@ -379,7 +379,7 @@ CHAT.Events = {
 			}
 			else {
 				// Csatlakozott a csatornához
-				$box = $(CHAT.DOM.box).filter('[data-room="' + extData.roomData.name + '"]');
+				$box = $(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
 				$users = $box.find(CHAT.DOM.users);
 				CHAT.Method.appendSystemMessage($box, 'forcejoinother', extData.triggerId, extData.userId);
 				CHAT.Method.generateUserList($users, extData.roomData.userIds, true);
@@ -396,7 +396,7 @@ CHAT.Events = {
 		 * }
 		 */
 		roomForceLeaved : function(extData){
-			var $box = $(CHAT.DOM.box).filter('[data-room="' + extData.roomData.name + '"]');
+			var $box = $(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
 			if (extData.userId === CHAT.USER.id){
 				CHAT.Method.appendSystemMessage($box, 'forceleaveyou', extData.triggerId);
 				CHAT.socket.emit('roomLeave', {
@@ -410,7 +410,7 @@ CHAT.Events = {
 			else {
 				CHAT.Method.appendSystemMessage($box, 'forceleaveother', extData.triggerId, extData.userId);
 			}
-			$box.find('[data-id="' + extData.userId + '"]').remove();
+			$box.find(`[data-id="${extData.userId}"]`).remove();
 		},
 
 		/**
@@ -424,7 +424,7 @@ CHAT.Events = {
 		 * }
 		 */
 		sendMessage : function(data){
-			var $box = $(CHAT.DOM.box).filter('[data-room="' + data.roomName + '"]');
+			var $box = $(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`);
 			if ($box.length === 0) return;
 			CHAT.Method.appendUserMessage($box, data);
 			CHAT.Method.stopWrite($box, data.id, '');
@@ -450,7 +450,7 @@ CHAT.Events = {
 		 * }
 		 */
 		sendFile : function(data){
-			var $box = $(CHAT.DOM.box).filter('[data-room="' + data.roomName + '"]');
+			var $box = $(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`);
 			if ($box.length === 0) return;
 			if (data.store === 'base64' || data.store === 'upload'){
 				CHAT.Method.appendFile($box, data);
@@ -473,10 +473,29 @@ CHAT.Events = {
 			CHAT.timer.writing.timerID = null;
 		},
 
+		/**
+		 * Fájlfogadás
+		 * @param {Object} data
+		 * @description data szerkezete: {
+		 *  	id : Number,
+		 * 		fileData : {
+		 * 			name : String,
+		 *  		size : Number,
+		 *  		type : String
+		 * 		},
+		 * 		file : String,
+		 * 		store : String,
+		 * 		type : String,
+		 * 		time : Number,
+		 * 		roomName : String
+		 * }
+		 */
 		fileReceive : function(data){
-			var $box = $(CHAT.DOM.box).filter('[data-room="' + data.roomName + '"]');
+			var $box = $(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`);
 			if (CHAT.USER.id !== data.userId){
-				CHAT.Method.progressbar($box, data, "get", Math.round((data.uploadedSize / data.fileSize) * 100), data.firstSend);
+				CHAT.Method.progressbar(
+					$box, "get", Math.round((data.uploadedSize / data.fileSize) * 100), data.firstSend
+				);
 			}
 		},
 
@@ -491,7 +510,7 @@ CHAT.Events = {
 		 * }
 		 */
 		typeMessage : function(data){
-			var $box = $(CHAT.DOM.box).filter('[data-room="' + data.roomName + '"]');
+			var $box = $(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`);
 			var writing = CHAT.timer.writing;
 			if ($box.length === 0) return;
 			writing.event = true;
