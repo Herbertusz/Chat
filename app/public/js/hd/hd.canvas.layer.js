@@ -5,6 +5,7 @@
  * @description 2D layer-kezelés
  * @example http://canvas.webprog.biz/layer
  */
+/* global HD namespace */
 
 "use strict";
 
@@ -14,7 +15,7 @@ HD.Canvas = namespace("HD.Canvas");
  * Rétegcsoportokat kezelő objektum (Module minta)
  * @param {HTMLCanvasElement} canvas a canvas elem amelyikhez a layerset tartozik
  * @param {Layer} [layer] tetszőleges számú réteg
- * @returns {Layerset}
+ * @returns {Object}
  */
 HD.Canvas.Layerset = function(canvas, layer){
 
@@ -34,12 +35,12 @@ HD.Canvas.Layerset = function(canvas, layer){
 	/**
 	 * Réteg keresése a layerset-ben
 	 * @private
-	 * @param {Layer} layer a keresett réteg
+	 * @param {Layer} currentLayer a keresett réteg
 	 * @returns {Number|Boolean} a réteg indexe vagy false
 	 */
-	var getLayerIndex = function(layer){
-		for (var n = 0; n < layers.length; n++){
-			if (layers[n] === layer){
+	var getLayerIndex = function(currentLayer){
+		for (let n = 0; n < layers.length; n++){
+			if (layers[n] === currentLayer){
 				return n;
 			}
 		}
@@ -51,7 +52,7 @@ HD.Canvas.Layerset = function(canvas, layer){
 	 * @private
 	 */
 	var resetZAxis = function(){
-		var n;
+		let n;
 		layers.sort(function(a, b){
 			if (a.zIndex === null) a.zIndex = 0;
 			if (b.zIndex === null) b.zIndex = 0;
@@ -78,19 +79,19 @@ HD.Canvas.Layerset = function(canvas, layer){
 
 		/**
 		 * Réteg beszúrása
-		 * @param {Layer} layer az új réteg
+		 * @param {Layer} currentLayer az új réteg
 		 * @param {Number|String} [zOverwrite="remain"] az új réteg helye (Number|"remain"|"top"|"bg")
 		 * @returns {Layerset}
 		 */
-		pushLayer : function(layer, zOverwrite){
+		pushLayer : function(currentLayer, zOverwrite){
 			if (typeof zOverwrite === "undefined") zOverwrite = "remain";
 			if (zOverwrite === "top"){
 				// legfelső réteg
-				layers.push(layer);
+				layers.push(currentLayer);
 			}
 			else if (zOverwrite === "bg"){
 				// háttérréteg
-				layers.unshift(layer);
+				layers.unshift(currentLayer);
 			}
 			else if (zOverwrite === "remain"){
 				// beszúrás a benne tárolt zIndex alapján
@@ -98,22 +99,22 @@ HD.Canvas.Layerset = function(canvas, layer){
 			}
 			else {
 				// beszúrás a paraméter alapján
-				layers.splice(zOverwrite, 0, layer);
+				layers.splice(zOverwrite, 0, currentLayer);
 			}
-			layer.ownerSet = this;
+			currentLayer.ownerSet = this;
 			return this;
 		},
 
 		/**
 		 * Réteg törlése
-		 * @param {Layer} layer az eltávolítandó réteg
+		 * @param {Layer} currentLayer az eltávolítandó réteg
 		 * @returns {Layerset}
 		 */
-		removeLayer : function(layer){
-			var n = getLayerIndex(layer);
+		removeLayer : function(currentLayer){
+			const n = getLayerIndex(currentLayer);
 			if (n !== false){
 				layers.splice(n, 1);
-				layer.clear();
+				currentLayer.clear();
 				this.reDraw();
 			}
 			return this;
@@ -121,16 +122,16 @@ HD.Canvas.Layerset = function(canvas, layer){
 
 		/**
 		 * Réteg mozgatása a z-tengelyen
-		 * @param {Layer} layer a mozdítandó réteg
+		 * @param {Layer} currentLayer a mozdítandó réteg
 		 * @param {String} location mozgatás iránya ("down"|"up"|"bg"|"top")
 		 * @param {Number} [num=1] down és up esetében a lépések száma
 		 * @returns {Layerset}
 		 */
-		moveLayer : function(layer, location, num){
+		moveLayer : function(currentLayer, location, num){
 			if (typeof num === "undefined") num = 1;
-			var temp, i;
-			var max = layers.length - 1;
-			var n = getLayerIndex(layer);
+			let temp, i;
+			const max = layers.length - 1;
+			let n = getLayerIndex(currentLayer);
 			if (n !== false){
 				if (location === "up"){
 					for (i = 0; n < max && i < num; n++, i++){
@@ -167,14 +168,15 @@ HD.Canvas.Layerset = function(canvas, layer){
 
 		/**
 		 * Újrarajzolás
-		 * @param {Array(Layer)} [except=[]] ezeket a rétegeket nem rajzolja újra
+		 * @param {Array.<Layer>} [except=[]] ezeket a rétegeket nem rajzolja újra
 		 * @returns {Layerset}
 		 */
 		reDraw : function(except){
 			if (typeof except === "undefined") except = [];
-			var n;
+			let n;
 			resetZAxis();
 			for (n = 0; n < layers.length; n++){
+				// FIXME: indexOf argumentuma egy objektum!
 				if (except.indexOf(layers[n]) === -1 && !layers[n].hidden){
 					layers[n].reDraw();
 				}
@@ -198,7 +200,7 @@ HD.Canvas.Layerset = function(canvas, layer){
  * Rétegeket kezelő objektum (Module minta)
  * @param {Function} [subCommand] műveletek
  * @param {Number} [z] előírt zIndex érték (különben a Layerset-ben megadott sorrend határozza meg)
- * @returns {Layer}
+ * @returns {Object}
  */
 HD.Canvas.Layer = function(subCommand, z){
 
@@ -248,8 +250,8 @@ HD.Canvas.Layer = function(subCommand, z){
 		 * @returns {Layer}
 		 */
 		reDraw : function(){
-			for (var n = 0; n < drawing.length; n++){
-				this.subCommand.call(this);
+			for (let n = 0; n < drawing.length; n++){
+				this.subCommand(this);
 				drawing[n].call(this);
 			}
 			return this;
@@ -281,8 +283,8 @@ HD.Canvas.Layer = function(subCommand, z){
 		 * @returns {Layer}
 		 */
 		hide : function(){
-			var canvas = this.ownerSet.canvas;
-			var ctx = canvas.getContext("2d");
+			const canvas = this.ownerSet.canvas;
+			const ctx = canvas.getContext("2d");
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			this.hidden = true;
 			this.ownerSet.reDraw();
@@ -304,8 +306,8 @@ HD.Canvas.Layer = function(subCommand, z){
 		 * @returns {Layer}
 		 */
 		erase : function(){
-			var canvas = this.ownerSet.canvas;
-			var ctx = canvas.getContext("2d");
+			const canvas = this.ownerSet.canvas;
+			const ctx = canvas.getContext("2d");
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			this.ownerSet.reDraw();
 			return this;
@@ -316,8 +318,8 @@ HD.Canvas.Layer = function(subCommand, z){
 		 * @returns {Layer}
 		 */
 		clear : function(){
-			var canvas = this.ownerSet.canvas;
-			var ctx = canvas.getContext("2d");
+			const canvas = this.ownerSet.canvas;
+			const ctx = canvas.getContext("2d");
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			drawing = [];
 			this.ownerSet.reDraw();

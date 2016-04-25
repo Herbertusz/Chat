@@ -1,6 +1,6 @@
-"use strict";
-
 /* global HD */
+
+"use strict";
 
 var CHAT = window.CHAT || {};
 

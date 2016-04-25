@@ -4,6 +4,7 @@
  *
  * @description Általános JS játékkezelő
  */
+/* global HD namespace */
 
 "use strict";
 
@@ -16,12 +17,12 @@ HD.Game = namespace("HD.Game");
  */
 HD.Game.Canvas2D = function(selector, gameStartFunc){
 
-	var This = HD.Game;
-	This.canvas = document.querySelector(selector);
-	This.originalWidth = This.canvas.width;
-	This.originalHeight = This.canvas.height;
-	This.ctx = This.canvas.getContext("2d");
-	gameStartFunc.call(This);
+	var Game = HD.Game;
+	Game.canvas = document.querySelector(selector);
+	Game.originalWidth = Game.canvas.width;
+	Game.originalHeight = Game.canvas.height;
+	Game.ctx = Game.canvas.getContext("2d");
+	gameStartFunc.call(Game);
 
 };
 
@@ -33,22 +34,22 @@ HD.Game.Canvas2D = function(selector, gameStartFunc){
  */
 HD.Game.Canvas3D = function(selector, gameStartFunc, gameFallbackFunc){
 
+	var Game = HD.Game;
 	if (typeof gameFallbackFunc === "undefined") gameFallbackFunc = function(){};
 
-	var This = HD.Game;
-	This.canvas = document.querySelector(selector);
-	This.originalWidth = This.canvas.width;
-	This.originalHeight = This.canvas.height;
+	Game.canvas = document.querySelector(selector);
+	Game.originalWidth = Game.canvas.width;
+	Game.originalHeight = Game.canvas.height;
 	try {
-		This.gl = This.canvas.getContext("webgl") || This.canvas.getContext("experimental-webgl");
+		Game.gl = Game.canvas.getContext("webgl") || Game.canvas.getContext("experimental-webgl");
 	}
 	catch (e){}
 
-	if (This.gl){
-		gameStartFunc.call(This);
+	if (Game.gl){
+		gameStartFunc.call(Game);
 	}
 	else {
-		gameFallbackFunc.call(This);
+		gameFallbackFunc.call(Game);
 	}
 
 };
@@ -60,9 +61,9 @@ HD.Game.Canvas3D = function(selector, gameStartFunc, gameFallbackFunc){
  */
 HD.Game.SVG = function(selector, gameStartFunc){
 
-	var This = HD.Game;
-	This.svg = document.querySelector(selector);
-	gameStartFunc.call(This);
+	var Game = HD.Game;
+	Game.svg = document.querySelector(selector);
+	gameStartFunc.call(Game);
 
 };
 
@@ -73,8 +74,8 @@ HD.Game.SVG = function(selector, gameStartFunc){
  */
 HD.Game.DOM = function(selector, gameStartFunc){
 
-	var This = HD.Game;
-	This.node = document.querySelector(selector);
-	gameStartFunc.call(This);
+	var Game = HD.Game;
+	Game.node = document.querySelector(selector);
+	gameStartFunc.call(Game);
 
 };

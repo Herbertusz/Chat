@@ -43,10 +43,11 @@ var namespace = function(namespaceString){
 $.expr[":"].data = function(obj, index, meta){
 	var args = meta[3].split(",");
 	if (args.length === 1){
-		return ($(obj).data($.trim(args[0])) !== undefined) ? true : false;
+		return (typeof $(obj).data($.trim(args[0])) !== "undefined");
 	}
 	else if (args.length === 2){
-		return ($(obj).data($.trim(args[0])) == $.trim(args[1])) ? true : false;
+		// FIXME == helyett ===
+		return ($(obj).data($.trim(args[0])) == $.trim(args[1]));
 	}
 	else {
 		return false;
@@ -55,7 +56,7 @@ $.expr[":"].data = function(obj, index, meta){
 
 /**
  * Webalkalmazás funkcióinak vezérlése (Module minta)
- * @returns {Web} webalkalmazás-vezérlő felület
+ * @returns {Object} webalkalmazás-vezérlő felület
  */
 HD.Web = function(){
 
@@ -63,7 +64,7 @@ HD.Web = function(){
 	var documentReady = [];
 	var windowLoad = [];
 
-	var Interface = {
+	return {
 
 		pushReady : function(func){
 			documentReady.push(func);
@@ -87,7 +88,5 @@ HD.Web = function(){
 		}
 
 	};
-
-	return Interface;
 
 };

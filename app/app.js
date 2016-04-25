@@ -1,6 +1,6 @@
-'use strict';
-
 /* global appRoot */
+
+'use strict';
 
 var io;
 var path = require('path');

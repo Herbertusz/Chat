@@ -2,6 +2,7 @@
  * HD-keret DateTime v1.1.0
  * 2015.12.16.
  */
+/* global HD namespace */
 
 "use strict";
 
@@ -48,9 +49,9 @@ HD.DateTime = {
 	 */
 	progFormat : function(date, separator){
 		if (typeof separator === "undefined") separator = "-";
-		var y = date.getFullYear();
-		var m = this.monthSigns[date.getMonth()];
-		var d = HD.Number.fillZero(date.getDate(), 2);
+		const y = date.getFullYear();
+		const m = this.monthSigns[date.getMonth()];
+		const d = HD.Number.fillZero(date.getDate(), 2);
 		return y + separator + m + separator + d;
 	},
 

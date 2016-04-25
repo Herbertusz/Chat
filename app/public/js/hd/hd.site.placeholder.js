@@ -6,6 +6,7 @@
  * @example
  *	HD.Site.Placeholder();
  */
+/* global HD namespace */
 
 "use strict";
 
@@ -13,11 +14,10 @@ HD.Site = namespace("HD.Site");
 
 /**
  * HTML5 placeholder attribútum megvalósítása IE6-9-ben (újabb böngészőkben nem fut le)
- * @type {Object}
  */
 HD.Site.Placeholder = function(){
 
-	var ph = this;
+	var This = this;
 
 	/**
 	 * IE verziószáma
@@ -58,30 +58,34 @@ HD.Site.Placeholder = function(){
 	};
 
 	if ("placeholder" in document.createElement("input")) return;
-	$("[placeholder]").each(function(){
-		if ($(this).val().length === 0){
-			$(this).val($(this).attr("placeholder"));
-			$(this).addClass("placeholder");
-			ph.changePassField($(this), "init");
-		}
-	}).focus(function(){
-		if ($(this).val() === $(this).attr("placeholder")){
-			$(this).val("");
-			$(this).removeClass("placeholder");
-			ph.changePassField($(this), "password");
-		}
-	}).blur(function(){
-		if ($(this).val().length === 0){
-			$(this).val($(this).attr("placeholder"));
-			$(this).addClass("placeholder");
-			ph.changePassField($(this), "text");
-		}
-	}).change(function(){
-		if ($(this).val().length > 0 && $(this).val() !== $(this).attr("placeholder")){
-			$(this).removeClass("placeholder");
-			ph.changePassField($(this), "password");
-		}
-	});
+	$("[placeholder]")
+		.each(function(){
+			if ($(this).val().length === 0){
+				$(this).val($(this).attr("placeholder"));
+				$(this).addClass("placeholder");
+				This.changePassField($(this), "init");
+			}
+		})
+		.focus(function(){
+			if ($(this).val() === $(this).attr("placeholder")){
+				$(this).val("");
+				$(this).removeClass("placeholder");
+				This.changePassField($(this), "password");
+			}
+		})
+		.blur(function(){
+			if ($(this).val().length === 0){
+				$(this).val($(this).attr("placeholder"));
+				$(this).addClass("placeholder");
+				This.changePassField($(this), "text");
+			}
+		})
+		.change(function(){
+			if ($(this).val().length > 0 && $(this).val() !== $(this).attr("placeholder")){
+				$(this).removeClass("placeholder");
+				This.changePassField($(this), "password");
+			}
+		});
 	$('form').submit(function(){
 		$(this).find('[placeholder]').each(function(){
 			if ($(this).val() === $(this).attr("placeholder")){

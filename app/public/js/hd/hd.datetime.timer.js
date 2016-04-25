@@ -12,6 +12,7 @@
  *		this.stop();
  *	});
  */
+/* global HD namespace */
 
 "use strict";
 
@@ -26,6 +27,8 @@ HD.DateTime = namespace("HD.DateTime");
  */
 HD.DateTime.Timer = function(add, stepInterval){
 
+	var T, timerID, run, events, step, parse, print, Interface;
+
 	if (typeof stepInterval === "undefined") stepInterval = 1000;
 
 	/**
@@ -33,21 +36,21 @@ HD.DateTime.Timer = function(add, stepInterval){
 	 * @type {Number}
 	 * @private
 	 */
-	var T = 0;
+	T = 0;
 
 	/**
 	 * Timeout ID
 	 * @type {Number}
 	 * @private
 	 */
-	var timerID = null;
+	timerID = null;
 
 	/**
 	 * Időmérő állapota
 	 * @type {Boolean}
 	 * @private
 	 */
-	var run = false;
+	run = false;
 
 	/**
 	 * Eseménykezelők
@@ -60,12 +63,12 @@ HD.DateTime.Timer = function(add, stepInterval){
 	 *		}
 	 * ]
 	 */
-	var events = [];
+	events = [];
 
 	/**
 	 * Léptetés
 	 */
-	var step = function(){
+	step = function(){
 		var n;
 		T += add;
 		if (events.length > 0){
@@ -82,16 +85,16 @@ HD.DateTime.Timer = function(add, stepInterval){
 	 * @param {String} str időt leíró string (formátum: "hh:mm:ss"|"mm:ss"|"ss")
 	 * @returns {Number} időegység értéke
 	 */
-	var parse = function(str){
+	parse = function(str){
 		var segments = str.split(":");
 		var ms;
 		if (segments.length === 1){
-			str = "00:00:" + str;
+			str = `00:00:${str}`;
 		}
 		else if (segments.length === 2){
-			str = "00:" + str;
+			str = `00:${str}`;
 		}
-		ms = Date.parse("1 Jan 1970 " + str + " GMT");
+		ms = Date.parse(`1 Jan 1970 ${str} GMT`);
 		return Math.round(ms / 1000);
 	};
 
@@ -101,7 +104,7 @@ HD.DateTime.Timer = function(add, stepInterval){
 	 * @param {String} format formátum (makrók: h, m, s, H, M, S, hh, mm, ss)
 	 * @returns {String} kiírható string
 	 */
-	var print = function(num, format){
+	print = function(num, format){
 		var timeObj = new Date(num * 1000);
 		var h = timeObj.getHours() - 1;
 		var m = timeObj.getMinutes();
@@ -109,23 +112,23 @@ HD.DateTime.Timer = function(add, stepInterval){
 		var H = h;
 		var M = h * 60 + m;
 		var S = h * 60 * 60 + m * 60 + s;
-		var hh = (h < 10) ? "0" + h.toString() : h.toString();
-		var mm = (m < 10) ? "0" + m.toString() : m.toString();
-		var ss = (s < 10) ? "0" + s.toString() : s.toString();
+		var hh = (h < 10) ? `0${h}` : `${h}`;
+		var mm = (m < 10) ? `0${m}` : `${m}`;
+		var ss = (s < 10) ? `0${s}` : `${s}`;
 		h = h.toString(); m = m.toString(); s = s.toString();
 		format = format.replace("hh", hh);
 		format = format.replace("mm", mm);
 		format = format.replace("ss", ss);
-		format = format.replace("h", h);
-		format = format.replace("m", m);
-		format = format.replace("s", s);
-		format = format.replace("H", H);
-		format = format.replace("M", M);
-		format = format.replace("S", S);
+		format = format.replace("h", `${h}`);
+		format = format.replace("m", `${m}`);
+		format = format.replace("s", `${s}`);
+		format = format.replace("H", `${H}`);
+		format = format.replace("M", `${M}`);
+		format = format.replace("S", `${S}`);
 		return format;
 	};
 
-	var Interface = {
+	Interface = {
 
 		/**
 		 * Beállítás
@@ -205,14 +208,13 @@ HD.DateTime.Timer = function(add, stepInterval){
 		 * @returns {Object} Timer objektum
 		 */
 		reach : function(value, callback){
-			var context = this;
 			if (typeof value === "string"){
 				value = parse(value);
 			}
 			events.push({
 				value : value,
 				handler : callback,
-				context : context
+				context : this
 			});
 			return this;
 		}

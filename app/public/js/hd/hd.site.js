@@ -2,6 +2,7 @@
  * HD-keret Site v1.0.0
  * 2015.02.21.
  */
+/* global HD namespace */
 
 "use strict";
 
@@ -20,7 +21,7 @@ HD.Site = {
 	 */
 	emailDecode : function(params){
 		var p = params.split(",");
-		return p[0] + "@" + p[1];
+		return `${p[0]}@${p[1]}`;
 	},
 
 	/**
@@ -30,8 +31,8 @@ HD.Site = {
 	 * @returns {Object} egérpozíció
 	 */
 	getMousePosition : function(event, elem){
-		if (typeof elem === "undefined") elem = document.body;
 		var offset = {x : 0, y : 0};
+		if (typeof elem === "undefined") elem = document.body;
 		do {
 			if (!isNaN(elem.offsetLeft)){
 				offset.x += elem.offsetLeft;
@@ -39,7 +40,7 @@ HD.Site = {
 			if (!isNaN(elem.offsetTop)){
 				offset.y += elem.offsetTop;
 			}
-		} while (elem = elem.offsetParent);
+		} while ((elem = elem.offsetParent));
 		return {
 			x : event.pageX - offset.x,
 			y : event.pageY - offset.y
@@ -53,7 +54,7 @@ HD.Site = {
 		$('p').mousedown(function(event){
 			event.preventDefault();
 		});
-		document.onselectstart = function(){return false;};
+		document.onselectstart = function(){ return false; };
 		document.unselectable = 'on';
 		$('body').css({
 			'user-select' : 'none',
@@ -79,22 +80,24 @@ HD.Site = {
 	 * @param {String} closehand drag kurzor teljes elérési útja
 	 */
 	grabCursor : function($elem, openhand, closehand){
+		var cssValueOpen = `url(${openhand}), move`;
+		var cssValueClose = `url(${closehand}), move`;
 		$elem.css({
-			"cursor": "url(" + openhand + "), move"
+			"cursor" : cssValueOpen
 		});
 		$elem.mouseover(function(){
 			$(this).css({
-				"cursor": "url(" + openhand + "), move"
+				"cursor" : cssValueOpen
 			});
 		});
 		$elem.mousedown(function(){
 			$(this).css({
-				"cursor": "url(" + closehand + "), move"
+				"cursor" : cssValueClose
 			});
 		});
 		$elem.mouseup(function(){
 			$(this).css({
-				"cursor": "url(" + openhand + "), move"
+				"cursor" : cssValueOpen
 			});
 		});
 	},
@@ -149,19 +152,13 @@ HD.Site = {
 
 	/**
 	 * Caps Lock ellenőrzés
-	 * @param {Event} ev Event objektum
+	 * @param {Event} event Event objektum
 	 * @returns {Boolean} true: le van nyomva a caps lock
 	 */
-	isDownCapsLock : function(ev){
-		var e = ev || window.event;
-		var _keyCode = e.keyCode ? e.keyCode : e.which;
-		var _keyShift = e.shiftKey ? e.shiftKey : ((_keyCode === 16) ? true : false);
-		if (((_keyCode >= 65 && _keyCode <= 90) && !_keyShift) || ((_keyCode >= 97 && _keyCode <= 122) && _keyShift)){
-			return true;
-		}
-		else {
-			return false;
-		}
+	isDownCapsLock : function(event){
+		var _keyCode = event.which;
+		var _keyShift = event.shiftKey ? event.shiftKey : (_keyCode === 16);
+		return ((_keyCode >= 65 && _keyCode <= 90) && !_keyShift) || ((_keyCode >= 97 && _keyCode <= 122) && _keyShift);
 	}
 
 };
