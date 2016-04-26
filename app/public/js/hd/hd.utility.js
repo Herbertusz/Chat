@@ -55,10 +55,10 @@ HD.Misc = {
 
 	/**
 	 * Switch szerkezetet helyettesítő függvény
-	 * @param {Object} variable változó
+	 * @param {*} variable változó
 	 * @param {Object} relations változó különböző értékeihez rendelt visszatérési értékek
-	 * @param {Object} [defaultValue=null] alapértelmezett érték (default)
-	 * @returns {Object|null}
+	 * @param {*} [defaultValue=null] alapértelmezett érték (default)
+	 * @returns {*}
 	 */
 	switching : function(variable, relations, defaultValue){
 		var index;
@@ -262,6 +262,59 @@ HD.String = {
 };
 
 /**
+ * Függvény műveletek
+ * @type {Object}
+ */
+HD.Function = {
+
+	/**
+	 * Alapértelmezett paraméterérték megadása függvényben
+	 * @example par = funcParam(par, 0);
+	 * @param {mixed} param paraméter
+	 * @param {mixed} value alapértelmezett érték
+	 * @returns {mixed} ezt kell értékül adni a paraméternek
+	 */
+	param : function(param, value){
+		if (typeof param === "undefined"){
+			return value;
+		}
+		else {
+			return param;
+		}
+	},
+
+	/**
+	 * Alapértelmezett paraméterértékek megadása függvényben
+	 * @param {Object} params argumentumok adatai
+	 * @returns {Array} paraméterek értékei
+	 * @description
+	 * HD.Misc.funcMultiParam({
+	 *     sql      : [sql, "string"],
+	 *     binds    : [binds, "object", {}],
+	 *     run      : [run, "boolean", true],
+	 *     preserve : [preserve, "boolean", false],
+	 *     callback : [callback, "function"]
+	 * });
+	 * név : [érték, typus, alapértelmezett érték]
+	 */
+	multiParam : function(params){
+		const newParams = [];
+		let n;
+		let currentParamNum = 0;
+		for (n in params){
+			if (typeof params[n][0] !== params[n][1] && typeof params[n][2] !== "undefined"){
+				newParams[n] = params[2];
+			}
+			else {
+				currentParamNum++;
+			}
+		}
+		return newParams;
+	}
+
+};
+
+/**
  * Tömb műveletek (Array objektum kiegészítései)
  * @type {Object}
  */
@@ -269,7 +322,7 @@ HD.Array = {
 
 	/**
 	 * A PHP in_array() függvénye (indexOf boolean változata)
-	 * @param {Object} needle keresendő elem
+	 * @param {*} needle keresendő elem
 	 * @param {Array} haystack tömb
 	 * @returns {Boolean}
 	 */
@@ -309,7 +362,7 @@ HD.Array = {
 	/**
 	 * Hozzáadás tömbhöz, ha még nem tartalmazza az adott értéket
 	 * @param {Array} arr tömb
-	 * @param {Object} val érték
+	 * @param {*} val érték
 	 * @returns {Array} módosított tömb
 	 */
 	addByVal : function(arr, val){
@@ -322,7 +375,7 @@ HD.Array = {
 	/**
 	 * Érték eltávolítása a tömbből
 	 * @param {Array} arr tömb
-	 * @param {Object} val érték
+	 * @param {*} val érték
 	 * @returns {Array} módosított tömb
 	 */
 	removeByVal : function(arr, val){

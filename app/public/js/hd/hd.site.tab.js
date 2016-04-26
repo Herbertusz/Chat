@@ -11,6 +11,7 @@
  *	});
  *	tab.init();
  */
+/* global HD namespace */
 
 "use strict";
 
@@ -19,9 +20,11 @@ HD.Site = namespace("HD.Site");
 /**
  * Tab objektum (Module minta)
  * @param {Object} options beállítások
- * @returns {Tab} tab-kezelő felület
+ * @returns {Object} tab-kezelő felület
  */
 HD.Site.Tab = function(options){
+
+	var Interface;
 
 	/**
 	 * Alapértelmezett beállítások
@@ -40,7 +43,7 @@ HD.Site.Tab = function(options){
 	 * Publikus felület
 	 * @type {Object}
 	 */
-	var Interface = {
+	Interface = {
 
 		/**
 		 * Felülírt beállítások
@@ -56,8 +59,8 @@ HD.Site.Tab = function(options){
 			options.$trigger.click(function(){
 				var group = $(this).data(options.dataGroup);
 				var id = $(this).data(options.dataId);
-				$(':data(' + options.dataGroup + ',' + group + ')').removeClass(options.activeClass);
-				$(':data(' + options.dataGroup + ',' + group + '):data(' + options.dataId + ',' + id + ')').addClass(options.activeClass);
+				$(`:data(${options.dataGroup},${group})`).removeClass(options.activeClass);
+				$(`:data(${options.dataGroup},${group}):data(${options.dataId},${id})`).addClass(options.activeClass);
 			});
 		}
 

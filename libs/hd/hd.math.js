@@ -2,6 +2,7 @@
  * HD-keret Math v1.0.0
  * 2015.02.21.
  */
+/* global HD */
 
 "use strict";
 
@@ -26,7 +27,7 @@ HD.Math = {
 	/**
 	 * Tizes számrendszerbeli kerekítés
 	 * @param {String} type kjerekítés típusa
-	 * @param {Number} value szám
+	 * @param {*} value szám
 	 * @param {Number} [exp=0] exponens (...|-2|-1|0|1|2|...) (a kerekítési alap 10-es alapú logaritmusa)
 	 * @returns {Number} kerekített érték
 	 */
@@ -55,27 +56,27 @@ HD.Math = {
 	 * @param {Number} [exp=0] pontosság (helyiérték csúsztatása)
 	 * @returns {Number} kerekített érték
 	 */
-    round : function(value, exp){
+	round : function(value, exp){
 		return HD.Math._decimalAdjust('round', value, exp);
-    },
+	},
 	/**
 	 * Szám lefelé kerekítése
 	 * @param {Number} value szám
 	 * @param {Number} [exp=0] pontosság (helyiérték csúsztatása)
 	 * @returns {Number} kerekített érték
 	 */
-    floor : function(value, exp){
+	floor : function(value, exp){
 		return HD.Math._decimalAdjust('floor', value, exp);
-    },
+	},
 	/**
 	 * Szám felfelé kerekítése
 	 * @param {Number} value szám
 	 * @param {Number} [exp=0] pontosság (helyiérték csúsztatása)
 	 * @returns {Number} kerekített érték
 	 */
-    ceil : function(value, exp){
+	ceil : function(value, exp){
 		return HD.Math._decimalAdjust('ceil', value, exp);
-    },
+	},
 
 	/**
 	 * Halmazműveletek
@@ -180,10 +181,10 @@ HD.Math = {
 		 * @returns {Array} abszolút koordináták [{x : Number, y : Number}, ...]
 		 */
 		getAbsoluteCoords : function(positions, w, h, xOffset, yOffset){
-			if (typeof xOffset === "undefined") xOffset = 0;
-			if (typeof yOffset === "undefined") yOffset = 0;
 			var coords = [];
 			var x, y;
+			if (typeof xOffset === "undefined") xOffset = 0;
+			if (typeof yOffset === "undefined") yOffset = 0;
 			positions.forEach(function(elem, index){
 				x = elem[0] / 100;
 				y = elem[1] / 100;
@@ -202,13 +203,8 @@ HD.Math = {
 		 * @returns {Boolean}
 		 */
 		isPointInsideRectangle : function(point, rectangle){
-			if (rectangle.x < point.x && rectangle.x + rectangle.w > point.x &&
-				rectangle.y < point.y && rectangle.y + rectangle.h > point.y){
-				return true;
-			}
-			else{
-				return false;
-			}
+			return (rectangle.x < point.x && rectangle.x + rectangle.w > point.x &&
+			rectangle.y < point.y && rectangle.y + rectangle.h > point.y);
 		}
 
 	},
@@ -222,14 +218,13 @@ HD.Math = {
 	 * @param {String} [easing="swing"] animációs függvény
 	 */
 	animate : function(func, callback, delay, range, easing){
+		var i, len, Easings;
+		var value = 0;
+		var steps = delay / 20;
 		if (typeof range === "undefined") range = 1;
 		if (typeof easing === "undefined") easing = "swing";
 
-		var i, len;
-		var value = 0;
-		var steps = delay / 20;
-
-		var Easings = {
+		Easings = {
 			/**
 			 * Easing függvény (továbbiak: https://github.com/danro/jquery-easing/blob/master/jquery.easing.js)
 			 * @param {Number} t független változó (idő)
@@ -246,12 +241,13 @@ HD.Math = {
 			}
 		};
 
+		// TODO: felül kell vizsgálni ezt a szerkezetet
 		for (i = 0, len = Math.floor(steps); i <= len; i++){
 			value = Easings[easing](i, 0, range, steps);
 			(function(value, currentStep){
 				window.setTimeout(function(){
 					func.call(this, value);
-					if (currentStep === len){
+					if (currentStep === len && typeof callback === "function"){
 						callback.call(this);
 					}
 				}.bind(this), delay / steps * i);

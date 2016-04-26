@@ -2,6 +2,7 @@
  * HD-keret Utility v1.0.0
  * 2015.02.21.
  */
+/* global HD */
 
 "use strict";
 
@@ -18,11 +19,11 @@ HD.Misc = {
 	 * @type {Object}
 	 */
 	keys : {
-		ALT: 18, BACKSPACE: 8, CAPS_LOCK: 20, COMMA: 188, CTRL: 17, DELETE: 46, DOWN: 40, END: 35, ENTER: 13,
-		ESC: 27, HOME: 36, INSERT: 45, LEFT: 37, NUM_LOCK: 144, NUMPAD_ADD: 107, NUMPAD_DECIMAL: 110,
-		NUMPAD_DIVIDE: 111, NUMPAD_ENTER: 108, NUMPAD_MULTIPLY: 106, NUMPAD_SUBTRACT: 109, PAGE_DOWN: 34,
-		PAGE_UP: 33, PAUSE: 19, PERIOD: 190, RIGHT: 39, RIGHT_CLICK: 93, SCROLL_LOCK: 145, SHIFT: 16, SPACE: 32,
-		TAB: 9, UP: 38, WINDOWS: 91
+		ALT : 18, BACKSPACE : 8, CAPS_LOCK : 20, COMMA : 188, CTRL : 17, DELETE : 46, DOWN : 40, END : 35, ENTER : 13,
+		ESC : 27, HOME : 36, INSERT : 45, LEFT : 37, NUM_LOCK : 144, NUMPAD_ADD : 107, NUMPAD_DECIMAL : 110,
+		NUMPAD_DIVIDE : 111, NUMPAD_ENTER : 108, NUMPAD_MULTIPLY : 106, NUMPAD_SUBTRACT : 109, PAGE_DOWN : 34,
+		PAGE_UP : 33, PAUSE : 19, PERIOD : 190, RIGHT : 39, RIGHT_CLICK : 93, SCROLL_LOCK : 145, SHIFT : 16, SPACE : 32,
+		TAB : 9, UP : 38, WINDOWS : 91
 	},
 
 	/**
@@ -30,22 +31,23 @@ HD.Misc = {
 	 * @type {Object}
 	 */
 	letters : {
-		"a": 65, "b": 66, "c": 67, "d": 68, "e": 69, "f": 70, "g": 71, "h": 72, "i": 73,
-		"j": 74, "k": 75, "l": 76, "m": 77, "n": 78, "o": 79, "p": 80, "q": 81, "r": 82,
-		"s": 83, "t": 84, "u": 85, "v": 86, "w": 87, "x": 88, "y": 89, "z": 90,
-		"0": 48, "1": 49, "2": 50, "3": 51, "4": 52, "5": 53, "6": 54, "7": 55, "8": 56, "9": 57
+		"a" : 65, "b" : 66, "c" : 67, "d" : 68, "e" : 69, "f" : 70, "g" : 71, "h" : 72, "i" : 73,
+		"j" : 74, "k" : 75, "l" : 76, "m" : 77, "n" : 78, "o" : 79, "p" : 80, "q" : 81, "r" : 82,
+		"s" : 83, "t" : 84, "u" : 85, "v" : 86, "w" : 87, "x" : 88, "y" : 89, "z" : 90,
+		"0" : 48, "1" : 49, "2" : 50, "3" : 51, "4" : 52, "5" : 53, "6" : 54, "7" : 55, "8" : 56, "9" : 57
 	},
 
 	/**
 	 * Switch szerkezetet helyettesítő függvény
-	 * @param {mixed} variable változó
+	 * @param {*} variable változó
 	 * @param {Object} relations változó különböző értékeihez rendelt visszatérési értékek
-	 * @param {mixed} [defaultValue=null] alapértelmezett érték (default)
-	 * @returns {mixed|null}
+	 * @param {*} [defaultValue=null] alapértelmezett érték (default)
+	 * @returns {*}
 	 */
 	switching : function(variable, relations, defaultValue){
+		var index;
 		if (typeof defaultValue === "undefined") defaultValue = null;
-		for (var index in relations){
+		for (index in relations){
 			if (variable === index){
 				return relations[index];
 			}
@@ -71,7 +73,7 @@ HD.Number = {
 		var numStr = "";
 		var originalNumStr = num.toString();
 		var originalLen = originalNumStr.length;
-		for (var n = originalLen; n < len; n++){
+		for (let n = originalLen; n < len; n++){
 			numStr += "0";
 		}
 		return numStr + originalNumStr;
@@ -85,11 +87,11 @@ HD.Number = {
 	 * @returns {String} olvasható érték
 	 */
 	displaySize : function(size, precision, prefixLimit){
-		if (typeof precision === "undefined") precision = 2;
-		if (typeof prefixLimit === "undefined") prefixLimit = 0.5;
 		var n = 1.0;
 		var pref = ["", "", "k", "M", "G", "T", "P", "E", "Z", "Y"];
 		var k, i;
+		if (typeof precision === "undefined") precision = 2;
+		if (typeof prefixLimit === "undefined") prefixLimit = 0.5;
 		for (k = 0; k < precision; k++){
 			n *= 10.0;
 		}
@@ -108,7 +110,8 @@ HD.Number = {
 	 * @returns {Number} értéke bájtban
 	 */
 	recoverSize : function(size){
-		var numberpart, multiply, offset, prefixum, index, n, q = "";
+		var numberpart, multiply, offset, prefixum, index, n;
+		var q = "";
 		var pref = {
 			none : 1,
 			k : 1024,
@@ -117,7 +120,7 @@ HD.Number = {
 			T : 1099511627776
 		};
 		for (n = size.length - 1; n >= 0; n--){
-			if (RegExp("[0-9]").test(size[n])){
+			if (/[0-9]/.test(size[n])){
 				n++;
 				break;
 			}
@@ -127,11 +130,11 @@ HD.Number = {
 			// nincs numerikus karakter
 			numberpart = 0.0;
 		}
-		else{
+		else {
 			if (q.length === 0){
 				offset = size.length;
 			}
-			else{
+			else {
 				offset = size.length - q.length;
 			}
 			numberpart = size.substr(0, offset);
@@ -159,7 +162,7 @@ HD.Number = {
 					}
 				}
 			}
-			else{
+			else {
 				// nincs ilyen prefixum definiálva
 				multiply = 0.0;
 			}
@@ -168,7 +171,7 @@ HD.Number = {
 			// nincs prefixum
 			multiply = pref.none;
 		}
-		else{
+		else {
 			// nincs mértékegység megadva vagy túl hosszú
 			multiply = 0.0;
 		}
@@ -198,9 +201,14 @@ HD.String = {
 	 * @returns {String}
 	 */
 	urlEncode : function(str){
-		str = (str + '').toString();
-		return encodeURIComponent(str).replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').
-				replace(/\)/g, '%29').replace(/\*/g, '%2A').replace(/%20/g, '+');
+		str = str.toString();
+		return encodeURIComponent(str)
+			.replace(/!/g, '%21')
+			.replace(/'/g, '%27')
+			.replace(/\(/g, '%28')
+			.replace(/\)/g, '%29')
+			.replace(/\*/g, '%2A')
+			.replace(/%20/g, '+');
 	},
 
 	/**
@@ -232,12 +240,7 @@ HD.String = {
 	 * @returns {Boolean} true, ha jó a formátum
 	 */
 	validateEmail : function(email){
-		if (/^[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]+$/.test(email)){
-			return true;
-		}
-		else{
-			return false;
-		}
+		return !!/^[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]+$/.test(email);
 	}
 
 };
@@ -259,7 +262,7 @@ HD.Function = {
 		if (typeof param === "undefined"){
 			return value;
 		}
-		else{
+		else {
 			return param;
 		}
 	},
@@ -279,14 +282,14 @@ HD.Function = {
 	 * név : [érték, typus, alapértelmezett érték]
 	 */
 	multiParam : function(params){
-		var newParams = [];
-		var currentParamNum = 0;
-		var paramNum = Object.keys(params).length;
-		for (var n in params){
+		const newParams = [];
+		let n;
+		let currentParamNum = 0;
+		for (n in params){
 			if (typeof params[n][0] !== params[n][1] && typeof params[n][2] !== "undefined"){
 				newParams[n] = params[2];
 			}
-			else{
+			else {
 				currentParamNum++;
 			}
 		}
@@ -303,7 +306,7 @@ HD.Array = {
 
 	/**
 	 * A PHP in_array() függvénye (indexOf boolean változata)
-	 * @param {mixed} needle keresendő elem
+	 * @param {*} needle keresendő elem
 	 * @param {Array} haystack tömb
 	 * @returns {Boolean}
 	 */
@@ -311,7 +314,7 @@ HD.Array = {
 		var len, i;
 		if (haystack){
 			if (Array.prototype.indexOf){
-				return (Array.prototype.indexOf.call(haystack, needle) > -1) ? true : false;
+				return (Array.prototype.indexOf.call(haystack, needle) > -1);
 			}
 			len = haystack.length;
 			for (i = 0; i < len; i++){
@@ -343,7 +346,7 @@ HD.Array = {
 	/**
 	 * Hozzáadás tömbhöz, ha még nem tartalmazza az adott értéket
 	 * @param {Array} arr tömb
-	 * @param {Mixed} val érték
+	 * @param {*} val érték
 	 * @returns {Array} módosított tömb
 	 */
 	addByVal : function(arr, val){
@@ -356,7 +359,7 @@ HD.Array = {
 	/**
 	 * Érték eltávolítása a tömbből
 	 * @param {Array} arr tömb
-	 * @param {Mixed} val érték
+	 * @param {*} val érték
 	 * @returns {Array} módosított tömb
 	 */
 	removeByVal : function(arr, val){
@@ -383,8 +386,9 @@ HD.Object = {
 	 */
 	objectPartialMatch : function(partialObject, fullObject){
 		var properties = Object.keys(fullObject);
-		for (var n = 0; n < properties.length; n++){
-			if (partialObject[properties[n]] !== undefined && partialObject[properties[n]] !== fullObject[properties[n]]){
+		for (let n = 0; n < properties.length; n++){
+			if (typeof partialObject[properties[n]] !== "undefined" &&
+				partialObject[properties[n]] !== fullObject[properties[n]]){
 				return false;
 			}
 		}
