@@ -1,6 +1,6 @@
-'use strict';
-
 /* global appRoot */
+
+'use strict';
 
 var ioExpressSession = require('socket.io-express-session');
 var Model = require(`${appRoot}/app/models/chat.js`);
@@ -143,7 +143,7 @@ module.exports = function(server, ioSession){
 		socket.on('disconnect', function(){
 			var discUserData = connectedUsers[socket.id];
 			if (discUserData){
-				Reflect.defineProperty(connectedUsers, socket.id); // delete connectedUsers[socket.id];
+				Reflect.deleteProperty(connectedUsers, socket.id); // delete connectedUsers[socket.id];
 				roomUpdate('remove', null, discUserData.id);
 				io.of('/chat').emit('statusChanged', connectedUsers);
 				io.of('/chat').emit('disconnect', discUserData);

@@ -2,6 +2,7 @@
  * HD-keret DateTime v1.1.0
  * 2015.12.16.
  */
+/* global HD namespace */
 
 "use strict";
 
@@ -48,9 +49,9 @@ HD.DateTime = {
 	 */
 	progFormat : function(date, separator){
 		if (typeof separator === "undefined") separator = "-";
-		var y = date.getFullYear();
-		var m = this.monthSigns[date.getMonth()];
-		var d = HD.Number.fillZero(date.getDate(), 2);
+		const y = date.getFullYear();
+		const m = this.monthSigns[date.getMonth()];
+		const d = HD.Number.fillZero(date.getDate(), 2);
 		return y + separator + m + separator + d;
 	},
 
@@ -99,11 +100,11 @@ HD.DateTime = {
 	getDaysOfYearWeek : function(year, week){
 		if (typeof year === "undefined") year = (new Date()).getFullYear();
 		if (typeof week === "undefined") year = this.getCurrentWeekOfYear();
-		var dayMS = 86400000;
-		var d = new Date("Jan 01, " + year + " 01:00:00");
-		var corr = (d.getDay() || 7) - 1;
-		var w = d.getTime() + (7 * (week - 1) - corr) * dayMS;
-		var days = {
+		const dayMS = 86400000;
+		const d = new Date(`Jan 01, ${year} 01:00:00`);
+		const corr = (d.getDay() || 7) - 1;
+		const w = d.getTime() + (7 * (week - 1) - corr) * dayMS;
+		return {
 			"H"   : new Date(w),
 			"K"   : new Date(w + dayMS),
 			"Sze" : new Date(w + 2 * dayMS),
@@ -112,7 +113,6 @@ HD.DateTime = {
 			"Szo" : new Date(w + 5 * dayMS),
 			"V"   : new Date(w + 6 * dayMS)
 		};
-		return days;
 	},
 
 	/**
@@ -126,9 +126,11 @@ HD.DateTime = {
 	parseTime : function(str, from, to){
 		if (typeof from === "undefined") from = "s";
 		if (typeof to === "undefined") to = "s";
-		var h = "00", m = "00", s = "00";
-		var segments = str.split(":");
-		var ms, ret;
+		let h = "00";
+		let m = "00";
+		let s = "00";
+		const segments = str.split(":");
+		let ret;
 		if (segments.length === 1){
 			if (from === "s"){
 				s = segments[0];
@@ -153,17 +155,15 @@ HD.DateTime = {
 				return null;
 			}
 		}
-		else {
-			if (from === "s"){
-				h = segments[0];
-				m = segments[1];
-				s = segments[2];
-			}
-			else {
-				return null;
-			}
+		else if (from === "s"){
+			h = segments[0];
+			m = segments[1];
+			s = segments[2];
 		}
-		ms = Date.parse("1 Jan 1970 " + h + ":" + m + ":" + s + " GMT");
+		else {
+			return null;
+		}
+		const ms = Date.parse(`1 Jan 1970 ${h}:${m}:${s} GMT`);
 		ret = null;
 		if (to === "ms") ret = ms;
 		if (to === "s") ret = Math.round(ms / 1000);
@@ -190,9 +190,9 @@ HD.DateTime = {
 		H = h;
 		M = h * 60 + m;
 		S = h * 60 * 60 + m * 60 + s;
-		hh = (h < 10) ? "0" + h.toString() : h.toString();
-		mm = (m < 10) ? "0" + m.toString() : m.toString();
-		ss = (s < 10) ? "0" + s.toString() : s.toString();
+		hh = (h < 10) ? `0${h}` : `${h}`;
+		mm = (m < 10) ? `0${m}` : `${m}`;
+		ss = (s < 10) ? `0${s}` : `${s}`;
 		h = h.toString(); m = m.toString(); s = s.toString();
 		format = format.replace("hh", hh);
 		format = format.replace("mm", mm);
@@ -468,7 +468,7 @@ HD.DateTime = {
 		};
 		this.date = function(format, timestamp) {
 			that = this;
-			jsdate = (timestamp === undefined ? new Date() : // Not provided
+			jsdate = (typeof timestamp === "undefined" ? new Date() : // Not provided
 				(timestamp instanceof Date) ? new Date(timestamp) : // JS Date()
 				new Date(timestamp * 1000) // UNIX timestamp (auto-convert to int)
 			);

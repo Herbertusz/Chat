@@ -267,9 +267,9 @@ var DB = {
 			INSERT INTO
 				\`${table}\`
 			(
-				\`` + Object.keys(data).join("`,`") + `\`
+				\`${Object.keys(data).join("`,`")}\`
 			) VALUE (
-				:` + Object.keys(data).join(",:") + `
+				:${Object.keys(data).join(",:")}
 			)
 		`;
 		return this.query(sql, data, callback);
@@ -285,19 +285,20 @@ var DB = {
 	 * @returns {String} nyers lekérdezés
 	 */
 	update : function(table, data, where, binds, callback){
-		var rows = [], sql;
+		var sql;
+		var rows = [];
 		var args = new Args(arguments);
 		binds = (typeof args.all[2] !== "undefined") ? args.all[2] : {};
 		callback = args.callback;
 
 		data.forEach(function(value, col){
-			rows.push("`" + col + "` = :" + col);
+			rows.push(`\`${col}\` = :${col}`);
 		});
 		sql = `
 			UPDATE
 				\`${table}\`
 			SET
-				` + rows.join(",") + `
+				${rows.join(",")}
 			WHERE
 				${where}
 		`;
@@ -365,9 +366,9 @@ var DB = {
 			temp_command = this.command;
 		}
 
-		//this.sql = mysql.format(sql, binds);
-		//this.command = this._getCommand();
-		//sql = this.sql;
+		// this.sql = mysql.format(sql, binds);
+		// this.command = this._getCommand();
+		// sql = this.sql;
 
 		this.sql = sql;
 
@@ -396,7 +397,7 @@ var DB = {
 		if (this.sql){
 			return this.sql.trim().split(' ')[0].toUpperCase();
 		}
-		else{
+		else {
 			return false;
 		}
 	}

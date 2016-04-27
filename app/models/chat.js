@@ -1,6 +1,6 @@
-'use strict';
-
 /* global appRoot */
+
+'use strict';
 
 var HD = require(`${appRoot}/libs/hd/hd.datetime.js`);
 var DB = require(`${appRoot}/app/models/dbconnect.js`);
