@@ -46,7 +46,7 @@ router.post('/uploadfile', function(req, res){
 		uploadedSize = 0;
 
 		req.on('data', function(file){
-			var first = (uploadedSize === 0);
+			const first = (uploadedSize === 0);
 			uploadedSize += file.byteLength;
 			io.of('/chat').to(data.roomName).emit('fileReceive', {
 				roomName : data.roomName,

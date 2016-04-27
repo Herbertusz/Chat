@@ -91,7 +91,6 @@ CHAT.Util = {
 	 * @returns {String}
 	 */
 	escapeHtml : function(string){
-		var str;
 		var entityMap = {
 			"&" : "&amp;",
 			"<" : "&lt;",
@@ -100,6 +99,8 @@ CHAT.Util = {
 			"'" : '&#39;',
 			"/" : '&#x2F;'
 		};
+		let str;
+
 		str = String(string).replace(/[&<>"'\/]/g, function(s){
 			return entityMap[s];
 		});
@@ -113,7 +114,8 @@ CHAT.Util = {
 	 */
 	scrollToBottom : function($box){
 		var height = 0;
-		var $list = $box.find(CHAT.DOM.list);
+		const $list = $box.find(CHAT.DOM.list);
+
 		$list.find('li').each(function(){
 			height += $(this).outerHeight();
 		});
@@ -128,7 +130,8 @@ CHAT.Util = {
 	 * @returns {jQuery} az elem másolata
 	 */
 	cloneElement : function($element, $insert, prepend){
-		var $clone = $element.clone(true, true);
+		const $clone = $element.clone(true, true);
+
 		prepend = HD.Misc.funcParam(prepend, false);
 		if (prepend){
 			$clone.prependTo($insert);

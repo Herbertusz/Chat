@@ -18,14 +18,14 @@ CHAT.Events = {
 		 * Csatorna létrehozása
 		 */
 		createRoom : function(){
-			var $users;
 			var roomData = {
 				name : "",
 				userIds : [CHAT.USER.id],
 				starter : CHAT.USER.id
 			};
-			var $box = CHAT.Util.cloneElement($(CHAT.DOM.cloneBox), $(CHAT.DOM.container));
-			$users = $box.find(CHAT.DOM.users);
+			const $box = CHAT.Util.cloneElement($(CHAT.DOM.cloneBox), $(CHAT.DOM.container));
+			const $users = $box.find(CHAT.DOM.users);
+
 			$(CHAT.DOM.online).find(CHAT.DOM.selectedUsers).each(function(){
 				var userId = Number($(this).val());
 				roomData.userIds.push(userId);
@@ -41,7 +41,8 @@ CHAT.Events = {
 		 * @param {jQuery} $box
 		 */
 		leaveRoom : function($box){
-			var roomName = $box.data("room");
+			const roomName = $box.data("room");
+
 			$box.remove();
 			CHAT.socket.emit('roomLeave', {
 				userId : CHAT.USER.id,
@@ -55,10 +56,11 @@ CHAT.Events = {
 		 * @param {Number} userId
 		 */
 		forceJoinRoom : function($add, userId){
-			var $box = $add.parents(CHAT.DOM.box);
-			var $users = $box.find(CHAT.DOM.users);
-			var roomName = $box.data("room");
-			var currentUserIds = [];
+			const $box = $add.parents(CHAT.DOM.box);
+			const $users = $box.find(CHAT.DOM.users);
+			const currentUserIds = [];
+			const roomName = $box.data("room");
+
 			$users.find(CHAT.DOM.userItems).filter(':not(.cloneable)').each(function(){
 				currentUserIds.push(Number($(this).attr("data-id")));
 			});
@@ -77,10 +79,11 @@ CHAT.Events = {
 		 * @param {jQuery} $close
 		 */
 		forceLeaveRoom : function($close){
-			var $box = $close.parents(CHAT.DOM.box);
-			var $user = $close.parents(CHAT.DOM.userItems);
-			var roomName = $box.data("room");
-			var userId = $user.data("id");
+			const $box = $close.parents(CHAT.DOM.box);
+			const $user = $close.parents(CHAT.DOM.userItems);
+			const roomName = $box.data("room");
+			const userId = $user.data("id");
+
 			if (!$close.hasClass("disabled")){
 				if (userId === CHAT.USER.id){
 					// kilépés
@@ -107,13 +110,14 @@ CHAT.Events = {
 		 * @param {jQuery} $box
 		 */
 		sendMessage : function($box){
-			var $message = $box.find(CHAT.DOM.message);
-			var data = {
+			const $message = $box.find(CHAT.DOM.message);
+			const data = {
 				id : CHAT.USER.id,
 				message : $message.val(),
 				time : Math.round(Date.now() / 1000),
 				roomName : $box.data("room")
 			};
+
 			if (data.message.trim().length > 0){
 				CHAT.socket.emit('sendMessage', data);
 				CHAT.Method.appendUserMessage($box, data, true);
@@ -131,6 +135,7 @@ CHAT.Events = {
 			var extensions = CHAT.Config.fileTransfer.extensions;
 			var allowedTypes = CHAT.Config.fileTransfer.allowedTypes;
 			var maxSize = CHAT.Config.fileTransfer.maxSize;
+
 			if (!CHAT.Config.fileTransfer.multiple){
 				files = [files[0]];
 			}
@@ -232,13 +237,14 @@ CHAT.Events = {
 		 * @param {jQuery} $box
 		 */
 		typeMessage : function($box){
-			var $message = $box.find(CHAT.DOM.message);
-			var data = {
+			const $message = $box.find(CHAT.DOM.message);
+			const data = {
 				id : CHAT.USER.id,
 				message : $message.val(),
 				time : Math.round(Date.now() / 1000),
 				roomName : $box.data("room")
 			};
+
 			CHAT.socket.emit('typeMessage', data);
 		},
 
@@ -247,7 +253,8 @@ CHAT.Events = {
 		 * @param {jQuery} $change
 		 */
 		sendMethod : function($change){
-			var $box = $change.parents('.chat');
+			const $box = $change.parents('.chat');
+
 			if ($change.prop("checked")){
 				$box.find(CHAT.DOM.sendButton).hide();
 			}
@@ -278,7 +285,7 @@ CHAT.Events = {
 		 */
 		disconnect : function(data){
 			$(CHAT.DOM.box).filter(':not(.cloneable)').each(function(){
-				var $box = $(this);
+				const $box = $(this);
 				if ($box.find(CHAT.DOM.userItems).filter(`[data-id="${data.id}"]`).length > 0){
 					CHAT.Method.appendSystemMessage($box, 'leave', data.id);
 					$box.find(`[data-id="${data.id}"]`).remove();
@@ -300,7 +307,8 @@ CHAT.Events = {
 		 * @param {type} roomData
 		 */
 		roomCreated : function(roomData){
-			var $box, $users;
+			let $box, $users;
+
 			if (roomData.userIds.indexOf(CHAT.USER.id) > -1){
 				$box = CHAT.Util.cloneElement($(CHAT.DOM.cloneBox), $(CHAT.DOM.container));
 				$users = $box.find(CHAT.DOM.users);
@@ -316,7 +324,8 @@ CHAT.Events = {
 		 * @param {type} roomData
 		 */
 		roomJoined : function(roomData){
-			var $box, $users;
+			let $box, $users;
+
 			if (roomData.joinedUserId === CHAT.USER.id){
 				// Létre kell hozni a dobozt a csatornához
 				$box = CHAT.Util.cloneElement($(CHAT.DOM.cloneBox), $(CHAT.DOM.container));
@@ -344,7 +353,8 @@ CHAT.Events = {
 		 * }
 		 */
 		roomLeaved : function(extData){
-			var $box;
+			let $box;
+
 			if (extData.roomData){
 				$box = $(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
 				CHAT.Method.appendSystemMessage($box, 'leave', extData.userId);
@@ -362,7 +372,8 @@ CHAT.Events = {
 		 * }
 		 */
 		roomForceJoined : function(extData){
-			var $box, $users;
+			let $box, $users;
+
 			if (extData.userId === CHAT.USER.id){
 				// Létre kell hozni a dobozt a csatornához
 				$box = CHAT.Util.cloneElement($(CHAT.DOM.cloneBox), $(CHAT.DOM.container));
@@ -396,7 +407,8 @@ CHAT.Events = {
 		 * }
 		 */
 		roomForceLeaved : function(extData){
-			var $box = $(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
+			const $box = $(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
+
 			if (extData.userId === CHAT.USER.id){
 				CHAT.Method.appendSystemMessage($box, 'forceleaveyou', extData.triggerId);
 				CHAT.socket.emit('roomLeave', {
@@ -424,12 +436,14 @@ CHAT.Events = {
 		 * }
 		 */
 		sendMessage : function(data){
-			var $box = $(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`);
-			if ($box.length === 0) return;
-			CHAT.Method.appendUserMessage($box, data);
-			CHAT.Method.stopWrite($box, data.id, '');
-			window.clearInterval(CHAT.timer.writing.timerID);
-			CHAT.timer.writing.timerID = null;
+			const $box = $(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`);
+
+			if ($box.length > 0){
+				CHAT.Method.appendUserMessage($box, data);
+				CHAT.Method.stopWrite($box, data.id, '');
+				window.clearInterval(CHAT.timer.writing.timerID);
+				CHAT.timer.writing.timerID = null;
+			}
 		},
 
 		/**
@@ -450,27 +464,29 @@ CHAT.Events = {
 		 * }
 		 */
 		sendFile : function(data){
-			var $box = $(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`);
-			if ($box.length === 0) return;
-			if (data.store === 'base64' || data.store === 'upload'){
-				CHAT.Method.appendFile($box, data);
+			const $box = $(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`);
+
+			if ($box.length > 0){
+				if (data.store === 'base64' || data.store === 'upload'){
+					CHAT.Method.appendFile($box, data);
+				}
+				else if (data.store === 'zip'){
+					CHAT.lzma.decompress(data.file, function(result, error){
+						if (error){
+							console.log(error);
+						}
+						else {
+							data.file = result;
+							CHAT.Method.appendFile($box, data);
+						}
+					}, function(percent){
+						// TODO: progressbar
+					});
+				}
+				CHAT.Method.stopWrite($box, data.id, '');
+				window.clearInterval(CHAT.timer.writing.timerID);
+				CHAT.timer.writing.timerID = null;
 			}
-			else if (data.store === 'zip'){
-				CHAT.lzma.decompress(data.file, function(result, error){
-					if (error){
-						console.log(error);
-					}
-					else {
-						data.file = result;
-						CHAT.Method.appendFile($box, data);
-					}
-				}, function(percent){
-					// TODO: progressbar
-				});
-			}
-			CHAT.Method.stopWrite($box, data.id, '');
-			window.clearInterval(CHAT.timer.writing.timerID);
-			CHAT.timer.writing.timerID = null;
 		},
 
 		/**
@@ -491,7 +507,8 @@ CHAT.Events = {
 		 * }
 		 */
 		fileReceive : function(data){
-			var $box = $(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`);
+			const $box = $(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`);
+
 			if (CHAT.USER.id !== data.userId){
 				CHAT.Method.progressbar(
 					$box, "get", Math.round((data.uploadedSize / data.fileSize) * 100), data.firstSend
@@ -512,19 +529,21 @@ CHAT.Events = {
 		typeMessage : function(data){
 			var $box = $(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`);
 			var writing = CHAT.timer.writing;
-			if ($box.length === 0) return;
-			writing.event = true;
-			writing.message = data.message;
-			if (!writing.timerID){
-				CHAT.Method.stillWrite($box, data.id);
-				writing.timerID = window.setInterval(function(){
-					if (!writing.event){
-						CHAT.Method.stopWrite($box, data.id, writing.message);
-						window.clearInterval(writing.timerID);
-						writing.timerID = null;
-					}
-					writing.event = false;
-				}, writing.interval);
+
+			if ($box.length > 0){
+				writing.event = true;
+				writing.message = data.message;
+				if (!writing.timerID){
+					CHAT.Method.stillWrite($box, data.id);
+					writing.timerID = window.setInterval(function(){
+						if (!writing.event){
+							CHAT.Method.stopWrite($box, data.id, writing.message);
+							window.clearInterval(writing.timerID);
+							writing.timerID = null;
+						}
+						writing.event = false;
+					}, writing.interval);
+				}
 			}
 		}
 

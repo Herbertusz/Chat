@@ -53,9 +53,10 @@ module.exports = function(server, ioSession){
 	 * @returns {Array<String>} törölt csatornák azonosítói
 	 */
 	var roomGarbageCollect = function(){
-		var key;
 		var deleted = [];
 		var onlineUserIds = [];
+		let key;
+
 		for (key in connectedUsers){
 			onlineUserIds.push(connectedUsers[key].id);
 		}
@@ -75,8 +76,8 @@ module.exports = function(server, ioSession){
 	 * @param {Number} userId user azonosító
 	 */
 	var roomUpdate = function(operation, roomName, userId){
-		var roomIndex;
-		var userIdIndex = -1;
+		let userIdIndex = -1;
+
 		if (!roomName){
 			// összes csatorna
 			rooms.forEach(function(room){
@@ -84,7 +85,7 @@ module.exports = function(server, ioSession){
 			});
 			return;
 		}
-		roomIndex = rooms.findIndex(function(room){
+		const roomIndex = rooms.findIndex(function(room){
 			return room.name === roomName;
 		});
 		if (roomIndex > -1){
@@ -109,8 +110,9 @@ module.exports = function(server, ioSession){
 
 	// Belépés a chat-be
 	io.of('/chat').on('connection', function(socket){
-		var session = socket.handshake.session;
 		var userData = null;
+		const session = socket.handshake.session;
+
 		if (session.login && session.login.loginned){
 			// belépett user
 			userData = {
@@ -141,7 +143,8 @@ module.exports = function(server, ioSession){
 
 		// Csatlakozás bontása
 		socket.on('disconnect', function(){
-			var discUserData = connectedUsers[socket.id];
+			const discUserData = connectedUsers[socket.id];
+
 			if (discUserData){
 				Reflect.deleteProperty(connectedUsers, socket.id); // delete connectedUsers[socket.id];
 				roomUpdate('remove', null, discUserData.id);
