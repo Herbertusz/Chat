@@ -10,7 +10,7 @@ CHAT.Config = {
 	fileTransfer : {
 		allowed : true,
 		store : 'upload',  // 'base64'|'upload'|'zip'
-		multiple : false,
+		multiple : true,
 		types : {
 			image : {tag : "img", attr : "src"},
 			file : {tag : "a", attr : "href"}
@@ -25,7 +25,7 @@ CHAT.Config = {
 			zip   : /^.*(zip|compressed).*$/,
 			audio : /^audio\/.*$/,
 			video : /^video\/.*$/,
-			exec  : /^application\/octet-stream$/,
+			exec  : /^application\/(octet-stream|x-msdownload|(x-|dos-|x-win)?exe|msdos-windows|x-msdos-program)$/,
 			file  : /^.*$/
 		},
 		allowedTypes : ["image", "text", "pdf", "doc", "xls", "ppt", "zip", "audio", "video", "exec", "file"],

@@ -177,51 +177,7 @@ CHAT.Events = {
 					const reader = new FileReader();
 					reader.onload = (function(data){
 						return function(){
-							if (store === 'base64'){
-								// base64 tárolása db-ben
-								data.file = reader.result;
-								CHAT.Method.appendFile($box, data, true);
-								CHAT.socket.emit('sendFile', data);
-							}
-							else if (store === 'upload'){
-								// fájlfeltöltés, url tárolása db-ben
-								const fileData = JSON.stringify(data);
-								const xhr = new XMLHttpRequest();
-								xhr.open("POST", "/chat/uploadfile");
-								xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-								xhr.setRequestHeader('X-File-Data', encodeURIComponent(fileData));
-								xhr.setRequestHeader('Content-Type', 'application/octet-stream');
-								CHAT.Method.progressbar($box, "send", 0, true);
-								xhr.upload.onprogress = function(event){
-									if (event.lengthComputable){
-										const percent = event.loaded / event.total;
-										CHAT.Method.progressbar($box, "send", Math.round(percent * 100));
-									}
-								};
-								xhr.onload = function(){
-									const response = JSON.parse(xhr.responseText);
-									data.file = response.filePath;
-									CHAT.Method.progressbar($box, "send", 100);
-									CHAT.Method.appendFile($box, data, true);
-									CHAT.socket.emit('sendFile', data);
-								};
-								xhr.send(rawFile);
-							}
-							else if (store === 'zip'){
-								// tömörített base64 tárolása db-ben
-								CHAT.lzma.compress(reader.result, 1, function(result, error){
-									if (error){
-										console.log(error);
-									}
-									else {
-										data.file = result;
-									}
-									CHAT.Method.appendFile($box, data, true);
-									CHAT.socket.emit('sendFile', data);
-								}, function(percent){
-									// TODO: progressbar
-								});
-							}
+							CHAT.FileTransfer.action('clientSend', [$box, data, reader, rawFile]);
 						};
 					})(_data);
 					reader.readAsDataURL(rawFile);
@@ -467,22 +423,7 @@ CHAT.Events = {
 			const $box = $(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`);
 
 			if ($box.length > 0){
-				if (data.store === 'base64' || data.store === 'upload'){
-					CHAT.Method.appendFile($box, data);
-				}
-				else if (data.store === 'zip'){
-					CHAT.lzma.decompress(data.file, function(result, error){
-						if (error){
-							console.log(error);
-						}
-						else {
-							data.file = result;
-							CHAT.Method.appendFile($box, data);
-						}
-					}, function(percent){
-						// TODO: progressbar
-					});
-				}
+				CHAT.FileTransfer.action('serverSend', [$box, data]);
 				CHAT.Method.stopWrite($box, data.id, '');
 				window.clearInterval(CHAT.timer.writing.timerID);
 				CHAT.timer.writing.timerID = null;

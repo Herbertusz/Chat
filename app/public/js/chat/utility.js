@@ -1,4 +1,4 @@
-/* global HD, DOMAIN, WSPORT, userData, io, LZMA */
+/* global HD, SERVER, io, LZMA */
 
 "use strict";
 
@@ -9,15 +9,15 @@ var CHAT = window.CHAT || {};
  * @type Object
  */
 CHAT.USER = {
-	id : userData.id,
-	name : userData.name
+	id : SERVER.userData.id,
+	name : SERVER.userData.name
 };
 
 /**
  * Socket objektum
  * @type Object
  */
-CHAT.socket = io.connect(`http://${DOMAIN}:${WSPORT}/chat`);
+CHAT.socket = io.connect(`http://${SERVER.domain}:${SERVER.wsport}/chat`);
 
 /**
  * Tömörítés

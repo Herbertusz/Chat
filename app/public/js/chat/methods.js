@@ -155,7 +155,7 @@ CHAT.Method = {
 	 */
 	progressbar : function($box, direction, percent, newBar){
 		const $list = $box.find(CHAT.DOM.list);
-		const label = direction === "send" ? 'Fájlküldés' : 'Fájlfogadás';
+		const label = (direction === "send") ? 'Fájlküldés' : 'Fájlfogadás';
 		newBar = HD.Misc.funcParam(newBar, false);
 		const tpl = `
 			<li>
@@ -174,7 +174,7 @@ CHAT.Method = {
 			CHAT.Util.scrollToBottom($box);
 		}
 		else {
-			const $progressbar = $list.find('.progressbar').last();
+			const $progressbar = $list.find('.progressbar').last(); // FIXME: nem mindig az utolsó!
 			if (percent === 100){
 				$progressbar.find('.label').html(`${label} befejeződött`);
 				$progressbar.find('.line').addClass('finished');
@@ -428,33 +428,7 @@ CHAT.Method = {
 							time : timestamp,
 							roomName : roomName
 						};
-						if (msgData.fileStore === 'base64'){
-							data.file = msgData.fileBase64;
-							CHAT.Method.appendFile($box, data);
-						}
-						else if (msgData.fileStore === 'upload'){
-							data.file = msgData.fileUrl;
-							CHAT.Method.appendFile($box, data);
-						}
-						else if (msgData.fileStore === 'zip'){
-							msgData.fileZip.data.forEach(function(element, index, arr){
-								arr[index] -= 128;
-							});
-							// FIXME: nem indul el a decompress
-							CHAT.lzma.decompress(msgData.fileZip, function(file, error){
-								console.log(data);
-								if (error){
-									console.log(error);
-								}
-								else {
-									data.file = file;
-									CHAT.Method.appendFile($box, data);
-								}
-							}, function(percent){
-								console.log(percent);
-								// TODO: progressbar
-							});
-						}
+						CHAT.FileTransfer.action('receive', [$box, data, msgData]);
 					}
 				});
 				callback();
