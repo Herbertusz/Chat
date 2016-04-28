@@ -23,10 +23,11 @@ CHAT.Method = {
 	 * }
 	 */
 	appendUserMessage : function($box, data, highlighted){
-		var time = HD.DateTime.format('H:i:s', data.time);
-		var $list = $box.find(CHAT.DOM.list);
-		var userName = CHAT.Method.getUserName(data.id);
+		const time = HD.DateTime.format('H:i:s', data.time);
+		const $list = $box.find(CHAT.DOM.list);
+		const userName = CHAT.Method.getUserName(data.id);
 		highlighted = HD.Misc.funcParam(highlighted, false);
+
 		$list.append(`
 			<li>
 				<span class="time">${time}</span>
@@ -45,9 +46,10 @@ CHAT.Method = {
 	 * @param {Number} [otherUserId]
 	 */
 	appendSystemMessage : function($box, type, userId, otherUserId){
-		var $list = $box.find(CHAT.DOM.list);
-		var userName = CHAT.Method.getUserName(userId);
-		var otherUserName = CHAT.Method.getUserName(otherUserId);
+		const $list = $box.find(CHAT.DOM.list);
+		const userName = CHAT.Method.getUserName(userId);
+		const otherUserName = CHAT.Method.getUserName(otherUserId);
+
 		if (type === 'join'){
 			$list.append(`
 				<li class="highlighted">${userName} csatlakozott!</li>
@@ -101,11 +103,13 @@ CHAT.Method = {
 	 * }
 	 */
 	appendFile : function($box, data, highlighted){
-		var $element, $listItem, tpl, img, imgSrc;
-		var time = HD.DateTime.format('H:i:s', data.time);
+		var $element, $listItem, tpl;
 		var $list = $box.find(CHAT.DOM.list);
-		var userName = CHAT.Method.getUserName(data.id);
+		let imgSrc;
+		const time = HD.DateTime.format('H:i:s', data.time);
+		const userName = CHAT.Method.getUserName(data.id);
 		highlighted = HD.Misc.funcParam(highlighted, false);
+
 		$listItem = $(`
 			<li>
 				<span class="time">${time}</span>
@@ -131,7 +135,8 @@ CHAT.Method = {
 				</a>
 			`;
 		}
-		img = document.createElement('img');
+
+		const img = document.createElement('img');
 		img.onload = function(){
 			$element = $(tpl);
 			$listItem.find('.filedisplay').append($element);
@@ -149,11 +154,10 @@ CHAT.Method = {
 	 * @param newBar
 	 */
 	progressbar : function($box, direction, percent, newBar){
-		var tpl;
-		var $list = $box.find(CHAT.DOM.list);
-		var label = direction === "send" ? 'Fájlküldés' : 'Fájlfogadás';
+		const $list = $box.find(CHAT.DOM.list);
+		const label = direction === "send" ? 'Fájlküldés' : 'Fájlfogadás';
 		newBar = HD.Misc.funcParam(newBar, false);
-		tpl = `
+		const tpl = `
 			<li>
 				<div class="progressbar">
 					<span class="label">${label}...</span>
@@ -164,6 +168,7 @@ CHAT.Method = {
 				</div>
 			</li>
 		`;
+
 		if (newBar){
 			$list.append(tpl);
 			CHAT.Util.scrollToBottom($box);
@@ -185,7 +190,7 @@ CHAT.Method = {
 	 * @param {Number} userId
 	 */
 	stillWrite : function($box, userId){
-		var userName = CHAT.Method.getUserName(userId);
+		const userName = CHAT.Method.getUserName(userId);
 		$box.find(CHAT.DOM.indicator).html(`${userName} éppen ír...`);
 	},
 
@@ -196,7 +201,8 @@ CHAT.Method = {
 	 * @param {String} message
 	 */
 	stopWrite : function($box, userId, message){
-		var userName = CHAT.Method.getUserName(userId);
+		const userName = CHAT.Method.getUserName(userId);
+
 		if (message.trim().length > 0){
 			$box.find(CHAT.DOM.indicator).html(`${userName} szöveget írt be`);
 		}
@@ -223,7 +229,7 @@ CHAT.Method = {
 	 * @returns {String}
 	 */
 	getUserName : function(id){
-		var $element = $(CHAT.DOM.onlineListItems).filter(`[data-id="${id}"]`);
+		const $element = $(CHAT.DOM.onlineListItems).filter(`[data-id="${id}"]`);
 		return $element.data("name");
 	},
 
@@ -235,13 +241,14 @@ CHAT.Method = {
 	 */
 	generateUserList : function($to, userIds, regenerate){
 		regenerate = HD.Misc.funcParam(regenerate, false);
+
 		if (regenerate){
 			$to.children(':not(.cloneable)').remove();
 		}
 		$(CHAT.DOM.onlineListItems).each(function(){
-			var $user;
-			var $this = $(this);
-			var currentUserId = $this.data("id");
+			let $user;
+			const $this = $(this);
+			const currentUserId = $this.data("id");
 			if (userIds.indexOf(currentUserId) > -1){
 				$user = CHAT.Util.cloneElement($to.find('.cloneable'), $to, currentUserId === CHAT.USER.id);
 				$user.attr("data-id", currentUserId);
@@ -257,9 +264,10 @@ CHAT.Method = {
 	 * @param {String} status
 	 */
 	setStatus : function($elem, status){
-		var n;
-		var $statusElem = $elem.find('.status');
-		var statuses = ["on", "busy", "inv", "off"];
+		let n;
+		const $statusElem = $elem.find('.status');
+		const statuses = ["on", "busy", "inv", "off"];
+
 		if (status === "idle"){
 			$statusElem.addClass("idle");
 		}
@@ -278,9 +286,10 @@ CHAT.Method = {
 	 * @returns {String}
 	 */
 	getStatus : function($elem){
-		var n, status;
-		var $statusElem = $elem.find('.status');
-		var statuses = ["on", "busy", "idle", "inv", "off"];
+		let n, status;
+		const $statusElem = $elem.find('.status');
+		const statuses = ["on", "busy", "idle", "inv", "off"];
+
 		for (n = 0; n < statuses.length; n++){
 			if ($statusElem.hasClass(statuses[n])){
 				status = statuses[n];
@@ -295,15 +304,16 @@ CHAT.Method = {
 	 * @param {Object} connectedUsers
 	 */
 	updateStatuses : function(connectedUsers){
-		var socketId, isIdle;
 		var onlineUserStatuses = {};
+		let socketId, isIdle;
+
 		for (socketId in connectedUsers){
 			isIdle = connectedUsers[socketId].isIdle;
 			onlineUserStatuses[connectedUsers[socketId].id] = isIdle ? "idle" : connectedUsers[socketId].status;
 		}
 		$(CHAT.DOM.onlineListItems).each(function(){
-			var $this = $(this);
-			var currentId = $this.data("id");
+			const $this = $(this);
+			const currentId = $this.data("id");
 			if (typeof onlineUserStatuses[currentId] !== "undefined"){
 				CHAT.Method.setStatus($this, onlineUserStatuses[currentId]);
 			}
@@ -313,7 +323,7 @@ CHAT.Method = {
 		});
 		$(CHAT.DOM.box).each(function(){
 			$(this).find(CHAT.DOM.userItems).each(function(){
-				var onlineStatus = onlineUserStatuses[$(this).attr("data-id")];
+				const onlineStatus = onlineUserStatuses[$(this).attr("data-id")];
 				CHAT.Method.setStatus($(this), onlineStatus || "off");
 			});
 		});
@@ -325,9 +335,10 @@ CHAT.Method = {
 	 * @returns {Object}
 	 */
 	changeCurrentStatus : function(newStatus){
-		var socketId;
-		var thisSocket = null;
-		var connectedUsers = $(CHAT.DOM.online).data("connectedUsers");
+		let socketId;
+		let thisSocket = null;
+		const connectedUsers = $(CHAT.DOM.online).data("connectedUsers");
+
 		for (socketId in connectedUsers){
 			if (connectedUsers[socketId].id === CHAT.USER.id){
 				thisSocket = socketId;
@@ -358,6 +369,7 @@ CHAT.Method = {
 	 */
 	fillBox : function($box, roomName, callback){
 		callback = HD.Misc.funcParam(callback, function(){});
+
 		$.ajax({
 			type : "POST",
 			url : "/chat/getroommessages",
@@ -393,8 +405,8 @@ CHAT.Method = {
 				 */
 				resp.messages.forEach(function(msgData){
 					var data;
-					// FIXME: 2 óra csúszás!
-					var timestamp = (new Date(msgData.created.replace(/ /g, 'T'))).getTime() / 1000;
+					const timestamp = (new Date(msgData.created.replace(/ /g, 'T'))).getTime() / 1000; // FIXME: csúszás
+
 					if (!msgData.fileId){
 						CHAT.Method.appendUserMessage($box, {
 							id : msgData.userId,

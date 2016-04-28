@@ -1,6 +1,6 @@
 /*!
- * Gomoku v1.0.0 alpha
- * Copyright (c) 2016.03.11.
+ * Chat v1.0.0 alpha
+ * Copyright (c) 2016.04.27.
  */
 
 'use strict';
