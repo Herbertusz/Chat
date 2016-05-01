@@ -36,28 +36,37 @@ router.post('/getroommessages', function(req, res){
 
 router.post('/uploadfile', function(req, res){
 
-	var data, fileName, fileStream, uploadedSize;
+	var data, userId, fileName, fileStream, uploadedSize, fileSize;
 	var io = req.app.get('io');
 
 	if (req.xhr){
 		data = JSON.parse(decodeURIComponent(req.header('X-File-Data')));
+		userId = Number.parseInt(data.userId);
 		fileName = `${Date.now()}-${HD.Math.rand(100, 999)}.${data.fileData.name.split('.').pop()}`;
 		fileStream = fs.createWriteStream(`${appRoot}/app/public/upload/${fileName}`);
 		uploadedSize = 0;
+		fileSize = Number.parseInt(data.fileData.size);
 
 		req.on('data', function(file){
 			const first = (uploadedSize === 0);
 			uploadedSize += file.byteLength;
 			io.of('/chat').to(data.roomName).emit('fileReceive', {
+				userId : userId,
 				roomName : data.roomName,
-				userId : Number.parseInt(data.id),
 				uploadedSize : uploadedSize,
-				fileSize : Number.parseInt(data.fileData.size),
+				fileSize : fileSize,
 				firstSend : first
 			});
 			fileStream.write(file);
 		});
 		req.on('end', function(){
+			io.of('/chat').to(data.roomName).emit('fileReceive', {
+				userId : userId,
+				roomName : data.roomName,
+				uploadedSize : fileSize,
+				fileSize : fileSize,
+				firstSend : false
+			});
 			res.send({
 				filePath : `upload/${fileName}`
 			});

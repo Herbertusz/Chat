@@ -16,7 +16,7 @@ CHAT.Method = {
 	 * @param {Object} data
 	 * @param {Boolean} [highlighted=false]
 	 * @description data szerkezete: {
-	 *  	id : Number,
+	 *  	userId : Number,
 	 * 		message : String,
 	 * 		time : Number,
 	 * 		roomName : String
@@ -25,14 +25,14 @@ CHAT.Method = {
 	appendUserMessage : function($box, data, highlighted){
 		const time = HD.DateTime.format('H:i:s', data.time);
 		const $list = $box.find(CHAT.DOM.list);
-		const userName = CHAT.Method.getUserName(data.id);
+		const userName = CHAT.Method.getUserName(data.userId);
 		highlighted = HD.Misc.funcParam(highlighted, false);
 
 		$list.append(`
 			<li>
 				<span class="time">${time}</span>
 				<strong class="${highlighted ? "self" : ""}">${CHAT.Util.escapeHtml(userName)}</strong>:
-				<br />${CHAT.Util.escapeHtml(data.message)}
+				<br />${CHAT.Method.replaceMessage(data.message)}
 			</li>
 		`);
 		CHAT.Util.scrollToBottom($box);
@@ -89,7 +89,7 @@ CHAT.Method = {
 	 * @param {Object} data
 	 * @param {Boolean} [highlighted=false]
 	 * @description data szerkezete: {
-	 *  	id : Number,
+	 *  	userId : Number,
 	 * 		fileData : {
 	 * 			name : String,
 	 *  		size : Number,
@@ -107,7 +107,7 @@ CHAT.Method = {
 		var $list = $box.find(CHAT.DOM.list);
 		let imgSrc;
 		const time = HD.DateTime.format('H:i:s', data.time);
-		const userName = CHAT.Method.getUserName(data.id);
+		const userName = CHAT.Method.getUserName(data.userId);
 		highlighted = HD.Misc.funcParam(highlighted, false);
 
 		$listItem = $(`
@@ -127,7 +127,7 @@ CHAT.Method = {
 			`;
 		}
 		else {
-			imgSrc = `/images/extensions/${data.type}.gif`;
+			imgSrc = `/images/filetypes/${data.type}.gif`;
 			tpl = `
 				<a href="${data.file}" target="_blank">
 					<img alt="" src="${imgSrc}" />
@@ -148,18 +148,18 @@ CHAT.Method = {
 
 	/**
 	 *
-	 * @param $box
-	 * @param direction
-	 * @param percent
-	 * @param newBar
+	 * @param {jQuery} $box
+	 * @param {String} direction
+	 * @param {Number} percent
+	 * @param {Number|null} barId - ha újat kell létrehozni, akkor null, egyébként egy létező progressbar id-ja
+	 * @returns {Number|null}
 	 */
-	progressbar : function($box, direction, percent, newBar){
+	progressbar : function($box, direction, percent, barId){
 		const $list = $box.find(CHAT.DOM.list);
 		const label = (direction === "send") ? 'Fájlküldés' : 'Fájlfogadás';
-		newBar = HD.Misc.funcParam(newBar, false);
 		const tpl = `
 			<li>
-				<div class="progressbar">
+				<div class="progressbar" data-id="{BARID}">
 					<span class="label">${label}...</span>
 					<span class="linecontainer">
 						<span class="line" style="width: ${percent}%"></span>
@@ -169,19 +169,45 @@ CHAT.Method = {
 			</li>
 		`;
 
-		if (newBar){
-			$list.append(tpl);
+		if (!barId){
+			barId = HD.Number.getUniqueId();
+			$list.append(tpl.replace("{BARID}", barId.toString()));
 			CHAT.Util.scrollToBottom($box);
+			return barId;
 		}
 		else {
-			const $progressbar = $list.find('.progressbar').last(); // FIXME: nem mindig az utolsó!
+			const $progressbar = $list.find('.progressbar').filter(`[data-id="${barId}"]`);
 			if (percent === 100){
 				$progressbar.find('.label').html(`${label} befejeződött`);
 				$progressbar.find('.line').addClass('finished');
 			}
 			$progressbar.find('.line').css("width", `${percent}%`);
 			$progressbar.find('.numeric').html(`${percent}%`);
+			return null;
 		}
+	},
+
+	/**
+	 * Módosítások az elküldött szövegben
+	 * @param {String} message
+	 * @returns {String}
+	 */
+	replaceMessage : function(message){
+		if (CHAT.Config.messageSend.escapeHTML){
+			message = CHAT.Util.escapeHtml(message);
+		}
+		if (CHAT.Config.messageSend.emoticonReplacement){
+			let icon;
+			const emoticons = CHAT.Config.messageSend.emoticons;
+			for (icon in emoticons){
+				const escapedIcon = icon.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+				message.replace(new RegExp(escapedIcon, 'g'), `<img alt="${icon}" src="${emoticons[icon]}" />`);
+			}
+		}
+		if (CHAT.Config.messageSend.bbCodeReplacement){
+			;
+		}
+		return message;
 	},
 
 	/**
@@ -225,11 +251,11 @@ CHAT.Method = {
 
 	/**
 	 * Felhasználónév id alapján
-	 * @param {Number} id
+	 * @param {Number} userId
 	 * @returns {String}
 	 */
-	getUserName : function(id){
-		const $element = $(CHAT.DOM.onlineListItems).filter(`[data-id="${id}"]`);
+	getUserName : function(userId){
+		const $element = $(CHAT.DOM.onlineListItems).filter(`[data-id="${userId}"]`);
 		return $element.data("name");
 	},
 
@@ -409,7 +435,7 @@ CHAT.Method = {
 
 					if (!msgData.fileId){
 						CHAT.Method.appendUserMessage($box, {
-							id : msgData.userId,
+							userId : msgData.userId,
 							time : timestamp,
 							message : msgData.message,
 							roomName : roomName
@@ -417,7 +443,7 @@ CHAT.Method = {
 					}
 					else {
 						data = {
-							id : msgData.userId,
+							userId : msgData.userId,
 							fileData : {
 								name : msgData.fileName,
 								size : msgData.fileSize,

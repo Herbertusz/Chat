@@ -146,7 +146,7 @@ module.exports = function(server, ioSession){
 			const discUserData = connectedUsers[socket.id];
 
 			if (discUserData){
-				Reflect.deleteProperty(connectedUsers, socket.id); // delete connectedUsers[socket.id];
+				Reflect.deleteProperty(connectedUsers, socket.id);
 				roomUpdate('remove', null, discUserData.id);
 				io.of('/chat').emit('statusChanged', connectedUsers);
 				io.of('/chat').emit('disconnect', discUserData);
