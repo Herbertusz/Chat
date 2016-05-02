@@ -38,6 +38,22 @@ HD.Misc = {
 	},
 
 	/**
+	 * Alapértelmezett paraméterérték megadása függvényben
+	 * @example par = funcParam(par, 0);
+	 * @param {Object} param paraméter
+	 * @param {Object} value alapértelmezett érték
+	 * @returns {Object} ezt kell értékül adni a paraméternek
+	 */
+	funcParam : function(param, value){
+		if (typeof param === "undefined"){
+			return value;
+		}
+		else {
+			return param;
+		}
+	},
+
+	/**
 	 * Switch szerkezetet helyettesítő függvény
 	 * @param {*} variable változó
 	 * @param {Object} relations változó különböző értékeihez rendelt visszatérési értékek
@@ -62,6 +78,14 @@ HD.Misc = {
  * @type {Object}
  */
 HD.Number = {
+
+	/**
+	 * Egyedi (pszeudo) id generálása
+	 * @returns {Number}
+	 */
+	getUniqueId : function(){
+		return Number(Date.now().toString().substr(6) + Math.floor(Math.random() * 1000).toString());
+	},
 
 	/**
 	 * Szám elejének feltöltése nullákkal
@@ -97,10 +121,10 @@ HD.Number = {
 		}
 		for (i = 1; i < 9; i++){
 			if (size < Math.pow(1024, i) * prefixLimit){
-				return Math.round((size / Math.pow(1024.0, i - 1)) * n) / n + " " + pref[i] + "B";
+				return `${Math.round((size / Math.pow(1024.0, i - 1)) * n) / n} ${pref[i]}B`;
 			}
 		}
-		return Math.round((size / Math.pow(1024.0, i - 1)) * n) / n + " " + pref[i] + "B";
+		return `${Math.round((size / Math.pow(1024.0, i - 1)) * n) / n} ${pref[i]}B`;
 	},
 
 	/**
@@ -185,6 +209,18 @@ HD.Number = {
  * @type {Object}
  */
 HD.String = {
+
+	/**
+	 * Egyedi (pszeudo) GUID generálása
+	 * @returns {String}
+	 */
+	getGuid : function(){
+		return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){
+			const r = Math.floor(Math.random() * 16);
+			const v = (c === 'x') ? r : (r & 0x3 | 0x8);
+			return v.toString(16);
+		});
+	},
 
 	/**
 	 * Első karakter nagybetűssé alakítása

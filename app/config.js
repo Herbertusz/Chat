@@ -1,21 +1,33 @@
 "use strict";
 
-var CHAT = window.CHAT || {};
+var CHAT = global.CHAT || {};
 
 /**
  * Chat beállításai
  * @type Object
  */
 CHAT.Config = {
+	messageSend : {
+		escapeHTML : true,
+		emoticonReplacement : false,
+		emoticons : {
+			':)' : '/images/emoticons/1.jpg',
+			':D' : '/images/emoticons/2.jpg'
+		},
+		bbCodeReplacement : false,
+		bbCodes : [
+			['`(.*?)`',           false],
+			['\\*\\*(.*?)\\*\\*', '<strong>$1</strong>'],
+			['__(.*?)__',         '<em>$1</em>'],
+			['--(.*?)--',         '<span style="text-decoration: line-through;">$1</span>']
+		],
+		defaultSendMode : 'enter'  // 'enter'|'button'
+	},
 	fileTransfer : {
 		allowed : true,
-		store : 'upload',  // 'base64'|'upload'|'zip'
-		multiple : true,
+		store : 'upload',  // 'upload'|'base64'|'zip'
+		multiple : false,
 		types : {
-			image : {tag : "img", attr : "src"},
-			file : {tag : "a", attr : "href"}
-		},
-		extensions : {
 			image : /^image\/.*$/,
 			text  : /^(text\/.*|.*javascript|.*ecmascript)$/,
 			pdf   : /^application\/pdf$/,
@@ -32,3 +44,5 @@ CHAT.Config = {
 		maxSize : 100 * 1024 * 1024
 	}
 };
+
+exports.Config = CHAT.Config;

@@ -112,7 +112,7 @@ CHAT.Events = {
 		sendMessage : function($box){
 			const $message = $box.find(CHAT.DOM.message);
 			const data = {
-				id : CHAT.USER.id,
+				userId : CHAT.USER.id,
 				message : $message.val(),
 				time : Math.round(Date.now() / 1000),
 				roomName : $box.data("room")
@@ -132,7 +132,7 @@ CHAT.Events = {
 		 */
 		sendFile : function($box, files){
 			var store = CHAT.Config.fileTransfer.store;
-			var extensions = CHAT.Config.fileTransfer.extensions;
+			var types = CHAT.Config.fileTransfer.types;
 			var allowedTypes = CHAT.Config.fileTransfer.allowedTypes;
 			var maxSize = CHAT.Config.fileTransfer.maxSize;
 
@@ -146,8 +146,8 @@ CHAT.Events = {
 			files.forEach(function(rawFile){
 				let i;
 				const errors = [];
-				const _data = {
-					id : CHAT.USER.id,
+				const fileData = {
+					userId : CHAT.USER.id,
 					fileData : {
 						name : rawFile.name,
 						size : rawFile.size,
@@ -163,13 +163,13 @@ CHAT.Events = {
 				if (rawFile.size > maxSize){
 					errors.push("size");
 				}
-				for (i in extensions){
-					if (extensions[i].test(rawFile.type)){
-						_data.type = i;
+				for (i in types){
+					if (types[i].test(rawFile.type)){
+						fileData.type = i;
 						break;
 					}
 				}
-				if (allowedTypes.indexOf(_data.type) === -1){
+				if (allowedTypes.indexOf(fileData.type) === -1){
 					errors.push("type");
 				}
 
@@ -179,7 +179,7 @@ CHAT.Events = {
 						return function(){
 							CHAT.FileTransfer.action('clientSend', [$box, data, reader, rawFile]);
 						};
-					})(_data);
+					})(fileData);
 					reader.readAsDataURL(rawFile);
 				}
 				else {
@@ -195,7 +195,7 @@ CHAT.Events = {
 		typeMessage : function($box){
 			const $message = $box.find(CHAT.DOM.message);
 			const data = {
-				id : CHAT.USER.id,
+				userId : CHAT.USER.id,
 				message : $message.val(),
 				time : Math.round(Date.now() / 1000),
 				roomName : $box.data("room")
@@ -385,7 +385,7 @@ CHAT.Events = {
 		 * Üzenetküldés
 		 * @param {Object} data
 		 * @description data szerkezete: {
-		 *  	id : Number,
+		 *  	userId : Number,
 		 * 		message : String,
 		 * 		time : Number,
 		 * 		roomName : String
@@ -396,7 +396,7 @@ CHAT.Events = {
 
 			if ($box.length > 0){
 				CHAT.Method.appendUserMessage($box, data);
-				CHAT.Method.stopWrite($box, data.id, '');
+				CHAT.Method.stopWrite($box, data.userId, '');
 				window.clearInterval(CHAT.timer.writing.timerID);
 				CHAT.timer.writing.timerID = null;
 			}
@@ -406,7 +406,7 @@ CHAT.Events = {
 		 * Fájlküldés
 		 * @param {Object} data
 		 * @description data szerkezete: {
-		 *  	id : Number,
+		 *  	userId : Number,
 		 * 		fileData : {
 		 * 			name : String,
 		 *  		size : Number,
@@ -424,7 +424,7 @@ CHAT.Events = {
 
 			if ($box.length > 0){
 				CHAT.FileTransfer.action('serverSend', [$box, data]);
-				CHAT.Method.stopWrite($box, data.id, '');
+				CHAT.Method.stopWrite($box, data.userId, '');
 				window.clearInterval(CHAT.timer.writing.timerID);
 				CHAT.timer.writing.timerID = null;
 			}
@@ -434,26 +434,27 @@ CHAT.Events = {
 		 * Fájlfogadás
 		 * @param {Object} data
 		 * @description data szerkezete: {
-		 *  	id : Number,
-		 * 		fileData : {
-		 * 			name : String,
-		 *  		size : Number,
-		 *  		type : String
-		 * 		},
-		 * 		file : String,
-		 * 		store : String,
-		 * 		type : String,
-		 * 		time : Number,
-		 * 		roomName : String
+		 *		userId : Number,
+		 *  	roomName : String,
+		 *		uploadedSize : Number,
+		 *		fileSize : Number,
+		 *		firstSend : Boolean
 		 * }
 		 */
 		fileReceive : function(data){
 			const $box = $(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`);
 
 			if (CHAT.USER.id !== data.userId){
-				CHAT.Method.progressbar(
-					$box, "get", Math.round((data.uploadedSize / data.fileSize) * 100), data.firstSend
-				);
+				if (data.firstSend){
+					CHAT.Events.Server.barId = CHAT.Method.progressbar(
+						$box, "get", Math.round((data.uploadedSize / data.fileSize) * 100), null
+					);
+				}
+				else {
+					CHAT.Method.progressbar(
+						$box, "get", Math.round((data.uploadedSize / data.fileSize) * 100), CHAT.Events.Server.barId
+					);
+				}
 			}
 		},
 
@@ -461,7 +462,7 @@ CHAT.Events = {
 		 * Üzenetírás
 		 * @param {Object} data
 		 * @description szerkezet: {
-		 *  	id : Number,
+		 *  	userId : Number,
 		 * 		message : String,
 		 * 		time : Number,
 		 * 		roomName : String
@@ -475,10 +476,10 @@ CHAT.Events = {
 				writing.event = true;
 				writing.message = data.message;
 				if (!writing.timerID){
-					CHAT.Method.stillWrite($box, data.id);
+					CHAT.Method.stillWrite($box, data.userId);
 					writing.timerID = window.setInterval(function(){
 						if (!writing.event){
-							CHAT.Method.stopWrite($box, data.id, writing.message);
+							CHAT.Method.stopWrite($box, data.userId, writing.message);
 							window.clearInterval(writing.timerID);
 							writing.timerID = null;
 						}
