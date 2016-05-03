@@ -94,14 +94,11 @@ CHAT.Util = {
 		var entityMap = {
 			"&" : "&amp;",
 			"<" : "&lt;",
-			">" : "&gt;",
-			'"' : '&quot;',
-			"'" : '&#39;',
-			"/" : '&#x2F;'
+			">" : "&gt;"
 		};
 		let str;
 
-		str = String(string).replace(/[&<>"'\/]/g, function(s){
+		str = String(string).replace(/[&<>]/g, function(s){
 			return entityMap[s];
 		});
 		str = str.replace(/\n/g, '<br />');

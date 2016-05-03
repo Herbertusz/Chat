@@ -1,3 +1,5 @@
+/* global HD */
+
 "use strict";
 
 var CHAT = window.CHAT || {};
@@ -164,7 +166,7 @@ CHAT.Events = {
 					errors.push("size");
 				}
 				for (i in types){
-					if (types[i].test(rawFile.type)){
+					if (HD.String.createRegExp(types[i]).test(rawFile.type)){
 						fileData.type = i;
 						break;
 					}

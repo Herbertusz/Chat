@@ -253,8 +253,8 @@ HD.String = {
 	 * @returns {String} karakterlánc visszafelé
 	 */
 	reverse : function(str){
-		var splitext = str.split("");
-		var revertext = splitext.reverse();
+		const splitext = str.split("");
+		const revertext = splitext.reverse();
 		return revertext.join("");
 	},
 
@@ -265,7 +265,7 @@ HD.String = {
 	 * @returns {String} maradék karakterlánc
 	 */
 	removePrefix : function(str, separator){
-		var arr = str.split(separator);
+		const arr = str.split(separator);
 		arr.shift();
 		return arr.join(separator);
 	},
@@ -277,6 +277,12 @@ HD.String = {
 	 */
 	validateEmail : function(email){
 		return !!/^[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]+$/.test(email);
+	},
+
+	createRegExp : function(str){
+		const pattern = str.replace(/^\/(.*)\/[gimuy]*$/, "$1");
+		const flags = str.replace(/^\/.*\/([gimuy]*)$/, "$1");
+		return new RegExp(pattern, flags);
 	}
 
 };
