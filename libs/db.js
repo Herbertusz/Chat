@@ -68,7 +68,7 @@ var DB = {
 	 *     user : 'root',
 	 *     password : '',
 	 *     database : 'nodejs',
-	 *     charset : 'utf8_hungarian_ci'
+	 *     charset : 'utf8_unicode_ci'
 	 * }
 	 */
 	connect : function(connectionData){
