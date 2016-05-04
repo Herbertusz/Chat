@@ -201,11 +201,25 @@ CHAT.Method = {
 			const emoticons = CHAT.Config.messageSend.emoticons;
 			for (icon in emoticons){
 				const escapedIcon = icon.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-				message.replace(new RegExp(escapedIcon, 'g'), `<img alt="${icon}" src="${emoticons[icon]}" />`);
+				message = message.replace(
+					new RegExp(escapedIcon, 'g'),
+					`<img alt="${icon}" src="${emoticons[icon]}" />`
+				);
 			}
 		}
 		if (CHAT.Config.messageSend.bbCodeReplacement){
-			;
+			const bbCodes = CHAT.Config.messageSend.bbCodes;
+			const disablePattern = bbCodes.findIndex(function(code){
+				return code[1] === false;
+			});
+			message.replace(new RegExp(disablePattern, 'g'), '');
+			bbCodes.forEach(function(code){
+				if (code[1] !== false){
+					//console.log(message);
+					message = message.replace(HD.String.createRegExp(code[0]), code[1]);
+					//console.log(message);
+				}
+			});
 		}
 		return message;
 	},

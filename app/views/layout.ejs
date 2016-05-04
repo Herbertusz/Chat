@@ -11,6 +11,7 @@
 		<link rel="stylesheet" href="/css/layout.css" />
 		<link rel="stylesheet" href="/css/index.css" />
 		<script>
+			<% RegExp.prototype.toJSON = RegExp.prototype.toString; %>
 			var SERVER = {
 				domain : '<%- layout.DOMAIN %>',
 				wsport : '<%- layout.WSPORT %>',
