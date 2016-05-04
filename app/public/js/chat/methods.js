@@ -208,18 +208,19 @@ CHAT.Method = {
 			}
 		}
 		if (CHAT.Config.messageSend.bbCodeReplacement){
+			let mArray;
 			const bbCodes = CHAT.Config.messageSend.bbCodes;
-			const disablePattern = bbCodes.findIndex(function(code){
+			const disablePattern = bbCodes.find(function(code){
 				return code[1] === false;
-			});
-			message.replace(new RegExp(disablePattern, 'g'), '');
+			})[0];
+			mArray = message.split(HD.String.createRegExp(disablePattern));
 			bbCodes.forEach(function(code){
 				if (code[1] !== false){
-					//console.log(message);
-					message = message.replace(HD.String.createRegExp(code[0]), code[1]);
-					//console.log(message);
+					mArray[0] = mArray[0].replace(HD.String.createRegExp(code[0]), code[1]);
+					mArray[2] = mArray[2].replace(HD.String.createRegExp(code[0]), code[1]);
 				}
 			});
+			message = mArray.join('');
 		}
 		return message;
 	},

@@ -31,10 +31,10 @@ CHAT.Config = {
 		},
 		bbCodeReplacement : true,
 		bbCodes : [
-			[/`(.*?)`/g,       false],
-			[/\*\*(.*?)\*\*/g, '<strong>$1</strong>'],
-			[/__(.*?)__/g,     '<em>$1</em>'],
-			[/--(.*?)--/g,     '<span style="text-decoration: line-through;">$1</span>'],
+			[/`(.*)`/,                         false],
+			[/\*\*(.*?)\*\*/g,                 '<strong>$1</strong>'],
+			[/__(.*?)__/g,                     '<em>$1</em>'],
+			[/--(.*?)--/g,                     '<span style="text-decoration: line-through;">$1</span>'],
 			[/\[color=(.*?)](.*?)\[\/color]/g, '<span style="color: $1;">$2</span>']
 		],
 		defaultSendMode : 'enter'  // 'enter'|'button'
