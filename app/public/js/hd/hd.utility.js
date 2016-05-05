@@ -279,6 +279,11 @@ HD.String = {
 		return !!/^[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]+$/.test(email);
 	},
 
+	/**
+	 * Karakterlánc átalakítása RegExp objektummá
+	 * @param {String} str pl.: "/x/gi"
+	 * @returns {RegExp}
+	 */
 	createRegExp : function(str){
 		const pattern = str.replace(/^\/(.*)\/[gimuy]*$/, "$1");
 		const flags = str.replace(/^\/.*\/([gimuy]*)$/, "$1");

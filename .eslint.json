@@ -240,7 +240,7 @@
     "object-shorthand": ["warn", "never"], // require or disallow method and property shorthand syntax for object literals
     "prefer-arrow-callback": "off", // require arrow functions as callbacks
     "prefer-const": "warn", // require const declarations for variables that are never reassigned after declared
-    "prefer-reflect": "warn", // require Reflect methods where applicable
+    "prefer-reflect": "off", // require Reflect methods where applicable
     "prefer-rest-params": "warn", // require rest parameters instead of arguments
     "prefer-spread": "warn", // require spread operators instead of .apply()
     "prefer-template": "warn", // require template literals instead of string concatenation

@@ -4,6 +4,12 @@
 
 var CHAT = window.CHAT || {};
 
+CHAT.Lang = {
+	labels : {
+		"systemJoin" : (userName) => `${userName} csatlakozott!`
+	}
+};
+
 /**
  * Alkalmazásspecifikus függvények
  * @type Object
@@ -147,7 +153,7 @@ CHAT.Method = {
 	},
 
 	/**
-	 *
+	 * Folyamatjelzők kezelése
 	 * @param {jQuery} $box
 	 * @param {String} direction
 	 * @param {Number} percent
@@ -193,35 +199,38 @@ CHAT.Method = {
 	 * @returns {String}
 	 */
 	replaceMessage : function(message){
+		const disablePattern = CHAT.Config.messageSend.replaceDisable;
 		if (CHAT.Config.messageSend.escapeHTML){
 			message = CHAT.Util.escapeHtml(message);
 		}
+		const messageArray = message.split(HD.String.createRegExp(disablePattern));
 		if (CHAT.Config.messageSend.emoticonReplacement){
 			let icon;
 			const emoticons = CHAT.Config.messageSend.emoticons;
 			for (icon in emoticons){
 				const escapedIcon = icon.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-				message = message.replace(
+				messageArray[0] = messageArray[0].replace(
 					new RegExp(escapedIcon, 'g'),
 					`<img alt="${icon}" src="${emoticons[icon]}" />`
 				);
+				if (messageArray.length > 1){
+					messageArray[2] = messageArray[2].replace(
+						new RegExp(escapedIcon, 'g'),
+						`<img alt="${icon}" src="${emoticons[icon]}" />`
+					);
+				}
 			}
 		}
 		if (CHAT.Config.messageSend.bbCodeReplacement){
-			let mArray;
 			const bbCodes = CHAT.Config.messageSend.bbCodes;
-			const disablePattern = bbCodes.find(function(code){
-				return code[1] === false;
-			})[0];
-			mArray = message.split(HD.String.createRegExp(disablePattern));
 			bbCodes.forEach(function(code){
-				if (code[1] !== false){
-					mArray[0] = mArray[0].replace(HD.String.createRegExp(code[0]), code[1]);
-					mArray[2] = mArray[2].replace(HD.String.createRegExp(code[0]), code[1]);
+				messageArray[0] = messageArray[0].replace(HD.String.createRegExp(code[0]), code[1]);
+				if (messageArray.length > 1){
+					messageArray[2] = messageArray[2].replace(HD.String.createRegExp(code[0]), code[1]);
 				}
 			});
-			message = mArray.join('');
 		}
+		message = messageArray.join('');
 		return message;
 	},
 
