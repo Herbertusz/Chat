@@ -61,7 +61,7 @@ CHAT.Config = {
 			exec  : /^application\/(octet-stream|x-msdownload|(x-|dos-|x-win)?exe|msdos-windows|x-msdos-program)$/,
 			file  : /^.*$/
 		},
-		allowedTypes : ["image", "text", "pdf", "doc", "xls", "ppt", "zip", "audio", "video", "exec", "file"],
+		allowedTypes : ["image", "text", "pdf", "doc", "xls", "ppt", "zip", "audio", "video", "file"],
 		maxSize : 100 * 1024 * 1024
 
 	}
