@@ -42,12 +42,14 @@
 				<div class="form">
 					<div class="indicator"></div>
 					<textarea class="message" placeholder="Üzenet"></textarea>
-					<div class="fileuploader">
-						<input type="file" class="file" <% if (CHAT.Config.fileTransfer.multiple){ %>multiple<% } %> />
-						<span class="trigger">
-							<span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
-						</span>
-					</div>
+					<% if (CHAT.Config.fileTransfer.allowed){ %>
+						<div class="fileuploader">
+							<input type="file" class="file" <% if (CHAT.Config.fileTransfer.multiple){ %>multiple<% } %> />
+							<span class="trigger">
+								<span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
+							</span>
+						</div>
+					<% } %>
 					<div class="submitmode">
 						<label><input class="send-switch" type="checkbox" value="1" checked /> Küldés enter megnyomására</label>
 						<button class="send hidden-weak">Küldés</button>

@@ -7,8 +7,11 @@ var CHAT = global.CHAT || {};
  * @type Object
  */
 CHAT.Config = {
+
 	messageSend : {
+
 		escapeHTML : true,
+		replaceDisable : /`(.*)`/,
 		emoticonReplacement : true,
 		emoticons : {
 			':)'       : '/images/emoticons/01.gif',
@@ -31,15 +34,17 @@ CHAT.Config = {
 		},
 		bbCodeReplacement : true,
 		bbCodes : [
-			[/`(.*)`/,                         false],
 			[/\*\*(.*?)\*\*/g,                 '<strong>$1</strong>'],
 			[/__(.*?)__/g,                     '<em>$1</em>'],
 			[/--(.*?)--/g,                     '<span style="text-decoration: line-through;">$1</span>'],
 			[/\[color=(.*?)](.*?)\[\/color]/g, '<span style="color: $1;">$2</span>']
 		],
 		defaultSendMode : 'enter'  // 'enter'|'button'
+
 	},
+
 	fileTransfer : {
+
 		allowed : true,
 		store : 'upload',  // 'upload'|'base64'|'zip'
 		multiple : true,
@@ -58,6 +63,7 @@ CHAT.Config = {
 		},
 		allowedTypes : ["image", "text", "pdf", "doc", "xls", "ppt", "zip", "audio", "video", "exec", "file"],
 		maxSize : 100 * 1024 * 1024
+
 	}
 };
 
