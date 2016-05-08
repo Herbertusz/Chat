@@ -54,7 +54,10 @@ CHAT.DOM = {
 	dropFile : '.drop-file',
 	indicator : '.indicator',
 	sendButton : '.send',
-	sendSwitch : '.send-switch'
+	sendSwitch : '.send-switch',
+	error : '.error',
+	errorList : '.error .error-list',
+	errorClose : '.error .error-close'
 };
 
 /**

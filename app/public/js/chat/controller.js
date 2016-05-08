@@ -39,22 +39,27 @@ $(document).ready(function(){
 		CHAT.Events.Client.forceLeaveRoom($(this));
 	});
 
+	// Hibaüzenet eltüntetése
+	$(CHAT.DOM.box).find(CHAT.DOM.errorClose).click(function(){
+		$(CHAT.DOM.box).find(CHAT.DOM.error).hide();
+	});
+
 	// Tétlen állapot
 	$(CHAT.DOM.idleCheck).idleTimer(CHAT.timer.idle);
 	$(CHAT.DOM.idleCheck).on("idle.idleTimer", function(){
-		const connectedUsers = CHAT.Method.changeCurrentStatus("idle");
+		const connectedUsers = CHAT.Method.changeUserStatus("idle");
 		CHAT.Method.updateStatuses(connectedUsers);
 		CHAT.socket.emit('statusChanged', connectedUsers);
 	});
 	$(CHAT.DOM.idleCheck).on("active.idleTimer", function(){
-		const connectedUsers = CHAT.Method.changeCurrentStatus("notidle");
+		const connectedUsers = CHAT.Method.changeUserStatus("notidle");
 		CHAT.Method.updateStatuses(connectedUsers);
 		CHAT.socket.emit('statusChanged', connectedUsers);
 	});
 
 	// Státusz megváltoztatása
 	$(CHAT.DOM.online).find(CHAT.DOM.statusChange).change(function(){
-		const connectedUsers = CHAT.Method.changeCurrentStatus($(this).val());
+		const connectedUsers = CHAT.Method.changeUserStatus($(this).val());
 		CHAT.Method.updateStatuses(connectedUsers);
 		CHAT.socket.emit('statusChanged', connectedUsers);
 	});

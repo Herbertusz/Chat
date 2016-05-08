@@ -196,6 +196,7 @@ module.exports = function(server, ioSession){
 
 		// Kidobás csatornából emitter
 		socket.on('roomForceLeave', function(data){
+			roomUpdate('remove', data.roomName, data.userId);
 			socket.broadcast.emit('roomForceLeaved', {
 				triggerId : data.triggerId,
 				userId : data.userId,
