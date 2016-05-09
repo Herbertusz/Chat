@@ -38,6 +38,10 @@
 					<span class="close" title="Kilépés"></span>
 					<button class="add-user hidden-weak">Hozzáadás</button>
 				</div>
+				<div class="error hidden-weak">
+					<div class="error-list">dasdasd</div>
+					<div class="error-close"></div>
+				</div>
 				<ul class="list drop-file"></ul>
 				<div class="form">
 					<div class="indicator"></div>
@@ -51,8 +55,15 @@
 						</div>
 					<% } %>
 					<div class="submitmode">
-						<label><input class="send-switch" type="checkbox" value="1" checked /> Küldés enter megnyomására</label>
-						<button class="send hidden-weak">Küldés</button>
+						<label>
+							<input class="send-switch" type="checkbox" value="1"
+								<% if (CHAT.Config.messageSend.defaultSendMode === 'enter'){ %>checked<% } %>
+							/>
+							Küldés enter megnyomására
+						</label>
+						<button class="send <% if (CHAT.Config.messageSend.defaultSendMode === 'enter'){ %>hidden-weak<% } %>">
+							Küldés
+						</button>
 					</div>
 				</div>
 			</div>

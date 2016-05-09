@@ -4,9 +4,45 @@
 
 var CHAT = window.CHAT || {};
 
-CHAT.Lang = {
-	labels : {
-		"systemJoin" : (userName) => `${userName} csatlakozott!`
+/**
+ * Rendszer által kiírt szövegek
+ * @type Object
+ */
+CHAT.Labels = {
+	// Rendszerüzenetek
+	'system' : {
+		'join' : (userName) =>
+			`${userName} csatlakozott!`,
+		'leave' : (userName) =>
+			`${userName} kilépett!`,
+		'forceJoinYou' : (userName) =>
+			`${userName} hozzáadott ehhez a csatornához!`,
+		'forceJoinOther' : (userName, otherUserName) =>
+			`${userName} hozzáadta ${otherUserName} felhasználót ehhez a csatornához!`,
+		'forceLeaveYou' : (userName) =>
+			`${userName} kidobott!`,
+		'forceLeaveOther' : (userName, otherUserName) =>
+			`${userName} kidobta ${otherUserName} felhasználót!`
+	},
+	// Fájlátvitel
+	'file' : {
+		'send' : () => `Fájlküldés...`,
+		'get' : () => `Fájlfogadás...`,
+		'sendEnd' : () => `Fájlküldés befejeződött`,
+		'getEnd' : () => `Fájlfogadás befejeződött`,
+		'percent' : (percent) => `${percent}%`
+	},
+	// Üzenetátvitel
+	'message' : {
+		'stillWrite' : (userName) => `${userName} éppen ír...`,
+		'stopWrite' : (userName) => `${userName} szöveget írt be`
+	},
+	// Hibaüzenetek
+	'error' : {
+		'fileSize' : (size, maxSize) =>
+			`Túl nagy a fájl mérete (${HD.Number.displaySize(size)}, max: ${HD.Number.displaySize(maxSize)})`,
+		'fileType' : (type, allowedTypes) =>
+			`Nem megfelelő a fájl típusa (${type}, megengedett typusok: ${allowedTypes.join(', ')})`
 	}
 };
 
@@ -56,36 +92,10 @@ CHAT.Method = {
 		const userName = CHAT.Method.getUserName(userId);
 		const otherUserName = CHAT.Method.getUserName(otherUserId);
 
-		if (type === 'join'){
-			$list.append(`
-				<li class="highlighted">${userName} csatlakozott!</li>
-			`);
-		}
-		else if (type === 'leave'){
-			$list.append(`
-				<li class="highlighted">${userName} kilépett!</li>
-			`);
-		}
-		else if (type === 'forcejoinyou'){
-			$list.append(`
-				<li class="highlighted">${userName} hozzáadott ehhez a csatornához!</li>
-			`);
-		}
-		else if (type === 'forcejoinother'){
-			$list.append(`
-				<li class="highlighted">${userName} hozzáadta ${otherUserName} felhasználót ehhez a csatornához!</li>
-			`);
-		}
-		else if (type === 'forceleaveyou'){
-			$list.append(`
-				<li class="highlighted">${userName} kidobott!</li>
-			`);
-		}
-		else if (type === 'forceleaveother'){
-			$list.append(`
-				<li class="highlighted">${userName} kidobta ${otherUserName} felhasználót!</li>
-			`);
-		}
+		$list.append(`
+			<li class="highlighted">${CHAT.Labels.system[type](userName, otherUserName)}</li>
+		`);
+
 		CHAT.Util.scrollToBottom($box);
 	},
 
@@ -109,14 +119,13 @@ CHAT.Method = {
 	 * }
 	 */
 	appendFile : function($box, data, highlighted){
-		var $element, $listItem, tpl;
-		var $list = $box.find(CHAT.DOM.list);
-		let imgSrc;
+		let $element, tpl, imgSrc;
+		const $list = $box.find(CHAT.DOM.list);
 		const time = HD.DateTime.format('H:i:s', data.time);
 		const userName = CHAT.Method.getUserName(data.userId);
 		highlighted = HD.Misc.funcParam(highlighted, false);
 
-		$listItem = $(`
+		const $listItem = $(`
 			<li>
 				<span class="time">${time}</span>
 				<strong class="${highlighted ? "self" : ""}">${CHAT.Util.escapeHtml(userName)}</strong>:
@@ -162,15 +171,14 @@ CHAT.Method = {
 	 */
 	progressbar : function($box, direction, percent, barId){
 		const $list = $box.find(CHAT.DOM.list);
-		const label = (direction === "send") ? 'Fájlküldés' : 'Fájlfogadás';
 		const tpl = `
 			<li>
 				<div class="progressbar" data-id="{BARID}">
-					<span class="label">${label}...</span>
+					<span class="label">${CHAT.Labels.file[direction]()}</span>
 					<span class="linecontainer">
 						<span class="line" style="width: ${percent}%"></span>
 					</span>
-					<span class="numeric">${percent}%</span>
+					<span class="numeric">${CHAT.Labels.file.percent(percent)}</span>
 				</div>
 			</li>
 		`;
@@ -184,11 +192,11 @@ CHAT.Method = {
 		else {
 			const $progressbar = $list.find('.progressbar').filter(`[data-id="${barId}"]`);
 			if (percent === 100){
-				$progressbar.find('.label').html(`${label} befejeződött`);
+				$progressbar.find('.label').html(CHAT.Labels.file[`${direction}End`]());
 				$progressbar.find('.line').addClass('finished');
 			}
 			$progressbar.find('.line').css("width", `${percent}%`);
-			$progressbar.find('.numeric').html(`${percent}%`);
+			$progressbar.find('.numeric').html(CHAT.Labels.file.percent(percent));
 			return null;
 		}
 	},
@@ -241,7 +249,7 @@ CHAT.Method = {
 	 */
 	stillWrite : function($box, userId){
 		const userName = CHAT.Method.getUserName(userId);
-		$box.find(CHAT.DOM.indicator).html(`${userName} éppen ír...`);
+		$box.find(CHAT.DOM.indicator).html(CHAT.Labels.message.stillWrite(userName));
 	},
 
 	/**
@@ -254,7 +262,7 @@ CHAT.Method = {
 		const userName = CHAT.Method.getUserName(userId);
 
 		if (message.trim().length > 0){
-			$box.find(CHAT.DOM.indicator).html(`${userName} szöveget írt be`);
+			$box.find(CHAT.DOM.indicator).html(CHAT.Labels.message.stopWrite(userName));
 		}
 		else {
 			$box.find(CHAT.DOM.indicator).html('');
@@ -266,11 +274,18 @@ CHAT.Method = {
 	 * @param {jQuery} $box
 	 * @param {Array} errors
 	 */
-	showError : function($box, errors){ // TODO
-		$box.find(CHAT.DOM.indicator).html(errors.join(", "));
+	showError : function($box, errors){
+		const errorMessages = [];
+		errors.forEach(function(error){
+			errorMessages.push(CHAT.Labels.error[error.type](error.value, error.restrict));
+		});
+		$box.find(CHAT.DOM.errorList).html(errorMessages.join("<br />"));
+		$box.find(CHAT.DOM.error).show();
 		setTimeout(function(){
-			$box.find(CHAT.DOM.indicator).html('');
-		}, 4000);
+			$box.find(CHAT.DOM.error).fadeOut(3000, function(){
+				$box.find(CHAT.DOM.errorList).html('');
+			});
+		}, 6000);
 	},
 
 	/**
@@ -354,7 +369,7 @@ CHAT.Method = {
 	 * @param {Object} connectedUsers
 	 */
 	updateStatuses : function(connectedUsers){
-		var onlineUserStatuses = {};
+		const onlineUserStatuses = {};
 		let socketId, isIdle;
 
 		for (socketId in connectedUsers){
@@ -384,7 +399,7 @@ CHAT.Method = {
 	 * @param {String} newStatus
 	 * @returns {Object}
 	 */
-	changeCurrentStatus : function(newStatus){
+	changeUserStatus : function(newStatus){
 		let socketId;
 		let thisSocket = null;
 		const connectedUsers = $(CHAT.DOM.online).data("connectedUsers");
@@ -409,6 +424,24 @@ CHAT.Method = {
 		}
 		$(CHAT.DOM.online).data("connectedUsers", connectedUsers);
 		return connectedUsers;
+	},
+
+	/**
+	 * Doboz aktiválása/inaktiválása
+	 * @param {jQuery} $box
+	 * @param {String} newStatus "enabled"|"disabled"
+	 */
+	changeBoxStatus : function($box, newStatus){
+		if (newStatus === "enabled"){
+			$box.find(CHAT.DOM.message).prop("disabled", false);
+			$box.find(CHAT.DOM.userThrow).removeClass("disabled");
+			$box.removeAttr('data-disabled');
+		}
+		else if (newStatus === "disabled"){
+			$box.find(CHAT.DOM.message).prop("disabled", true);
+			$box.find(CHAT.DOM.userThrow).addClass("disabled");
+			$box.attr('data-disabled', 'true');
+		}
 	},
 
 	/**
@@ -454,7 +487,7 @@ CHAT.Method = {
 				 * 	}
 				 */
 				resp.messages.forEach(function(msgData){
-					var data;
+					let data;
 					const timestamp = (new Date(msgData.created.replace(/ /g, 'T'))).getTime() / 1000; // FIXME: csúszás
 
 					if (!msgData.fileId){
@@ -463,7 +496,7 @@ CHAT.Method = {
 							time : timestamp,
 							message : msgData.message,
 							roomName : roomName
-						});
+						}, msgData.userId === CHAT.USER.id);
 					}
 					else {
 						data = {

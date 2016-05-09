@@ -110,6 +110,7 @@ aside.online {
 	height: 480px;
 
 	.chat {
+		position: relative;
 		float: left;
 		margin-left: 10px;
 		width: 300px;
@@ -162,6 +163,32 @@ aside.online {
 				position: absolute;
 				right: 18px;
 				top: 32px;
+			}
+		}
+
+		.error {
+			position: absolute;
+			left: 0;
+			top: 33px;
+			padding: 5px;
+			width: 93%;
+			height: auto;
+			border-radius: 7px;
+			overflow: hidden;
+			//box-shadow: 2px 2px 5px 1px #aa0000;
+			background-color: #aa0000;
+			color: #ffffff;
+
+			.error-list {
+				float: left;
+				width: 80%;
+			}
+
+			.error-close {
+				@include cross(12px, 12px, 2px, 5px, 0, #ffffff);
+				margin: 5px;
+				float: right;
+				cursor: pointer;
 			}
 		}
 

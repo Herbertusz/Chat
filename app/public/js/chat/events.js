@@ -20,7 +20,7 @@ CHAT.Events = {
 		 * Csatorna létrehozása
 		 */
 		createRoom : function(){
-			var roomData = {
+			const roomData = {
 				name : "",
 				userIds : [CHAT.USER.id],
 				starter : CHAT.USER.id
@@ -29,7 +29,7 @@ CHAT.Events = {
 			const $users = $box.find(CHAT.DOM.users);
 
 			$(CHAT.DOM.online).find(CHAT.DOM.selectedUsers).each(function(){
-				var userId = Number($(this).val());
+				const userId = Number($(this).val());
 				roomData.userIds.push(userId);
 			});
 			CHAT.Method.generateUserList($users, roomData.userIds);
@@ -133,16 +133,16 @@ CHAT.Events = {
 		 * @param {Object} files
 		 */
 		sendFile : function($box, files){
-			var store = CHAT.Config.fileTransfer.store;
-			var types = CHAT.Config.fileTransfer.types;
-			var allowedTypes = CHAT.Config.fileTransfer.allowedTypes;
-			var maxSize = CHAT.Config.fileTransfer.maxSize;
+			const store = CHAT.Config.fileTransfer.store;
+			const types = CHAT.Config.fileTransfer.types;
+			const allowedTypes = CHAT.Config.fileTransfer.allowedTypes;
+			const maxSize = CHAT.Config.fileTransfer.maxSize;
 
 			if (!CHAT.Config.fileTransfer.multiple){
 				files = [files[0]];
 			}
 			else {
-				files = Array.prototype.slice.call(files);
+				files = Array.from(files);
 			}
 
 			files.forEach(function(rawFile){
@@ -163,7 +163,11 @@ CHAT.Events = {
 				};
 
 				if (rawFile.size > maxSize){
-					errors.push("size");
+					errors.push({
+						type : "fileSize",
+						value : rawFile.size,
+						restrict : maxSize
+					});
 				}
 				for (i in types){
 					if (HD.String.createRegExp(types[i]).test(rawFile.type)){
@@ -172,7 +176,11 @@ CHAT.Events = {
 					}
 				}
 				if (allowedTypes.indexOf(fileData.type) === -1){
-					errors.push("type");
+					errors.push({
+						type : "fileType",
+						value : fileData.type,
+						restrict : allowedTypes
+					});
 				}
 
 				if (errors.length === 0){
@@ -332,26 +340,38 @@ CHAT.Events = {
 		roomForceJoined : function(extData){
 			let $box, $users;
 
+			$box = $(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
+
 			if (extData.userId === CHAT.USER.id){
-				// Létre kell hozni a dobozt a csatornához
-				$box = CHAT.Util.cloneElement($(CHAT.DOM.cloneBox), $(CHAT.DOM.container));
-				$users = $box.find(CHAT.DOM.users);
-				$box.attr("data-room", extData.roomData.name);
-				CHAT.Method.generateUserList($users, extData.roomData.userIds);
-				CHAT.Method.updateStatuses($(CHAT.DOM.online).data("connectedUsers"));
-				CHAT.Method.fillBox($box, extData.roomData.name);
-				CHAT.Method.appendSystemMessage($box, 'forcejoinyou', extData.triggerId);
+				// Csatlakoztattak a csatornához
+				if ($box.length > 0){
+					// Van a csatornához tartozó doboz (korábban ki lett dobva)
+					$users = $box.find(CHAT.DOM.users);
+					CHAT.Method.changeBoxStatus($box, 'enabled');
+					CHAT.Method.generateUserList($users, extData.roomData.userIds, true);
+					CHAT.Method.appendSystemMessage($box, 'forceJoinYou', extData.triggerId);
+				}
+				else {
+					// Létre kell hozni a dobozt a csatornához
+					$box = CHAT.Util.cloneElement($(CHAT.DOM.cloneBox), $(CHAT.DOM.container));
+					$users = $box.find(CHAT.DOM.users);
+					$box.attr("data-room", extData.roomData.name);
+					CHAT.Method.updateStatuses($(CHAT.DOM.online).data("connectedUsers"));
+					CHAT.Method.fillBox($box, extData.roomData.name);
+					CHAT.Method.generateUserList($users, extData.roomData.userIds);
+					CHAT.Method.appendSystemMessage($box, 'forceJoinYou', extData.triggerId);
+				}
 				CHAT.socket.emit('roomJoin', {
 					userId : CHAT.USER.id,
 					roomName : extData.roomData.name
 				});
 			}
 			else {
-				// Csatlakozott a csatornához
+				// Új user csatlakozott a csatornához
 				$box = $(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
 				$users = $box.find(CHAT.DOM.users);
-				CHAT.Method.appendSystemMessage($box, 'forcejoinother', extData.triggerId, extData.userId);
 				CHAT.Method.generateUserList($users, extData.roomData.userIds, true);
+				CHAT.Method.appendSystemMessage($box, 'forceJoinOther', extData.triggerId, extData.userId);
 			}
 		},
 
@@ -368,17 +388,16 @@ CHAT.Events = {
 			const $box = $(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
 
 			if (extData.userId === CHAT.USER.id){
-				CHAT.Method.appendSystemMessage($box, 'forceleaveyou', extData.triggerId);
+				CHAT.Method.appendSystemMessage($box, 'forceLeaveYou', extData.triggerId);
 				CHAT.socket.emit('roomLeave', {
 					silent : true,
 					userId : CHAT.USER.id,
 					roomName : extData.roomData.name
 				});
-				$box.find(CHAT.DOM.message).prop("disabled", true);
-				$box.find(CHAT.DOM.userThrow).addClass("disabled");
+				CHAT.Method.changeBoxStatus($box, 'disabled');
 			}
 			else {
-				CHAT.Method.appendSystemMessage($box, 'forceleaveother', extData.triggerId, extData.userId);
+				CHAT.Method.appendSystemMessage($box, 'forceLeaveOther', extData.triggerId, extData.userId);
 			}
 			$box.find(`[data-id="${extData.userId}"]`).remove();
 		},
@@ -471,8 +490,8 @@ CHAT.Events = {
 		 * }
 		 */
 		typeMessage : function(data){
-			var $box = $(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`);
-			var writing = CHAT.timer.writing;
+			const $box = $(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`);
+			const writing = CHAT.timer.writing;
 
 			if ($box.length > 0){
 				writing.event = true;

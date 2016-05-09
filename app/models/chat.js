@@ -85,7 +85,7 @@ var Model = {
 	},
 
 	setMessage : function(data, callback){
-		var messageId;
+		let messageId;
 		DB.insert('chat_messages', {
 			'user_id' : data.userId,
 			'room' : data.room,
@@ -100,8 +100,8 @@ var Model = {
 	},
 
 	setFile : function(data, callback){
-		var This = this;
-		var messageForFile = function(fdata, fileId){
+		const This = this;
+		const messageForFile = function(fdata, fileId){
 			This.setMessage({
 				'userId' : fdata.userId,
 				'room' : fdata.room,

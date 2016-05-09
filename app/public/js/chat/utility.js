@@ -54,7 +54,10 @@ CHAT.DOM = {
 	dropFile : '.drop-file',
 	indicator : '.indicator',
 	sendButton : '.send',
-	sendSwitch : '.send-switch'
+	sendSwitch : '.send-switch',
+	error : '.error',
+	errorList : '.error .error-list',
+	errorClose : '.error .error-close'
 };
 
 /**
@@ -91,7 +94,7 @@ CHAT.Util = {
 	 * @returns {String}
 	 */
 	escapeHtml : function(string){
-		var entityMap = {
+		const entityMap = {
 			"&" : "&amp;",
 			"<" : "&lt;",
 			">" : "&gt;"
@@ -110,7 +113,7 @@ CHAT.Util = {
 	 * @param {jQuery} $box doboz
 	 */
 	scrollToBottom : function($box){
-		var height = 0;
+		let height = 0;
 		const $list = $box.find(CHAT.DOM.list);
 
 		$list.find('li').each(function(){

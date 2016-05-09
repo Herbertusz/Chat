@@ -21,7 +21,7 @@ module.exports = function(server, ioSession){
 	 *		...
 	 * }
 	 */
-	var connectedUsers = {};
+	let connectedUsers = {};
 
 	/**
 	 * Futó chat-csatornák
@@ -35,14 +35,14 @@ module.exports = function(server, ioSession){
 	 *		...
 	 * ]
 	 */
-	var rooms = [];
+	const rooms = [];
 
 	/**
 	 * Csatorna adatainak lekérése név alapján
 	 * @param {String} name
 	 * @returns {Object}
 	 */
-	var getRoom = function(name){
+	const getRoom = function(name){
 		return rooms.find(function(room){
 			return room.name === name;
 		});
@@ -52,9 +52,9 @@ module.exports = function(server, ioSession){
 	 * Csatornák törlése, melyekben nincs user, vagy csak offline userek vannak
 	 * @returns {Array<String>} törölt csatornák azonosítói
 	 */
-	var roomGarbageCollect = function(){
-		var deleted = [];
-		var onlineUserIds = [];
+	const roomGarbageCollect = function(){
+		const deleted = [];
+		const onlineUserIds = [];
 		let key;
 
 		for (key in connectedUsers){
@@ -75,7 +75,7 @@ module.exports = function(server, ioSession){
 	 * @param {String} roomName csatorna azonosító
 	 * @param {Number} userId user azonosító
 	 */
-	var roomUpdate = function(operation, roomName, userId){
+	const roomUpdate = function(operation, roomName, userId){
 		let userIdIndex = -1;
 
 		if (!roomName){
@@ -105,12 +105,12 @@ module.exports = function(server, ioSession){
 		}
 	};
 
-	var io = require('socket.io')(server);
+	const io = require('socket.io')(server);
 	io.of('/chat').use(ioExpressSession(ioSession));
 
 	// Belépés a chat-be
 	io.of('/chat').on('connection', function(socket){
-		var userData = null;
+		let userData = null;
 		const session = socket.handshake.session;
 
 		if (session.login && session.login.loginned){
@@ -196,6 +196,7 @@ module.exports = function(server, ioSession){
 
 		// Kidobás csatornából emitter
 		socket.on('roomForceLeave', function(data){
+			roomUpdate('remove', data.roomName, data.userId);
 			socket.broadcast.emit('roomForceLeaved', {
 				triggerId : data.triggerId,
 				userId : data.userId,

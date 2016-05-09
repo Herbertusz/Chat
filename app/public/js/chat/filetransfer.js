@@ -41,14 +41,13 @@ CHAT.FileTransfer = {
 			 * }
 			 */
 			clientSend : function($box, data, reader, rawFile){
-				var barId;
 				const fileData = JSON.stringify(data);
 				const xhr = new XMLHttpRequest();
 				xhr.open("POST", "/chat/uploadfile");
 				xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 				xhr.setRequestHeader('X-File-Data', encodeURIComponent(fileData));
 				xhr.setRequestHeader('Content-Type', 'application/octet-stream');
-				barId = CHAT.Method.progressbar($box, "send", 0, null);
+				const barId = CHAT.Method.progressbar($box, "send", 0, null);
 				xhr.upload.onprogress = function(event){
 					if (event.lengthComputable){
 						const percent = event.loaded / event.total;

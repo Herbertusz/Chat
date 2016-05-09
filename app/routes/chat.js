@@ -36,16 +36,14 @@ router.post('/getroommessages', function(req, res){
 
 router.post('/uploadfile', function(req, res){
 
-	var data, userId, fileName, fileStream, uploadedSize, fileSize;
-	var io = req.app.get('io');
-
 	if (req.xhr){
-		data = JSON.parse(decodeURIComponent(req.header('X-File-Data')));
-		userId = Number.parseInt(data.userId);
-		fileName = `${Date.now()}-${HD.Math.rand(100, 999)}.${data.fileData.name.split('.').pop()}`;
-		fileStream = fs.createWriteStream(`${appRoot}/app/public/upload/${fileName}`);
-		uploadedSize = 0;
-		fileSize = Number.parseInt(data.fileData.size);
+		let uploadedSize = 0;
+		const io = req.app.get('io');
+		const data = JSON.parse(decodeURIComponent(req.header('X-File-Data')));
+		const userId = Number.parseInt(data.userId);
+		const fileName = `${Date.now()}-${HD.Math.rand(100, 999)}.${data.fileData.name.split('.').pop()}`;
+		const fileStream = fs.createWriteStream(`${appRoot}/app/public/upload/${fileName}`);
+		const fileSize = Number.parseInt(data.fileData.size);
 
 		req.on('data', function(file){
 			const first = (uploadedSize === 0);
@@ -72,7 +70,6 @@ router.post('/uploadfile', function(req, res){
 			});
 		});
 	}
-
 
 });
 

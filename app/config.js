@@ -37,7 +37,11 @@ CHAT.Config = {
 			[/\*\*(.*?)\*\*/g,                 '<strong>$1</strong>'],
 			[/__(.*?)__/g,                     '<em>$1</em>'],
 			[/--(.*?)--/g,                     '<span style="text-decoration: line-through;">$1</span>'],
-			[/\[color=(.*?)](.*?)\[\/color]/g, '<span style="color: $1;">$2</span>']
+			[/\[color=(.*?)](.*?)\[\/color]/g, '<span style="color: $1;">$2</span>'],
+			[
+				/((https?:)?\/\/(www\.)?([-a-zA-Z0-9@:%._\+~#=]{2,256})\.([a-z]{2,6})\b([-a-zA-Z0-9@:%_\+.~#?&\/=]*))/g,
+				'<a href="$1" target="_blank">$1</a>'
+			]
 		],
 		defaultSendMode : 'enter'  // 'enter'|'button'
 
@@ -61,8 +65,8 @@ CHAT.Config = {
 			exec  : /^application\/(octet-stream|x-msdownload|(x-|dos-|x-win)?exe|msdos-windows|x-msdos-program)$/,
 			file  : /^.*$/
 		},
-		allowedTypes : ["image", "text", "pdf", "doc", "xls", "ppt", "zip", "audio", "video", "exec", "file"],
-		maxSize : 100 * 1024 * 1024
+		allowedTypes : ["image", "text", "pdf", "doc", "xls", "ppt", "zip", "audio", "video", "file"],
+		maxSize : 10 * 1024 * 1024
 
 	}
 };
