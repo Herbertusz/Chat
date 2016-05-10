@@ -64,6 +64,7 @@ var Model = {
 				cf.base64 AS fileBase64,
 				cf.zip AS fileZip,
 				cf.url AS fileUrl,
+				cf.deleted AS fileDeleted,
 				cu.username AS userName
 			FROM
 				chat_messages cm
@@ -79,6 +80,7 @@ var Model = {
 			if (error) throw error;
 			rows.forEach(function(row, i){
 				rows[i].created = HD.DateTime.format('Y-m-d H:i:s', Math.floor(Date.parse(row.created) / 1000));
+				rows[i].fileDeleted = !!rows[i].fileDeleted;
 			});
 			callback.call(this, rows);
 		});
@@ -120,7 +122,8 @@ var Model = {
 				'type' : data.fileData.type,
 				'main_type' : data.mainType,
 				'store' : data.store,
-				'base64' : data.file
+				'base64' : data.file,
+				'deleted' : 0
 			}, function(error, result){
 				if (error) throw error;
 				messageForFile(data, result.insertId);
@@ -133,7 +136,8 @@ var Model = {
 				'type' : data.fileData.type,
 				'main_type' : data.mainType,
 				'store' : data.store,
-				'url' : data.file
+				'url' : data.file,
+				'deleted' : 0
 			}, function(error, result){
 				if (error) throw error;
 				messageForFile(data, result.insertId);
@@ -152,7 +156,8 @@ var Model = {
 				'size' : data.fileData.size,
 				'type' : data.fileData.type,
 				'main_type' : data.mainType,
-				'store' : data.store
+				'store' : data.store,
+				'deleted' : 0
 			}, function(error, result){
 				if (error) throw error;
 				messageForFile(data, result.insertId);

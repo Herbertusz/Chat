@@ -122,10 +122,6 @@ module.exports = function(server, ioSession){
 				isIdle : false
 			};
 		}
-		else {
-			// vendég generálása
-			// ...
-		}
 		if (userData){
 			// csatlakozás emitter
 			connectedUsers[socket.id] = userData;

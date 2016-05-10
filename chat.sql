@@ -1,9 +1,8 @@
 /*
-SQLyog Ultimate v9.63
+SQLyog Ultimate v9.63 
 MySQL - 5.6.20 : Database - chat
 *********************************************************************
-*/
-
+*/
 
 /*!40101 SET NAMES utf8 */;
 
@@ -25,6 +24,7 @@ CREATE TABLE `chat_files` (
   `base64` mediumtext CHARACTER SET utf8 COLLATE utf8_unicode_ci,
   `zip` mediumblob,
   `url` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `deleted` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
