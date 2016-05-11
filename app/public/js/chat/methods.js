@@ -182,7 +182,6 @@ CHAT.Method = {
 	 * }
 	 */
 	appendDeletedFile : function($box, data, highlighted){
-		let $element, tpl, imgSrc;
 		const $list = $box.find(CHAT.DOM.list);
 		const time = HD.DateTime.format('H:i:s', data.time);
 		const userName = CHAT.Method.getUserName(data.userId);
@@ -197,12 +196,8 @@ CHAT.Method = {
 			</li>
 		`);
 
-		const img = document.createElement('img');
-		img.onload = function(){
-			$list.append($listItem);
-			CHAT.Util.scrollToBottom($box);
-		};
-		img.src = imgSrc;
+		$list.append($listItem);
+		CHAT.Util.scrollToBottom($box);
 	},
 
 	/**
@@ -329,7 +324,7 @@ CHAT.Method = {
 			$box.find(CHAT.DOM.error).fadeOut(3000, function(){
 				$box.find(CHAT.DOM.errorList).html('');
 			});
-		}, 6000);
+		}, CHAT.Config.error.messageWait);
 	},
 
 	/**

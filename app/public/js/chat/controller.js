@@ -41,7 +41,7 @@ $(document).ready(function(){
 
 	// Hibaüzenet eltüntetése
 	$(CHAT.DOM.box).find(CHAT.DOM.errorClose).click(function(){
-		$(CHAT.DOM.box).find(CHAT.DOM.error).hide();
+		$(this).parents(CHAT.DOM.box).find(CHAT.DOM.error).hide();
 	});
 
 	// Tétlen állapot
@@ -96,6 +96,7 @@ $(document).ready(function(){
 		// event.preventDefault();
 	});
 
+	// Fájlküldés (drag-n-drop)
 	$(CHAT.DOM.box).find(CHAT.DOM.dropFile).on(
 		'drag dragstart dragend dragover dragenter dragleave drop',
 		function(event){
@@ -104,33 +105,16 @@ $(document).ready(function(){
 		}
 	)
 	.on('dragover dragenter', function(){
-		$(this).addClass('active');
+		$(this).addClass('drop-active');
 	})
 	.on('dragleave dragend drop', function(){
-		$(this).removeClass('active');
+		$(this).removeClass('drop-active');
 	})
 	.on('drop', function(event){
 		const $box = $(this).parents('.chat');
 		const files = event.originalEvent.dataTransfer.files;
 		CHAT.Events.Client.sendFile($box, files);
 	});
-
-	/*
-	$('body').on('dragover', function(event){
-		event.stopPropagation();
-		event.preventDefault();
-
-	 	const $dropArea = $(CHAT.DOM.box).find(CHAT.DOM.dropFile);
-
-		$dropArea.addClass("active");
-		if (CHAT.timer.drag.timerID){
-			window.clearTimeout(CHAT.timer.drag.timerID);
-		}
-		CHAT.timer.drag.timerID = window.setTimeout(function(){
-			$dropArea.removeClass("active");
-		}, CHAT.timer.drag.interval);
-	});
-	*/
 
 	// Üzenet gépelése
 	$(CHAT.DOM.box).find(CHAT.DOM.message).keyup(function(event){

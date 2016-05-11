@@ -8,6 +8,10 @@ var CHAT = global.CHAT || {};
  */
 CHAT.Config = {
 
+	error : {
+		messageWait : 6000
+	},
+
 	messageSend : {
 
 		escapeHTML : true,
@@ -52,6 +56,10 @@ CHAT.Config = {
 		allowed : true,
 		store : 'upload',  // 'upload'|'base64'|'zip'
 		multiple : true,
+		dragndrop : {
+			allowed : true,
+			html : 'Ide húzd a fájlokat amiket át akarsz küldeni!'
+		},
 		types : {
 			image : /^image\/.*$/,
 			text  : /^(text\/.*|.*javascript|.*ecmascript)$/,
@@ -69,6 +77,7 @@ CHAT.Config = {
 		maxSize : 10 * 1024 * 1024
 
 	}
+
 };
 
 exports.Config = CHAT.Config;

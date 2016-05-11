@@ -39,10 +39,13 @@
 					<button class="add-user hidden-weak">Hozzáadás</button>
 				</div>
 				<div class="error hidden-weak">
-					<div class="error-list">dasdasd</div>
+					<div class="error-list"></div>
 					<div class="error-close"></div>
 				</div>
-				<ul class="list drop-file"></ul>
+				<div class="<% if (CHAT.Config.fileTransfer.dragndrop.allowed){ %>drop-file<% } %>">
+					<div class="drop-sign"><%= CHAT.Config.fileTransfer.dragndrop.html %></div>
+					<ul class="list"></ul>
+				</div>
 				<div class="form">
 					<div class="indicator"></div>
 					<textarea class="message" placeholder="Üzenet"></textarea>
