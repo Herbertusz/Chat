@@ -21,13 +21,14 @@ app = express();
 
 app.set('views', `${__dirname}/views`);
 app.set('view engine', 'ejs');
+app.set('public path', `${__dirname}/public`);
 
 app.use(favicon(`${__dirname}/public/favicon.png`));
 // app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : false}));
 app.use(cookieParser());
-app.use(express.static(`${__dirname}/public`));
+app.use(express.static(app.get('public path')));
 
 session = sessionModule({
 	secret : "Kh5Cwxpe8wCXNaWJ075g",
@@ -45,7 +46,7 @@ require(`${appRoot}/app/layout.js`)(app);
 
 // Websocket
 server = http.createServer(app);
-io = require(`${appRoot}/app/websocket.js`)(server, session);
+io = require(`${appRoot}/app/websocket.js`)(server, session, app);
 app.set('io', io);
 
 // Route

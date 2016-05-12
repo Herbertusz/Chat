@@ -2,11 +2,12 @@
 
 'use strict';
 
+var fs = require('fs');
 var ioExpressSession = require('socket.io-express-session');
 var Model = require(`${appRoot}/app/models/chat.js`);
 var HD = require(`${appRoot}/libs/hd/hd.math.js`);
 
-module.exports = function(server, ioSession){
+module.exports = function(server, ioSession, app){
 
 	/**
 	 * Chat-be belépett userek
@@ -62,7 +63,19 @@ module.exports = function(server, ioSession){
 		}
 		rooms.forEach(function(room, index){
 			if (room.userIds.length === 0 || HD.Math.Set.intersection(room.userIds, onlineUserIds).length === 0){
-				// TODO fájlok törlése
+				// fájlok törlése
+				// TODO: Promise
+				Model.deleteFile(room.name, function(urls){
+					urls.forEach(function(url){
+						const path = `${app.get('public path')}/${url}`;
+						fs.access(path, fs.W_OK, function(error){
+							if (!error){
+								fs.unlink(path, function(){});
+							}
+						});
+					});
+				});
+
 				deleted.push(room.name);
 				rooms.splice(index, 1);
 			}

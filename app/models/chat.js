@@ -163,6 +163,38 @@ var Model = {
 				messageForFile(data, result.insertId);
 			});
 		}
+	},
+
+	deleteFile : function(roomName, callback){
+		DB.query(`
+			SELECT
+				cf.id AS id,
+				cf.url AS fileUrl
+			FROM
+				chat_messages cm
+				LEFT JOIN chat_files cf ON cm.file_id = cf.id
+			WHERE
+				cm.room = :roomName
+		`, {
+			roomName : roomName
+		}, function(error, rows){
+			if (error) throw error;
+			const urls = [];
+			rows.forEach(function(row){
+				urls.push(row.fileUrl);
+				DB.query(`
+					UPDATE
+						chat_files
+					SET
+						deleted = 1
+					WHERE
+						id = :id
+				`, {
+					id : row.id
+				});
+			});
+			callback.call(this, urls);
+		});
 	}
 
 };

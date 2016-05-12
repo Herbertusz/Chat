@@ -68,6 +68,7 @@ router.post('/uploadfile', function(req, res){
 			res.send({
 				filePath : `upload/${fileName}`
 			});
+			fileStream.end();
 		});
 	}
 
