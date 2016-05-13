@@ -2,6 +2,7 @@
 
 'use strict';
 
+var promisify = require('es6-promisify');
 var fs = require('fs');
 var ioExpressSession = require('socket.io-express-session');
 var Model = require(`${appRoot}/app/models/chat.js`);
@@ -58,22 +59,27 @@ module.exports = function(server, ioSession, app){
 		const onlineUserIds = [];
 		let key;
 
+		// const ModelDeleteFile = promisify(Model.deleteFile);
+		const fsAccess = promisify(fs.access);
+		const fsUnlink = promisify(fs.unlink);
+
 		for (key in connectedUsers){
 			onlineUserIds.push(connectedUsers[key].id);
 		}
 		rooms.forEach(function(room, index){
 			if (room.userIds.length === 0 || HD.Math.Set.intersection(room.userIds, onlineUserIds).length === 0){
 				// fájlok törlése
-				// TODO: Promise
 				Model.deleteFile(room.name, function(urls){
-					urls.forEach(function(url){
-						const path = `${app.get('public path')}/${url}`;
-						fs.access(path, fs.W_OK, function(error){
-							if (!error){
-								fs.unlink(path, function(){});
-							}
-						});
-					});
+					for (let i = 0; i < urls.length; i++){
+						const path = `${app.get('public path')}/${urls[i]}`;
+						fsAccess(path, fs.W_OK)
+							.then(function(error){
+								if (error) throw new Error(error);
+							})
+							.then(function(){
+								fsUnlink(path);
+							});
+					}
 				});
 
 				deleted.push(room.name);
