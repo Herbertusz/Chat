@@ -228,7 +228,7 @@ module.exports = function(server, ioSession, app){
 				fileId : 0,
 				message : data.message,
 				time : data.time
-			}, function(){});
+			}, () => {});
 		});
 
 		// Fájlküldés emitter
@@ -242,7 +242,7 @@ module.exports = function(server, ioSession, app){
 				mainType : data.type,
 				file : data.file,
 				time : data.time
-			}, function(){});
+			}, () => {});
 		});
 
 		// Üzenetírás emitter

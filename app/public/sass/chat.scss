@@ -121,6 +121,14 @@ aside.online {
 			height: 30px;
 			background-color: #cccccc;
 
+			.users {
+				display: inline-block;
+				width: 260px;
+				overflow: hidden;
+				white-space: nowrap;
+				cursor: ew-resize;
+			}
+
 			.user-item:not(.cloneable) {
 				display: inline-block;
 				padding: 5px;

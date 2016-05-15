@@ -115,21 +115,7 @@ var Model = {
 			});
 		};
 
-		if (data.store === 'base64'){
-			DB.insert('chat_files', {
-				'name' : data.fileData.name,
-				'size' : data.fileData.size,
-				'type' : data.fileData.type,
-				'main_type' : data.mainType,
-				'store' : data.store,
-				'base64' : data.file,
-				'deleted' : 0
-			}, function(error, result){
-				if (error) throw error;
-				messageForFile(data, result.insertId);
-			});
-		}
-		else if (data.store === 'upload'){
+		if (data.store === 'upload'){
 			DB.insert('chat_files', {
 				'name' : data.fileData.name,
 				'size' : data.fileData.size,
@@ -137,6 +123,20 @@ var Model = {
 				'main_type' : data.mainType,
 				'store' : data.store,
 				'url' : data.file,
+				'deleted' : 0
+			}, function(error, result){
+				if (error) throw error;
+				messageForFile(data, result.insertId);
+			});
+		}
+		else if (data.store === 'base64'){
+			DB.insert('chat_files', {
+				'name' : data.fileData.name,
+				'size' : data.fileData.size,
+				'type' : data.fileData.type,
+				'main_type' : data.mainType,
+				'store' : data.store,
+				'base64' : data.file,
 				'deleted' : 0
 			}, function(error, result){
 				if (error) throw error;
