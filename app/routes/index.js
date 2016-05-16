@@ -21,16 +21,22 @@ router.get('/', function(req, res){
 
 	const db = req.app.get('db');
 
-	const cursorU = db.collection('chat_users').find();
-	const users = [];
-	cursorU.forEach(function(doc){
-		users.push(doc);
-	}, function(){
-		const cursorM = db.collection('chat_messages').find();
-		const messages = [];
-		cursorM.forEach(function(doc){
-			messages.push(doc);
-		}, function(){
+	let users, messages;
+	db.collection('chat_users').find().toArray()
+		.then(function(docs){
+			users = docs;
+		})
+		.then(function(){
+			return db.collection('chat_messages').find().toArray();
+		})
+		.then(function(docs){
+			messages = docs;
+		})
+		.catch(function(error){
+			console.log(error.name);
+			console.log(error.message);
+		})
+		.then(function(){
 			res.render('layout', {
 				page : 'index',
 				login : req.session.login ? req.session.login.loginned : false,
@@ -41,7 +47,7 @@ router.get('/', function(req, res){
 				messages : messages
 			});
 		});
-	});
+
 });
 
 module.exports = router;

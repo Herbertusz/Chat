@@ -11,8 +11,8 @@ var createDB = function(db, callback){
 	db.collection('chat_users').deleteMany({});
 	db.collection('chat_users').insertMany([
 		{"id" : 1, "username" : "Hörb",    "password" : "x", "created" : new Date("2016-05-14T22:53:00Z")},
-		{"id" : 1, "username" : "Dan",     "password" : "x", "created" : new Date("2016-05-14T23:07:00Z")},
-		{"id" : 1, "username" : "Pistike", "password" : "x", "created" : new Date("2016-05-14T23:07:00Z")}
+		{"id" : 2, "username" : "Dan",     "password" : "x", "created" : new Date("2016-05-14T23:07:00Z")},
+		{"id" : 3, "username" : "Pistike", "password" : "x", "created" : new Date("2016-05-14T23:07:00Z")}
 	], function(error, result){
 		if (error) throw error;
 		completed++;
