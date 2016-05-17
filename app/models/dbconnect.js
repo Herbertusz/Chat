@@ -1,15 +1,20 @@
 'use strict';
 
-/* global appRoot */
+var dbUrl;
 
-var DB = require(`${appRoot}/libs/db.js`);
+const dbConn = {
+	host : process.env.OPENSHIFT_MONGODB_DB_HOST || 'localhost',
+	port : process.env.OPENSHIFT_MONGODB_DB_PORT || 27017,
+	user : process.env.OPENSHIFT_MONGODB_DB_USERNAME || '',
+	pass : process.env.OPENSHIFT_MONGODB_DB_PASSWORD || '',
+	app  : process.env.OPENSHIFT_APP_NAME || 'chat'
+};
 
-DB.connect({
-	host     : process.env.OPENSHIFT_MYSQL_DB_HOST || 'localhost',
-	user     : process.env.OPENSHIFT_MYSQL_DB_USERNAME || 'root',
-	password : process.env.OPENSHIFT_MYSQL_DB_PASSWORD || '',
-	database : process.env.OPENSHIFT_GEAR_NAME || 'chat',
-	charset  : 'utf8_unicode_ci'
-});
+if (process.env.OPENSHIFT_APP_NAME){
+	dbUrl = `mongodb://${dbConn.user}:${dbConn.pass}@${dbConn.host}:${dbConn.port}/${dbConn.app}`;
+}
+else {
+	dbUrl = `mongodb://${dbConn.host}:${dbConn.port}/${dbConn.app}`;
+}
 
-module.exports = DB;
+module.exports = dbUrl;

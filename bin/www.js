@@ -5,7 +5,7 @@
 
 'use strict';
 
-var app;
+// var app;
 // var http = require('http');
 // var debug = require('debug')('nodeapp:server');
 
@@ -36,12 +36,14 @@ global.WSPORT = process.env.NODE_ENV === 'production' ? '8000' : '3000';
 global.PORT = normalizePort(process.env.OPENSHIFT_NODEJS_PORT || '3000');
 global.IPADDRESS = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
 
-app = require('../app/app.js');
+require('../app/app.js').then(function(app){
 
-// Port tárolása az Express-ben
-app.set('port', global.PORT);
+	// Port tárolása az Express-ben
+	app.set('port', global.PORT);
 
-// Port figyelése
-app.httpServer.listen(global.PORT, global.IPADDRESS, function(){
-	console.log(`Listening ${global.IPADDRESS}:${global.PORT}`);
+	// Port figyelése
+	app.httpServer.listen(global.PORT, global.IPADDRESS, function(){
+		console.log(`Listening ${global.IPADDRESS}:${global.PORT}`);
+	});
+
 });

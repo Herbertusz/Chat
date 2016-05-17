@@ -6,8 +6,13 @@ var express = require('express');
 var router = express.Router();
 // var session = require('express-session');
 var fs = require('fs');
-var Model = require(`${appRoot}/app/models/chat.js`);
 var HD = require(`${appRoot}/libs/hd/hd.math.js`);
+var Model;
+
+router.use(function(req, res, next){
+	Model = require(`${appRoot}/app/models/chat.js`)(req.app.get('db'));
+	next();
+});
 
 router.get('/', function(req, res){
 
@@ -68,6 +73,7 @@ router.post('/uploadfile', function(req, res){
 			res.send({
 				filePath : `upload/${fileName}`
 			});
+			fileStream.end();
 		});
 	}
 

@@ -5,26 +5,26 @@
 var express = require('express');
 var router = express.Router();
 // var session = require('express-session');
-var DB = require(`${appRoot}/app/models/dbconnect.js`);
+var Model;
+
+router.use(function(req, res, next){
+	Model = require(`${appRoot}/app/models/login.js`)(req.app.get('db'));
+	next();
+});
 
 router.post('/', function(req, res){
-	var username, password;
 	if (req.body.submit){
-		username = req.body.username;
-		password = req.body.password;
+		const data = {
+			username : req.body.username,
+			password : req.body.password
+		};
 
-		DB.query(`
-			SELECT * FROM chat_users WHERE username = :username AND password = :password AND active = 1
-		`, {
-			username : username,
-			password : password
-		}, function(error, rows){
-			if (error) throw error;
-			if (rows.length > 0){
+		Model.getUser(data, function(user){
+			if (user){
 				req.session.login = {
 					loginned : true,
-					userId : rows[0].id,
-					userName : username,
+					userId : user.id,
+					userName : user.username,
 					error : null
 				};
 			}

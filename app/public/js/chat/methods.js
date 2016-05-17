@@ -30,7 +30,8 @@ CHAT.Labels = {
 		'get' : () => `Fájlfogadás...`,
 		'sendEnd' : () => `Fájlküldés befejeződött`,
 		'getEnd' : () => `Fájlfogadás befejeződött`,
-		'percent' : (percent) => `${percent}%`
+		'percent' : (percent) => `${percent}%`,
+		'deleted' : `A fájlküldés meg lett szakítva vagy a fájl törölve lett`
 	},
 	// Üzenetátvitel
 	'message' : {
@@ -162,6 +163,44 @@ CHAT.Method = {
 	},
 
 	/**
+	 * Fájl beszúrása
+	 * @param {jQuery} $box
+	 * @param {Object} data
+	 * @param {Boolean} [highlighted=false]
+	 * @description data szerkezete: {
+	 *  	userId : Number,
+	 * 		fileData : {
+	 * 			name : String,
+	 *  		size : Number,
+	 *  		type : String
+	 * 		},
+	 * 		file : String,
+	 * 		store : String,
+	 * 		type : String,
+	 * 		time : Number,
+	 * 		roomName : String
+	 * }
+	 */
+	appendDeletedFile : function($box, data, highlighted){
+		const $list = $box.find(CHAT.DOM.list);
+		const time = HD.DateTime.format('H:i:s', data.time);
+		const userName = CHAT.Method.getUserName(data.userId);
+		highlighted = HD.Misc.funcParam(highlighted, false);
+
+		const $listItem = $(`
+			<li>
+				<span class="time">${time}</span>
+				<strong class="${highlighted ? "self" : ""}">${CHAT.Util.escapeHtml(userName)}</strong>:
+				<br />
+				<div class="filedisplay">${CHAT.Labels.file.deleted}</div>
+			</li>
+		`);
+
+		$list.append($listItem);
+		CHAT.Util.scrollToBottom($box);
+	},
+
+	/**
 	 * Folyamatjelzők kezelése
 	 * @param {jQuery} $box
 	 * @param {String} direction
@@ -285,7 +324,7 @@ CHAT.Method = {
 			$box.find(CHAT.DOM.error).fadeOut(3000, function(){
 				$box.find(CHAT.DOM.errorList).html('');
 			});
-		}, 6000);
+		}, CHAT.Config.error.messageWait);
 	},
 
 	/**
@@ -479,7 +518,7 @@ CHAT.Method = {
 				 *				fileBase64 : String,
 				 *				fileZip : Array,
 				 *				fileUrl : String,
-				 *				fileData : String|Array
+				 *				fileDeleted : Boolean,
 				 *				userName : String
 				 *			},
 				 *			...
@@ -504,7 +543,8 @@ CHAT.Method = {
 							fileData : {
 								name : msgData.fileName,
 								size : msgData.fileSize,
-								type : msgData.fileType
+								type : msgData.fileType,
+								deleted : msgData.fileDeleted
 							},
 							file : null,
 							type : msgData.fileMainType,

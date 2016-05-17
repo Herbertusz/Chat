@@ -1,11 +1,19 @@
 <section class="preroom">
 	<h2>Előszoba</h2>
 	<div class="list">
+		<h3>Felhasználók:</h3>
 		<% users.forEach(function(element){ %>
-			<hr />
 			<% for (var i in element){ %>
 				<%- i %>: <%- element[i] %><br />
 			<% } %>
+			<hr />
+		<% }); %>
+		<h3>Üzenetek:</h3>
+		<% messages.forEach(function(element){ %>
+			<% for (var i in element){ %>
+				<%- i %>: <%- element[i] %><br />
+			<% } %>
+			<hr />
 		<% }); %>
 	</div>
 </section>

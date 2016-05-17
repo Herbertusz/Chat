@@ -107,7 +107,12 @@ CHAT.FileTransfer = {
 			 */
 			receive : function($box, data, msgData){
 				data.file = msgData.fileUrl;
-				CHAT.Method.appendFile($box, data);
+				if (!data.fileData.deleted){
+					CHAT.Method.appendFile($box, data);
+				}
+				else {
+					CHAT.Method.appendDeletedFile($box, data);
+				}
 			}
 
 		},

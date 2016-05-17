@@ -2,11 +2,13 @@
 
 'use strict';
 
+var promisify = require('es6-promisify');
+var fs = require('fs');
 var ioExpressSession = require('socket.io-express-session');
 var Model = require(`${appRoot}/app/models/chat.js`);
 var HD = require(`${appRoot}/libs/hd/hd.math.js`);
 
-module.exports = function(server, ioSession){
+module.exports = function(server, ioSession, app){
 
 	/**
 	 * Chat-be belépett userek
@@ -57,12 +59,29 @@ module.exports = function(server, ioSession){
 		const onlineUserIds = [];
 		let key;
 
+		// const ModelDeleteFile = promisify(Model.deleteFile);
+		const fsAccess = promisify(fs.access);
+		const fsUnlink = promisify(fs.unlink);
+
 		for (key in connectedUsers){
 			onlineUserIds.push(connectedUsers[key].id);
 		}
 		rooms.forEach(function(room, index){
 			if (room.userIds.length === 0 || HD.Math.Set.intersection(room.userIds, onlineUserIds).length === 0){
-				// TODO fájlok törlése
+				// fájlok törlése
+				Model.deleteFile(room.name, function(urls){
+					for (let i = 0; i < urls.length; i++){
+						const path = `${app.get('public path')}/${urls[i]}`;
+						fsAccess(path, fs.W_OK)
+							.then(function(error){
+								if (error) throw new Error(error);
+							})
+							.then(function(){
+								fsUnlink(path);
+							});
+					}
+				});
+
 				deleted.push(room.name);
 				rooms.splice(index, 1);
 			}
@@ -121,10 +140,6 @@ module.exports = function(server, ioSession){
 				status : "on",
 				isIdle : false
 			};
-		}
-		else {
-			// vendég generálása
-			// ...
 		}
 		if (userData){
 			// csatlakozás emitter
@@ -213,7 +228,7 @@ module.exports = function(server, ioSession){
 				fileId : 0,
 				message : data.message,
 				time : data.time
-			}, function(){});
+			}, () => {});
 		});
 
 		// Fájlküldés emitter
@@ -227,7 +242,7 @@ module.exports = function(server, ioSession){
 				mainType : data.type,
 				file : data.file,
 				time : data.time
-			}, function(){});
+			}, () => {});
 		});
 
 		// Üzenetírás emitter
