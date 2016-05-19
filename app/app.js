@@ -98,8 +98,7 @@ const connectPromise = MongoClient.connect(dbConnectionString).then(function(db)
 	return app;
 
 }).catch(function(error){
-	console.log(error.name);
-	console.log(error.message);
+	console.log(error);
 });
 
 module.exports = connectPromise;

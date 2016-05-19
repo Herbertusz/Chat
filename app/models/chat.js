@@ -6,77 +6,75 @@ var HD = require(`${appRoot}/libs/hd/hd.datetime.js`);
 
 var Model = function(db){
 
-	var DB = db;
-
 	return {
 
 		getUsers : function(callback){
 			db.collection("chat_users")
 				.find({"active" : true})
-				.sort({"username" : 1})
-				.toArray(function(error, docs){
-					if (error) throw error;
-					docs.forEach(function(doc, i){
-						docs[i].created = HD.DateTime.format('Y-m-d H:i:s', Math.floor(Date.parse(doc.created) / 1000));
+				.sort({"name" : 1})
+				.toArray()
+				.then(function(users){
+					users.forEach(function(user, i){
+						users[i].created = HD.DateTime.formatMS('Y-m-d H:i:s', user.created);
 					});
-					callback.call(this, docs);
+					callback(users);
+				})
+				.catch(function(error){
+					console.log(error.name);
+					console.log(error.message);
 				});
 		},
 
 		getRoomMessages : function(roomName, callback){
-			DB.query(`
-				SELECT
-					cm.id AS messageId,
-					cm.user_id AS userId,
-					cm.room,
-					cm.file_id AS fileId,
-					cm.message,
-					cm.created,
-					cf.name AS fileName,
-					cf.size AS fileSize,
-					cf.type AS fileType,
-					cf.main_type AS fileMainType,
-					cf.store AS fileStore,
-					cf.base64 AS fileBase64,
-					cf.zip AS fileZip,
-					cf.url AS fileUrl,
-					cf.deleted AS fileDeleted,
-					cu.username AS userName
-				FROM
-					chat_messages cm
-					LEFT JOIN chat_files cf ON cm.file_id = cf.id
-					LEFT JOIN chat_users cu ON cm.user_id = cu.id
-				WHERE
-					cm.room = :roomName
-				ORDER BY
-					cm.created ASC
-			`, {
-				roomName : roomName
-			}, function(error, rows){
-				if (error) throw error;
-				rows.forEach(function(row, i){
-					rows[i].created = HD.DateTime.format('Y-m-d H:i:s', Math.floor(Date.parse(row.created) / 1000));
-					rows[i].fileDeleted = !!rows[i].fileDeleted;
+			db.collection("chat_messages")
+				.find({"room" : roomName})
+				.sort({"created" : 1})
+				.toArray()
+				.then(function(messages){
+					const promises = [];
+					messages.forEach(function(message){
+						promises.push(
+							new Promise(function(resolve){
+								db.collection("chat_users")
+									.find({"id" : message.userId})
+									.limit(1)
+									.toArray()
+									.then(function(users){
+										message.userName = users.length ? users[0].name : '';
+										resolve(message);
+									});
+							})
+						);
+					});
+					return Promise.all(promises);
+				})
+				.then(function(messages){
+					callback(messages);
+				})
+				.catch(function(error){
+					console.log(error);
 				});
-				callback.call(this, rows);
-			});
 		},
 
 		setMessage : function(data, callback){
 			let messageId;
-			DB.insert('chat_messages', {
-				'user_id' : data.userId,
-				'room' : data.room,
-				'file_id' : data.fileId,
-				'message' : data.message,
-				'created' : HD.DateTime.format('Y-m-d H:i:s', data.time)
-			}, function(error, result){
-				if (error) throw error;
-				messageId = result.insertId;
-				callback.call(this, messageId);
-			});
-		},
-
+			db.collection("chat_messages")
+				.insertOne({
+					'userId' : data.userId,
+					'room' : data.room,
+					'file_id' : data.fileId,
+					'message' : data.message,
+					'created' : HD.DateTime.format('Y-m-d H:i:s', data.time)
+				})
+				.then(function(result){
+					messageId = result.insertedId;
+					callback(messageId);
+				})
+				.catch(function(error){
+					console.log(error);
+				});
+		}
+/*
 		setFile : function(data, callback){
 			const This = this;
 			const messageForFile = function(fdata, fileId){
@@ -172,6 +170,7 @@ var Model = function(db){
 				callback.call(this, urls);
 			});
 		}
+*/
 
 	};
 

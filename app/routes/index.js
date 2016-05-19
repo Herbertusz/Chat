@@ -5,6 +5,12 @@
 var express = require('express');
 var router = express.Router();
 // var session = require('express-session');
+var Model;
+
+router.use(function(req, res, next){
+	Model = require(`${appRoot}/app/models/chat.js`)(req.app.get('db'));
+	next();
+});
 
 router.get('/', function(req, res){
 	var message;
@@ -22,7 +28,9 @@ router.get('/', function(req, res){
 	const db = req.app.get('db');
 
 	let users, messages;
-	db.collection('chat_users').find().toArray()
+	db.collection('chat_users')
+		.find()
+		.toArray()
 		.then(function(docs){
 			users = docs;
 		})
