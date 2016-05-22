@@ -73,11 +73,11 @@ module.exports = function(server, ioSession, app){
 					for (let i = 0; i < urls.length; i++){
 						const path = `${app.get('public path')}/${urls[i]}`;
 						fsAccess(path, fs.W_OK)
-							.then(function(error){
-								if (error) throw new Error(error);
-							})
 							.then(function(){
 								fsUnlink(path);
+							})
+							.catch(function(error){
+								console.log(error);
 							});
 					}
 				});
@@ -225,7 +225,6 @@ module.exports = function(server, ioSession, app){
 			Model.setMessage({
 				userId : userData.id,
 				room : data.roomName,
-				fileId : 0,
 				message : data.message,
 				time : data.time
 			}, () => {});

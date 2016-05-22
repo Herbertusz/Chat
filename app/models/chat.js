@@ -57,15 +57,25 @@ var Model = function(db){
 		},
 
 		setMessage : function(data, callback){
-			let messageId;
-			db.collection("chat_messages")
-				.insertOne({
+			let messageId, insertData;
+			if (data.message){
+				insertData = {
 					'userId' : data.userId,
 					'room' : data.room,
-					'file_id' : data.fileId,
 					'message' : data.message,
 					'created' : HD.DateTime.format('Y-m-d H:i:s', data.time)
-				})
+				};
+			}
+			else if (data.file){
+				insertData = {
+					'userId' : data.userId,
+					'room' : data.room,
+					'file' : data.file,
+					'created' : HD.DateTime.format('Y-m-d H:i:s', data.time)
+				};
+			}
+			db.collection("chat_messages")
+				.insertOne(insertData)
 				.then(function(result){
 					messageId = result.insertedId;
 					callback(messageId);
@@ -73,104 +83,56 @@ var Model = function(db){
 				.catch(function(error){
 					console.log(error);
 				});
-		}
-/*
-		setFile : function(data, callback){
-			const This = this;
-			const messageForFile = function(fdata, fileId){
-				This.setMessage({
-					'userId' : fdata.userId,
-					'room' : fdata.room,
-					'fileId' : fileId,
-					'message' : null,
-					'created' : HD.DateTime.format('Y-m-d H:i:s', fdata.time)
-				}, function(messageId){
-					callback.call(this, fileId, messageId);
-				});
-			};
+		},
 
-			if (data.store === 'upload'){
-				DB.insert('chat_files', {
+		setFile : function(data, callback){
+			this.setMessage({
+				'userId' : data.userId,
+				'room' : data.room,
+				'file' : {
 					'name' : data.fileData.name,
 					'size' : data.fileData.size,
 					'type' : data.fileData.type,
-					'main_type' : data.mainType,
+					'mainType' : data.mainType,
 					'store' : data.store,
-					'url' : data.file,
-					'deleted' : 0
-				}, function(error, result){
-					if (error) throw error;
-					messageForFile(data, result.insertId);
-				});
-			}
-			else if (data.store === 'base64'){
-				DB.insert('chat_files', {
-					'name' : data.fileData.name,
-					'size' : data.fileData.size,
-					'type' : data.fileData.type,
-					'main_type' : data.mainType,
-					'store' : data.store,
-					'base64' : data.file,
-					'deleted' : 0
-				}, function(error, result){
-					if (error) throw error;
-					messageForFile(data, result.insertId);
-				});
-			}
-			else if (data.store === 'zip'){
-				data.file.forEach(function(element, index, arr){
-					arr[index] += 128;
-				});
-				DB.query(`
-					INSERT INTO chat_files
-					(name, size, type, main_type, store, zip) VALUES
-					(:name, :size, :type, :main_type, :store, CHAR(${data.file}))
-				`, {
-					'name' : data.fileData.name,
-					'size' : data.fileData.size,
-					'type' : data.fileData.type,
-					'main_type' : data.mainType,
-					'store' : data.store,
-					'deleted' : 0
-				}, function(error, result){
-					if (error) throw error;
-					messageForFile(data, result.insertId);
-				});
-			}
+					'data' : data.file,
+					'deleted' : false
+				},
+				'created' : HD.DateTime.format('Y-m-d H:i:s', data.time)
+			}, function(messageId){
+				callback(messageId);
+			});
 		},
 
 		deleteFile : function(roomName, callback){
-			DB.query(`
-				SELECT
-					cf.id AS id,
-					cf.url AS fileUrl
-				FROM
-					chat_messages cm
-					LEFT JOIN chat_files cf ON cm.file_id = cf.id
-				WHERE
-					cm.room = :roomName
-			`, {
-				roomName : roomName
-			}, function(error, rows){
-				if (error) throw error;
-				const urls = [];
-				rows.forEach(function(row){
-					urls.push(row.fileUrl);
-					DB.query(`
-						UPDATE
-							chat_files
-						SET
-							deleted = 1
-						WHERE
-							id = :id
-					`, {
-						id : row.id
+			db.collection("chat_messages")
+				.find({"$and" : [
+					{"room" : roomName},
+					{"file" : {"$exists" : true}},
+					{"file.store" : "upload"}
+				]}, {
+					"file" : 1
+				})
+				.toArray()
+				.then(function(docs){
+					const urls = [];
+					docs.forEach(function(doc){
+						urls.push(doc.file.data);
+						db.collection("chat_messages")
+							.updateOne({
+								"_id" : doc._id
+							}, {
+								"$set" : {
+									"file.deleted" : true
+								}
+							});
 					});
+					callback(urls);
+				})
+				.catch(function(error){
+					console.log(error);
 				});
-				callback.call(this, urls);
-			});
 		}
-*/
 
 	};
 

@@ -38,7 +38,7 @@ var createDB = function(db, callback){
 				"name" : "parrot.jpg",
 				"size" : 124500,
 				"type" : "image/jpeg",
-				"main_type" : "image",
+				"mainType" : "image",
 				"store" : "upload",
 				"base64" : "",
 				"zip" : [],
