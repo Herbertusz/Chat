@@ -5,10 +5,12 @@
 var promisify = require('es6-promisify');
 var fs = require('fs');
 var ioExpressSession = require('socket.io-express-session');
-var Model = require(`${appRoot}/app/models/chat.js`);
 var HD = require(`${appRoot}/libs/hd/hd.math.js`);
+var Model;
 
 module.exports = function(server, ioSession, app){
+
+	Model = require(`${appRoot}/app/models/chat.js`)(app.get('db'));
 
 	/**
 	 * Chat-be belépett userek

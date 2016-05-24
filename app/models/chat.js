@@ -20,8 +20,7 @@ var Model = function(db){
 					callback(users);
 				})
 				.catch(function(error){
-					console.log(error.name);
-					console.log(error.message);
+					console.log(error);
 				});
 		},
 
