@@ -5,10 +5,12 @@
 var promisify = require('es6-promisify');
 var fs = require('fs');
 var ioExpressSession = require('socket.io-express-session');
-var Model = require(`${appRoot}/app/models/chat.js`);
 var HD = require(`${appRoot}/libs/hd/hd.math.js`);
+var Model;
 
 module.exports = function(server, ioSession, app){
+
+	Model = require(`${appRoot}/app/models/chat.js`)(app.get('db'));
 
 	/**
 	 * Chat-be belépett userek
@@ -73,11 +75,11 @@ module.exports = function(server, ioSession, app){
 					for (let i = 0; i < urls.length; i++){
 						const path = `${app.get('public path')}/${urls[i]}`;
 						fsAccess(path, fs.W_OK)
-							.then(function(error){
-								if (error) throw new Error(error);
-							})
 							.then(function(){
 								fsUnlink(path);
+							})
+							.catch(function(error){
+								console.log(error);
 							});
 					}
 				});
@@ -225,7 +227,6 @@ module.exports = function(server, ioSession, app){
 			Model.setMessage({
 				userId : userData.id,
 				room : data.roomName,
-				fileId : 0,
 				message : data.message,
 				time : data.time
 			}, () => {});

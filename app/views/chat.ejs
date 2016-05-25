@@ -14,10 +14,10 @@
 				</li>
 				<% users.forEach(function(user){ %>
 					<% if (userId !== user.id){ %>
-						<li data-id="<%- user.id %>" data-name="<%= user.username %>" class="<% if (userId === user.id){ %>hidden-weak<% } %>">
+						<li data-id="<%- user.id %>" data-name="<%= user.name %>" class="<% if (userId === user.id){ %>hidden-weak<% } %>">
 							<label>
 								<input class="user-select" type="checkbox" value="<%- user.id %>" />
-								<span class="status off"></span> <%= user.username %>
+								<span class="status off"></span> <%= user.name %>
 							</label>
 						</li>
 					<% } %>

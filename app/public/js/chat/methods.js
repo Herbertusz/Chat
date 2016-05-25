@@ -503,33 +503,31 @@ CHAT.Method = {
 				/**
 				 * @description resp : {
 				 * 		messages : [
-				 * 			0 : {
-				 * 				messageId : Number,
+				 *			0 : {
+				 *				_id : ObjectId,
 				 *				userId : Number,
+				 *				userName : String,
 				 *				room : String,
-				 *				fileId : Number,
-				 *				message : String,
-				 *				created : String,
-				 *				fileName : String,
-				 *				fileSize : Number,
-				 *				fileType : String,
-				 *				fileMainType : String,
-				 *				fileStore : String,
-				 *				fileBase64 : String,
-				 *				fileZip : Array,
-				 *				fileUrl : String,
-				 *				fileDeleted : Boolean,
-				 *				userName : String
-				 *			},
-				 *			...
+				 *				message : String|undefined,
+				 *				file : Object|undefined {
+				 *					name : String,
+				 *					size : Number,
+				 *					type : String,
+				 *					mainType : String,
+				 *					store : String,
+				 *					data : String,
+				 *					deleted : Boolean
+				 *				},
+				 *				created : String
+				 *			}
 				 *		]
 				 * 	}
 				 */
 				resp.messages.forEach(function(msgData){
 					let data;
-					const timestamp = (new Date(msgData.created.replace(/ /g, 'T'))).getTime() / 1000; // FIXME: csúszás
+					const timestamp = Date.parse(msgData.created.replace(/ /g, 'T')) / 1000;
 
-					if (!msgData.fileId){
+					if (typeof msgData.message !== "undefined"){
 						CHAT.Method.appendUserMessage($box, {
 							userId : msgData.userId,
 							time : timestamp,
@@ -541,13 +539,13 @@ CHAT.Method = {
 						data = {
 							userId : msgData.userId,
 							fileData : {
-								name : msgData.fileName,
-								size : msgData.fileSize,
-								type : msgData.fileType,
-								deleted : msgData.fileDeleted
+								name : msgData.file.name,
+								size : msgData.file.size,
+								type : msgData.file.type,
+								deleted : msgData.file.deleted
 							},
 							file : null,
-							type : msgData.fileMainType,
+							type : msgData.file.mainType,
 							time : timestamp,
 							roomName : roomName
 						};

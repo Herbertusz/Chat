@@ -24,7 +24,7 @@ router.post('/', function(req, res){
 				req.session.login = {
 					loginned : true,
 					userId : user.id,
-					userName : user.username,
+					userName : user.name,
 					error : null
 				};
 			}
