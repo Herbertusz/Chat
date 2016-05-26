@@ -504,7 +504,7 @@ CHAT.Method = {
 				 * @description resp : {
 				 * 		messages : [
 				 *			0 : {
-				 *				_id : ObjectId,
+				 *				_id : ObjectID,
 				 *				userId : Number,
 				 *				userName : String,
 				 *				room : String,
