@@ -4,56 +4,56 @@
 */
 
 body {
-	margin: 0 0 10px 0;
-	font: {
-		family: Arial, Helvetica, sans-serif;
-		size: 13px;
-	}
+    margin: 0 0 10px 0;
+    font: {
+        family: Arial, Helvetica, sans-serif;
+        size: 13px;
+    }
 }
 
 #container {
-	margin: 0 auto;
-	width: 1000px;
+    margin: 0 auto;
+    width: 1000px;
 }
 
 header {
-	margin: 0 0 10px 0;
-	padding: 5px;
-	height: 30px;
-	background-color: #cccccc;
+    margin: 0 0 10px 0;
+    padding: 5px;
+    height: 30px;
+    background-color: #cccccc;
 
-	nav ul {
-		margin: 0;
-		padding: 0;
-		list-style: none;
+    nav ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
 
-		li {
-			float: left;
-			margin: 0 10px;
+        li {
+            float: left;
+            margin: 0 10px;
 
-			a {
-				&.active {}
-			}
-		}
-	}
+            a {
+                &.active {}
+            }
+        }
+    }
 }
 
 h1.game {
-	margin-bottom: 10px;
-	font-size: 20px;
+    margin-bottom: 10px;
+    font-size: 20px;
 }
 
 .login {
-	margin: 10px 0;
+    margin: 10px 0;
 
-	.error {
-		display: block;
-		color: red;
-	}
+    .error {
+        display: block;
+        color: red;
+    }
 }
 
 footer {
-	margin: 30px 0 0 0;
+    margin: 30px 0 0 0;
 
-	.html5logo {}
+    .html5logo {}
 }

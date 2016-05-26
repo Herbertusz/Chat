@@ -9,8 +9,8 @@ var CHAT = window.CHAT || {};
  * @type Object
  */
 CHAT.USER = {
-	id : SERVER.userData.id,
-	name : SERVER.userData.name
+    id : SERVER.userData.id,
+    name : SERVER.userData.name
 };
 
 /**
@@ -30,34 +30,34 @@ CHAT.lzma = LZMA;
  * @type Object
  */
 CHAT.DOM = {
-	idleCheck : 'body',
-	start : '.online .start',
-	online : '.online',
-	onlineListItems : '.online li',
-	onlineSelfListItem : '.online li.self',
-	selfStatus : '.self .status',
-	statusChange : '.status-change',
-	userSelect : '.user-select',
-	selectedUsers : '.user-select:checked',
-	container : '.chatcontainer',
-	cloneBox : '.chat.cloneable',
-	box : '.chat',
-	userItems : '.user-item',
-	userThrow : '.throw',
-	users : '.users',
-	close : '.close',
-	addUser : '.add-user',
-	list : '.list',
-	message : '.message',
-	file : '.fileuploader .file',
-	fileTrigger : '.fileuploader .trigger',
-	dropFile : '.drop-file',
-	indicator : '.indicator',
-	sendButton : '.send',
-	sendSwitch : '.send-switch',
-	error : '.error',
-	errorList : '.error .error-list',
-	errorClose : '.error .error-close'
+    idleCheck : 'body',
+    start : '.online .start',
+    online : '.online',
+    onlineListItems : '.online li',
+    onlineSelfListItem : '.online li.self',
+    selfStatus : '.self .status',
+    statusChange : '.status-change',
+    userSelect : '.user-select',
+    selectedUsers : '.user-select:checked',
+    container : '.chatcontainer',
+    cloneBox : '.chat.cloneable',
+    box : '.chat',
+    userItems : '.user-item',
+    userThrow : '.throw',
+    users : '.users',
+    close : '.close',
+    addUser : '.add-user',
+    list : '.list',
+    message : '.message',
+    file : '.fileuploader .file',
+    fileTrigger : '.fileuploader .trigger',
+    dropFile : '.drop-file',
+    indicator : '.indicator',
+    sendButton : '.send',
+    sendSwitch : '.send-switch',
+    error : '.error',
+    errorList : '.error .error-list',
+    errorClose : '.error .error-close'
 };
 
 /**
@@ -65,21 +65,21 @@ CHAT.DOM = {
  * @type Object
  */
 CHAT.timer = {
-	writing : {
-		timerID : 0,
-		interval : 1000,
-		event : false,
-		message : ''
-	},
-	drag : {
-		timerID : 0,
-		interval : 1000
-	},
-	drop : {
-		timerID : 0,
-		interval : 1000
-	},
-	idle : 300000
+    writing : {
+        timerID : 0,
+        interval : 1000,
+        event : false,
+        message : ''
+    },
+    drag : {
+        timerID : 0,
+        interval : 1000
+    },
+    drop : {
+        timerID : 0,
+        interval : 1000
+    },
+    idle : 300000
 };
 
 /**
@@ -88,59 +88,59 @@ CHAT.timer = {
  */
 CHAT.Util = {
 
-	/**
-	 * HTML entitások cseréje
-	 * @param {String} string
-	 * @returns {String}
-	 */
-	escapeHtml : function(string){
-		const entityMap = {
-			"&" : "&amp;",
-			"<" : "&lt;",
-			">" : "&gt;"
-		};
-		let str;
+    /**
+     * HTML entitások cseréje
+     * @param {String} string
+     * @returns {String}
+     */
+    escapeHtml : function(string){
+        const entityMap = {
+            "&" : "&amp;",
+            "<" : "&lt;",
+            ">" : "&gt;"
+        };
+        let str;
 
-		str = String(string).replace(/[&<>]/g, function(s){
-			return entityMap[s];
-		});
-		str = str.replace(/\n/g, '<br />');
-		return str;
-	},
+        str = String(string).replace(/[&<>]/g, function(s){
+            return entityMap[s];
+        });
+        str = str.replace(/\n/g, '<br />');
+        return str;
+    },
 
-	/**
-	 * Doboz scrollozása az aljára
-	 * @param {jQuery} $box doboz
-	 */
-	scrollToBottom : function($box){
-		let height = 0;
-		const $list = $box.find(CHAT.DOM.list);
+    /**
+     * Doboz scrollozása az aljára
+     * @param {jQuery} $box doboz
+     */
+    scrollToBottom : function($box){
+        let height = 0;
+        const $list = $box.find(CHAT.DOM.list);
 
-		$list.find('li').each(function(){
-			height += $(this).outerHeight();
-		});
-		$list.scrollTop(height);
-	},
+        $list.find('li').each(function(){
+            height += $(this).outerHeight();
+        });
+        $list.scrollTop(height);
+    },
 
-	/**
-	 * Elem rekurzív másolása eseménykezelőkkel együtt
-	 * @param {jQuery} $element másolandó elem
-	 * @param {jQuery} $insert beszúrás helye
-	 * @param {Boolean} [prepend=false] ha true, beszúrás az elejére
-	 * @returns {jQuery} az elem másolata
-	 */
-	cloneElement : function($element, $insert, prepend){
-		const $clone = $element.clone(true, true);
+    /**
+     * Elem rekurzív másolása eseménykezelőkkel együtt
+     * @param {jQuery} $element másolandó elem
+     * @param {jQuery} $insert beszúrás helye
+     * @param {Boolean} [prepend=false] ha true, beszúrás az elejére
+     * @returns {jQuery} az elem másolata
+     */
+    cloneElement : function($element, $insert, prepend){
+        const $clone = $element.clone(true, true);
 
-		prepend = HD.Misc.funcParam(prepend, false);
-		if (prepend){
-			$clone.prependTo($insert);
-		}
-		else {
-			$clone.appendTo($insert);
-		}
-		$clone.removeClass("cloneable");
-		return $clone;
-	}
+        prepend = HD.Misc.funcParam(prepend, false);
+        if (prepend){
+            $clone.prependTo($insert);
+        }
+        else {
+            $clone.appendTo($insert);
+        }
+        $clone.removeClass("cloneable");
+        return $clone;
+    }
 
 };
