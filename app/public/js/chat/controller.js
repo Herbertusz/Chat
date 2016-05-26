@@ -134,7 +134,7 @@ $(document).ready(function(){
 	});
 
 	// User-sáv görgetése
-	let userDrag = {
+	const userDrag = {
 		active : false,
 		moving : false,
 		x : 0
