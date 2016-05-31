@@ -185,11 +185,16 @@ CHAT.Events = {
 
                 if (errors.length === 0){
                     const reader = new FileReader();
-                    reader.onload = (function(data){
-                        return function(){
-                            CHAT.FileTransfer.action('clientSend', [$box, data, reader, rawFile]);
-                        };
-                    })(fileData);
+                    (new Promise(function(resolve){
+                        reader.onload = resolve;
+                    })).then((function(){
+                        CHAT.FileTransfer.action('clientSend', [$box, fileData, reader, rawFile]);
+                    }));
+                    /*
+                    HD.Function.promise(reader.onload).then((function(){
+                        CHAT.FileTransfer.action('clientSend', [$box, fileData, reader, rawFile]);
+                    }));
+                    */
                     reader.readAsDataURL(rawFile);
                 }
                 else {

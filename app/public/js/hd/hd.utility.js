@@ -39,22 +39,6 @@ HD.Misc = {
     },
 
     /**
-     * Alapértelmezett paraméterérték megadása függvényben
-     * @example par = funcParam(par, 0);
-     * @param {Object} param paraméter
-     * @param {Object} value alapértelmezett érték
-     * @returns {Object} ezt kell értékül adni a paraméternek
-     */
-    funcParam : function(param, value){
-        if (typeof param === "undefined"){
-            return value;
-        }
-        else {
-            return param;
-        }
-    },
-
-    /**
      * Switch szerkezetet helyettesítő függvény
      * @param {*} variable változó
      * @param {Object} relations változó különböző értékeihez rendelt visszatérési értékek
@@ -301,7 +285,7 @@ HD.Function = {
 
     /**
      * Alapértelmezett paraméterérték megadása függvényben
-     * @example par = funcParam(par, 0);
+     * @example par = param(par, 0);
      * @param {mixed} param paraméter
      * @param {mixed} value alapértelmezett érték
      * @returns {mixed} ezt kell értékül adni a paraméternek
@@ -342,6 +326,17 @@ HD.Function = {
             }
         }
         return newParams;
+    },
+
+    /**
+     * Időzített aszinkron esemény promise-szá alakítása
+     * @param {Function} callback
+     * @returns {Promise}
+     */
+    promise : function(callback){
+        return new Promise(function(resolve, reject){
+            callback = resolve;
+        });
     }
 
 };

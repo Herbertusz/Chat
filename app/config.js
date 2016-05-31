@@ -74,7 +74,7 @@ CHAT.Config = {
             file  : /^.*$/
         },
         allowedTypes : ["image", "text", "pdf", "doc", "xls", "ppt", "zip", "audio", "video", "file"],
-        maxSize : 10 * 1024 * 1024
+        maxSize : 1000 * 1024 * 1024
 
     }
 

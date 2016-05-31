@@ -41,6 +41,28 @@ CHAT.FileTransfer = {
              * }
              */
             clientSend : function($box, data, reader, rawFile){
+                const fileData = JSON.stringify(data);
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", "/chat/uploadfile");
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                xhr.setRequestHeader('X-File-Data', encodeURIComponent(fileData));
+                xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+                const barId = CHAT.Method.progressbar($box, "send", 0, null);
+                xhr.upload.onprogress = function(event){
+                    if (event.lengthComputable){
+                        const percent = event.loaded / event.total;
+                        CHAT.Method.progressbar($box, "send", Math.round(percent * 100), barId);
+                    }
+                };
+                xhr.onload = function(){
+                    const response = JSON.parse(xhr.responseText);
+                    data.file = response.filePath;
+                    CHAT.Method.progressbar($box, "send", 100, barId);
+                    CHAT.Method.appendFile($box, data, true);
+                    CHAT.socket.emit('sendFile', data);
+                };
+                xhr.send(rawFile);
+                /*
                 return new Promise(function(resolve){
                     const fileData = JSON.stringify(data);
                     const xhr = new XMLHttpRequest();
@@ -65,6 +87,7 @@ CHAT.FileTransfer = {
                     };
                     xhr.send(rawFile);
                 });
+                */
             },
 
             /**
@@ -247,7 +270,7 @@ CHAT.FileTransfer = {
         const store = CHAT.Config.fileTransfer.store;
 
         if (this.strategies[store] && this.strategies[store][operation]){
-            this.strategies[store][operation](...args);
+            return this.strategies[store][operation](...args);
         }
     }
 

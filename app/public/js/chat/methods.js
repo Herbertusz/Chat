@@ -69,7 +69,7 @@ CHAT.Method = {
         const time = HD.DateTime.format('H:i:s', data.time);
         const $list = $box.find(CHAT.DOM.list);
         const userName = CHAT.Method.getUserName(data.userId);
-        highlighted = HD.Misc.funcParam(highlighted, false);
+        highlighted = HD.Function.param(highlighted, false);
 
         $list.append(`
             <li>
@@ -124,7 +124,7 @@ CHAT.Method = {
         const $list = $box.find(CHAT.DOM.list);
         const time = HD.DateTime.format('H:i:s', data.time);
         const userName = CHAT.Method.getUserName(data.userId);
-        highlighted = HD.Misc.funcParam(highlighted, false);
+        highlighted = HD.Function.param(highlighted, false);
 
         const $listItem = $(`
             <li>
@@ -185,7 +185,7 @@ CHAT.Method = {
         const $list = $box.find(CHAT.DOM.list);
         const time = HD.DateTime.format('H:i:s', data.time);
         const userName = CHAT.Method.getUserName(data.userId);
-        highlighted = HD.Misc.funcParam(highlighted, false);
+        highlighted = HD.Function.param(highlighted, false);
 
         const $listItem = $(`
             <li>
@@ -344,7 +344,7 @@ CHAT.Method = {
      * @param {Boolean} [regenerate=false]
      */
     generateUserList : function($to, userIds, regenerate){
-        regenerate = HD.Misc.funcParam(regenerate, false);
+        regenerate = HD.Function.param(regenerate, false);
 
         if (regenerate){
             $to.children(':not(.cloneable)').remove();
@@ -490,7 +490,7 @@ CHAT.Method = {
      * @param {Function} [callback]
      */
     fillBox : function($box, roomName, callback){
-        callback = HD.Misc.funcParam(callback, function(){});
+        callback = HD.Function.param(callback, function(){});
 
         $.ajax({
             type : "POST",

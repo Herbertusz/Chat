@@ -39,22 +39,6 @@ HD.Misc = {
     },
 
     /**
-     * Alapértelmezett paraméterérték megadása függvényben
-     * @example par = funcParam(par, 0);
-     * @param {Object} param paraméter
-     * @param {Object} value alapértelmezett érték
-     * @returns {Object} ezt kell értékül adni a paraméternek
-     */
-    funcParam : function(param, value){
-        if (typeof param === "undefined"){
-            return value;
-        }
-        else {
-            return param;
-        }
-    },
-
-    /**
      * Switch szerkezetet helyettesítő függvény
      * @param {*} variable változó
      * @param {Object} relations változó különböző értékeihez rendelt visszatérési értékek

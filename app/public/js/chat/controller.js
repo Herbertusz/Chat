@@ -72,7 +72,7 @@ $(document).ready(function(){
     inBox(CHAT.DOM.message).keydown(function(event){
         const $box = $(this).parents('.chat');
         if (event.which === HD.Misc.keys.ENTER){
-            if (!event.shiftKey && inBox(CHAT.DOM.sendSwitch).prop("checked")){
+			if (!event.shiftKey && $box.find(CHAT.DOM.sendSwitch).prop("checked")){
                 CHAT.Events.Client.sendMessage($box);
                 event.preventDefault();
             }
@@ -91,7 +91,7 @@ $(document).ready(function(){
     });
     inBox(CHAT.DOM.file).change(function(){
         const $box = $(this).parents('.chat');
-        const files = inBox(CHAT.DOM.file).get(0).files;
+		const files = $box.find(CHAT.DOM.file).get(0).files;
         if (files.length > 0){
             CHAT.Events.Client.sendFile($box, files);
         }
