@@ -16,36 +16,36 @@ $font-verdana: Verdana, Arial, Helvetica, sans-serif;
 $font-arial: Arial, Helvetica, sans-serif;
 
 @mixin transform-skewX($angle){
-	-moz-transform: skewX($angle);
-	-webkit-transform: skewX($angle);
-	-o-transform: skewX($angle);
-	-ms-transform: skewX($angle);
-	transform: skewX($angle);
+    -moz-transform: skewX($angle);
+    -webkit-transform: skewX($angle);
+    -o-transform: skewX($angle);
+    -ms-transform: skewX($angle);
+    transform: skewX($angle);
 }
 
 @mixin cross($width, $height, $thick, $top, $borderRadius, $backgroundColor){
-	display: inline-block;
-	position: relative;
-	width: $width;
-	height: $height;
+    display: inline-block;
+    position: relative;
+    width: $width;
+    height: $height;
 
-	&%beforeafter {
-		content: '';
-		position: absolute;
-		left: 0;
-		top: $top;
-		border-radius: $borderRadius;
-		width: $width;
-		height: $thick;
-		background-color: $backgroundColor;
-	}
+    &%beforeafter {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: $top;
+        border-radius: $borderRadius;
+        width: $width;
+        height: $thick;
+        background-color: $backgroundColor;
+    }
 
-	&::before {
-		@extend %beforeafter;
-		transform: rotate(45deg);
-	}
-	&::after {
-		@extend %beforeafter;
-		transform: rotate(-45deg);
-	}
+    &::before {
+        @extend %beforeafter;
+        transform: rotate(45deg);
+    }
+    &::after {
+        @extend %beforeafter;
+        transform: rotate(-45deg);
+    }
 }

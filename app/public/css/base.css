@@ -32,19 +32,19 @@
 .italic { font-style: italic; }
 
 input, select {
-	outline-width: 0px;
+    outline-width: 0px;
 }
 textarea {
-	resize: none;
+    resize: none;
 }
 img {
-	border-width: 0px;
+    border-width: 0px;
 }
 a {
-	padding: 0;
-	text-decoration: none;
-	color: #000000;
+    padding: 0;
+    text-decoration: none;
+    color: #000000;
 }
 a:hover {
-	text-decoration: none;
+    text-decoration: none;
 }

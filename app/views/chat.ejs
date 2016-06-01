@@ -1,78 +1,78 @@
 <div style="margin: 20px 0;">
-	<% if (login){ %>
-		<aside class="online" data-connected-users="">
-			<ul>
-				<li data-id="<%- userId %>" data-name="<%= userName %>" class="self">
-					<label>
-						<span class="status on"></span> <%= userName %>
-						<select class="status-change">
-							<option value="on" selected>Elérhető</option>
-							<option value="busy">Elfoglalt</option>
-							<option value="inv">Lopakodó</option>
-						</select>
-					</label>
-				</li>
-				<% users.forEach(function(user){ %>
-					<% if (userId !== user.id){ %>
-						<li data-id="<%- user.id %>" data-name="<%= user.name %>" class="<% if (userId === user.id){ %>hidden-weak<% } %>">
-							<label>
-								<input class="user-select" type="checkbox" value="<%- user.id %>" />
-								<span class="status off"></span> <%= user.name %>
-							</label>
-						</li>
-					<% } %>
-				<% }); %>
-			</ul>
-			<button class="start">Chat</button>
-		</aside>
-		<section class="chatcontainer">
-			<div class="chat cloneable" data-room="">
-				<div class="bar">
-					<span class="users">
-						<span class="user-item cloneable" data-id="">
-							<span class="status"></span>
-							<span class="name"></span>
-							<span class="throw" title="Kidobás"></span>
-						</span>
-					</span>
-					<span class="close" title="Kilépés"></span>
-					<button class="add-user hidden-weak">Hozzáadás</button>
-				</div>
-				<div class="error hidden-weak">
-					<div class="error-list"></div>
-					<div class="error-close"></div>
-				</div>
-				<div class="<% if (CHAT.Config.fileTransfer.dragndrop.allowed){ %>drop-file<% } %>">
-					<div class="drop-sign"><%= CHAT.Config.fileTransfer.dragndrop.html %></div>
-					<ul class="list"></ul>
-				</div>
-				<div class="form">
-					<div class="indicator"></div>
-					<textarea class="message" placeholder="Üzenet"></textarea>
-					<% if (CHAT.Config.fileTransfer.allowed){ %>
-						<div class="fileuploader">
-							<input type="file" class="file" <% if (CHAT.Config.fileTransfer.multiple){ %>multiple<% } %> />
-							<span class="trigger">
-								<span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
-							</span>
-						</div>
-					<% } %>
-					<div class="submitmode">
-						<label>
-							<input class="send-switch" type="checkbox" value="1"
-								<% if (CHAT.Config.messageSend.defaultSendMode === 'enter'){ %>checked<% } %>
-							/>
-							Küldés enter megnyomására
-						</label>
-						<button class="send <% if (CHAT.Config.messageSend.defaultSendMode === 'enter'){ %>hidden-weak<% } %>">
-							Küldés
-						</button>
-					</div>
-				</div>
-			</div>
-		</section>
-		<div class="clearfix"></div>
-	<% }else{ %>
-		Jelentkezzé be!
-	<% } %>
+    <% if (login){ %>
+        <aside class="online" data-connected-users="">
+            <ul>
+                <li data-id="<%- userId %>" data-name="<%= userName %>" class="self">
+                    <label>
+                        <span class="status on"></span> <%= userName %>
+                        <select class="status-change">
+                            <option value="on" selected>Elérhető</option>
+                            <option value="busy">Elfoglalt</option>
+                            <option value="inv">Lopakodó</option>
+                        </select>
+                    </label>
+                </li>
+                <% users.forEach(function(user){ %>
+                    <% if (userId !== user.id){ %>
+                        <li data-id="<%- user.id %>" data-name="<%= user.name %>" class="<% if (userId === user.id){ %>hidden-weak<% } %>">
+                            <label>
+                                <input class="user-select" type="checkbox" value="<%- user.id %>" />
+                                <span class="status off"></span> <%= user.name %>
+                            </label>
+                        </li>
+                    <% } %>
+                <% }); %>
+            </ul>
+            <button class="start">Chat</button>
+        </aside>
+        <section class="chatcontainer">
+            <div class="chat cloneable" data-room="">
+                <div class="bar">
+                    <span class="users">
+                        <span class="user-item cloneable" data-id="">
+                            <span class="status"></span>
+                            <span class="name"></span>
+                            <span class="throw" title="Kidobás"></span>
+                        </span>
+                    </span>
+                    <span class="close" title="Kilépés"></span>
+                    <button class="add-user hidden-weak">Hozzáadás</button>
+                </div>
+                <div class="error hidden-weak">
+                    <div class="error-list"></div>
+                    <div class="error-close"></div>
+                </div>
+                <div class="<% if (CHAT.Config.fileTransfer.dragndrop.allowed){ %>drop-file<% } %>">
+                    <div class="drop-sign"><%= CHAT.Config.fileTransfer.dragndrop.html %></div>
+                    <ul class="list"></ul>
+                </div>
+                <div class="form">
+                    <div class="indicator"></div>
+                    <textarea class="message" placeholder="Üzenet"></textarea>
+                    <% if (CHAT.Config.fileTransfer.allowed){ %>
+                        <div class="fileuploader">
+                            <input type="file" class="file" <% if (CHAT.Config.fileTransfer.multiple){ %>multiple<% } %> />
+                            <span class="trigger">
+                                <span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
+                            </span>
+                        </div>
+                    <% } %>
+                    <div class="submitmode">
+                        <label>
+                            <input class="send-switch" type="checkbox" value="1"
+                                <% if (CHAT.Config.messageSend.defaultSendMode === 'enter'){ %>checked<% } %>
+                            />
+                            Küldés enter megnyomására
+                        </label>
+                        <button class="send <% if (CHAT.Config.messageSend.defaultSendMode === 'enter'){ %>hidden-weak<% } %>">
+                            Küldés
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="clearfix"></div>
+    <% }else{ %>
+        Jelentkezzé be!
+    <% } %>
 </div>

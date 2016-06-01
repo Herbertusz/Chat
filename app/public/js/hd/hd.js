@@ -19,18 +19,18 @@ var HD = window.HD || {};
  * @returns {Object}
  */
 var namespace = function(namespaceString){
-	var parts = namespaceString.split(".");
-	var parent = window;
-	var currentPart = "";
-	var i, length;
+    var parts = namespaceString.split(".");
+    var parent = window;
+    var currentPart = "";
+    var i, length;
 
-	for (i = 0, length = parts.length; i < length; i++){
-		currentPart = parts[i];
-		parent[currentPart] = parent[currentPart] || {};
-		parent = parent[currentPart];
-	}
+    for (i = 0, length = parts.length; i < length; i++){
+        currentPart = parts[i];
+        parent[currentPart] = parent[currentPart] || {};
+        parent = parent[currentPart];
+    }
 
-	return parent;
+    return parent;
 };
 
 /**
@@ -41,17 +41,17 @@ var namespace = function(namespaceString){
  * @returns {Boolean} true, ha a szelektorra illeszkedik az aktuális DOM elem
  */
 $.expr[":"].data = function(obj, index, meta){
-	var args = meta[3].split(",");
-	if (args.length === 1){
-		return (typeof $(obj).data($.trim(args[0])) !== "undefined");
-	}
-	else if (args.length === 2){
-		// FIXME == helyett ===
-		return ($(obj).data($.trim(args[0])) == $.trim(args[1]));
-	}
-	else {
-		return false;
-	}
+    var args = meta[3].split(",");
+    if (args.length === 1){
+        return (typeof $(obj).data($.trim(args[0])) !== "undefined");
+    }
+    else if (args.length === 2){
+        // FIXME == helyett ===
+        return ($(obj).data($.trim(args[0])) == $.trim(args[1]));
+    }
+    else {
+        return false;
+    }
 };
 
 /**
@@ -60,33 +60,33 @@ $.expr[":"].data = function(obj, index, meta){
  */
 HD.Web = function(){
 
-	var i;
-	var documentReady = [];
-	var windowLoad = [];
+    var i;
+    var documentReady = [];
+    var windowLoad = [];
 
-	return {
+    return {
 
-		pushReady : function(func){
-			documentReady.push(func);
-		},
+        pushReady : function(func){
+            documentReady.push(func);
+        },
 
-		pushLoad : function(func){
-			windowLoad.push(func);
-		},
+        pushLoad : function(func){
+            windowLoad.push(func);
+        },
 
-		init : function(){
-			$(document).ready(function(){
-				for (i = 0; i < documentReady.length; i++){
-					documentReady[i].call(HD.Web);
-				}
-			});
-			$(window).load(function(){
-				for (i = 0; i < windowLoad.length; i++){
-					windowLoad[i].call(HD.Web);
-				}
-			});
-		}
+        init : function(){
+            $(document).ready(function(){
+                for (i = 0; i < documentReady.length; i++){
+                    documentReady[i].call(HD.Web);
+                }
+            });
+            $(window).load(function(){
+                for (i = 0; i < windowLoad.length; i++){
+                    windowLoad[i].call(HD.Web);
+                }
+            });
+        }
 
-	};
+    };
 
 };

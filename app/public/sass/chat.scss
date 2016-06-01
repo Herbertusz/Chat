@@ -8,327 +8,327 @@
 @import "_utility.scss";
 
 .glyphicon {
-	opacity: 0.7;
-	font-size: 18px;
-	cursor: pointer;
+    opacity: 0.7;
+    font-size: 18px;
+    cursor: pointer;
 
-	&:hover {
-		opacity: 1;
-	}
+    &:hover {
+        opacity: 1;
+    }
 }
 
 .status {
-	display: inline-block;
-	position: relative;
-	border-radius: 5px;
-	width: 16px;
-	height: 16px;
-	background: {
-		image: url("../images/chat.png");
-		repeat: no-repeat;
-	}
+    display: inline-block;
+    position: relative;
+    border-radius: 5px;
+    width: 16px;
+    height: 16px;
+    background: {
+        image: url("../images/chat.png");
+        repeat: no-repeat;
+    }
 
-	&.off      { background-position: -60px -21px; }
-	&.on       { background-position:   0px -21px; }
-	&.busy     { background-position: -20px -21px; }
-	&.idle     { background-position: -40px -21px; }
-	&.off.run  { background-position: -60px -42px; }
-	&.on.run   { background-position:   0px -42px; }
-	&.busy.run { background-position: -20px -42px; }
-	&.idle.run { background-position: -40px -42px; }
+    &.off      { background-position: -60px -21px; }
+    &.on       { background-position:   0px -21px; }
+    &.busy     { background-position: -20px -21px; }
+    &.idle     { background-position: -40px -21px; }
+    &.off.run  { background-position: -60px -42px; }
+    &.on.run   { background-position:   0px -42px; }
+    &.busy.run { background-position: -20px -42px; }
+    &.idle.run { background-position: -40px -42px; }
 
-	&.inv      { background-position: -60px -21px !important; }
-	&.inv.run  { background-position: -60px -42px !important; }
+    &.inv      { background-position: -60px -21px !important; }
+    &.inv.run  { background-position: -60px -42px !important; }
 }
 
 aside.online {
-	float: left;
-	width: 200px;
-	background-color: #eeeeee;
+    float: left;
+    width: 200px;
+    background-color: #eeeeee;
 
-	ul {
-		list-style-type: none;
-		margin: 0 0 10px 0;
-		padding: 0;
+    ul {
+        list-style-type: none;
+        margin: 0 0 10px 0;
+        padding: 0;
 
-		li {
-			padding: 0;
+        li {
+            padding: 0;
 
-			&.self {
-				border-bottom: 2px solid #ffffff;
+            &.self {
+                border-bottom: 2px solid #ffffff;
 
-				label {
-					padding: 10px;
-					height: 40px;
-					cursor: default;
+                label {
+                    padding: 10px;
+                    height: 40px;
+                    cursor: default;
 
-					&:hover {
-						background-color: inherit;
-					}
+                    &:hover {
+                        background-color: inherit;
+                    }
 
-					.status-change {
-						float: right;
-						width: 80px;
-					}
-				}
-			}
+                    .status-change {
+                        float: right;
+                        width: 80px;
+                    }
+                }
+            }
 
-			label {
-				display: block;
-				padding: 5px 10px;
-				width: 100%;
-				height: 28px;
-				cursor: pointer;
+            label {
+                display: block;
+                padding: 5px 10px;
+                width: 100%;
+                height: 28px;
+                cursor: pointer;
 
-				&:hover {
-					background-color: #dddddd;
-				}
-			}
+                &:hover {
+                    background-color: #dddddd;
+                }
+            }
 
-			.status {
-				top: 4px;
-				margin: 0 7px 0 0;
-			}
+            .status {
+                top: 4px;
+                margin: 0 7px 0 0;
+            }
 
-			input {
-				display: inline-block;
-				position: relative;
-				top: 2px;
-				margin: 0 10px 0 0;
-			}
-		}
-	}
+            input {
+                display: inline-block;
+                position: relative;
+                top: 2px;
+                margin: 0 10px 0 0;
+            }
+        }
+    }
 
-	button.start {
-		margin: 10px;
-		font-weight: bold;
-	}
+    button.start {
+        margin: 10px;
+        font-weight: bold;
+    }
 }
 
 .chatcontainer {
-	margin-left: 205px;
-	height: 480px;
+    margin-left: 205px;
+    height: 480px;
 
-	.chat {
-		position: relative;
-		float: left;
-		margin-left: 10px;
-		width: 300px;
+    .chat {
+        position: relative;
+        float: left;
+        margin-left: 10px;
+        width: 300px;
 
-		.bar {
-			position: relative;
-			width: 100%;
-			height: 30px;
-			background-color: #cccccc;
+        .bar {
+            position: relative;
+            width: 100%;
+            height: 30px;
+            background-color: #cccccc;
 
-			.users {
-				display: inline-block;
-				width: 260px;
-				overflow: hidden;
-				white-space: nowrap;
-				cursor: ew-resize;
-			}
+            .users {
+                display: inline-block;
+                width: 260px;
+                overflow: hidden;
+                white-space: nowrap;
+                cursor: ew-resize;
+            }
 
-			.user-item:not(.cloneable) {
-				display: inline-block;
-				padding: 5px;
+            .user-item:not(.cloneable) {
+                display: inline-block;
+                padding: 5px;
 
-				.status {
-					top: 4px;
-				}
+                .status {
+                    top: 4px;
+                }
 
-				.throw {
-					@include cross(13px, 13px, 2px, 6px, 0px, #000000);
-					cursor: pointer;
+                .throw {
+                    @include cross(13px, 13px, 2px, 6px, 0px, #000000);
+                    cursor: pointer;
 
-					&:hover::before,
-					&:hover::after {
-						background-color: #ff0000;
-					}
+                    &:hover::before,
+                    &:hover::after {
+                        background-color: #ff0000;
+                    }
 
-					&.disabled::before,
-					&.disabled::after {
-						background-color: #aaaaaa;
-					}
-				}
-			}
+                    &.disabled::before,
+                    &.disabled::after {
+                        background-color: #aaaaaa;
+                    }
+                }
+            }
 
-			.close {
-				@include cross(20px, 20px, 4px, 7px, 0, #f5f5f5);
-				margin: 5px;
-				float: right;
-				cursor: pointer;
+            .close {
+                @include cross(20px, 20px, 4px, 7px, 0, #f5f5f5);
+                margin: 5px;
+                float: right;
+                cursor: pointer;
 
-				&:hover::before {
-					background-color: #ff0000;
-				}
-				&:hover::after {
-					background-color: #ff0000;
-				}
-			}
+                &:hover::before {
+                    background-color: #ff0000;
+                }
+                &:hover::after {
+                    background-color: #ff0000;
+                }
+            }
 
-			.add-user {
-				position: absolute;
-				right: 18px;
-				top: 32px;
-				z-index: 2;
-			}
-		}
+            .add-user {
+                position: absolute;
+                right: 18px;
+                top: 32px;
+                z-index: 2;
+            }
+        }
 
-		.error {
-			position: absolute;
-			left: 0;
-			top: 33px;
-			z-index: 1;
-			padding: 5px;
-			width: 93%;
-			height: auto;
-			border-radius: 7px;
-			overflow: hidden;
-			//box-shadow: 2px 2px 5px 1px #aa0000;
-			background-color: #aa0000;
-			color: #ffffff;
+        .error {
+            position: absolute;
+            left: 0;
+            top: 33px;
+            z-index: 1;
+            padding: 5px;
+            width: 93%;
+            height: auto;
+            border-radius: 7px;
+            overflow: hidden;
+            //box-shadow: 2px 2px 5px 1px #aa0000;
+            background-color: #aa0000;
+            color: #ffffff;
 
-			.error-list {
-				float: left;
-				width: 80%;
-			}
+            .error-list {
+                float: left;
+                width: 80%;
+            }
 
-			.error-close {
-				@include cross(12px, 12px, 2px, 5px, 0, #ffffff);
-				margin: 5px;
-				float: right;
-				cursor: pointer;
-			}
-		}
+            .error-close {
+                @include cross(12px, 12px, 2px, 5px, 0, #ffffff);
+                margin: 5px;
+                float: right;
+                cursor: pointer;
+            }
+        }
 
-		.form {
-			position: relative;
-			width: 100%;
+        .form {
+            position: relative;
+            width: 100%;
 
-			textarea {
-				display: block;
-				border: 1px solid #000000;
-				padding: 10px;
-				height: 60px;
-				width: 100%;
-				resize: vertical;
-			}
+            textarea {
+                display: block;
+                border: 1px solid #000000;
+                padding: 10px;
+                height: 60px;
+                width: 100%;
+                resize: vertical;
+            }
 
-			.indicator {
-				margin: 5px 0;
-				height: 20px;
-				color: #999999;
-			}
+            .indicator {
+                margin: 5px 0;
+                height: 20px;
+                color: #999999;
+            }
 
-			.fileuploader {
-				position: absolute;
-				top: 27px;
-				right: 3px;
+            .fileuploader {
+                position: absolute;
+                top: 27px;
+                right: 3px;
 
-				input {
-					display: none;
-				}
-			}
+                input {
+                    display: none;
+                }
+            }
 
-			.submitmode {
-				padding: 15px 0;
+            .submitmode {
+                padding: 15px 0;
 
-				button {
-					float: right;
-					font-weight: bold;
-				}
-			}
-		}
+                button {
+                    float: right;
+                    font-weight: bold;
+                }
+            }
+        }
 
-		.list {
-			list-style-type: none;
-			margin: 0;
-			padding: 0;
-			width: 100%;
-			height: 300px;
-			overflow-y: scroll;
+        .list {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 300px;
+            overflow-y: scroll;
 
-			li {
-				padding: 5px 10px;
+            li {
+                padding: 5px 10px;
 
-				&.highlighted {
-					color: red;
-					font-weight: bold;
-				}
+                &.highlighted {
+                    color: red;
+                    font-weight: bold;
+                }
 
-				.self {
-					color: #ff0000;
-				}
+                .self {
+                    color: #ff0000;
+                }
 
-				.time {
-					float: right;
-					margin: 0 0 0 20px;
-					color: #aaaaaa;
-				}
+                .time {
+                    float: right;
+                    margin: 0 0 0 20px;
+                    color: #aaaaaa;
+                }
 
-				.send-image {
-					max-width: 100%;
-					max-height: 120px;
-				}
+                .send-image {
+                    max-width: 100%;
+                    max-height: 120px;
+                }
 
-				.progressbar {
+                .progressbar {
 
-					.label {
-						display: block;
-					}
+                    .label {
+                        display: block;
+                    }
 
-					.linecontainer {
-						display: inline-block;
-						padding: 1px;
-						width: 220px;
-						height: 10px;
-						border: 1px solid #000000;
+                    .linecontainer {
+                        display: inline-block;
+                        padding: 1px;
+                        width: 220px;
+                        height: 10px;
+                        border: 1px solid #000000;
 
-						.line {
-							display: inline-block;
-							float: left;
-							height: 6px;
-							background-color: #009eff;
+                        .line {
+                            display: inline-block;
+                            float: left;
+                            height: 6px;
+                            background-color: #009eff;
 
-							&.finished {
-								background-color: #029500;
-							}
-						}
-					}
+                            &.finished {
+                                background-color: #029500;
+                            }
+                        }
+                    }
 
-					.numeric {
-						display: inline-block;
-						margin-left: 5px;
-					}
-				}
-			}
-		}
-	}
+                    .numeric {
+                        display: inline-block;
+                        margin-left: 5px;
+                    }
+                }
+            }
+        }
+    }
 
-	.drop-file {
-		position: relative;
+    .drop-file {
+        position: relative;
 
-		.drop-sign {
-			display: none;
-			position: absolute;
-			margin: 0;
-			border: 7px dashed #cccccc;
-			padding-top: 40%;
-			width: 100%;
-			height: 100%;
-			text-align: center;
-			background-color: rgba(200, 200, 200, 0.6);
-			color: #666666;
-			font : {
-				size : 20px;
-				weight: bold;
-			}
-			pointer-events: none;
-		}
+        .drop-sign {
+            display: none;
+            position: absolute;
+            margin: 0;
+            border: 7px dashed #cccccc;
+            padding-top: 40%;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            background-color: rgba(200, 200, 200, 0.6);
+            color: #666666;
+            font : {
+                size : 20px;
+                weight: bold;
+            }
+            pointer-events: none;
+        }
 
-		&.drop-active .drop-sign {
-			display: block;
-		}
-	}
+        &.drop-active .drop-sign {
+            display: block;
+        }
+    }
 }
