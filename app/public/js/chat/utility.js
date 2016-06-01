@@ -57,7 +57,8 @@ CHAT.DOM = {
     sendSwitch : '.send-switch',
     error : '.error',
     errorList : '.error .error-list',
-    errorClose : '.error .error-close'
+    errorClose : '.error .error-close',
+    progress : '.progress'
 };
 
 /**

@@ -145,23 +145,9 @@ CHAT.Events = {
                 files = Array.from(files);
             }
 
-            files.forEach(function(rawFile){
+            const fileCheck = function(fileData, rawFile){
                 let i;
                 const errors = [];
-                const fileData = {
-                    userId : CHAT.USER.id,
-                    fileData : {
-                        name : rawFile.name,
-                        size : rawFile.size,
-                        type : rawFile.type
-                    },
-                    file : null,  // base64
-                    store : store,
-                    type : '',
-                    time : Math.round(Date.now() / 1000),
-                    roomName : $box.data("room")
-                };
-
                 if (rawFile.size > maxSize){
                     errors.push({
                         type : "fileSize",
@@ -182,25 +168,55 @@ CHAT.Events = {
                         restrict : allowedTypes
                     });
                 }
+                return errors;
+            };
+
+            const filePrepare = function(rawFile){
+                const fileData = {
+                    userId : CHAT.USER.id,
+                    fileData : {
+                        name : rawFile.name,
+                        size : rawFile.size,
+                        type : rawFile.type
+                    },
+                    file : null,  // base64
+                    store : store,
+                    type : '',
+                    time : Math.round(Date.now() / 1000),
+                    roomName : $box.data("room")
+                };
+                const errors = fileCheck(fileData, rawFile);
 
                 if (errors.length === 0){
                     const reader = new FileReader();
                     (new Promise(function(resolve){
+                        CHAT.Method.progress($box, "show");
                         reader.onload = resolve;
                     })).then((function(){
-                        CHAT.FileTransfer.action('clientSend', [$box, fileData, reader, rawFile]);
+                        CHAT.Method.progress($box, "hide");
+                        return CHAT.FileTransfer.action('clientSend', [$box, fileData, reader, rawFile]);
                     }));
-                    /*
-                    HD.Function.promise(reader.onload).then((function(){
-                        CHAT.FileTransfer.action('clientSend', [$box, fileData, reader, rawFile]);
-                    }));
-                    */
                     reader.readAsDataURL(rawFile);
                 }
                 else {
                     CHAT.Method.showError($box, errors);
                 }
+            };
+
+            files.forEach(function(rawFile){
+                filePrepare(rawFile);
             });
+
+            /*
+            files.reduce(function(acc){
+                return acc.then(function(res){
+                    return filePrepare(acc).then(function(result){
+                        res.push(result);
+                        return res;
+                    });
+                });
+            }, Promise.resolve([]));
+            */
         },
 
         /**
