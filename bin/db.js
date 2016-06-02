@@ -10,9 +10,46 @@ var createDB = function(db, callback){
     db.createCollection('chat_users');
     db.collection('chat_users').deleteMany({});
     db.collection('chat_users').insertMany([
-        {"id" : 1, "name" : "Hörb",    "password" : "x", "lastActive" : new Date("2016-05-14T22:53:00Z"), "created" : new Date("2016-05-14T22:53:00Z")},
-        {"id" : 2, "name" : "Dan",     "password" : "x", "lastActive" : new Date("2016-05-14T22:53:00Z"), "created" : new Date("2016-05-14T23:07:00Z")},
-        {"id" : 3, "name" : "Pistike", "password" : "x", "lastActive" : new Date("2016-05-14T22:53:00Z"), "created" : new Date("2016-05-14T23:07:00Z")}
+        {
+            "id" : 1,
+            "name" : "Hörb",
+            "password" : "x",
+            "lastActive" : "2016-05-15 22:53:00",
+            "created" : "2016-05-14 22:53:00",
+            "active" : true
+        },
+        {
+            "id" : 2,
+            "name" : "Dan",
+            "password" : "x",
+            "lastActive" : "2016-05-16 10:53:00",
+            "created" : "2016-05-14 23:07:00",
+            "active" : true
+        },
+        {
+            "id" : 3,
+            "name" : "Pistike",
+            "password" : "x",
+            "lastActive" : null,
+            "created" : "2016-05-14 23:07:00",
+            "active" : true
+        },
+        {
+            "id" : 4,
+            "name" : "Kristóf",
+            "password" : "x",
+            "lastActive" : null,
+            "created" : "2016-05-14 23:07:00",
+            "active" : true
+        },
+        {
+            "id" : 5,
+            "name" : "Richi",
+            "password" : "x",
+            "lastActive" : null,
+            "created" : "2016-05-14 23:07:00",
+            "active" : true
+        }
     ], function(error, result){
         if (error) throw error;
         completed++;
@@ -27,26 +64,22 @@ var createDB = function(db, callback){
     db.collection('chat_messages').insertMany([
         {
             "userId" : 1,
-            "room" : "room-2-1463315399305",
-            "file" : null,
+            "room" : "room-1-1464111342853",
             "message" : "Hé, mi a pálya?",
-            "created" : new Date("2016-05-15T14:28:08Z")
+            "created" : "2016-05-24 19:35:46"
         }, {
             "userId" : 1,
-            "room" : "room-1-1463315409354",
+            "room" : "room-1-1464111818071",
             "file" : {
-                "name" : "parrot.jpg",
-                "size" : 124500,
+                "name" : "4.jpg",
+                "size" : 60205,
                 "type" : "image/jpeg",
                 "mainType" : "image",
                 "store" : "upload",
-                "base64" : "",
-                "zip" : [],
-                "url" : "/upload/1463315457937-356.jpg",
-                "deleted" : true
+                "data" : "upload/1464111822726-805.jpg",
+                "deleted" : false
             },
-            "message" : null,
-            "created" : new Date("2016-05-15T14:34:27Z")
+            "created" : "2016-05-24 19:43:42"
         }
     ], function(error, result){
         if (error) throw error;
@@ -63,14 +96,4 @@ MongoClient.connect(url, function(error, db){
     createDB(db, function(){
         db.close();
     });
-
-    /*
-    const cursor = db.collection('chat_users').find();
-    cursor.forEach(function(doc){
-        console.dir(doc);
-    }, function(){
-        console.log('END');
-        db.close();
-    });
-    */
 });

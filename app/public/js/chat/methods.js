@@ -241,6 +241,21 @@ CHAT.Method = {
     },
 
     /**
+     * Indeterminisztikus folyamatjelző kezelése
+     * @param {jQuery} $box
+     * @param {String} operation
+     */
+    progress : function($box, operation){
+        const $progress = $box.find(CHAT.DOM.progress);
+        if (operation === "show"){
+            $progress.show();
+        }
+        else {
+            $progress.hide();
+        }
+    },
+
+    /**
      * Módosítások az elküldött szövegben
      * @param {String} message
      * @returns {String}
