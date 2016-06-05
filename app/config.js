@@ -12,6 +12,12 @@ CHAT.Config = {
         messageWait : 6000
     },
 
+    notification : {
+        allowed : true,
+        visual : true,
+        sound : '/audio/notification.mp3'  // false|'path'
+    },
+
     messageSend : {
 
         escapeHTML : true,
@@ -73,7 +79,7 @@ CHAT.Config = {
             exec  : /^application\/(octet-stream|x-msdownload|(x-|dos-|x-win)?exe|msdos-windows|x-msdos-program)$/,
             file  : /^.*$/
         },
-        allowedTypes : ["image", "text", "pdf", "doc", "xls", "ppt", "zip", "audio", "video", "file"],
+        allowedTypes : ["image", "text", "pdf", "doc", "xls", "ppt", "zip", "audio", "video"],
         maxSize : 1000 * 1024 * 1024
 
     }

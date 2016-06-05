@@ -19,6 +19,8 @@
  *  menucompress.init();
  */
 
+/* global HD namespace */
+
 "use strict";
 
 HD.Site = namespace("HD.Site");
@@ -143,8 +145,8 @@ HD.Site.Hamburger = function(options){
         init : function(){
             $menu = $(options.menu);
             $menuClone = $menu.clone().css({
-                visibility: "hidden",
-                position: "absolute"
+                visibility : "hidden",
+                position : "absolute"
             }).appendTo('body').addClass(options.cloneClass);
 
             menuCalc();

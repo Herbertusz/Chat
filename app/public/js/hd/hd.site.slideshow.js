@@ -41,6 +41,8 @@
  *  carousel.init();
  */
 
+/* global HD namespace */
+
 "use strict";
 
 HD.Site = namespace("HD.Site");
@@ -90,6 +92,8 @@ HD.Site.Slideshow = function(options){
         dataJumper : "hd-site-slideshow-jump"
     };
 
+    options = $.extend({}, defaultOptions, options);
+
     /**
      * Jelenleg látható slide
      * @type {Number}
@@ -101,8 +105,6 @@ HD.Site.Slideshow = function(options){
      * @type {Number}
      */
     var timer = null;
-
-    options = $.extend({}, defaultOptions, options);
 
     /**
      * Jumper-ek létrehozása
@@ -178,7 +180,7 @@ HD.Site.Slideshow = function(options){
             var $items = $(options.items);
             var itemnum = $items.length;
             var $itemfrom = $items.filter(':data(' + options.dataItem + ',' + current + ')');
-            var $itemto = null;
+            var $itemto;
             if (loc === "left"){
                 current = (current + (itemnum - 1)) % itemnum;
             }

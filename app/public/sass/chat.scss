@@ -138,7 +138,7 @@ aside.online {
                 }
 
                 .throw {
-                    @include cross(13px, 13px, 2px, 6px, 0px, #000000);
+                    @include cross(13px, 13px, 3px, 6px, 0px, #000000);
                     cursor: pointer;
 
                     &:hover::before,
@@ -294,9 +294,25 @@ aside.online {
                 }
 
                 .progressbar {
+                    position: relative;
 
                     .label {
                         display: block;
+                    }
+
+                    .cancel {
+                        @include cross(13px, 13px, 3px, 6px, 0px, #ff0000);
+                        position: absolute;
+                        right: 0;
+                        top: 0;
+                        cursor: pointer;
+
+                        &:hover::before {
+                            background-color: #000000;
+                        }
+                        &:hover::after {
+                            background-color: #000000;
+                        }
                     }
 
                     .linecontainer {

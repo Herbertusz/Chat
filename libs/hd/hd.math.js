@@ -219,13 +219,13 @@ HD.Math = {
      * @param {String} [easing="swing"] animációs függvény
      */
     animate : function(func, callback, delay, range, easing){
-        var i, len, Easings;
-        var value = 0;
-        var steps = delay / 20;
+        let i, len;
+        let value = 0;
+        const steps = delay / 20;
         if (typeof range === "undefined") range = 1;
         if (typeof easing === "undefined") easing = "swing";
 
-        Easings = {
+        const Easings = {
             /**
              * Easing függvény (továbbiak: https://github.com/danro/jquery-easing/blob/master/jquery.easing.js)
              * @param {Number} t független változó (idő)
@@ -245,9 +245,9 @@ HD.Math = {
         // TODO: felül kell vizsgálni ezt a szerkezetet
         for (i = 0, len = Math.floor(steps); i <= len; i++){
             value = Easings[easing](i, 0, range, steps);
-            (function(value, currentStep){
+            (function(val, currentStep){
                 window.setTimeout(function(){
-                    func.call(this, value);
+                    func.call(this, val);
                     if (currentStep === len && typeof callback === "function"){
                         callback.call(this);
                     }

@@ -245,6 +245,11 @@ module.exports = function(server, ioSession, app){
             }, () => {});
         });
 
+        // Fájlátvitel megszakítás emitter
+        socket.on('abortFile', function(data){
+            socket.broadcast.to(data.roomName).emit('abortFile', data);
+        });
+
         // Üzenetírás emitter
         socket.on('typeMessage', function(data){
             socket.broadcast.to(data.roomName).emit('typeMessage', data);

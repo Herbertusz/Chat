@@ -206,17 +206,17 @@ CHAT.Events = {
             files.forEach(function(rawFile){
                 filePrepare(rawFile);
             });
+        },
 
-            /*
-            files.reduce(function(acc){
-                return acc.then(function(res){
-                    return filePrepare(acc).then(function(result){
-                        res.push(result);
-                        return res;
-                    });
-                });
-            }, Promise.resolve([]));
-            */
+        /**
+         * Fájlküldés megszakítása
+         * @param $progressbar
+         */
+        abortFile : function($progressbar){
+            const barId = $progressbar.data("id");
+            if (typeof CHAT.FileTransfer.XHR[barId] !== "undefined"){
+                CHAT.FileTransfer.XHR[barId].abort();
+            }
         },
 
         /**
@@ -386,6 +386,7 @@ CHAT.Events = {
                     userId : CHAT.USER.id,
                     roomName : extData.roomData.name
                 });
+                CHAT.Method.notification(extData.triggerId, "forceJoin");
             }
             else {
                 // Új user csatlakozott a csatornához
@@ -416,6 +417,7 @@ CHAT.Events = {
                     roomName : extData.roomData.name
                 });
                 CHAT.Method.changeBoxStatus($box, 'disabled');
+                CHAT.Method.notification(extData.triggerId, "forceLeave");
             }
             else {
                 CHAT.Method.appendSystemMessage($box, 'forceLeaveOther', extData.triggerId, extData.userId);
@@ -441,6 +443,7 @@ CHAT.Events = {
                 CHAT.Method.stopWrite($box, data.userId, '');
                 window.clearInterval(CHAT.timer.writing.timerID);
                 CHAT.timer.writing.timerID = null;
+                CHAT.Method.notification(data.userId, "message");
             }
         },
 
@@ -466,6 +469,34 @@ CHAT.Events = {
 
             if ($box.length > 0){
                 CHAT.FileTransfer.action('serverSend', [$box, data]);
+                CHAT.Method.stopWrite($box, data.userId, '');
+                window.clearInterval(CHAT.timer.writing.timerID);
+                CHAT.timer.writing.timerID = null;
+                CHAT.Method.notification(data.userId, "file");
+            }
+        },
+
+        /**
+         * Fájlátvitel megszakítása
+         * @param {Object} data
+         * @description data szerkezete: {
+         *     userId : Number,
+         *     fileData : {
+         *         name : String,
+         *         size : Number,
+         *         type : String
+         *     },
+         *     file : String,
+         *     store : String,
+         *     type : String,
+         *     time : Number,
+         *     roomName : String
+         * }
+         */
+        abortFile : function(data){
+            const $box = $(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`);
+
+            if ($box.length > 0){
                 CHAT.Method.stopWrite($box, data.userId, '');
                 window.clearInterval(CHAT.timer.writing.timerID);
                 CHAT.timer.writing.timerID = null;

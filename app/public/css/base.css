@@ -16,10 +16,10 @@
 .spacer-inline { padding-left: 10px; }
 
 .nowrap     { white-space: nowrap; }
-.h-first    { margin-left: 0px !important; }
-.h-last     { margin-right: 0px !important; }
-.v-first    { margin-top: 0px !important; }
-.v-last     { margin-bottom: 0px !important; }
+.h-first    { margin-left: 0 !important; }
+.h-last     { margin-right: 0 !important; }
+.v-first    { margin-top: 0 !important; }
+.v-last     { margin-bottom: 0 !important; }
 .stretch    { height: auto !important; }
 .resizeable { resize: vertical; }
 
@@ -32,13 +32,13 @@
 .italic { font-style: italic; }
 
 input, select {
-    outline-width: 0px;
+    outline-width: 0;
 }
 textarea {
     resize: none;
 }
 img {
-    border-width: 0px;
+    border-width: 0;
 }
 a {
     padding: 0;
