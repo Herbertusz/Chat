@@ -8,6 +8,9 @@ var ioExpressSession = require('socket.io-express-session');
 var HD = require(`${appRoot}/libs/hd/hd.math.js`);
 var Model;
 
+const fsAccess = promisify(fs.access);
+const fsUnlink = promisify(fs.unlink);
+
 module.exports = function(server, ioSession, app){
 
     Model = require(`${appRoot}/app/models/chat.js`)(app.get('db'));
@@ -61,16 +64,13 @@ module.exports = function(server, ioSession, app){
         const onlineUserIds = [];
         let key;
 
-        const fsAccess = promisify(fs.access);
-        const fsUnlink = promisify(fs.unlink);
-
         for (key in connectedUsers){
             onlineUserIds.push(connectedUsers[key].id);
         }
         rooms.forEach(function(room, index){
             if (room.userIds.length === 0 || HD.Math.Set.intersection(room.userIds, onlineUserIds).length === 0){
                 // fájlok törlése
-                Model.deleteFile(room.name, function(urls){
+                Model.deleteRoomFiles(room.name, function(urls){
                     for (let i = 0; i < urls.length; i++){
                         const path = `${app.get('public path')}/${urls[i]}`;
                         fsAccess(path, fs.W_OK)
@@ -248,6 +248,7 @@ module.exports = function(server, ioSession, app){
         // Fájlátvitel megszakítás emitter
         socket.on('abortFile', function(data){
             socket.broadcast.to(data.roomName).emit('abortFile', data);
+            // TODO: Model.deleteFile(data.time, () => {}); (nincs azonosító!)
         });
 
         // Üzenetírás emitter

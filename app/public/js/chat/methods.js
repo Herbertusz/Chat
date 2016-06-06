@@ -209,10 +209,13 @@ CHAT.Method = {
      * @param {String} direction
      * @param {Number} percent
      * @param {Number|null} barId - ha újat kell létrehozni, akkor null, egyébként egy létező progressbar id-ja
+     * @param {Boolean} cancelable
      * @returns {Number|null}
      */
-    progressbar : function($box, direction, percent, barId){
+    progressbar : function($box, direction, percent, barId, cancelable){
         const $list = $box.find(CHAT.DOM.list);
+        percent = Math.round(percent * 100);
+        cancelable = HD.Function.param(cancelable, true);
         const tpl = `
             <li>
                 <div class="progressbar" data-id="{BARID}">
@@ -230,21 +233,33 @@ CHAT.Method = {
             barId = HD.Number.getUniqueId();
             $list.append(tpl.replace("{BARID}", barId.toString()));
             CHAT.Util.scrollToBottom($box);
-            $list.find(CHAT.DOM.fileCancel).click(function(){
-                const $progressbar = $(this).parents('.progressbar');
-                CHAT.Events.Client.abortFile($progressbar);
-            });
+            if (cancelable){
+                $list.find('.cancel').click(function(){
+                    const $progressbar = $(this).parents('.progressbar');
+                    CHAT.Events.Client.abortFile($progressbar);
+                    $(this).hide();
+                });
+            }
+            else {
+                $list.find('.cancel').hide();
+            }
             return barId;
         }
         else {
             const $progressbar = $list.find('.progressbar').filter(`[data-id="${barId}"]`);
-            if (percent === 100){
-                $progressbar.find('.label').html(CHAT.Labels.file[`${direction}End`]());
-                $progressbar.find('.line').addClass('finished');
-                $progressbar.find('.cancel').hide();
+            if (direction === "abort"){
+                $progressbar.find('.label').html(CHAT.Labels.file[direction]());
+                $progressbar.find('.line').addClass('aborted');
             }
-            $progressbar.find('.line').css("width", `${percent}%`);
-            $progressbar.find('.numeric').html(CHAT.Labels.file.percent(percent));
+            else {
+                if (percent === 100){
+                    $progressbar.find('.label').html(CHAT.Labels.file[`${direction}End`]());
+                    $progressbar.find('.line').addClass('finished');
+                    $progressbar.find('.cancel').hide();
+                }
+                $progressbar.find('.line').css("width", `${percent}%`);
+                $progressbar.find('.numeric').html(CHAT.Labels.file.percent(percent));
+            }
             return null;
         }
     },
@@ -342,6 +357,8 @@ CHAT.Method = {
         else {
             $box.find(CHAT.DOM.indicator).html('');
         }
+        window.clearInterval(CHAT.timer.writing.timerID);
+        CHAT.timer.writing.timerID = null;
     },
 
     /**

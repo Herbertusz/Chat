@@ -441,14 +441,40 @@ CHAT.Events = {
             if ($box.length > 0){
                 CHAT.Method.appendUserMessage($box, data);
                 CHAT.Method.stopWrite($box, data.userId, '');
-                window.clearInterval(CHAT.timer.writing.timerID);
-                CHAT.timer.writing.timerID = null;
                 CHAT.Method.notification(data.userId, "message");
             }
         },
 
         /**
-         * Fájlküldés
+         * Fájlfogadás folyamata
+         * @param {Object} data
+         * @description data szerkezete: {
+         *     userId : Number,
+         *     roomName : String,
+         *     uploadedSize : Number,
+         *     fileSize : Number,
+         *     firstSend : Boolean
+         * }
+         */
+        fileReceive : function(data){
+            const $box = $(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`);
+
+            if (CHAT.USER.id !== data.userId){
+                if (data.firstSend){
+                    CHAT.Events.Server.barId = CHAT.Method.progressbar(
+                        $box, "get", data.uploadedSize / data.fileSize, null, false
+                    );
+                }
+                else {
+                    CHAT.Method.progressbar(
+                        $box, "get", data.uploadedSize / data.fileSize, CHAT.Events.Server.barId, false
+                    );
+                }
+            }
+        },
+
+        /**
+         * Fájlfogadás vége (a fájl átjött)
          * @param {Object} data
          * @description data szerkezete: {
          *     userId : Number,
@@ -470,14 +496,12 @@ CHAT.Events = {
             if ($box.length > 0){
                 CHAT.FileTransfer.action('serverSend', [$box, data]);
                 CHAT.Method.stopWrite($box, data.userId, '');
-                window.clearInterval(CHAT.timer.writing.timerID);
-                CHAT.timer.writing.timerID = null;
                 CHAT.Method.notification(data.userId, "file");
             }
         },
 
         /**
-         * Fájlátvitel megszakítása
+         * Fájlátvitel megszakítása a fogadó oldalon
          * @param {Object} data
          * @description data szerkezete: {
          *     userId : Number,
@@ -497,37 +521,7 @@ CHAT.Events = {
             const $box = $(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`);
 
             if ($box.length > 0){
-                CHAT.Method.stopWrite($box, data.userId, '');
-                window.clearInterval(CHAT.timer.writing.timerID);
-                CHAT.timer.writing.timerID = null;
-            }
-        },
-
-        /**
-         * Fájlfogadás
-         * @param {Object} data
-         * @description data szerkezete: {
-         *     userId : Number,
-         *     roomName : String,
-         *     uploadedSize : Number,
-         *     fileSize : Number,
-         *     firstSend : Boolean
-         * }
-         */
-        fileReceive : function(data){
-            const $box = $(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`);
-
-            if (CHAT.USER.id !== data.userId){
-                if (data.firstSend){
-                    CHAT.Events.Server.barId = CHAT.Method.progressbar(
-                        $box, "get", Math.round((data.uploadedSize / data.fileSize) * 100), null
-                    );
-                }
-                else {
-                    CHAT.Method.progressbar(
-                        $box, "get", Math.round((data.uploadedSize / data.fileSize) * 100), CHAT.Events.Server.barId
-                    );
-                }
+                CHAT.Method.progressbar($box, "abort", null, CHAT.Events.Server.barId, false);
             }
         },
 
@@ -553,8 +547,6 @@ CHAT.Events = {
                     writing.timerID = window.setInterval(function(){
                         if (!writing.event){
                             CHAT.Method.stopWrite($box, data.userId, writing.message);
-                            window.clearInterval(writing.timerID);
-                            writing.timerID = null;
                         }
                         writing.event = false;
                     }, writing.interval);

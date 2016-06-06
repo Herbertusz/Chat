@@ -51,7 +51,6 @@ CHAT.DOM = {
     message : '.message',
     file : '.fileuploader .file',
     fileTrigger : '.fileuploader .trigger',
-    fileCancel : '.progressbar .cancel',
     dropFile : '.drop-file',
     indicator : '.indicator',
     sendButton : '.send',

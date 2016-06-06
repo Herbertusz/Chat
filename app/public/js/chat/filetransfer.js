@@ -58,17 +58,17 @@ CHAT.FileTransfer = {
                 xhr.upload.onprogress = function(event){
                     if (event.lengthComputable){
                         const percent = event.loaded / event.total;
-                        CHAT.Method.progressbar($box, "send", Math.round(percent * 100), barId);
+                        CHAT.Method.progressbar($box, "send", percent, barId);
                     }
                 };
-                xhr.abort = function(){
-                    CHAT.Method.progressbar($box, "abort", 0, barId);
+                xhr.onabort = function(){
+                    CHAT.Method.progressbar($box, "abort", null, barId);
                     CHAT.socket.emit('abortFile', data);
                 };
                 xhr.onload = function(){
                     const response = JSON.parse(xhr.responseText);
                     data.file = response.filePath;
-                    CHAT.Method.progressbar($box, "send", 100, barId);
+                    CHAT.Method.progressbar($box, "send", 1, barId);
                     CHAT.Method.appendFile($box, data, true);
                     CHAT.socket.emit('sendFile', data);
                 };

@@ -331,6 +331,10 @@ aside.online {
                             &.finished {
                                 background-color: #029500;
                             }
+
+                            &.aborted {
+                                background-color: #e10000;
+                            }
                         }
                     }
 
