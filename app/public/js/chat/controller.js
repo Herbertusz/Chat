@@ -10,6 +10,12 @@ $(document).ready(function(){
         return $(CHAT.DOM.box).find(selector);
     };
 
+    $(document).hover(function(){
+        CHAT.notification = false;
+    }, function(){
+        CHAT.notification = true;
+    });
+
     // Csatorna létrehozása
     $(CHAT.DOM.start).click(function(){
         CHAT.Events.Client.createRoom();
@@ -101,24 +107,25 @@ $(document).ready(function(){
     });
 
     // Fájlküldés (drag-n-drop)
-    inBox(CHAT.DOM.dropFile).on(
-        'drag dragstart dragend dragover dragenter dragleave drop',
-        function(event){
-            event.preventDefault();
-            event.stopPropagation();
-        }
-    )
-    .on('dragover dragenter', function(){
-        $(this).addClass('drop-active');
-    })
-    .on('dragleave dragend drop', function(){
-        $(this).removeClass('drop-active');
-    })
-    .on('drop', function(event){
-        const $box = $(this).parents('.chat');
-        const files = event.originalEvent.dataTransfer.files;
-        CHAT.Events.Client.sendFile($box, files);
-    });
+    inBox(CHAT.DOM.dropFile)
+        .on(
+            'drag dragstart dragend dragover dragenter dragleave drop',
+            function(event){
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        )
+        .on('dragover dragenter', function(){
+            $(this).addClass('drop-active');
+        })
+        .on('dragleave dragend drop', function(){
+            $(this).removeClass('drop-active');
+        })
+        .on('drop', function(event){
+            const $box = $(this).parents('.chat');
+            const files = event.originalEvent.dataTransfer.files;
+            CHAT.Events.Client.sendFile($box, files);
+        });
 
     // Üzenet gépelése
     inBox(CHAT.DOM.message).keyup(function(event){

@@ -386,7 +386,7 @@ CHAT.Events = {
                     userId : CHAT.USER.id,
                     roomName : extData.roomData.name
                 });
-                CHAT.Method.notification(extData.triggerId, "forceJoin");
+                CHAT.Method.notification($box, extData.triggerId, "forceJoin");
             }
             else {
                 // Új user csatlakozott a csatornához
@@ -417,7 +417,7 @@ CHAT.Events = {
                     roomName : extData.roomData.name
                 });
                 CHAT.Method.changeBoxStatus($box, 'disabled');
-                CHAT.Method.notification(extData.triggerId, "forceLeave");
+                CHAT.Method.notification($box, extData.triggerId, "forceLeave");
             }
             else {
                 CHAT.Method.appendSystemMessage($box, 'forceLeaveOther', extData.triggerId, extData.userId);
@@ -441,7 +441,7 @@ CHAT.Events = {
             if ($box.length > 0){
                 CHAT.Method.appendUserMessage($box, data);
                 CHAT.Method.stopWrite($box, data.userId, '');
-                CHAT.Method.notification(data.userId, "message");
+                CHAT.Method.notification($box, data.userId, "message");
             }
         },
 
@@ -496,7 +496,7 @@ CHAT.Events = {
             if ($box.length > 0){
                 CHAT.FileTransfer.action('serverSend', [$box, data]);
                 CHAT.Method.stopWrite($box, data.userId, '');
-                CHAT.Method.notification(data.userId, "file");
+                CHAT.Method.notification($box, data.userId, "file");
             }
         },
 

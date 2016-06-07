@@ -284,10 +284,11 @@ CHAT.Method = {
 
     /**
      *
+     * @param {jQuery} $box
      * @param {Number} triggerId
      * @param {String} operation ("message", "file", "forceJoin", "forceLeave")
      */
-    notification : function(triggerId, operation){
+    notification : function($box, triggerId, operation){
         ;
     },
 

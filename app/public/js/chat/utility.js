@@ -6,7 +6,7 @@ var CHAT = window.CHAT || {};
 
 /**
  * Az aktuális kliensoldali user adatai
- * @type Object
+ * @type {Object}
  */
 CHAT.USER = {
     id : SERVER.userData.id,
@@ -15,7 +15,7 @@ CHAT.USER = {
 
 /**
  * Socket objektum
- * @type Object
+ * @type {Object}
  */
 CHAT.socket = io.connect(`http://${SERVER.domain}:${SERVER.wsport}/chat`);
 
@@ -24,6 +24,12 @@ CHAT.socket = io.connect(`http://${SERVER.domain}:${SERVER.wsport}/chat`);
  * @type {Object}
  */
 CHAT.lzma = LZMA;
+
+/**
+ * Értesítés (inaktív ablak)
+ * @type {Boolean}
+ */
+CHAT.notification = false;
 
 /**
  * jQuery szelektorok
