@@ -206,17 +206,17 @@ CHAT.Events = {
             files.forEach(function(rawFile){
                 filePrepare(rawFile);
             });
+        },
 
-            /*
-            files.reduce(function(acc){
-                return acc.then(function(res){
-                    return filePrepare(acc).then(function(result){
-                        res.push(result);
-                        return res;
-                    });
-                });
-            }, Promise.resolve([]));
-            */
+        /**
+         * Fájlküldés megszakítása
+         * @param $progressbar
+         */
+        abortFile : function($progressbar){
+            const barId = $progressbar.data("id");
+            if (typeof CHAT.FileTransfer.XHR[barId] !== "undefined"){
+                CHAT.FileTransfer.XHR[barId].abort();
+            }
         },
 
         /**
@@ -386,6 +386,7 @@ CHAT.Events = {
                     userId : CHAT.USER.id,
                     roomName : extData.roomData.name
                 });
+                CHAT.Method.notification(extData.triggerId, "forceJoin");
             }
             else {
                 // Új user csatlakozott a csatornához
@@ -416,6 +417,7 @@ CHAT.Events = {
                     roomName : extData.roomData.name
                 });
                 CHAT.Method.changeBoxStatus($box, 'disabled');
+                CHAT.Method.notification(extData.triggerId, "forceLeave");
             }
             else {
                 CHAT.Method.appendSystemMessage($box, 'forceLeaveOther', extData.triggerId, extData.userId);
@@ -439,13 +441,40 @@ CHAT.Events = {
             if ($box.length > 0){
                 CHAT.Method.appendUserMessage($box, data);
                 CHAT.Method.stopWrite($box, data.userId, '');
-                window.clearInterval(CHAT.timer.writing.timerID);
-                CHAT.timer.writing.timerID = null;
+                CHAT.Method.notification(data.userId, "message");
             }
         },
 
         /**
-         * Fájlküldés
+         * Fájlfogadás folyamata
+         * @param {Object} data
+         * @description data szerkezete: {
+         *     userId : Number,
+         *     roomName : String,
+         *     uploadedSize : Number,
+         *     fileSize : Number,
+         *     firstSend : Boolean
+         * }
+         */
+        fileReceive : function(data){
+            const $box = $(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`);
+
+            if (CHAT.USER.id !== data.userId){
+                if (data.firstSend){
+                    CHAT.Events.Server.barId = CHAT.Method.progressbar(
+                        $box, "get", data.uploadedSize / data.fileSize, null, false
+                    );
+                }
+                else {
+                    CHAT.Method.progressbar(
+                        $box, "get", data.uploadedSize / data.fileSize, CHAT.Events.Server.barId, false
+                    );
+                }
+            }
+        },
+
+        /**
+         * Fájlfogadás vége (a fájl átjött)
          * @param {Object} data
          * @description data szerkezete: {
          *     userId : Number,
@@ -467,36 +496,32 @@ CHAT.Events = {
             if ($box.length > 0){
                 CHAT.FileTransfer.action('serverSend', [$box, data]);
                 CHAT.Method.stopWrite($box, data.userId, '');
-                window.clearInterval(CHAT.timer.writing.timerID);
-                CHAT.timer.writing.timerID = null;
+                CHAT.Method.notification(data.userId, "file");
             }
         },
 
         /**
-         * Fájlfogadás
+         * Fájlátvitel megszakítása a fogadó oldalon
          * @param {Object} data
          * @description data szerkezete: {
          *     userId : Number,
-         *     roomName : String,
-         *     uploadedSize : Number,
-         *     fileSize : Number,
-         *     firstSend : Boolean
+         *     fileData : {
+         *         name : String,
+         *         size : Number,
+         *         type : String
+         *     },
+         *     file : String,
+         *     store : String,
+         *     type : String,
+         *     time : Number,
+         *     roomName : String
          * }
          */
-        fileReceive : function(data){
+        abortFile : function(data){
             const $box = $(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`);
 
-            if (CHAT.USER.id !== data.userId){
-                if (data.firstSend){
-                    CHAT.Events.Server.barId = CHAT.Method.progressbar(
-                        $box, "get", Math.round((data.uploadedSize / data.fileSize) * 100), null
-                    );
-                }
-                else {
-                    CHAT.Method.progressbar(
-                        $box, "get", Math.round((data.uploadedSize / data.fileSize) * 100), CHAT.Events.Server.barId
-                    );
-                }
+            if ($box.length > 0){
+                CHAT.Method.progressbar($box, "abort", null, CHAT.Events.Server.barId, false);
             }
         },
 
@@ -522,8 +547,6 @@ CHAT.Events = {
                     writing.timerID = window.setInterval(function(){
                         if (!writing.event){
                             CHAT.Method.stopWrite($box, data.userId, writing.message);
-                            window.clearInterval(writing.timerID);
-                            writing.timerID = null;
                         }
                         writing.event = false;
                     }, writing.interval);

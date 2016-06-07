@@ -72,8 +72,7 @@ router.get('/', function(req, res){
             messages = docs;
         })
         .catch(function(error){
-            console.log(error.name);
-            console.log(error.message);
+            console.log(error);
         })
         .then(function(){
             res.render('layout', {

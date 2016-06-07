@@ -124,10 +124,43 @@ var Model = function(db){
 
         /**
          * ?
+         * @param data
+         * @param callback
+         */
+        deleteFile : function(data, callback){
+            db.collection("chat_messages")
+                .find({"$and" : [
+                    {"data" : data},
+                    {"file" : {"$exists" : true}},
+                    {"file.store" : "upload"}
+                ]}, {
+                    "file" : 1
+                })
+                .limit(1)
+                .toArray()
+                .then(function(docs){
+                    const url = docs[0].file.data;
+                    db.collection("chat_messages")
+                        .updateOne({
+                            "_id" : docs[0]._id
+                        }, {
+                            "$set" : {
+                                "file.deleted" : true
+                            }
+                        });
+                    callback(url);
+                })
+                .catch(function(error){
+                    console.log(error);
+                });
+        },
+
+        /**
+         * ?
          * @param roomName
          * @param callback
          */
-        deleteFile : function(roomName, callback){
+        deleteRoomFiles : function(roomName, callback){
             db.collection("chat_messages")
                 .find({"$and" : [
                     {"room" : roomName},

@@ -26,10 +26,13 @@ CHAT.Labels = {
     },
     // Fájlátvitel
     'file' : {
+        'read' : () => `Fájl beolvasása...`,
         'send' : () => `Fájlküldés...`,
         'get' : () => `Fájlfogadás...`,
+        'abort' : () => `Fájlátvitel megszakítva`,
         'sendEnd' : () => `Fájlküldés befejeződött`,
         'getEnd' : () => `Fájlfogadás befejeződött`,
+        'cancel' : () => `Megszakítás`,
         'percent' : (percent) => `${percent}%`,
         'deleted' : `A fájlküldés meg lett szakítva vagy a fájl törölve lett`
     },
@@ -206,14 +209,18 @@ CHAT.Method = {
      * @param {String} direction
      * @param {Number} percent
      * @param {Number|null} barId - ha újat kell létrehozni, akkor null, egyébként egy létező progressbar id-ja
+     * @param {Boolean} cancelable
      * @returns {Number|null}
      */
-    progressbar : function($box, direction, percent, barId){
+    progressbar : function($box, direction, percent, barId, cancelable){
         const $list = $box.find(CHAT.DOM.list);
+        percent = Math.round(percent * 100);
+        cancelable = HD.Function.param(cancelable, true);
         const tpl = `
             <li>
                 <div class="progressbar" data-id="{BARID}">
                     <span class="label">${CHAT.Labels.file[direction]()}</span>
+                    <span class="cancel" title="${CHAT.Labels.file.cancel()}"></span>
                     <span class="linecontainer">
                         <span class="line" style="width: ${percent}%"></span>
                     </span>
@@ -226,16 +233,33 @@ CHAT.Method = {
             barId = HD.Number.getUniqueId();
             $list.append(tpl.replace("{BARID}", barId.toString()));
             CHAT.Util.scrollToBottom($box);
+            if (cancelable){
+                $list.find('.cancel').click(function(){
+                    const $progressbar = $(this).parents('.progressbar');
+                    CHAT.Events.Client.abortFile($progressbar);
+                    $(this).hide();
+                });
+            }
+            else {
+                $list.find('.cancel').hide();
+            }
             return barId;
         }
         else {
             const $progressbar = $list.find('.progressbar').filter(`[data-id="${barId}"]`);
-            if (percent === 100){
-                $progressbar.find('.label').html(CHAT.Labels.file[`${direction}End`]());
-                $progressbar.find('.line').addClass('finished');
+            if (direction === "abort"){
+                $progressbar.find('.label').html(CHAT.Labels.file[direction]());
+                $progressbar.find('.line').addClass('aborted');
             }
-            $progressbar.find('.line').css("width", `${percent}%`);
-            $progressbar.find('.numeric').html(CHAT.Labels.file.percent(percent));
+            else {
+                if (percent === 100){
+                    $progressbar.find('.label').html(CHAT.Labels.file[`${direction}End`]());
+                    $progressbar.find('.line').addClass('finished');
+                    $progressbar.find('.cancel').hide();
+                }
+                $progressbar.find('.line').css("width", `${percent}%`);
+                $progressbar.find('.numeric').html(CHAT.Labels.file.percent(percent));
+            }
             return null;
         }
     },
@@ -247,12 +271,24 @@ CHAT.Method = {
      */
     progress : function($box, operation){
         const $progress = $box.find(CHAT.DOM.progress);
+        const tpl = `
+            <span class="text">${CHAT.Labels.file.read()}</span>
+        `;
         if (operation === "show"){
-            $progress.show();
+            $progress.html(tpl).show();
         }
         else {
-            $progress.hide();
+            $progress.html('').hide();
         }
+    },
+
+    /**
+     *
+     * @param {Number} triggerId
+     * @param {String} operation ("message", "file", "forceJoin", "forceLeave")
+     */
+    notification : function(triggerId, operation){
+        ;
     },
 
     /**
@@ -321,6 +357,8 @@ CHAT.Method = {
         else {
             $box.find(CHAT.DOM.indicator).html('');
         }
+        window.clearInterval(CHAT.timer.writing.timerID);
+        CHAT.timer.writing.timerID = null;
     },
 
     /**

@@ -326,17 +326,6 @@ HD.Function = {
             }
         }
         return newParams;
-    },
-
-    /**
-     * Időzített aszinkron esemény promise-szá alakítása
-     * @param {Function} callback
-     * @returns {Promise}
-     */
-    promise : function(callback){
-        return new Promise(function(resolve, reject){
-            callback = resolve;
-        });
     }
 
 };
