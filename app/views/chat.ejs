@@ -58,17 +58,19 @@
                             </span>
                         </div>
                     <% } %>
-                    <div class="submitmode">
-                        <label>
-                            <input class="send-switch" type="checkbox" value="1"
-                                <% if (CHAT.Config.messageSend.defaultSendMode === 'enter'){ %>checked<% } %>
-                            />
-                            Küldés enter megnyomására
-                        </label>
-                        <button class="send <% if (CHAT.Config.messageSend.defaultSendMode === 'enter'){ %>hidden-weak<% } %>">
-                            Küldés
-                        </button>
-                    </div>
+                    <% if (CHAT.Config.messageSend.sendMode.allowed){ %>
+                        <div class="submitmode">
+                            <label>
+                                <input class="send-switch" type="checkbox" value="1"
+                                    <% if (CHAT.Config.messageSend.sendMode.default === 'enter'){ %>checked<% } %>
+                                />
+                                Küldés enter megnyomására
+                            </label>
+                            <button class="send <% if (CHAT.Config.messageSend.sendMode.default === 'enter'){ %>hidden-weak<% } %>">
+                                Küldés
+                            </button>
+                        </div>
+                    <% } %>
                 </div>
             </div>
         </section>

@@ -289,7 +289,9 @@ CHAT.Method = {
      * @param {String} operation ("message", "file", "forceJoin", "forceLeave")
      */
     notification : function($box, triggerId, operation){
-        ;
+        if (CHAT.Config.notification.allowed){
+            ;
+        }
     },
 
     /**
@@ -303,9 +305,9 @@ CHAT.Method = {
             message = CHAT.Util.escapeHtml(message);
         }
         const messageArray = message.split(HD.String.createRegExp(disablePattern));
-        if (CHAT.Config.messageSend.emoticonReplacement){
+        if (CHAT.Config.messageSend.emoticonReplacement.allowed){
             let icon;
-            const emoticons = CHAT.Config.messageSend.emoticons;
+            const emoticons = CHAT.Config.messageSend.emoticonReplacement.emoticons;
             for (icon in emoticons){
                 const escapedIcon = icon.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
                 messageArray[0] = messageArray[0].replace(
@@ -320,8 +322,8 @@ CHAT.Method = {
                 }
             }
         }
-        if (CHAT.Config.messageSend.bbCodeReplacement){
-            const bbCodes = CHAT.Config.messageSend.bbCodes;
+        if (CHAT.Config.messageSend.bbCodeReplacement.allowed){
+            const bbCodes = CHAT.Config.messageSend.bbCodeReplacement.bbCodes;
             bbCodes.forEach(function(code){
                 messageArray[0] = messageArray[0].replace(HD.String.createRegExp(code[0]), code[1]);
                 if (messageArray.length > 1){
