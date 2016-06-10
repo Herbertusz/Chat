@@ -289,8 +289,25 @@ CHAT.Method = {
      * @param {String} operation ("message", "file", "forceJoin", "forceLeave")
      */
     notification : function($box, triggerId, operation){
-        if (CHAT.Config.notification.allowed){
-            ;
+        const notif = CHAT.Config.notification;
+        if (notif.allowed){
+            if (notif.sound.allowed){
+                let audio = document.getElementById('notification-audio');
+                if (!audio){
+                    audio = document.createElement("audio");
+                    audio.oncanplaythrough = function(){
+                        audio.play();
+                    };
+                    audio.volume = 5;
+                    audio.preload = "auto";
+                    audio.style.display = "none";
+                    audio.src = notif.sound.audio;
+                    document.body.appendChild(audio);
+                }
+                else {
+                    audio.play();
+                }
+            }
         }
     },
 
