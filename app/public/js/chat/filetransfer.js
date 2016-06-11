@@ -1,3 +1,5 @@
+/* global LZMA */
+
 "use strict";
 
 var CHAT = window.CHAT || {};
@@ -13,6 +15,12 @@ CHAT.FileTransfer = {
      * @type Object
      */
     XHR : {},
+
+    /**
+     * Tömörítés
+     * @type {Object}
+     */
+    LZMA : LZMA,
 
     /**
      *
@@ -185,7 +193,7 @@ CHAT.FileTransfer = {
              * @param rawFile
              */
             clientSend : function($box, data, reader, rawFile){
-                CHAT.lzma.compress(reader.result, 1, function(result, error){
+                CHAT.FileTransfer.LZMA.compress(reader.result, 1, function(result, error){
                     if (error){
                         console.log(error);
                     }
@@ -205,7 +213,7 @@ CHAT.FileTransfer = {
              * @param data
              */
             serverSend : function($box, data){
-                CHAT.lzma.decompress(data.file, function(result, error){
+                CHAT.FileTransfer.LZMA.decompress(data.file, function(result, error){
                     if (error){
                         console.log(error);
                     }
@@ -229,7 +237,7 @@ CHAT.FileTransfer = {
                     arr[index] -= 128;
                 });
                 // FIXME: nem indul el a decompress
-                CHAT.lzma.decompress(msgData.fileZip, function(file, error){
+                CHAT.FileTransfer.LZMA.decompress(msgData.fileZip, function(file, error){
                     console.log(data);
                     if (error){
                         console.log(error);

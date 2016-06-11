@@ -13,7 +13,7 @@ module.exports = function(app){
         menu : [
             {
                 text : 'Előszoba',
-                url : '/'
+                url : '/index'
             },
             {
                 text : 'Chat',

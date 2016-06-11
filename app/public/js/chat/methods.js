@@ -41,6 +41,12 @@ CHAT.Labels = {
         'stillWrite' : (userName) => `${userName} éppen ír...`,
         'stopWrite' : (userName) => `${userName} szöveget írt be`
     },
+    'notification' : {
+        'message' : (userName) => `${userName} üzenetet írt`,
+        'file' : (userName) => `${userName} fájlt küldött`,
+        'forceJoin' : (userName) => `${userName} csatlakoztatott egy csatornához`,
+        'forceLeave' : (userName) => `${userName} kidobott egy csatornából`
+    },
     // Hibaüzenetek
     'error' : {
         'fileSize' : (size, maxSize) =>
@@ -284,13 +290,37 @@ CHAT.Method = {
 
     /**
      *
-     * @param {jQuery} $box
-     * @param {Number} triggerId
-     * @param {String} operation ("message", "file", "forceJoin", "forceLeave")
+     * @param {jQuery|Boolean} [$box]
+     * @param {Number} [triggerId]
+     * @param {String} [operation] ("message", "file", "forceJoin", "forceLeave")
      */
     notification : function($box, triggerId, operation){
         const notif = CHAT.Config.notification;
-        if (notif.allowed){
+        const userName = CHAT.Method.getUserName(triggerId);
+        const visualEffects = {
+            title : function(activate){
+                if (activate){
+                    document.title = CHAT.Labels.notification[operation](userName);
+                }
+                else {
+                    document.title = CHAT.Config.defaultTitle;
+                }
+            },
+            box : function(activate){
+                if (activate){
+                    $box.css("outline", "2px dashed red");
+                }
+                else {
+                    $(CHAT.DOM.box).css("outline", "0px solid transparent");
+                }
+            }
+        };
+        if (notif.allowed && CHAT.notificationStatus){
+            if (notif.visual.allowed){
+                notif.visual.types.forEach(function(type){
+                    visualEffects[type](true);
+                });
+            }
             if (notif.sound.allowed){
                 let audio = document.getElementById('notification-audio');
                 if (!audio){
@@ -298,7 +328,7 @@ CHAT.Method = {
                     audio.oncanplaythrough = function(){
                         audio.play();
                     };
-                    audio.volume = 5;
+                    audio.volume = 0.5;
                     audio.preload = "auto";
                     audio.style.display = "none";
                     audio.src = notif.sound.audio;
@@ -307,6 +337,14 @@ CHAT.Method = {
                 else {
                     audio.play();
                 }
+            }
+        }
+        else if (notif.allowed){
+            // vizuális effektek megszüntetése
+            if (notif.visual.allowed){
+                notif.visual.types.forEach(function(type){
+                    visualEffects[type](false);
+                });
             }
         }
     },
@@ -546,12 +584,14 @@ CHAT.Method = {
     changeBoxStatus : function($box, newStatus){
         if (newStatus === "enabled"){
             $box.find(CHAT.DOM.message).prop("disabled", false);
-            $box.find(CHAT.DOM.userThrow).removeClass("disabled");
+            $box.find(CHAT.DOM.userThrow).removeAttr('data-disabled');
+            $box.find(CHAT.DOM.fileTrigger).removeAttr('data-disabled');
             $box.removeAttr('data-disabled');
         }
         else if (newStatus === "disabled"){
             $box.find(CHAT.DOM.message).prop("disabled", true);
-            $box.find(CHAT.DOM.userThrow).addClass("disabled");
+            $box.find(CHAT.DOM.userThrow).attr('data-disabled', 'true');
+            $box.find(CHAT.DOM.fileTrigger).attr('data-disabled', 'true');
             $box.attr('data-disabled', 'true');
         }
     },
