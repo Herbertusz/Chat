@@ -60,8 +60,13 @@ HD.Site.Tab = function(options){
             options.$trigger.click(function(){
                 var group = $(this).data(options.dataGroup);
                 var id = $(this).data(options.dataId);
-                $(`:data(${options.dataGroup},${group})`).removeClass(options.activeClass);
-                $(`:data(${options.dataGroup},${group}):data(${options.dataId},${id})`).addClass(options.activeClass);
+                var $all = $('*');
+                $all.filter(function(){
+                    return $(this).data(options.dataGroup) === group;
+                }).removeClass(options.activeClass);
+                $all.filter(function(){
+                    return $(this).data(options.dataGroup) === group && $(this).data(options.dataId) === id;
+                }).addClass(options.activeClass);
             });
         }
 

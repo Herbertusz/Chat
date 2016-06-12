@@ -116,8 +116,10 @@ HD.Site.Slideshow = function(options){
         var $activeJumper;
         if ($jumpers && $jumpers.length > 0){
             $jumpers.removeClass(options.jumpers.activeClass);
-            if ($jumpers.data(options.dataJumper) !== undefined){
-                $activeJumper = $jumpers.filter(':data(' + options.dataJumper + ',' + current + ')');
+            if (typeof $jumpers.data(options.dataJumper) !== "undefined"){
+                $activeJumper = $jumpers.filter(function(){
+                    return $(this).data(options.dataJumper) === current;
+                });
             }
             else {
                 $activeJumper = $jumpers.eq(current);
@@ -179,7 +181,9 @@ HD.Site.Slideshow = function(options){
         step : function(loc){
             var $items = $(options.items);
             var itemnum = $items.length;
-            var $itemfrom = $items.filter(':data(' + options.dataItem + ',' + current + ')');
+            var $itemfrom = $items.filter(function(){
+                return $(this).data(options.dataItem) === current;
+            });
             var $itemto;
             if (loc === "left"){
                 current = (current + (itemnum - 1)) % itemnum;
@@ -190,7 +194,9 @@ HD.Site.Slideshow = function(options){
             else {
                 current = loc;
             }
-            $itemto = $items.filter(':data(' + options.dataItem + ',' + current + ')');
+            $itemto = $items.filter(function(){
+                return $(this).data(options.dataItem) === current;
+            });
             timerRestart();
             setJumper(current);
             if (options.cycle){
@@ -243,7 +249,7 @@ HD.Site.Slideshow = function(options){
             if ($jumpers && $jumpers.length > 0){
                 $jumpers.click(function(){
                     var num = 0;
-                    if ($jumpers.data(options.dataJumper) !== undefined){
+                    if (typeof $jumpers.data(options.dataJumper) !== "undefined"){
                         num = $(this).data(options.dataJumper);
                     }
                     else {
