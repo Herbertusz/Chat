@@ -118,7 +118,7 @@ HD.DOM = {
      *
      * @param {HTMLElement} element
      * @param {String} name
-     * @returns {Mixed}
+     * @returns {String}
      */
     getData : function(element, name){
         return element.getAttribute(`data-${name}`);
@@ -127,16 +127,33 @@ HD.DOM = {
     /**
      *
      * @param {HTMLElement} element
+     * @param {String} name
+     * @param {String} value
+     */
+    setData : function(element, name, value){
+        element.setAttribute(`data-${name}`, value);
+    },
+
+    /**
+     *
+     * @param {HTMLElement} element
      * @param {Boolean} [withEvents=false]
-     * @returns {HTMLElement}
+     * @returns {Node}
      */
     clone : function(element, withEvents){
         withEvents = HD.Function.param(withEvents, false);
+        const clone = element.cloneNode(true);
         if (!withEvents){
-            return element.cloneNode(true);
+            return clone;
         }
         else {
-            return $(element).clone(true, true).get(0);
+            //return $(element).clone(true, true).get(0);
+            const iterator = document.createNodeIterator(element, NodeFilter.SHOW_ELEMENT);
+            let elem;
+            while (elem = iterator.nextNode()){
+                const listeners = this.getHandlers(elem);
+                ;
+            }
         }
     },
 
@@ -152,6 +169,12 @@ HD.DOM = {
             target : target,
             eventName : eventName,
             handler : handler
+        });
+    },
+
+    getHandlers : function(element){
+        return this.eventListeners.filter(function(listener){
+            return listener.target === element;
         });
     }
 
