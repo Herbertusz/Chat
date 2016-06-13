@@ -131,7 +131,8 @@ CHAT.Util = {
      * @returns {jQuery} az elem másolata
      */
     cloneElement : function($element, $insert, prepend){
-        const $clone = $element.clone(true, true);
+        // const $clone = $element.clone(true, true);
+        const $clone = $(HD.DOM.clone($element.get(0), true));
 
         prepend = HD.Function.param(prepend, false);
         if (prepend){
