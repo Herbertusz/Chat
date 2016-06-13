@@ -7,7 +7,7 @@
  *  var timer = new HD.DateTime.Timer(-1);
  *  timer.set("00:10");
  *  timer.start(function(){
- *      $("#show-timer").html(this.get("mm:ss"));
+ *      element.innerHTML = this.get("mm:ss");
  *  }).reach(0, function(){
  *      this.stop();
  *  });

@@ -8,6 +8,12 @@ var CHAT = global.CHAT || {};
  */
 CHAT.Config = {
 
+    // Alapértelmezett szöveg a title tegben
+    defaultTitle : 'Chat',
+
+    // Várakozás tétlen állpotba állítás előtt ms-ban (5 perc)
+    idleTime : 300000,
+
     // Hibaüzenetek
     error : {
         // Hibaüzenet eltüntetése előtt eltelt idő

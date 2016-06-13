@@ -1,4 +1,4 @@
-/* global HD, SERVER, io, LZMA */
+/* global HD, SERVER, io */
 
 "use strict";
 
@@ -20,16 +20,10 @@ CHAT.USER = {
 CHAT.socket = io.connect(`http://${SERVER.domain}:${SERVER.wsport}/chat`);
 
 /**
- * Tömörítés
+ * Értesítés (inaktív ablak)
  * @type {Object}
  */
-CHAT.lzma = LZMA;
-
-/**
- * Értesítés (inaktív ablak)
- * @type {Boolean}
- */
-CHAT.notification = false;
+CHAT.notificationStatus = false;
 
 /**
  * jQuery szelektorok
@@ -86,7 +80,7 @@ CHAT.timer = {
         timerID : 0,
         interval : 1000
     },
-    idle : 300000
+    idle : CHAT.Config.idleTime
 };
 
 /**

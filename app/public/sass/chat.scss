@@ -146,8 +146,8 @@ aside.online {
                         background-color: #ff0000;
                     }
 
-                    &.disabled::before,
-                    &.disabled::after {
+                    &[data-disabled]::before,
+                    &[data-disabled]::after {
                         background-color: #aaaaaa;
                     }
                 }
@@ -246,6 +246,10 @@ aside.online {
                 position: absolute;
                 top: 27px;
                 right: 3px;
+
+                .trigger[data-disabled] {
+                    opacity: 0.5;
+                }
 
                 input {
                     display: none;

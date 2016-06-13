@@ -10,10 +10,12 @@ $(document).ready(function(){
         return $(CHAT.DOM.box).find(selector);
     };
 
+    // Értesítések állapotának beállítása
     $(document).hover(function(){
-        CHAT.notification = false;
+        CHAT.notificationStatus = false;
+        CHAT.Method.notification();
     }, function(){
-        CHAT.notification = true;
+        CHAT.notificationStatus = true;
     });
 
     // Csatorna létrehozása
@@ -38,15 +40,20 @@ $(document).ready(function(){
     });
     inBox(CHAT.DOM.addUser).click(function(){
         const $add = $(this);
-        $(CHAT.DOM.selectedUsers).each(function(){
-            CHAT.Events.Client.forceJoinRoom($add, Number($(this).val()));
-        });
-        $(CHAT.DOM.userSelect).prop("checked", false).trigger("change");
+        if (!$add.data("disabled")){
+            $(CHAT.DOM.selectedUsers).each(function(){
+                CHAT.Events.Client.forceJoinRoom($add, Number($(this).val()));
+            });
+            $(CHAT.DOM.userSelect).prop("checked", false).trigger("change");
+        }
     });
 
     // User kidobása csatornából
     inBox(CHAT.DOM.userThrow).click(function(){
-        CHAT.Events.Client.forceLeaveRoom($(this));
+        const $remove = $(this);
+        if (!$remove.data("disabled")){
+            CHAT.Events.Client.forceLeaveRoom($remove);
+        }
     });
 
     // Hibaüzenet eltüntetése
@@ -93,7 +100,10 @@ $(document).ready(function(){
 
     // Fájlküldés
     inBox(CHAT.DOM.fileTrigger).click(function(){
-        $(this).parents(CHAT.DOM.box).find(CHAT.DOM.file).trigger("click");
+        const $trigger = $(this);
+        if (!$trigger.data("disabled")){
+            $trigger.parents(CHAT.DOM.box).find(CHAT.DOM.file).trigger("click");
+        }
     });
     inBox(CHAT.DOM.file).change(function(){
         const $box = $(this).parents('.chat');

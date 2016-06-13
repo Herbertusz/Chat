@@ -62,7 +62,7 @@ const connectPromise = MongoClient
 
         // Route
         routes = [
-            ['/', require('./routes/index')],
+            ['/', require('./routes/index')],  // FIXME: az minden kérésnél lefut!!!
             ['/chat', require('./routes/chat')],
             ['/login', require('./routes/login')],
             ['/logout', require('./routes/logout')]
@@ -73,24 +73,15 @@ const connectPromise = MongoClient
 
         // Hibakezelők
         app.use(function(req, res, next){
-            const err = new Error('Not Found');
+            const err = new Error(`Not Found: ${req.originalUrl}`);
             err.status = 404;
             next(err);
         });
-        if (app.get('env') === 'development'){
-            app.use(function(err, req, res){
-                res.status(err.status || 500);
-                res.render('error', {
-                    message : err.message,
-                    error : err
-                });
-            });
-        }
         app.use(function(err, req, res){
             res.status(err.status || 500);
             res.render('error', {
                 message : err.message,
-                error : {}
+                error : err
             });
         });
 

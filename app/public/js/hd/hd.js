@@ -33,26 +33,25 @@ var namespace = function(namespaceString){
     return parent;
 };
 
-/**
- * jQuery data attribútum szelektor :data(név,érték)
- * @param {HTMLElement} obj aktuális DOM elem
- * @param {Number} index
- * @param {Array} meta szelektor adatai
- * @returns {Boolean} true, ha a szelektorra illeszkedik az aktuális DOM elem
- */
-$.expr[":"].data = function(obj, index, meta){
-    var args = meta[3].split(",");
-    if (args.length === 1){
-        return (typeof $(obj).data($.trim(args[0])) !== "undefined");
-    }
-    else if (args.length === 2){
-        // FIXME == helyett ===
-        return ($(obj).data($.trim(args[0])) == $.trim(args[1]));
-    }
-    else {
-        return false;
-    }
-};
+// /**
+//  * jQuery data attribútum szelektor :data(név,érték)
+//  * @param {HTMLElement} obj aktuális DOM elem
+//  * @param {Number} index
+//  * @param {Array} meta szelektor adatai
+//  * @returns {Boolean} true, ha a szelektorra illeszkedik az aktuális DOM elem
+//  */
+// $.expr[":"].data = function(obj, index, meta){
+//     var args = meta[3].split(",");
+//     if (args.length === 1){
+//         return (typeof $(obj).data($.trim(args[0])) !== "undefined");
+//     }
+//     else if (args.length === 2){
+//         return ($(obj).data($.trim(args[0])) == $.trim(args[1]));
+//     }
+//     else {
+//         return false;
+//     }
+// };
 
 /**
  * Webalkalmazás funkcióinak vezérlése (Module minta)
@@ -75,12 +74,12 @@ HD.Web = function(){
         },
 
         init : function(){
-            $(document).ready(function(){
+            document.addEventListener("DOMContentLoaded", function(){
                 for (i = 0; i < documentReady.length; i++){
                     documentReady[i].call(HD.Web);
                 }
             });
-            $(window).load(function(){
+            window.addEventListener("load", function(){
                 for (i = 0; i < windowLoad.length; i++){
                     windowLoad[i].call(HD.Web);
                 }

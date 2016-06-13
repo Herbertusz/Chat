@@ -40,9 +40,9 @@ HD.Site.Tooltip = function(options){
             return text;
         },
         position : {
-            my: "left+15 top+10",
-            at: "right bottom",
-            collision: "flip fit"
+            my : "left+15 top+10",
+            at : "right bottom",
+            collision : "flip fit"
         },
         positionMouse : true,
         drag : false,

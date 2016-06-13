@@ -66,7 +66,7 @@ CHAT.Events = {
             $users.find(CHAT.DOM.userItems).filter(':not(.cloneable)').each(function(){
                 currentUserIds.push(Number($(this).attr("data-id")));
             });
-            if (!$add.hasClass("disabled") && currentUserIds.indexOf(userId) === -1){
+            if (currentUserIds.indexOf(userId) === -1){
                 CHAT.Method.generateUserList($users, [userId]);
                 CHAT.socket.emit('roomForceJoin', {
                     triggerId : CHAT.USER.id,
@@ -86,24 +86,22 @@ CHAT.Events = {
             const roomName = $box.data("room");
             const userId = $user.data("id");
 
-            if (!$close.hasClass("disabled")){
-                if (userId === CHAT.USER.id){
-                    // kilépés
-                    $box.remove();
-                    CHAT.socket.emit('roomLeave', {
-                        userId : CHAT.USER.id,
-                        roomName : roomName
-                    });
-                }
-                else {
-                    // másik felhasználó kidobása
-                    $user.remove();
-                    CHAT.socket.emit('roomForceLeave', {
-                        triggerId : CHAT.USER.id,
-                        userId : userId,
-                        roomName : roomName
-                    });
-                }
+            if (userId === CHAT.USER.id){
+                // kilépés
+                $box.remove();
+                CHAT.socket.emit('roomLeave', {
+                    userId : CHAT.USER.id,
+                    roomName : roomName
+                });
+            }
+            else {
+                // másik felhasználó kidobása
+                $user.remove();
+                CHAT.socket.emit('roomForceLeave', {
+                    triggerId : CHAT.USER.id,
+                    userId : userId,
+                    roomName : roomName
+                });
             }
         },
 
