@@ -489,7 +489,7 @@
     "no-mixed-spaces-and-tabs": "warn",
     // disallow multiple empty lines
     "no-multiple-empty-lines": [
-      "error",
+      "warn",
       {
         "max": 2,
         "maxEOF": 1,
