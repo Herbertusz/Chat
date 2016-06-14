@@ -170,6 +170,33 @@ HD.DOM = {
             }));
         });
         return listenerIds;
+    },
+
+    /**
+     *
+     * @param {EventTarget|Array.<EventTarget>} targets
+     * @param {String} eventName
+     * @returns {Event}
+     */
+    trigger : function(targets, eventName){
+        if (!Array.isArray(targets)){
+            targets = [targets];
+        }
+        let eventObj;
+        if (typeof Event === "function"){
+            eventObj = new Event(eventName, {
+                bubbles : true,
+                cancelable : true
+            });
+        }
+        else {
+            eventObj = document.createEvent("Event");
+            eventObj.initEvent(eventName, true, true);
+        }
+        targets.forEach(function(target){
+            target.dispatchEvent(eventObj);
+        });
+        return eventObj;
     }
 
 };

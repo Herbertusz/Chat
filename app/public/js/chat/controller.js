@@ -22,6 +22,10 @@ $(document).ready(function(){
     });
 
     // Csatorna létrehozása
+    HD.DOM.event(HD.DOM.get(CHAT.DOM.start), "click", function(){
+        CHAT.Events.Client.createRoom();
+        HD.DOM.get(CHAT.DOM.userSelect).prop("checked", false).trigger("change");
+    });
     $(CHAT.DOM.start).click(function(){
         CHAT.Events.Client.createRoom();
         $(CHAT.DOM.userSelect).prop("checked", false).trigger("change");
