@@ -6,8 +6,11 @@ var CHAT = window.CHAT || {};
 
 $(document).ready(function(){
 
-    var inBox = function(selector){
+    var inBoxOld = function(selector){
         return $(CHAT.DOM.box).find(selector);
+    };
+    var inBox = function(selector){
+        return HD.DOM.find(HD.DOM.get(CHAT.DOM.box), selector);
     };
 
     // Értesítések állapotának beállítása
@@ -25,7 +28,7 @@ $(document).ready(function(){
     });
 
     // Kilépés csatornából
-    inBox(CHAT.DOM.close).click(function(){
+    HD.DOM.event(inBox(CHAT.DOM.close), "click", function(){
         CHAT.Events.Client.leaveRoom($(this).parents(CHAT.DOM.box));
     });
 
@@ -35,10 +38,10 @@ $(document).ready(function(){
             $(CHAT.DOM.box).filter(':not([data-disabled])').find(CHAT.DOM.addUser).show();
         }
         else {
-            inBox(CHAT.DOM.addUser).hide();
+            inBoxOld(CHAT.DOM.addUser).hide();
         }
     });
-    inBox(CHAT.DOM.addUser).click(function(){
+    inBoxOld(CHAT.DOM.addUser).click(function(){
         const $add = $(this);
         if (!$add.data("disabled")){
             $(CHAT.DOM.selectedUsers).each(function(){
@@ -49,7 +52,7 @@ $(document).ready(function(){
     });
 
     // User kidobása csatornából
-    inBox(CHAT.DOM.userThrow).click(function(){
+    inBoxOld(CHAT.DOM.userThrow).click(function(){
         const $remove = $(this);
         if (!$remove.data("disabled")){
             CHAT.Events.Client.forceLeaveRoom($remove);
@@ -57,7 +60,7 @@ $(document).ready(function(){
     });
 
     // Hibaüzenet eltüntetése
-    inBox(CHAT.DOM.errorClose).click(function(){
+    inBoxOld(CHAT.DOM.errorClose).click(function(){
         $(this).parents(CHAT.DOM.box).find(CHAT.DOM.error).hide();
     });
 
@@ -82,7 +85,7 @@ $(document).ready(function(){
     });
 
     // Üzenetküldés indítása ENTER leütésére
-    inBox(CHAT.DOM.message).keydown(function(event){
+    inBoxOld(CHAT.DOM.message).keydown(function(event){
         const $box = $(this).parents('.chat');
         if (event.which === HD.Misc.keys.ENTER){
             if (!event.shiftKey && $box.find(CHAT.DOM.sendSwitch).prop("checked")){
@@ -93,19 +96,19 @@ $(document).ready(function(){
     });
 
     // Üzenetküldés indítása gombnyomásra
-    inBox(CHAT.DOM.sendButton).click(function(){
+    inBoxOld(CHAT.DOM.sendButton).click(function(){
         const $box = $(this).parents('.chat');
         CHAT.Events.Client.sendMessage($box);
     });
 
     // Fájlküldés
-    inBox(CHAT.DOM.fileTrigger).click(function(){
+    inBoxOld(CHAT.DOM.fileTrigger).click(function(){
         const $trigger = $(this);
         if (!$trigger.data("disabled")){
             $trigger.parents(CHAT.DOM.box).find(CHAT.DOM.file).trigger("click");
         }
     });
-    inBox(CHAT.DOM.file).change(function(){
+    inBoxOld(CHAT.DOM.file).change(function(){
         const $box = $(this).parents('.chat');
         const files = $box.find(CHAT.DOM.file).get(0).files;
         if (files.length > 0){
@@ -117,7 +120,7 @@ $(document).ready(function(){
     });
 
     // Fájlküldés (drag-n-drop)
-    inBox(CHAT.DOM.dropFile)
+    inBoxOld(CHAT.DOM.dropFile)
         .on(
             'drag dragstart dragend dragover dragenter dragleave drop',
             function(event){
@@ -138,7 +141,7 @@ $(document).ready(function(){
         });
 
     // Üzenet gépelése
-    inBox(CHAT.DOM.message).keyup(function(event){
+    inBoxOld(CHAT.DOM.message).keyup(function(event){
         const $box = $(this).parents('.chat');
         if (event.which !== HD.Misc.keys.ENTER){
             CHAT.Events.Client.typeMessage($box);
@@ -146,7 +149,7 @@ $(document).ready(function(){
     });
 
     // Üzenetküldés módja
-    inBox(CHAT.DOM.sendSwitch).change(function(){
+    inBoxOld(CHAT.DOM.sendSwitch).change(function(){
         CHAT.Events.Client.sendMethod($(this));
     });
 
@@ -156,17 +159,17 @@ $(document).ready(function(){
         moving : false,
         x : 0
     };
-    inBox(CHAT.DOM.users).mousedown(function(event){
+    inBoxOld(CHAT.DOM.users).mousedown(function(event){
         event.preventDefault();
         userDrag.active = true;
         userDrag.x = event.pageX;
     });
-    inBox(CHAT.DOM.users).on("mouseup mouseleave", function(event){
+    inBoxOld(CHAT.DOM.users).on("mouseup mouseleave", function(event){
         event.preventDefault();
         userDrag.active = false;
         userDrag.moving = false;
     });
-    inBox(CHAT.DOM.users).mousemove(function(event){
+    inBoxOld(CHAT.DOM.users).mousemove(function(event){
         if (userDrag.active){
             if (userDrag.moving){
                 $(this).scrollLeft(userDrag.x - event.pageX);

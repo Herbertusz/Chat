@@ -29,7 +29,10 @@ router.post('/', function(req, res){
                 };
             }
             else {
-                req.session.login.error = 'Nem jó!!!';
+                req.session.login = {
+                    loginned : false,
+                    error : 'Nem jó!!!'
+                };
             }
             res.redirect('/');
         });

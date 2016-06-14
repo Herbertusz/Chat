@@ -17,45 +17,20 @@ HD.DOM = {
     /**
      *
      * @type {Array}
+     * @private
      */
     eventListeners : [],
 
     /**
      *
-     * @param {String} selector
-     * @returns {Array.<HTMLElement>}
-     */
-    getAll : function(selector){
-        return Array.from(document.querySelectorAll(selector));
-    },
-
-    /**
-     *
-     * @param {String} selector
-     * @returns {HTMLElement}
-     */
-    get : function(selector){
-        return document.querySelector(selector);
-    },
-
-    /**
-     *
      * @param {HTMLElement} element
-     * @param {String} selector
-     * @returns {Array.<HTMLElement>}
+     * @returns {Array.<Object>}
+     * @private
      */
-    findAll : function(element, selector){
-        return Array.from(element.querySelectorAll(selector));
-    },
-
-    /**
-     *
-     * @param {HTMLElement} element
-     * @param {String} selector
-     * @returns {HTMLElement}
-     */
-    find : function(element, selector){
-        return element.querySelector(selector);
+    getHandlers : function(element){
+        return HD.DOM.eventListeners.filter(function(listener){
+            return listener.target === element;
+        });
     },
 
     /**
@@ -63,6 +38,7 @@ HD.DOM = {
      * @param {HTMLElement} element
      * @param {String} selector
      * @returns {Boolean}
+     * @private
      */
     matches : function(element, selector){
         var p = Element.prototype;
@@ -70,6 +46,29 @@ HD.DOM = {
             return [].indexOf.call(document.querySelectorAll(s), this) !== -1;
         };
         return f.call(element, selector);
+    },
+
+    /**
+     *
+     * @param {String} selector
+     * @returns {Array.<HTMLElement>}
+     */
+    get : function(selector){
+        return Array.from(document.querySelectorAll(selector));
+    },
+
+    /**
+     *
+     * @param {Array.<HTMLElement>} elements
+     * @param {String} selector
+     * @returns {Array.<HTMLElement>}
+     */
+    find : function(elements, selector){
+        let find = [];
+        elements.forEach(function(elem){
+            find = find.concat(Array.from(elem.querySelectorAll(selector)));
+        });
+        return find;
     },
 
     /**
@@ -90,27 +89,12 @@ HD.DOM = {
      * @param {*} [value]
      * @returns {Array.<HTMLElement>}
      */
-    getByDataAll : function(name, value){
-        if (typeof value === "undefined"){
-            return this.getAll(`[data-${name}]`);
-        }
-        else {
-            return this.getAll(`[data-${name}="${value}"]`);
-        }
-    },
-
-    /**
-     *
-     * @param {String} name
-     * @param {*} [value]
-     * @returns {HTMLElement}
-     */
     getByData : function(name, value){
         if (typeof value === "undefined"){
-            return this.get(`[data-${name}]`);
+            return HD.DOM.get(`[data-${name}]`);
         }
         else {
-            return this.get(`[data-${name}="${value}"]`);
+            return HD.DOM.get(`[data-${name}="${value}"]`);
         }
     },
 
@@ -126,12 +110,14 @@ HD.DOM = {
 
     /**
      *
-     * @param {HTMLElement} element
+     * @param {Array.<HTMLElement>} elements
      * @param {String} name
      * @param {String} value
      */
-    setData : function(element, name, value){
-        element.setAttribute(`data-${name}`, value);
+    setData : function(elements, name, value){
+        elements.forEach(function(elem){
+            elem.setAttribute(`data-${name}`, value);
+        });
     },
 
     /**
@@ -142,40 +128,48 @@ HD.DOM = {
      */
     clone : function(element, withEvents){
         withEvents = HD.Function.param(withEvents, false);
-        const clone = element.cloneNode(true);
-        if (!withEvents){
-            return clone;
-        }
-        else {
-            //return $(element).clone(true, true).get(0);
+        const elementClone = element.cloneNode(true);
+        if (withEvents){
+            let elem, elemClone, listeners;
             const iterator = document.createNodeIterator(element, NodeFilter.SHOW_ELEMENT);
-            let elem;
-            while (elem = iterator.nextNode()){
-                const listeners = this.getHandlers(elem);
-                ;
+            const iteratorClone = document.createNodeIterator(elementClone, NodeFilter.SHOW_ELEMENT);
+            const addEvent = function(listener){
+                HD.DOM.event(elemClone, listener.eventName, listener.handler);
+            };
+            while ((elem = iterator.nextNode())){
+                listeners = HD.DOM.getHandlers(elem);
+                while ((elemClone = iteratorClone.nextNode())){
+                    if (elem.isEqualNode(elemClone)){
+                        listeners.forEach(addEvent);
+                        break;
+                    }
+                }
             }
         }
+        return elementClone;
     },
 
     /**
      *
-     * @param {EventTarget} target
+     * @param {EventTarget|Array.<EventTarget>} targets
      * @param {String} eventName
      * @param {Function} handler
+     * @returns {Array.<Number>}
      */
-    event : function(target, eventName, handler){
-        target.addEventListener(eventName, handler, false);
-        return this.eventListeners.push({
-            target : target,
-            eventName : eventName,
-            handler : handler
+    event : function(targets, eventName, handler){
+        const listenerIds = [];
+        if (!Array.isArray(targets)){
+            targets = [targets];
+        }
+        targets.forEach(function(target){
+            target.addEventListener(eventName, handler.bind(target), false);
+            listenerIds.push(HD.DOM.eventListeners.push({
+                target : target,
+                eventName : eventName,
+                handler : handler
+            }));
         });
-    },
-
-    getHandlers : function(element){
-        return this.eventListeners.filter(function(listener){
-            return listener.target === element;
-        });
+        return listenerIds;
     }
 
 };
