@@ -132,7 +132,7 @@ CHAT.Util = {
      */
     cloneElement : function($element, $insert, prepend){
         // const $clone = $element.clone(true, true);
-        const $clone = $(HD.DOM.clone($element.get(0), true));
+        const $clone = $(HD.DOM($element.get(0)).clone(true).elements[0]);
 
         prepend = HD.Function.param(prepend, false);
         if (prepend){

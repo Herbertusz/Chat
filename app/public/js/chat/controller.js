@@ -10,7 +10,7 @@ $(document).ready(function(){
         return $(CHAT.DOM.box).find(selector);
     };
     var inBox = function(selector){
-        return HD.DOM.find(HD.DOM.get(CHAT.DOM.box), selector);
+        return HD.DOM(CHAT.DOM.box).find(selector);
     };
 
     // Értesítések állapotának beállítása
@@ -22,17 +22,13 @@ $(document).ready(function(){
     });
 
     // Csatorna létrehozása
-    HD.DOM.event(HD.DOM.get(CHAT.DOM.start), "click", function(){
+    HD.DOM(CHAT.DOM.start).event("click", function(){
         CHAT.Events.Client.createRoom();
-        HD.DOM.get(CHAT.DOM.userSelect).prop("checked", false).trigger("change");
-    });
-    $(CHAT.DOM.start).click(function(){
-        CHAT.Events.Client.createRoom();
-        $(CHAT.DOM.userSelect).prop("checked", false).trigger("change");
+        HD.DOM(CHAT.DOM.userSelect).prop("checked", false).trigger("change");
     });
 
     // Kilépés csatornából
-    HD.DOM.event(inBox(CHAT.DOM.close), "click", function(){
+    inBox(CHAT.DOM.close).event("click", function(){
         CHAT.Events.Client.leaveRoom($(this).parents(CHAT.DOM.box));
     });
 
