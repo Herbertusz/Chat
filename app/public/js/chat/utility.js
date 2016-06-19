@@ -111,38 +111,32 @@ CHAT.Util = {
 
     /**
      * Doboz scrollozása az aljára
-     * @param {jQuery} $box doboz
+     * @param {HTMLElement} box doboz
      */
-    scrollToBottom : function($box){
-        let height = 0;
-        const $list = $box.find(CHAT.DOM.list);
-
-        $list.find('li').each(function(){
-            height += $(this).outerHeight();
-        });
-        $list.scrollTop(height);
+    scrollToBottom : function(box){
+        const list = HD.DOM(box).find(CHAT.DOM.list).elem();
+        list.scrollTop = list.scrollHeight;
     },
 
     /**
      * Elem rekurzív másolása eseménykezelőkkel együtt
-     * @param {jQuery} $element másolandó elem
-     * @param {jQuery} $insert beszúrás helye
+     * @param {HTMLElement} element másolandó elem
+     * @param {HTMLElement} insert beszúrás helye
      * @param {Boolean} [prepend=false] ha true, beszúrás az elejére
-     * @returns {jQuery} az elem másolata
+     * @returns {HTMLElement} az elem másolata
      */
-    cloneElement : function($element, $insert, prepend){
-        // const $clone = $element.clone(true, true);
-        const $clone = $(HD.DOM($element.get(0)).clone(true).elements[0]);
+    cloneElement : function(element, insert, prepend){
+        const Clone = HD.DOM(element).clone(true);
 
         prepend = HD.Function.param(prepend, false);
         if (prepend){
-            $clone.prependTo($insert);
+            insert.insertBefore(Clone.elem(), insert.firstChild);
         }
         else {
-            $clone.appendTo($insert);
+            insert.appendChild(Clone.elem());
         }
-        $clone.removeClass("cloneable");
-        return $clone;
+        Clone.class("remove", "cloneable");
+        return Clone.elem();
     }
 
 };

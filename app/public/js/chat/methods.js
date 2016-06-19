@@ -64,7 +64,7 @@ CHAT.Method = {
 
     /**
      * Felhasználói üzenet beszúrása
-     * @param {jQuery} $box
+     * @param {HTMLElement} box
      * @param {Object} data
      * @param {Boolean} [highlighted=false]
      * @description data szerkezete: {
@@ -74,44 +74,44 @@ CHAT.Method = {
      *     roomName : String
      * }
      */
-    appendUserMessage : function($box, data, highlighted){
+    appendUserMessage : function(box, data, highlighted){
         const time = HD.DateTime.format('H:i:s', data.time);
-        const $list = $box.find(CHAT.DOM.list);
+        const List = HD.DOM(box).find(CHAT.DOM.list);
         const userName = CHAT.Method.getUserName(data.userId);
         highlighted = HD.Function.param(highlighted, false);
 
-        $list.append(`
+        List.elem().innerHTML += `
             <li>
                 <span class="time">${time}</span>
                 <strong class="${highlighted ? "self" : ""}">${CHAT.Util.escapeHtml(userName)}</strong>:
                 <br />${CHAT.Method.replaceMessage(data.message)}
             </li>
-        `);
-        CHAT.Util.scrollToBottom($box);
+        `;
+        CHAT.Util.scrollToBottom(box);
     },
 
     /**
      * Rendszerüzenet beszúrása
-     * @param {jQuery} $box
+     * @param {HTMLElement} box
      * @param {String} type
      * @param {Number} userId
      * @param {Number} [otherUserId]
      */
-    appendSystemMessage : function($box, type, userId, otherUserId){
-        const $list = $box.find(CHAT.DOM.list);
+    appendSystemMessage : function(box, type, userId, otherUserId){
+        const List = HD.DOM(box).find(CHAT.DOM.list);
         const userName = CHAT.Method.getUserName(userId);
         const otherUserName = CHAT.Method.getUserName(otherUserId);
 
-        $list.append(`
+        List.elem().innerHTML += `
             <li class="highlighted">${CHAT.Labels.system[type](userName, otherUserName)}</li>
-        `);
+        `;
 
-        CHAT.Util.scrollToBottom($box);
+        CHAT.Util.scrollToBottom(box);
     },
 
     /**
      * Fájl beszúrása
-     * @param {jQuery} $box
+     * @param {HTMLElement} box
      * @param {Object} data
      * @param {Boolean} [highlighted=false]
      * @description data szerkezete: {
@@ -128,14 +128,14 @@ CHAT.Method = {
      *     roomName : String
      * }
      */
-    appendFile : function($box, data, highlighted){
-        let $element, tpl, imgSrc;
-        const $list = $box.find(CHAT.DOM.list);
+    appendFile : function(box, data, highlighted){
+        let tpl, imgSrc;
+        const List = HD.DOM(box).find(CHAT.DOM.list);
         const time = HD.DateTime.format('H:i:s', data.time);
         const userName = CHAT.Method.getUserName(data.userId);
         highlighted = HD.Function.param(highlighted, false);
 
-        const $listItem = $(`
+        const ListItem = HD.DOM(`
             <li>
                 <span class="time">${time}</span>
                 <strong class="${highlighted ? "self" : ""}">${CHAT.Util.escapeHtml(userName)}</strong>:
@@ -163,17 +163,16 @@ CHAT.Method = {
 
         const img = document.createElement('img');
         img.onload = function(){
-            $element = $(tpl);
-            $listItem.find('.filedisplay').append($element);
-            $list.append($listItem);
-            CHAT.Util.scrollToBottom($box);
+            ListItem.find('.filedisplay').elem().innerHTML = tpl;
+            List.elem().appendChild(ListItem);
+            CHAT.Util.scrollToBottom(box);
         };
         img.src = imgSrc;
     },
 
     /**
      * Fájl beszúrása
-     * @param {jQuery} $box
+     * @param {HTMLElement} box
      * @param {Object} data
      * @param {Boolean} [highlighted=false]
      * @description data szerkezete: {
@@ -190,13 +189,13 @@ CHAT.Method = {
      *     roomName : String
      * }
      */
-    appendDeletedFile : function($box, data, highlighted){
-        const $list = $box.find(CHAT.DOM.list);
+    appendDeletedFile : function(box, data, highlighted){
+        const List = HD.DOM(box).find(CHAT.DOM.list);
         const time = HD.DateTime.format('H:i:s', data.time);
         const userName = CHAT.Method.getUserName(data.userId);
         highlighted = HD.Function.param(highlighted, false);
 
-        const $listItem = $(`
+        const ListItem = HD.DOM(`
             <li>
                 <span class="time">${time}</span>
                 <strong class="${highlighted ? "self" : ""}">${CHAT.Util.escapeHtml(userName)}</strong>:
@@ -205,21 +204,21 @@ CHAT.Method = {
             </li>
         `);
 
-        $list.append($listItem);
-        CHAT.Util.scrollToBottom($box);
+        List.elem().appendChild(ListItem);
+        CHAT.Util.scrollToBottom(box);
     },
 
     /**
      * Folyamatjelzők kezelése
-     * @param {jQuery} $box
+     * @param {HTMLElement} box
      * @param {String} direction
      * @param {Number} percent
      * @param {Number|null} barId - ha újat kell létrehozni, akkor null, egyébként egy létező progressbar id-ja
      * @param {Boolean} cancelable
      * @returns {Number|null}
      */
-    progressbar : function($box, direction, percent, barId, cancelable){
-        const $list = $box.find(CHAT.DOM.list);
+    progressbar : function(box, direction, percent, barId, cancelable){
+        const List = HD.DOM(box).find(CHAT.DOM.list);
         percent = Math.round(percent * 100);
         cancelable = HD.Function.param(cancelable, true);
         const tpl = `
@@ -237,34 +236,34 @@ CHAT.Method = {
 
         if (!barId){
             barId = HD.Number.getUniqueId();
-            $list.append(tpl.replace("{BARID}", barId.toString()));
-            CHAT.Util.scrollToBottom($box);
+            List.elem().innerHTML += tpl.replace("{BARID}", barId.toString());
+            CHAT.Util.scrollToBottom(box);
             if (cancelable){
-                $list.find('.cancel').click(function(){
-                    const $progressbar = $(this).parents('.progressbar');
-                    CHAT.Events.Client.abortFile($progressbar);
-                    $(this).hide();
+                List.find('.cancel').event("click", function(){
+                    const Progressbar = HD.DOM(this).ancestor('.progressbar');
+                    CHAT.Events.Client.abortFile(Progressbar.elem());
+                    HD.DOM(this).class("add", "hidden-weak");
                 });
             }
             else {
-                $list.find('.cancel').hide();
+                List.find('.cancel').class("add", "hidden-weak");
             }
             return barId;
         }
         else {
-            const $progressbar = $list.find('.progressbar').filter(`[data-id="${barId}"]`);
+            const progressbar = List.find('.progressbar').filter(`[data-id="${barId}"]`);
             if (direction === "abort"){
-                $progressbar.find('.label').html(CHAT.Labels.file[direction]());
-                $progressbar.find('.line').addClass('aborted');
+                progressbar.find('.label').elem().innerHTML = CHAT.Labels.file[direction]();
+                progressbar.find('.line').class("add", "aborted");
             }
             else {
                 if (percent === 100){
-                    $progressbar.find('.label').html(CHAT.Labels.file[`${direction}End`]());
-                    $progressbar.find('.line').addClass('finished');
-                    $progressbar.find('.cancel').hide();
+                    progressbar.find('.label').elem().innerHTML = CHAT.Labels.file[`${direction}End`]();
+                    progressbar.find('.line').class("add", "finished");
+                    progressbar.find('.cancel').class("add", "hidden-weak");
                 }
-                $progressbar.find('.line').css("width", `${percent}%`);
-                $progressbar.find('.numeric').html(CHAT.Labels.file.percent(percent));
+                progressbar.find('.line').css({"width" : `${percent}%`});
+                progressbar.find('.numeric').elem().innerHTML = CHAT.Labels.file.percent(percent);
             }
             return null;
         }
@@ -272,29 +271,31 @@ CHAT.Method = {
 
     /**
      * Indeterminisztikus folyamatjelző kezelése
-     * @param {jQuery} $box
+     * @param {HTMLElement} box
      * @param {String} operation
      */
-    progress : function($box, operation){
-        const $progress = $box.find(CHAT.DOM.progress);
+    progress : function(box, operation){
+        const Progress = HD.DOM(box).find(CHAT.DOM.progress);
         const tpl = `
             <span class="text">${CHAT.Labels.file.read()}</span>
         `;
         if (operation === "show"){
-            $progress.html(tpl).show();
+            Progress.elem().innerHTML = tpl;
+            Progress.class("remove", "hidden-weak");
         }
         else {
-            $progress.html('').hide();
+            Progress.class("add", "hidden-weak");
+            Progress.elem().innerHTML = '';
         }
     },
 
     /**
      *
-     * @param {jQuery|Boolean} [$box]
+     * @param {HTMLElement|Boolean} [box]
      * @param {Number} [triggerId]
      * @param {String} [operation] ("message", "file", "forceJoin", "forceLeave")
      */
-    notification : function($box, triggerId, operation){
+    notification : function(box, triggerId, operation){
         const notif = CHAT.Config.notification;
         const userName = CHAT.Method.getUserName(triggerId);
         const visualEffects = {
@@ -308,10 +309,10 @@ CHAT.Method = {
             },
             box : function(activate){
                 if (activate){
-                    $box.css("outline", "2px dashed red");
+                    box.css({"outline" : "2px dashed red"});
                 }
                 else {
-                    $(CHAT.DOM.box).css("outline", "0px solid transparent");
+                    HD.DOM(CHAT.DOM.box).css({"outline" : "0px solid transparent"});
                 }
             }
         };
@@ -322,7 +323,7 @@ CHAT.Method = {
                 });
             }
             if (notif.sound.allowed){
-                let audio = document.getElementById('notification-audio');
+                let audio = HD.DOM('#notification-audio').elem();
                 if (!audio){
                     audio = document.createElement("audio");
                     audio.oncanplaythrough = function(){
@@ -392,28 +393,28 @@ CHAT.Method = {
 
     /**
      * Gépelés jelzése
-     * @param {jQuery} $box
+     * @param {HTMLElement} box
      * @param {Number} userId
      */
-    stillWrite : function($box, userId){
+    stillWrite : function(box, userId){
         const userName = CHAT.Method.getUserName(userId);
-        $box.find(CHAT.DOM.indicator).html(CHAT.Labels.message.stillWrite(userName));
+        HD.DOM(box).find(CHAT.DOM.indicator).elem().innerHTML = CHAT.Labels.message.stillWrite(userName);
     },
 
     /**
      * Gépelés megállásának lekezelése
-     * @param {jQuery} $box
+     * @param {HTMLElement} box
      * @param {Number} userId
      * @param {String} message
      */
-    stopWrite : function($box, userId, message){
+    stopWrite : function(box, userId, message){
         const userName = CHAT.Method.getUserName(userId);
 
         if (message.trim().length > 0){
-            $box.find(CHAT.DOM.indicator).html(CHAT.Labels.message.stopWrite(userName));
+            HD.DOM(box).find(CHAT.DOM.indicator).elem().innerHTML = CHAT.Labels.message.stopWrite(userName);
         }
         else {
-            $box.find(CHAT.DOM.indicator).html('');
+            HD.DOM(box).find(CHAT.DOM.indicator).elem().innerHTML = '';
         }
         window.clearInterval(CHAT.timer.writing.timerID);
         CHAT.timer.writing.timerID = null;
@@ -421,20 +422,20 @@ CHAT.Method = {
 
     /**
      * Hibaüzenetek kiírása
-     * @param {jQuery} $box
+     * @param {HTMLElement} box
      * @param {Array} errors
      */
-    showError : function($box, errors){
+    showError : function(box, errors){
+        const Box = HD.DOM(box);
         const errorMessages = [];
         errors.forEach(function(error){
             errorMessages.push(CHAT.Labels.error[error.type](error.value, error.restrict));
         });
-        $box.find(CHAT.DOM.errorList).html(errorMessages.join("<br />"));
-        $box.find(CHAT.DOM.error).show();
-        setTimeout(function(){
-            $box.find(CHAT.DOM.error).fadeOut(3000, function(){
-                $box.find(CHAT.DOM.errorList).html('');
-            });
+        Box.find(CHAT.DOM.errorList).elem().innerHTML(errorMessages.join("<br />"));
+        Box.find(CHAT.DOM.error).class("remove", "hidden-weak");
+        window.setTimeout(function(){
+            Box.find(CHAT.DOM.error).class("add", "hidden-weak");
+            Box.find(CHAT.DOM.errorList).elem().innerHTML = '';
         }, CHAT.Config.error.messageWait);
     },
 
@@ -444,69 +445,69 @@ CHAT.Method = {
      * @returns {String}
      */
     getUserName : function(userId){
-        const $element = $(CHAT.DOM.onlineListItems).filter(`[data-id="${userId}"]`);
-        return $element.data("name");
+        const Element = HD.DOM(CHAT.DOM.onlineListItems).filter(`[data-id="${userId}"]`);
+        return Element.data("name");
     },
 
     /**
      * Doboz tetején lévő felhasználólista létrehozása
-     * @param {jQuery} $to
+     * @param {HTMLElement} to
      * @param {Array} userIds
      * @param {Boolean} [regenerate=false]
      */
-    generateUserList : function($to, userIds, regenerate){
+    generateUserList : function(to, userIds, regenerate){
         regenerate = HD.Function.param(regenerate, false);
 
         if (regenerate){
-            $to.children(':not(.cloneable)').remove();
+            HD.DOM(to.childNodes).filter(':not(.cloneable)').remove();
         }
-        $(CHAT.DOM.onlineListItems).each(function(){
-            let $user;
-            const $this = $(this);
-            const currentUserId = $this.data("id");
+        HD.DOM(CHAT.DOM.onlineListItems).elements.forEach(function(onlineListItem){
+            let user;
+            const currentUserId = HD.DOM(onlineListItem).data("id");
             if (userIds.indexOf(currentUserId) > -1){
-                $user = CHAT.Util.cloneElement($to.find('.cloneable'), $to, currentUserId === CHAT.USER.id);
-                $user.attr("data-id", currentUserId);
-                $user.find('.status').addClass(CHAT.Method.getStatus($this)).addClass("run");
-                $user.find('.name').html(CHAT.Method.getUserName(currentUserId));
+                user = CHAT.Util.cloneElement(HD.DOM(to).find('.cloneable').elem(), to, currentUserId === CHAT.USER.id);
+                const User = HD.DOM(user);
+                User.data("id", currentUserId);
+                User.find('.status').class("add", CHAT.Method.getStatus(onlineListItem)).class("add", "run");
+                User.find('.name').elem().innerHTML = CHAT.Method.getUserName(currentUserId);
             }
         });
     },
 
     /**
      * Státuszjelző DOM-elem módosítása
-     * @param {jQuery} $elem
+     * @param {HTMLElement} elem
      * @param {String} status
      */
-    setStatus : function($elem, status){
+    setStatus : function(elem, status){
         let n;
-        const $statusElem = $elem.find('.status');
+        const StatusElem = HD.DOM(elem).find('.status');
         const statuses = ["on", "busy", "inv", "off"];
 
         if (status === "idle"){
-            $statusElem.addClass("idle");
+            StatusElem.class("add", "idle");
         }
         else {
-            $statusElem.removeClass("idle");
+            StatusElem.class("remove", "idle");
             for (n = 0; n < statuses.length; n++){
-                $statusElem.removeClass(statuses[n]);
+                StatusElem.class("remove", statuses[n]);
             }
-            $statusElem.addClass(status);
+            StatusElem.class("add", status);
         }
     },
 
     /**
      * Státuszjelző DOM-elem lekérdezése
-     * @param {jQuery} $elem
+     * @param {HTMLElement} elem
      * @returns {String}
      */
-    getStatus : function($elem){
+    getStatus : function(elem){
         let n, status;
-        const $statusElem = $elem.find('.status');
+        const StatusElem = HD.DOM(elem).find('.status');
         const statuses = ["on", "busy", "idle", "inv", "off"];
 
         for (n = 0; n < statuses.length; n++){
-            if ($statusElem.hasClass(statuses[n])){
+            if (StatusElem.class("contains", statuses[n])){
                 status = statuses[n];
                 break;
             }
@@ -526,20 +527,19 @@ CHAT.Method = {
             isIdle = connectedUsers[socketId].isIdle;
             onlineUserStatuses[connectedUsers[socketId].id] = isIdle ? "idle" : connectedUsers[socketId].status;
         }
-        $(CHAT.DOM.onlineListItems).each(function(){
-            const $this = $(this);
-            const currentId = $this.data("id");
+        HD.DOM(CHAT.DOM.onlineListItems).elements.forEach(function(onlineListItem){
+            const currentId = HD.DOM(onlineListItem).data("id");
             if (typeof onlineUserStatuses[currentId] !== "undefined"){
-                CHAT.Method.setStatus($this, onlineUserStatuses[currentId]);
+                CHAT.Method.setStatus(onlineListItem, onlineUserStatuses[currentId]);
             }
             else {
-                CHAT.Method.setStatus($this, "off");
+                CHAT.Method.setStatus(onlineListItem, "off");
             }
         });
-        $(CHAT.DOM.box).each(function(){
-            $(this).find(CHAT.DOM.userItems).each(function(){
-                const onlineStatus = onlineUserStatuses[$(this).attr("data-id")];
-                CHAT.Method.setStatus($(this), onlineStatus || "off");
+        HD.DOM(CHAT.DOM.box).elements.forEach(function(box){
+            HD.DOM(box).find(CHAT.DOM.userItems).elements.forEach(function(userItem){
+                const onlineStatus = onlineUserStatuses[HD.DOM(userItem).data("id")];
+                CHAT.Method.setStatus(userItem, onlineStatus || "off");
             });
         });
     },
@@ -552,7 +552,7 @@ CHAT.Method = {
     changeUserStatus : function(newStatus){
         let socketId;
         let thisSocket = null;
-        const connectedUsers = $(CHAT.DOM.online).data("connectedUsers");
+        const connectedUsers = HD.DOM(CHAT.DOM.online).data("connectedUsers");
 
         for (socketId in connectedUsers){
             if (connectedUsers[socketId].id === CHAT.USER.id){
@@ -572,37 +572,38 @@ CHAT.Method = {
                 connectedUsers[thisSocket].status = newStatus;
             }
         }
-        $(CHAT.DOM.online).data("connectedUsers", connectedUsers);
+        HD.DOM(CHAT.DOM.online).data("connectedUsers", connectedUsers);
         return connectedUsers;
     },
 
     /**
      * Doboz aktiválása/inaktiválása
-     * @param {jQuery} $box
+     * @param {HTMLElement} box
      * @param {String} newStatus "enabled"|"disabled"
      */
-    changeBoxStatus : function($box, newStatus){
+    changeBoxStatus : function(box, newStatus){
+        const Box = HD.DOM(box);
         if (newStatus === "enabled"){
-            $box.find(CHAT.DOM.message).prop("disabled", false);
-            $box.find(CHAT.DOM.userThrow).removeAttr('data-disabled');
-            $box.find(CHAT.DOM.fileTrigger).removeAttr('data-disabled');
-            $box.removeAttr('data-disabled');
+            Box.find(CHAT.DOM.message).prop("disabled", "false");
+            Box.find(CHAT.DOM.userThrow).data("disabled", "false");
+            Box.find(CHAT.DOM.fileTrigger).data("disabled", "false");
+            Box.data("disabled", "false");
         }
         else if (newStatus === "disabled"){
-            $box.find(CHAT.DOM.message).prop("disabled", true);
-            $box.find(CHAT.DOM.userThrow).attr('data-disabled', 'true');
-            $box.find(CHAT.DOM.fileTrigger).attr('data-disabled', 'true');
-            $box.attr('data-disabled', 'true');
+            Box.find(CHAT.DOM.message).prop("disabled", "true");
+            Box.find(CHAT.DOM.userThrow).data("disabled", "true");
+            Box.find(CHAT.DOM.fileTrigger).data("disabled", "true");
+            Box.data("disabled", "true");
         }
     },
 
     /**
      * Doboz kitöltése DB-ből származó adatokkal
-     * @param {jQuery} $box
+     * @param {HTMLElement} box
      * @param {String} roomName
      * @param {Function} [callback]
      */
-    fillBox : function($box, roomName, callback){
+    fillBox : function(box, roomName, callback){
         callback = HD.Function.param(callback, function(){});
 
         $.ajax({
@@ -641,7 +642,7 @@ CHAT.Method = {
                     const timestamp = Date.parse(msgData.created.replace(/ /g, 'T')) / 1000;
 
                     if (typeof msgData.message !== "undefined"){
-                        CHAT.Method.appendUserMessage($box, {
+                        CHAT.Method.appendUserMessage(box, {
                             userId : msgData.userId,
                             time : timestamp,
                             message : msgData.message,
@@ -662,7 +663,7 @@ CHAT.Method = {
                             time : timestamp,
                             roomName : roomName
                         };
-                        CHAT.FileTransfer.action('receive', [$box, data, msgData]);
+                        CHAT.FileTransfer.action('receive', [box, data, msgData]);
                     }
                 });
                 callback();

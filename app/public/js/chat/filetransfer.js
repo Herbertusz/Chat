@@ -6,13 +6,13 @@ var CHAT = window.CHAT || {};
 
 /**
  *
- * @type Object
+ * @type {Object}
  */
 CHAT.FileTransfer = {
 
     /**
      *
-     * @type Object
+     * @type {Object.<XMLHttpRequest>}
      */
     XHR : {},
 
@@ -24,22 +24,22 @@ CHAT.FileTransfer = {
 
     /**
      *
-     * @type Object
+     * @type {Object}
      */
     strategies : {
 
         /**
          *
-         * @type Object
+         * @type {Object}
          */
         upload : {
 
             /**
              * Fájlfeltöltés, url tárolása db-ben
-             * @param $box
-             * @param data
-             * @param reader
-             * @param rawFile
+             * @param {HTMLElement} box
+             * @param {Object} data
+             * @param {FileReader} reader
+             * @param {Object} rawFile
              * @returns {XMLHttpRequest}
              * @description data szerkezete: {
              *     userId : Number,
@@ -55,9 +55,9 @@ CHAT.FileTransfer = {
              *     roomName : String
              * }
              */
-            clientSend : function($box, data, reader, rawFile){
+            clientSend : function(box, data, reader, rawFile){
                 const fileData = JSON.stringify(data);
-                const barId = CHAT.Method.progressbar($box, "send", 0, null);
+                const barId = CHAT.Method.progressbar(box, "send", 0, null);
                 const xhr = new XMLHttpRequest();
                 xhr.open("POST", "/chat/uploadfile");
                 xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
@@ -66,18 +66,18 @@ CHAT.FileTransfer = {
                 xhr.upload.onprogress = function(event){
                     if (event.lengthComputable){
                         const percent = event.loaded / event.total;
-                        CHAT.Method.progressbar($box, "send", percent, barId);
+                        CHAT.Method.progressbar(box, "send", percent, barId);
                     }
                 };
                 xhr.onabort = function(){
-                    CHAT.Method.progressbar($box, "abort", null, barId);
+                    CHAT.Method.progressbar(box, "abort", null, barId);
                     CHAT.socket.emit('abortFile', data);
                 };
                 xhr.onload = function(){
                     const response = JSON.parse(xhr.responseText);
                     data.file = response.filePath;
-                    CHAT.Method.progressbar($box, "send", 1, barId);
-                    CHAT.Method.appendFile($box, data, true);
+                    CHAT.Method.progressbar(box, "send", 1, barId);
+                    CHAT.Method.appendFile(box, data, true);
                     CHAT.socket.emit('sendFile', data);
                 };
                 xhr.send(rawFile);
@@ -87,8 +87,8 @@ CHAT.FileTransfer = {
 
             /**
              *
-             * @param $box
-             * @param data
+             * @param {HTMLElement} box
+             * @param {Object} data
              * @description data szerkezete: {
              *     userId : Number,
              *     fileData : {
@@ -103,15 +103,15 @@ CHAT.FileTransfer = {
              *     roomName : String
              * }
              */
-            serverSend : function($box, data){
-                CHAT.Method.appendFile($box, data);
+            serverSend : function(box, data){
+                CHAT.Method.appendFile(box, data);
             },
 
             /**
              *
-             * @param $box
-             * @param data
-             * @param msgData
+             * @param {HTMLElement} box
+             * @param {Object} data
+             * @param {Object} msgData
              * @description data szerkezete: {
              *     userId : Number,
              *     fileData : {
@@ -126,13 +126,13 @@ CHAT.FileTransfer = {
              *     roomName : String
              * }
              */
-            receive : function($box, data, msgData){
+            receive : function(box, data, msgData){
                 data.file = msgData.file.data;
                 if (!data.fileData.deleted){
-                    CHAT.Method.appendFile($box, data);
+                    CHAT.Method.appendFile(box, data);
                 }
                 else {
-                    CHAT.Method.appendDeletedFile($box, data);
+                    CHAT.Method.appendDeletedFile(box, data);
                 }
             }
 
@@ -146,35 +146,35 @@ CHAT.FileTransfer = {
 
             /**
              * Fájlküldés
-             * @param $box
-             * @param data
-             * @param reader
-             * @param rawFile
+             * @param {HTMLElement} box
+             * @param {Object} data
+             * @param {FileReader} reader
+             * @param {Object} rawFile
              */
-            clientSend : function($box, data, reader, rawFile){
+            clientSend : function(box, data, reader, rawFile){
                 data.file = reader.result;
-                CHAT.Method.appendFile($box, data, true);
+                CHAT.Method.appendFile(box, data, true);
                 CHAT.socket.emit('sendFile', data);
             },
 
             /**
              * Fájlfogadás
-             * @param $box
-             * @param data
+             * @param {HTMLElement} box
+             * @param {Object} data
              */
-            serverSend : function($box, data){
-                CHAT.Method.appendFile($box, data);
+            serverSend : function(box, data){
+                CHAT.Method.appendFile(box, data);
             },
 
             /**
              * Korábban küldött fájl fogadása
-             * @param $box
-             * @param data
-             * @param msgData
+             * @param {HTMLElement} box
+             * @param {Object} data
+             * @param {Object} msgData
              */
-            receive : function($box, data, msgData){
+            receive : function(box, data, msgData){
                 data.file = msgData.fileBase64;
-                CHAT.Method.appendFile($box, data);
+                CHAT.Method.appendFile(box, data);
             }
 
         },
@@ -187,12 +187,12 @@ CHAT.FileTransfer = {
 
             /**
              * Tömörített base64 kód tárolása db-ben
-             * @param $box
-             * @param data
-             * @param reader
-             * @param rawFile
+             * @param {HTMLElement} box
+             * @param {Object}data
+             * @param {FileReader} reader
+             * @param {Object} rawFile
              */
-            clientSend : function($box, data, reader, rawFile){
+            clientSend : function(box, data, reader, rawFile){
                 CHAT.FileTransfer.LZMA.compress(reader.result, 1, function(result, error){
                     if (error){
                         console.log(error);
@@ -200,7 +200,7 @@ CHAT.FileTransfer = {
                     else {
                         data.file = result;
                     }
-                    CHAT.Method.appendFile($box, data, true);
+                    CHAT.Method.appendFile(box, data, true);
                     CHAT.socket.emit('sendFile', data);
                 }, function(percent){
                     // TODO: progressbar
@@ -209,17 +209,17 @@ CHAT.FileTransfer = {
 
             /**
              *
-             * @param $box
-             * @param data
+             * @param {HTMLElement} box
+             * @param {Object} data
              */
-            serverSend : function($box, data){
+            serverSend : function(box, data){
                 CHAT.FileTransfer.LZMA.decompress(data.file, function(result, error){
                     if (error){
                         console.log(error);
                     }
                     else {
                         data.file = result;
-                        CHAT.Method.appendFile($box, data);
+                        CHAT.Method.appendFile(box, data);
                     }
                 }, function(percent){
                     // TODO: progressbar
@@ -228,11 +228,11 @@ CHAT.FileTransfer = {
 
             /**
              *
-             * @param $box
-             * @param data
-             * @param msgData
+             * @param {HTMLElement} box
+             * @param {Object} data
+             * @param {Object} msgData
              */
-            receive : function($box, data, msgData){
+            receive : function(box, data, msgData){
                 msgData.fileZip.data.forEach(function(element, index, arr){
                     arr[index] -= 128;
                 });
@@ -244,7 +244,7 @@ CHAT.FileTransfer = {
                     }
                     else {
                         data.file = file;
-                        CHAT.Method.appendFile($box, data);
+                        CHAT.Method.appendFile(box, data);
                     }
                 }, function(percent){
                     console.log(percent);
@@ -258,8 +258,8 @@ CHAT.FileTransfer = {
 
     /**
      *
-     * @param operation
-     * @param args
+     * @param {String }operation
+     * @param {Array} args
      */
     action : function(operation, args){
         const store = CHAT.Config.fileTransfer.store;
