@@ -25,7 +25,8 @@ CHAT.Events = {
                 userIds : [CHAT.USER.id],
                 starter : CHAT.USER.id
             };
-            const $box = CHAT.Util.cloneElement($(CHAT.DOM.cloneBox), $(CHAT.DOM.container));
+            const box = CHAT.Util.cloneElement(HD.DOM(CHAT.DOM.cloneBox).elem(), HD.DOM(CHAT.DOM.container).elem());
+            const $box = $(box);
             const $users = $box.find(CHAT.DOM.users);
 
             $(CHAT.DOM.online).find(CHAT.DOM.selectedUsers).each(function(){
@@ -54,10 +55,11 @@ CHAT.Events = {
 
         /**
          * User hozzáadása csatornához
-         * @param {jQuery} $add
+         * @param {HTMLElement} add
          * @param {Number} userId
          */
-        forceJoinRoom : function($add, userId){
+        forceJoinRoom : function(add, userId){
+            const $add = $(add);
             const $box = $add.parents(CHAT.DOM.box);
             const $users = $box.find(CHAT.DOM.users);
             const currentUserIds = [];
@@ -78,9 +80,10 @@ CHAT.Events = {
 
         /**
          * User kidobása csatornából
-         * @param {jQuery} $close
+         * @param {HTMLElement} close
          */
-        forceLeaveRoom : function($close){
+        forceLeaveRoom : function(close){
+            const $close = $(close);
             const $box = $close.parents(CHAT.DOM.box);
             const $user = $close.parents(CHAT.DOM.userItems);
             const roomName = $box.data("room");
@@ -107,9 +110,10 @@ CHAT.Events = {
 
         /**
          * Üzenetküldés
-         * @param {jQuery} $box
+         * @param {HTMLElement} box
          */
-        sendMessage : function($box){
+        sendMessage : function(box){
+            const $box = $(box);
             const $message = $box.find(CHAT.DOM.message);
             const data = {
                 userId : CHAT.USER.id,
@@ -127,10 +131,11 @@ CHAT.Events = {
 
         /**
          * Fájlküldés
-         * @param {jQuery} $box
+         * @param {HTMLElement} box
          * @param {Object} files
          */
-        sendFile : function($box, files){
+        sendFile : function(box, files){
+            const $box = $(box);
             const store = CHAT.Config.fileTransfer.store;
             const types = CHAT.Config.fileTransfer.types;
             const allowedTypes = CHAT.Config.fileTransfer.allowedTypes;
@@ -219,9 +224,10 @@ CHAT.Events = {
 
         /**
          * Gépelés
-         * @param {jQuery} $box
+         * @param {HTMLElement} box
          */
-        typeMessage : function($box){
+        typeMessage : function(box){
+            const $box = $(box);
             const $message = $box.find(CHAT.DOM.message);
             const data = {
                 userId : CHAT.USER.id,
@@ -235,9 +241,10 @@ CHAT.Events = {
 
         /**
          * Üzenetküldés módjának változtatása
-         * @param {jQuery} $change
+         * @param {HTMLElement} change
          */
-        sendMethod : function($change){
+        sendMethod : function(change){
+            const $change = $(change);
             const $box = $change.parents('.chat');
 
             if ($change.prop("checked")){

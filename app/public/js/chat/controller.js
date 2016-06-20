@@ -4,22 +4,20 @@
 
 var CHAT = window.CHAT || {};
 
-$(document).ready(function(){
+HD.DOM(document).event("DOMContentLoaded", function(){
 
-    var inBoxOld = function(selector){
-        return $(CHAT.DOM.box).find(selector);
-    };
     var inBox = function(selector){
         return HD.DOM(CHAT.DOM.box).find(selector);
     };
 
     // Értesítések állapotának beállítása
-    $(document).hover(function(){
-        CHAT.notificationStatus = false;
-        CHAT.Method.notification();
-    }, function(){
-        CHAT.notificationStatus = true;
-    });
+    HD.DOM(document)
+        .event("mouseenter", function(){
+            CHAT.notificationStatus = false;
+            CHAT.Method.notification();
+        }).event("mouseleave", function(){
+            CHAT.notificationStatus = true;
+        });
 
     // Csatorna létrehozása
     HD.DOM(CHAT.DOM.start).event("click", function(){
@@ -29,42 +27,42 @@ $(document).ready(function(){
 
     // Kilépés csatornából
     inBox(CHAT.DOM.close).event("click", function(){
-        CHAT.Events.Client.leaveRoom($(this).parents(CHAT.DOM.box));
+        CHAT.Events.Client.leaveRoom(HD.DOM(this).ancestor(CHAT.DOM.box));
     });
 
     // User hozzáadása csatornához
-    $(CHAT.DOM.userSelect).change(function(){
-        if ($(CHAT.DOM.selectedUsers).length > 0){
-            $(CHAT.DOM.box).filter(':not([data-disabled])').find(CHAT.DOM.addUser).show();
+    HD.DOM(CHAT.DOM.userSelect).event("change", function(){
+        if (HD.DOM(CHAT.DOM.selectedUsers).elements.length > 0){
+            HD.DOM(CHAT.DOM.box).filter(':not([data-disabled])').find(CHAT.DOM.addUser).class("remove", "hidden-weak");
         }
         else {
-            inBoxOld(CHAT.DOM.addUser).hide();
+            inBox(CHAT.DOM.addUser).class("add", "hidden-weak");
         }
     });
-    inBoxOld(CHAT.DOM.addUser).click(function(){
-        const $add = $(this);
-        if (!$add.data("disabled")){
-            $(CHAT.DOM.selectedUsers).each(function(){
-                CHAT.Events.Client.forceJoinRoom($add, Number($(this).val()));
+    inBox(CHAT.DOM.addUser).event("click", function(){
+        const Add = HD.DOM(this);
+        if (!Add.getBoolData("disabled")){
+            HD.DOM(CHAT.DOM.selectedUsers).elements.forEach(function(selectedUser){
+                CHAT.Events.Client.forceJoinRoom(Add.elem(), Number(selectedUser.value));
             });
-            $(CHAT.DOM.userSelect).prop("checked", false).trigger("change");
+            HD.DOM(CHAT.DOM.userSelect).prop("checked", false).trigger("change");
         }
     });
 
     // User kidobása csatornából
-    inBoxOld(CHAT.DOM.userThrow).click(function(){
-        const $remove = $(this);
-        if (!$remove.data("disabled")){
-            CHAT.Events.Client.forceLeaveRoom($remove);
+    inBox(CHAT.DOM.userThrow).event("click", function(){
+        const Remove = HD.DOM(this);
+        if (!Remove.getBoolData("disabled")){
+            CHAT.Events.Client.forceLeaveRoom(Remove.elem());
         }
     });
 
     // Hibaüzenet eltüntetése
-    inBoxOld(CHAT.DOM.errorClose).click(function(){
-        $(this).parents(CHAT.DOM.box).find(CHAT.DOM.error).hide();
+    inBox(CHAT.DOM.errorClose).event("click", function(){
+        HD.DOM(this).ancestor(CHAT.DOM.box).find(CHAT.DOM.error).class("add", "hidden-weak");
     });
 
-    // Tétlen állapot
+    // Tétlen állapot TODO: saját kód
     $(CHAT.DOM.idleCheck).idleTimer(CHAT.timer.idle);
     $(CHAT.DOM.idleCheck).on("idle.idleTimer", function(){
         const connectedUsers = CHAT.Method.changeUserStatus("idle");
@@ -78,79 +76,81 @@ $(document).ready(function(){
     });
 
     // Státusz megváltoztatása
-    $(CHAT.DOM.online).find(CHAT.DOM.statusChange).change(function(){
-        const connectedUsers = CHAT.Method.changeUserStatus($(this).val());
+    HD.DOM(CHAT.DOM.online).find(CHAT.DOM.statusChange).event("change", function(){
+        const connectedUsers = CHAT.Method.changeUserStatus(this.value);
         CHAT.Method.updateStatuses(connectedUsers);
         CHAT.socket.emit('statusChanged', connectedUsers);
     });
 
     // Üzenetküldés indítása ENTER leütésére
-    inBoxOld(CHAT.DOM.message).keydown(function(event){
-        const $box = $(this).parents('.chat');
+    inBox(CHAT.DOM.message).event("keydown", function(event){
+        const Box = HD.DOM(this).ancestor('.chat');
         if (event.which === HD.Misc.keys.ENTER){
-            if (!event.shiftKey && $box.find(CHAT.DOM.sendSwitch).prop("checked")){
-                CHAT.Events.Client.sendMessage($box);
+            if (!event.shiftKey && Box.find(CHAT.DOM.sendSwitch).prop("checked")){
+                CHAT.Events.Client.sendMessage(Box.elem());
                 event.preventDefault();
             }
         }
     });
 
     // Üzenetküldés indítása gombnyomásra
-    inBoxOld(CHAT.DOM.sendButton).click(function(){
-        const $box = $(this).parents('.chat');
-        CHAT.Events.Client.sendMessage($box);
+    inBox(CHAT.DOM.sendButton).event("click", function(){
+        const Box = HD.DOM(this).ancestor('.chat');
+        CHAT.Events.Client.sendMessage(Box.elem());
     });
 
     // Fájlküldés
-    inBoxOld(CHAT.DOM.fileTrigger).click(function(){
-        const $trigger = $(this);
-        if (!$trigger.data("disabled")){
-            $trigger.parents(CHAT.DOM.box).find(CHAT.DOM.file).trigger("click");
+    inBox(CHAT.DOM.fileTrigger).event("click", function(){
+        const Trigger = HD.DOM(this);
+        if (!Trigger.getBoolData("disabled")){
+            Trigger.ancestor(CHAT.DOM.box).find(CHAT.DOM.file).trigger("click");
         }
     });
-    inBoxOld(CHAT.DOM.file).change(function(){
-        const $box = $(this).parents('.chat');
-        const files = $box.find(CHAT.DOM.file).get(0).files;
+    inBox(CHAT.DOM.file).event("change", function(){
+        const Box = HD.DOM(this).ancestor('.chat');
+        const files = Box.find(CHAT.DOM.file).elem().files;
         if (files.length > 0){
-            CHAT.Events.Client.sendFile($box, files);
+            CHAT.Events.Client.sendFile(Box.elem(), files);
         }
     });
-    $(CHAT.DOM.box).on('click', 'a.notredirect', function(event){
-        // event.preventDefault();
+    HD.DOM(CHAT.DOM.box).event("click", function(event){
+        // if (event.target.getAttribute("class") === "notredirect"){
+        //     event.preventDefault();
+        // }
     });
 
     // Fájlküldés (drag-n-drop)
-    inBoxOld(CHAT.DOM.dropFile)
-        .on(
-            'drag dragstart dragend dragover dragenter dragleave drop',
+    inBox(CHAT.DOM.dropFile)
+        .event(
+            "drag dragstart dragend dragover dragenter dragleave drop",
             function(event){
                 event.preventDefault();
                 event.stopPropagation();
             }
         )
-        .on('dragover dragenter', function(){
-            $(this).addClass('drop-active');
+        .event("dragover dragenter", function(){
+            HD.DOM(this).class("add", "drop-active");
         })
-        .on('dragleave dragend drop', function(){
-            $(this).removeClass('drop-active');
+        .event("dragleave dragend drop", function(){
+            HD.DOM(this).class("remove", "drop-active");
         })
-        .on('drop', function(event){
-            const $box = $(this).parents('.chat');
-            const files = event.originalEvent.dataTransfer.files;
-            CHAT.Events.Client.sendFile($box, files);
+        .event("drop", function(event){
+            const Box = HD.DOM(this).ancestor(".chat");
+            const files = event.dataTransfer.files;
+            CHAT.Events.Client.sendFile(Box.elem(), files);
         });
 
     // Üzenet gépelése
-    inBoxOld(CHAT.DOM.message).keyup(function(event){
-        const $box = $(this).parents('.chat');
+    inBox(CHAT.DOM.message).event("keyup", function(event){
+        const Box = HD.DOM(this).ancestor('.chat');
         if (event.which !== HD.Misc.keys.ENTER){
-            CHAT.Events.Client.typeMessage($box);
+            CHAT.Events.Client.typeMessage(Box.elem());
         }
     });
 
     // Üzenetküldés módja
-    inBoxOld(CHAT.DOM.sendSwitch).change(function(){
-        CHAT.Events.Client.sendMethod($(this));
+    inBox(CHAT.DOM.sendSwitch).event("change", function(){
+        CHAT.Events.Client.sendMethod(this);
     });
 
     // User-sáv görgetése
@@ -159,24 +159,24 @@ $(document).ready(function(){
         moving : false,
         x : 0
     };
-    inBoxOld(CHAT.DOM.users).mousedown(function(event){
+    inBox(CHAT.DOM.users).event("mousedown", function(event){
         event.preventDefault();
         userDrag.active = true;
         userDrag.x = event.pageX;
     });
-    inBoxOld(CHAT.DOM.users).on("mouseup mouseleave", function(event){
+    inBox(CHAT.DOM.users).event("mouseup mouseleave", function(event){
         event.preventDefault();
         userDrag.active = false;
         userDrag.moving = false;
     });
-    inBoxOld(CHAT.DOM.users).mousemove(function(event){
+    inBox(CHAT.DOM.users).event("mousemove", function(event){
         if (userDrag.active){
             if (userDrag.moving){
-                $(this).scrollLeft(userDrag.x - event.pageX);
+                this.scrollLeft = userDrag.x - event.pageX;
             }
             else {
                 userDrag.moving = true;
-                userDrag.x = $(this).scrollLeft() + event.pageX;
+                userDrag.x = this.scrollLeft + event.pageX;
             }
         }
     });

@@ -94,7 +94,7 @@ var createDB = function(db, callback){
                 ])
                 .then(function(result){
                     completed++;
-                    console.log(`chat_users: ${result.insertedCount}`);
+                    console.log(`chat_messages: ${result.insertedCount}`);
                     if (completed === collectionNum){
                         callback();
                     }
