@@ -17,7 +17,7 @@ var HD = namespace("HD");
 
 /**
  * DOM elemek kezelését segítő objektum (Module minta)
- * @param {String|HTMLElement} identifier
+ * @param {String|Array|HTMLElement|NodeList} identifier
  * @returns {Object}
  */
 HD.DOM = function(identifier){
@@ -159,11 +159,10 @@ HD.DOM = function(identifier){
 
         /**
          * Elemek szűrése
-         * @param {Array.<HTMLElement>} elements
          * @param {String} selector
          * @returns {HD.DOM}
          */
-        filter : function(elements, selector){
+        filter : function(selector){
             this.elements = this.elements.filter(function(elem){
                 return matches(elem, selector);
             });

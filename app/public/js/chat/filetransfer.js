@@ -39,7 +39,7 @@ CHAT.FileTransfer = {
              * @param {HTMLElement} box
              * @param {Object} data
              * @param {FileReader} reader
-             * @param {Object} rawFile
+             * @param {Blob} rawFile
              * @returns {XMLHttpRequest}
              * @description data szerkezete: {
              *     userId : Number,
@@ -149,7 +149,7 @@ CHAT.FileTransfer = {
              * @param {HTMLElement} box
              * @param {Object} data
              * @param {FileReader} reader
-             * @param {Object} rawFile
+             * @param {Blob} rawFile
              */
             clientSend : function(box, data, reader, rawFile){
                 data.file = reader.result;
@@ -190,7 +190,7 @@ CHAT.FileTransfer = {
              * @param {HTMLElement} box
              * @param {Object}data
              * @param {FileReader} reader
-             * @param {Object} rawFile
+             * @param {Blob} rawFile
              */
             clientSend : function(box, data, reader, rawFile){
                 CHAT.FileTransfer.LZMA.compress(reader.result, 1, function(result, error){

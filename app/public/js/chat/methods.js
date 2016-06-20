@@ -164,7 +164,7 @@ CHAT.Method = {
         const img = document.createElement('img');
         img.onload = function(){
             ListItem.find('.filedisplay').elem().innerHTML = tpl;
-            List.elem().appendChild(ListItem);
+            List.elem().appendChild(ListItem.elem());
             CHAT.Util.scrollToBottom(box);
         };
         img.src = imgSrc;
@@ -204,7 +204,7 @@ CHAT.Method = {
             </li>
         `);
 
-        List.elem().appendChild(ListItem);
+        List.elem().appendChild(ListItem.elem());
         CHAT.Util.scrollToBottom(box);
     },
 
@@ -251,19 +251,19 @@ CHAT.Method = {
             return barId;
         }
         else {
-            const progressbar = List.find('.progressbar').filter(`[data-id="${barId}"]`);
+            const Progressbar = List.find('.progressbar').filter(`[data-id="${barId}"]`);
             if (direction === "abort"){
-                progressbar.find('.label').elem().innerHTML = CHAT.Labels.file[direction]();
-                progressbar.find('.line').class("add", "aborted");
+                Progressbar.find('.label').elem().innerHTML = CHAT.Labels.file[direction]();
+                Progressbar.find('.line').class("add", "aborted");
             }
             else {
                 if (percent === 100){
-                    progressbar.find('.label').elem().innerHTML = CHAT.Labels.file[`${direction}End`]();
-                    progressbar.find('.line').class("add", "finished");
-                    progressbar.find('.cancel').class("add", "hidden-weak");
+                    Progressbar.find('.label').elem().innerHTML = CHAT.Labels.file[`${direction}End`]();
+                    Progressbar.find('.line').class("add", "finished");
+                    Progressbar.find('.cancel').class("add", "hidden-weak");
                 }
-                progressbar.find('.line').css({"width" : `${percent}%`});
-                progressbar.find('.numeric').elem().innerHTML = CHAT.Labels.file.percent(percent);
+                Progressbar.find('.line').css({"width" : `${percent}%`});
+                Progressbar.find('.numeric').elem().innerHTML = CHAT.Labels.file.percent(percent);
             }
             return null;
         }

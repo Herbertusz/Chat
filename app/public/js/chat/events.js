@@ -25,6 +25,7 @@ CHAT.Events = {
                 userIds : [CHAT.USER.id],
                 starter : CHAT.USER.id
             };
+            // const $box = CHAT.Util.cloneElement($(CHAT.DOM.cloneBox), $(CHAT.DOM.container));
             const box = CHAT.Util.cloneElement(HD.DOM(CHAT.DOM.cloneBox).elem(), HD.DOM(CHAT.DOM.container).elem());
             const $box = $(box);
             const $users = $box.find(CHAT.DOM.users);
