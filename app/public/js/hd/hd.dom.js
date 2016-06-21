@@ -146,9 +146,9 @@ HD.DOM = function(identifier){
          * @returns {HD.DOM}
          */
         ancestor : function(selector){
-            this.elements = [];
             let parent = this.elem().parentNode;
-            while (parent !== null){
+            this.elements = [];
+            while (parent.nodeType !== Node.DOCUMENT_NODE){
                 if (matches(parent, selector)){
                     this.elements.push(parent);
                 }
