@@ -136,8 +136,7 @@ HD.DOM = function(identifier){
             this.elements.forEach(function(elem){
                 find = find.concat(Array.from(elem.querySelectorAll(selector)));
             });
-            this.elements = find;
-            return this;
+            return HD.DOM(find);
         },
 
         /**
@@ -146,15 +145,15 @@ HD.DOM = function(identifier){
          * @returns {HD.DOM}
          */
         ancestor : function(selector){
+            const elements = [];
             let parent = this.elem().parentNode;
-            this.elements = [];
             while (parent.nodeType !== Node.DOCUMENT_NODE){
                 if (matches(parent, selector)){
-                    this.elements.push(parent);
+                    elements.push(parent);
                 }
                 parent = parent.parentNode;
             }
-            return this;
+            return HD.DOM(elements);
         },
 
         /**
@@ -163,10 +162,10 @@ HD.DOM = function(identifier){
          * @returns {HD.DOM}
          */
         filter : function(selector){
-            this.elements = this.elements.filter(function(elem){
+            const elements = this.elements.filter(function(elem){
                 return matches(elem, selector);
             });
-            return this;
+            return HD.DOM(elements);
         },
 
         /**
@@ -176,13 +175,14 @@ HD.DOM = function(identifier){
          * @returns {HD.DOM}
          */
         getByData : function(name, value){
+            let elements;
             if (typeof value === "undefined"){
-                this.elements = this.get(`[data-${name}]`);
+                elements = this.filter(`[data-${name}]`);
             }
             else {
-                this.elements = this.get(`[data-${name}="${value}"]`);
+                elements = this.filter(`[data-${name}="${value}"]`);
             }
-            return this;
+            return HD.DOM(elements);
         },
 
         /**
@@ -308,8 +308,7 @@ HD.DOM = function(identifier){
                     }
                 }
             }
-            this.elements = [elementClone];
-            return this;
+            return HD.DOM(elementClone);
         },
 
         /**
