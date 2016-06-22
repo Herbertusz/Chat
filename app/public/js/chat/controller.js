@@ -84,7 +84,8 @@ HD.DOM(document).event("DOMContentLoaded", function(){
 
     // Üzenetküldés indítása ENTER leütésére
     inBox(CHAT.DOM.message).event("keydown", function(event){
-        const Box = HD.DOM(this).ancestor('.chat');
+        const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
+        console.log(Box.elem());
         if (event.which === HD.Misc.keys.ENTER){
             if (!event.shiftKey && Box.find(CHAT.DOM.sendSwitch).prop("checked")){
                 CHAT.Events.Client.sendMessage(Box.elem());
@@ -95,7 +96,7 @@ HD.DOM(document).event("DOMContentLoaded", function(){
 
     // Üzenetküldés indítása gombnyomásra
     inBox(CHAT.DOM.sendButton).event("click", function(){
-        const Box = HD.DOM(this).ancestor('.chat');
+        const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
         CHAT.Events.Client.sendMessage(Box.elem());
     });
 
@@ -107,7 +108,7 @@ HD.DOM(document).event("DOMContentLoaded", function(){
         }
     });
     inBox(CHAT.DOM.file).event("change", function(){
-        const Box = HD.DOM(this).ancestor('.chat');
+        const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
         const files = Box.find(CHAT.DOM.file).elem().files;
         if (files.length > 0){
             CHAT.Events.Client.sendFile(Box.elem(), files);
@@ -135,14 +136,14 @@ HD.DOM(document).event("DOMContentLoaded", function(){
             HD.DOM(this).class("remove", "drop-active");
         })
         .event("drop", function(event){
-            const Box = HD.DOM(this).ancestor(".chat");
+            const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
             const files = event.dataTransfer.files;
             CHAT.Events.Client.sendFile(Box.elem(), files);
         });
 
     // Üzenet gépelése
     inBox(CHAT.DOM.message).event("keyup", function(event){
-        const Box = HD.DOM(this).ancestor('.chat');
+        const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
         if (event.which !== HD.Misc.keys.ENTER){
             CHAT.Events.Client.typeMessage(Box.elem());
         }

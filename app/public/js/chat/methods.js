@@ -445,6 +445,7 @@ CHAT.Method = {
      * @returns {String}
      */
     getUserName : function(userId){
+        if (!userId) return "";
         const Element = HD.DOM(CHAT.DOM.onlineListItems).filter(`[data-id="${userId}"]`);
         return Element.data("name");
     },
