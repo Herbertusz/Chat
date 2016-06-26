@@ -22,6 +22,11 @@ var HD = namespace("HD");
  */
 HD.DOM = function(identifier){
 
+    /**
+     *
+     * @param {Object} ident
+     * @returns {Boolean}
+     */
     const acceptableObject = function(ident){
         if (typeof ident === "object"){
             if (
@@ -39,15 +44,43 @@ HD.DOM = function(identifier){
     };
 
     /**
-     * Egy elemhez csatolt seménykezelők
+     * Egy elemhez csatolt eseménykezelők
      * @param {HTMLElement} element
+     * @param {String} [eventName]
      * @returns {Array.<Object>}
      * @private
      */
-    const getHandlers = function(element){
-        return HD.DOM.eventListeners.filter(function(listener){
-            return listener.target === element;
-        });
+    const getHandlers = function(element, eventName){
+        if (typeof eventName === "string"){
+            return HD.DOM.eventListeners.filter(function(listener){
+                return listener.target === element && listener.eventName === eventName;
+            });
+        }
+        else {
+            return HD.DOM.eventListeners.filter(function(listener){
+                return listener.target === element;
+            });
+        }
+    };
+
+    /**
+     * Egy elemhez csatolt adatok
+     * @param {HTMLElement} element
+     * @param {String} [name]
+     * @returns {Object|Array.<Object>}
+     * @private
+     */
+    const getDataObjects = function(element, name){
+        if (typeof name === "string"){
+            return HD.DOM.dataObjects.find(function(data){
+                return data.element === element && data.name === name;
+            });
+        }
+        else {
+            return HD.DOM.dataObjects.filter(function(data){
+                return data.element === element;
+            });
+        }
     };
 
     /**
@@ -77,7 +110,7 @@ HD.DOM = function(identifier){
                     // HTML kód
                     const div = document.createElement("div");
                     div.innerHTML = ident;
-                    return Array.from(div.childNodes);
+                    return Array.from(div.children);
                 }
                 else {
                     // Szelektor
@@ -97,9 +130,12 @@ HD.DOM = function(identifier){
                         throw Error('HD.DOM(): Nem támogatott objektum típusok találhatók a tömbben.');
                     }
                 }
-                else if (ident instanceof NodeList){
+                else if (ident instanceof NodeList || ident instanceof HTMLCollection){
                     // Elemlista
                     return Array.from(ident);
+                }
+                else if (ident === null){
+                    return [];
                 }
                 else if (acceptableObject(ident)){
                     return [ident];
@@ -129,7 +165,7 @@ HD.DOM = function(identifier){
         /**
          * Keresés a leszármazott elemek közt
          * @param {String} selector
-         * @returns {HD.DOM}
+         * @returns {Object}
          */
         find : function(selector){
             let find = [];
@@ -142,7 +178,7 @@ HD.DOM = function(identifier){
         /**
          * Keresés a szülő elemek közt
          * @param {String} selector
-         * @returns {HD.DOM}
+         * @returns {Object}
          */
         ancestor : function(selector){
             const elements = [];
@@ -159,7 +195,7 @@ HD.DOM = function(identifier){
         /**
          * Elemek szűrése
          * @param {String} selector
-         * @returns {HD.DOM}
+         * @returns {Object}
          */
         filter : function(selector){
             const elements = this.elements.filter(function(elem){
@@ -172,7 +208,7 @@ HD.DOM = function(identifier){
          * Elemek szűrése kapcsolt adat alapján
          * @param {String} name
          * @param {*} [value]
-         * @returns {HD.DOM}
+         * @returns {Object}
          */
         getByData : function(name, value){
             let elements;
@@ -183,23 +219,6 @@ HD.DOM = function(identifier){
                 elements = this.filter(`[data-${name}="${value}"]`);
             }
             return HD.DOM(elements);
-        },
-
-        /**
-         * Elemhez kapcsolt adat logikai értéke
-         * @param {String} name
-         * @returns {Boolean}
-         */
-        getBoolData : function(name){
-            const data = this.data(name);
-            return !(
-                data === null ||
-                data === "" ||
-                data === "0" ||
-                data === "false" ||
-                data === "null" ||
-                data === "undefined"
-            );
         },
 
         /**
@@ -222,6 +241,140 @@ HD.DOM = function(identifier){
                 // setter
                 this.elements.forEach(function(elem){
                     elem.setAttribute(`data-${name}`, value);
+                });
+                return this;
+            }
+        },
+
+        /**
+         * Elemhez kapcsolt logikai adat lekérdezése / módosítása
+         * @param {String} name
+         * @param {Boolean} [value]
+         * @returns {Boolean|HD.DOM}
+         */
+        dataBool : function(name, value){
+            if (typeof value === "undefined"){
+                // getter
+                const data = this.data(name);
+                return !(
+                    data === null ||
+                    data === "" ||
+                    data === "0" ||
+                    data === "false" ||
+                    data === "null" ||
+                    data === "undefined"
+                );
+            }
+            else {
+                // setter
+                this.data(name, value ? "true" : "false");
+                return this;
+            }
+        },
+
+        /**
+         * Elemhez kapcsolt szám adat lekérdezése / módosítása
+         * @param {String} name
+         * @param {Number} [value]
+         * @returns {Number|HD.DOM}
+         */
+        dataNum : function(name, value){
+            if (typeof value === "undefined"){
+                // getter
+                const data = this.data(name);
+                return Number(data);
+            }
+            else {
+                // setter
+                this.data(name, value.toString());
+                return this;
+            }
+        },
+
+        /**
+         * Elemhez kapcsolt objektum adat lekérdezése / módosítása
+         * @param {String} name
+         * @param {Object} [value]
+         * @returns {Object|HD.DOM}
+         */
+        dataObj : function(name, value){
+            if (typeof value === "undefined"){
+                // getter
+                let obj;
+                const data = this.data(name);
+                try {
+                    obj = JSON.parse(data);
+                }
+                catch (error){
+                    if (!data){
+                        obj = {};
+                    }
+                    else {
+                        throw error;
+                    }
+                }
+                return obj;
+            }
+            else {
+                // setter
+                this.data(name, JSON.stringify(value));
+                return this;
+            }
+        },
+
+        /**
+         * Elemhez kapcsolt adat lekérdezése / módosítása
+         * @param {String} name
+         * @param {*} [value]
+         * @returns {*|HD.DOM}
+         */
+        dataX : function(name, value){
+            if (typeof value === "undefined"){
+                // getter
+                const element = this.elem();
+                const data = getDataObjects(element, name);
+                if (element.hasAttribute(`data-${name}`)){
+                    value = element.getAttribute(`data-${name}`);
+                    if (data){
+                        value = HD.Misc.switching(data.type, {
+                            "undefined" : null,
+                            "boolean" : Boolean(value),
+                            "number" : Number(value),
+                            "string" : String(value),
+                            "symbol" : Symbol(value),
+                            "object" : JSON.parse(value)
+                        }, value);
+                        if (data.value === null){
+                            value = null;
+                        }
+                    }
+                    return value;
+                }
+                else {
+                    return null;
+                }
+            }
+            else {
+                // setter
+                const originalType = typeof value;
+                let storeValue;
+                if (originalType === "undefined" || value === null){
+                    storeValue = null;
+                }
+                else if (originalType === "object"){
+                    storeValue = JSON.stringify(value);
+                }
+                else {
+                    storeValue = value.toString();
+                }
+                this.elements.forEach(function(elem){
+                    HD.DOM.dataObjects.push({
+                        element : elem,
+                        type : originalType,
+                        name : name,
+                        value : value
+                    });
+                    elem.setAttribute(`data-${name}`, storeValue);
                 });
                 return this;
             }
@@ -286,7 +439,7 @@ HD.DOM = function(identifier){
         /**
          * Elem klónozása
          * @param {Boolean} [withEvents=false]
-         * @returns {HD.DOM}
+         * @returns {Object}
          */
         clone : function(withEvents){
             withEvents = HD.Function.param(withEvents, false);
@@ -343,11 +496,40 @@ HD.DOM = function(identifier){
         },
 
         /**
-         * Esemény kiváltása
+         * Eseménykezelők meghívása
          * @param {String} eventName
          * @returns {HD.DOM}
          */
         trigger : function(eventName){
+            let handlers, eventObj;
+            if (typeof Event === "function"){
+                eventObj = new Event(eventName, {
+                    bubbles : true,
+                    cancelable : true
+                });
+            }
+            else {
+                eventObj = document.createEvent("Event");
+                eventObj.initEvent(eventName, true, true);
+            }
+            this.elements.forEach(function(target){
+                handlers = getHandlers(target, eventName);
+                handlers.forEach(function(handlerObj){
+                    handlerObj.handler.call(target, eventObj);
+                });
+                if (!eventObj.isDefaultPrevented && typeof target[eventName] === "function"){
+                    target[eventName]();
+                }
+            });
+            return this;
+        },
+
+        /**
+         * Esemény kiváltása
+         * @param {String} eventName
+         * @returns {HD.DOM}
+         */
+        fire : function(eventName){
             let eventObj;
             if (typeof Event === "function"){
                 eventObj = new Event(eventName, {
@@ -373,8 +555,30 @@ HD.DOM = function(identifier){
  * Csatolt eseménykezelők belső tárolása
  * @type {Array.<Object>}
  * @private
+ * @description szerkezet: [
+ *     {
+ *         target : HTMLElement,
+ *         eventName : String,
+ *         handler : Function
+ *     }
+ * ]
  */
 HD.DOM.eventListeners = [];
+
+/**
+ * Csatolt adatok típusainak belső tárolása
+ * @type {Array.<Object>}
+ * @private
+ * @description szerkezet: [
+ *     {
+ *         element : HTMLElement,
+ *         type : String,
+ *         name : String,
+ *         value : *
+ *     }
+ * ]
+ */
+HD.DOM.dataObjects = [];
 
 /**
  * Egér pozíciója egy elemhez képest

@@ -14,7 +14,7 @@
                 </li>
                 <% users.forEach(function(user){ %>
                     <% if (userId !== user.id){ %>
-                        <li data-id="<%- user.id %>" data-name="<%= user.name %>" class="<% if (userId === user.id){ %>hidden-weak<% } %>">
+                        <li data-id="<%- user.id %>" data-name="<%= user.name %>" class="<% if (userId === user.id){ %>hidden<% } %>">
                             <label>
                                 <input class="user-select" type="checkbox" value="<%- user.id %>" />
                                 <span class="status off"></span> <%= user.name %>
@@ -36,13 +36,13 @@
                         </span>
                     </span>
                     <span class="close" title="Kilépés"></span>
-                    <button class="add-user hidden-weak">Hozzáadás</button>
+                    <button class="add-user hidden">Hozzáadás</button>
                 </div>
-                <div class="error hidden-weak">
+                <div class="error hidden">
                     <div class="error-list"></div>
                     <div class="error-close"></div>
                 </div>
-                <div class="progress hidden-weak"></div>
+                <div class="progress hidden"></div>
                 <div class="<% if (CHAT.Config.fileTransfer.dragndrop.allowed){ %>drop-file<% } %>">
                     <div class="drop-sign"><%= CHAT.Config.fileTransfer.dragndrop.html %></div>
                     <ul class="list"></ul>
@@ -66,7 +66,7 @@
                                 />
                                 Küldés enter megnyomására
                             </label>
-                            <button class="send <% if (CHAT.Config.messageSend.sendMode.default === 'enter'){ %>hidden-weak<% } %>">
+                            <button class="send <% if (CHAT.Config.messageSend.sendMode.default === 'enter'){ %>hidden<% } %>">
                                 Küldés
                             </button>
                         </div>

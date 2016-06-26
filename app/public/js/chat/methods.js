@@ -80,13 +80,15 @@ CHAT.Method = {
         const userName = CHAT.Method.getUserName(data.userId);
         highlighted = HD.Function.param(highlighted, false);
 
-        List.elem().innerHTML += `
-            <li>
-                <span class="time">${time}</span>
-                <strong class="${highlighted ? "self" : ""}">${CHAT.Util.escapeHtml(userName)}</strong>:
-                <br />${CHAT.Method.replaceMessage(data.message)}
-            </li>
-        `;
+        if (List.elem()){
+            List.elem().innerHTML += `
+                <li>
+                    <span class="time">${time}</span>
+                    <strong class="${highlighted ? "self" : ""}">${CHAT.Util.escapeHtml(userName)}</strong>:
+                    <br />${CHAT.Method.replaceMessage(data.message)}
+                </li>
+            `;
+        }
         CHAT.Util.scrollToBottom(box);
     },
 
@@ -102,10 +104,11 @@ CHAT.Method = {
         const userName = CHAT.Method.getUserName(userId);
         const otherUserName = CHAT.Method.getUserName(otherUserId);
 
-        List.elem().innerHTML += `
-            <li class="highlighted">${CHAT.Labels.system[type](userName, otherUserName)}</li>
-        `;
-
+        if (List.elem()){
+            List.elem().innerHTML += `
+                <li class="highlighted">${CHAT.Labels.system[type](userName, otherUserName)}</li>
+            `;
+        }
         CHAT.Util.scrollToBottom(box);
     },
 
@@ -242,11 +245,12 @@ CHAT.Method = {
                 List.find('.cancel').event("click", function(){
                     const Progressbar = HD.DOM(this).ancestor('.progressbar');
                     CHAT.Events.Client.abortFile(Progressbar.elem());
-                    HD.DOM(this).class("add", "hidden-weak");
+                    HD.DOM(this).class("add", "hidden");
+                    console.log(this);
                 });
             }
             else {
-                List.find('.cancel').class("add", "hidden-weak");
+                List.find('.cancel').class("add", "hidden");
             }
             return barId;
         }
@@ -260,7 +264,7 @@ CHAT.Method = {
                 if (percent === 100){
                     Progressbar.find('.label').elem().innerHTML = CHAT.Labels.file[`${direction}End`]();
                     Progressbar.find('.line').class("add", "finished");
-                    Progressbar.find('.cancel').class("add", "hidden-weak");
+                    Progressbar.find('.cancel').class("add", "hidden");
                 }
                 Progressbar.find('.line').css({"width" : `${percent}%`});
                 Progressbar.find('.numeric').elem().innerHTML = CHAT.Labels.file.percent(percent);
@@ -281,16 +285,16 @@ CHAT.Method = {
         `;
         if (operation === "show"){
             Progress.elem().innerHTML = tpl;
-            Progress.class("remove", "hidden-weak");
+            Progress.class("remove", "hidden");
         }
         else {
-            Progress.class("add", "hidden-weak");
+            Progress.class("add", "hidden");
             Progress.elem().innerHTML = '';
         }
     },
 
     /**
-     *
+     * Értesítések megjelenítése
      * @param {HTMLElement|Boolean} [box]
      * @param {Number} [triggerId]
      * @param {String} [operation] ("message", "file", "forceJoin", "forceLeave")
@@ -309,7 +313,7 @@ CHAT.Method = {
             },
             box : function(activate){
                 if (activate){
-                    box.css({"outline" : "2px dashed red"});
+                    HD.DOM(box).css({"outline" : "2px dashed red"});
                 }
                 else {
                     HD.DOM(CHAT.DOM.box).css({"outline" : "0px solid transparent"});
@@ -361,29 +365,29 @@ CHAT.Method = {
             message = CHAT.Util.escapeHtml(message);
         }
         const messageArray = message.split(HD.String.createRegExp(disablePattern));
-        if (CHAT.Config.messageSend.emoticonReplacement.allowed){
-            let icon;
-            const emoticons = CHAT.Config.messageSend.emoticonReplacement.emoticons;
-            for (icon in emoticons){
-                const escapedIcon = icon.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+        if (CHAT.Config.messageSend.imageReplacement.allowed){
+            let image;
+            const images = CHAT.Config.messageSend.imageReplacement.images;
+            for (image in images){
+                const escapedIcon = image.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
                 messageArray[0] = messageArray[0].replace(
                     new RegExp(escapedIcon, 'g'),
-                    `<img alt="${icon}" src="${emoticons[icon]}" />`
+                    `<img alt="${image}" src="${images[image]}" />`
                 );
                 if (messageArray.length > 1){
                     messageArray[2] = messageArray[2].replace(
                         new RegExp(escapedIcon, 'g'),
-                        `<img alt="${icon}" src="${emoticons[icon]}" />`
+                        `<img alt="${image}" src="${images[image]}" />`
                     );
                 }
             }
         }
-        if (CHAT.Config.messageSend.bbCodeReplacement.allowed){
-            const bbCodes = CHAT.Config.messageSend.bbCodeReplacement.bbCodes;
-            bbCodes.forEach(function(code){
-                messageArray[0] = messageArray[0].replace(HD.String.createRegExp(code[0]), code[1]);
+        if (CHAT.Config.messageSend.stringReplacement.allowed){
+            const strings = CHAT.Config.messageSend.stringReplacement.strings;
+            strings.forEach(function(str){
+                messageArray[0] = messageArray[0].replace(HD.String.createRegExp(str[0]), str[1]);
                 if (messageArray.length > 1){
-                    messageArray[2] = messageArray[2].replace(HD.String.createRegExp(code[0]), code[1]);
+                    messageArray[2] = messageArray[2].replace(HD.String.createRegExp(str[0]), str[1]);
                 }
             });
         }
@@ -431,10 +435,10 @@ CHAT.Method = {
         errors.forEach(function(error){
             errorMessages.push(CHAT.Labels.error[error.type](error.value, error.restrict));
         });
-        Box.find(CHAT.DOM.errorList).elem().innerHTML(errorMessages.join("<br />"));
-        Box.find(CHAT.DOM.error).class("remove", "hidden-weak");
+        Box.find(CHAT.DOM.errorList).elem().innerHTML = errorMessages.join("<br />");
+        Box.find(CHAT.DOM.error).class("remove", "hidden");
         window.setTimeout(function(){
-            Box.find(CHAT.DOM.error).class("add", "hidden-weak");
+            Box.find(CHAT.DOM.error).class("add", "hidden");
             Box.find(CHAT.DOM.errorList).elem().innerHTML = '';
         }, CHAT.Config.error.messageWait);
     },
@@ -460,15 +464,15 @@ CHAT.Method = {
         regenerate = HD.Function.param(regenerate, false);
 
         if (regenerate){
-            HD.DOM(to.childNodes).filter(':not(.cloneable)').remove();
+            HD.DOM(to.children).filter(':not(.cloneable)').remove();
         }
         HD.DOM(CHAT.DOM.onlineListItems).elements.forEach(function(onlineListItem){
             let user;
-            const currentUserId = HD.DOM(onlineListItem).data("id");
+            const currentUserId = HD.DOM(onlineListItem).dataNum("id");
             if (userIds.indexOf(currentUserId) > -1){
                 user = CHAT.Util.cloneElement(HD.DOM(to).find('.cloneable').elem(), to, currentUserId === CHAT.USER.id);
                 const User = HD.DOM(user);
-                User.data("id", currentUserId);
+                User.dataNum("id", currentUserId);
                 User.find('.status').class("add", CHAT.Method.getStatus(onlineListItem)).class("add", "run");
                 User.find('.name').elem().innerHTML = CHAT.Method.getUserName(currentUserId);
             }
@@ -529,7 +533,7 @@ CHAT.Method = {
             onlineUserStatuses[connectedUsers[socketId].id] = isIdle ? "idle" : connectedUsers[socketId].status;
         }
         HD.DOM(CHAT.DOM.onlineListItems).elements.forEach(function(onlineListItem){
-            const currentId = HD.DOM(onlineListItem).data("id");
+            const currentId = HD.DOM(onlineListItem).dataNum("id");
             if (typeof onlineUserStatuses[currentId] !== "undefined"){
                 CHAT.Method.setStatus(onlineListItem, onlineUserStatuses[currentId]);
             }
@@ -539,7 +543,7 @@ CHAT.Method = {
         });
         HD.DOM(CHAT.DOM.box).elements.forEach(function(box){
             HD.DOM(box).find(CHAT.DOM.userItems).elements.forEach(function(userItem){
-                const onlineStatus = onlineUserStatuses[HD.DOM(userItem).data("id")];
+                const onlineStatus = onlineUserStatuses[HD.DOM(userItem).dataNum("id")];
                 CHAT.Method.setStatus(userItem, onlineStatus || "off");
             });
         });
@@ -553,7 +557,7 @@ CHAT.Method = {
     changeUserStatus : function(newStatus){
         let socketId;
         let thisSocket = null;
-        const connectedUsers = HD.DOM(CHAT.DOM.online).data("connectedUsers");
+        const connectedUsers = HD.DOM(CHAT.DOM.online).dataObj("connected-users");
 
         for (socketId in connectedUsers){
             if (connectedUsers[socketId].id === CHAT.USER.id){
@@ -573,7 +577,7 @@ CHAT.Method = {
                 connectedUsers[thisSocket].status = newStatus;
             }
         }
-        HD.DOM(CHAT.DOM.online).data("connectedUsers", connectedUsers);
+        HD.DOM(CHAT.DOM.online).dataObj("connected-users", connectedUsers);
         return connectedUsers;
     },
 
@@ -585,16 +589,16 @@ CHAT.Method = {
     changeBoxStatus : function(box, newStatus){
         const Box = HD.DOM(box);
         if (newStatus === "enabled"){
-            Box.find(CHAT.DOM.message).prop("disabled", "false");
-            Box.find(CHAT.DOM.userThrow).data("disabled", "false");
-            Box.find(CHAT.DOM.fileTrigger).data("disabled", "false");
-            Box.data("disabled", "false");
+            Box.find(CHAT.DOM.message).prop("disabled", false);
+            Box.find(CHAT.DOM.userThrow).dataBool("disabled", false);
+            Box.find(CHAT.DOM.fileTrigger).dataBool("disabled", false);
+            Box.dataBool("disabled", false);
         }
         else if (newStatus === "disabled"){
-            Box.find(CHAT.DOM.message).prop("disabled", "true");
-            Box.find(CHAT.DOM.userThrow).data("disabled", "true");
-            Box.find(CHAT.DOM.fileTrigger).data("disabled", "true");
-            Box.data("disabled", "true");
+            Box.find(CHAT.DOM.message).prop("disabled", true);
+            Box.find(CHAT.DOM.userThrow).dataBool("disabled", true);
+            Box.find(CHAT.DOM.fileTrigger).dataBool("disabled", true);
+            Box.dataBool("disabled", true);
         }
     },
 
