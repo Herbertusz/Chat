@@ -29,19 +29,20 @@ CHAT.FileTransfer = {
     strategies : {
 
         /**
-         *
+         * URL tárolása db-ben
          * @type {Object}
          */
         upload : {
 
             /**
-             * Fájlfeltöltés, url tárolása db-ben
+             * Fájlfeltöltés
              * @param {HTMLElement} box
              * @param {Object} data
              * @param {FileReader} reader
              * @param {Blob} rawFile
              * @returns {XMLHttpRequest}
-             * @description data szerkezete: {
+             * @description
+             * data = {
              *     userId : Number,
              *     fileData : {
              *         name : String,
@@ -86,10 +87,11 @@ CHAT.FileTransfer = {
             },
 
             /**
-             *
+             * Fájlfogadás
              * @param {HTMLElement} box
              * @param {Object} data
-             * @description data szerkezete: {
+             * @description
+             * data = {
              *     userId : Number,
              *     fileData : {
              *         name : String,
@@ -108,11 +110,12 @@ CHAT.FileTransfer = {
             },
 
             /**
-             *
+             * Korábban feltöltött fájl fogadása
              * @param {HTMLElement} box
              * @param {Object} data
              * @param {Object} msgData
-             * @description data szerkezete: {
+             * @description
+             * data = {
              *     userId : Number,
              *     fileData : {
              *         name : String,
@@ -124,6 +127,23 @@ CHAT.FileTransfer = {
              *     type : String,
              *     time : Number,
              *     roomName : String
+             * }
+             * msgData = {
+             *     _id : ObjectID,
+             *     userId : Number,
+             *     userName : String,
+             *     room : String,
+             *     message : String|undefined,
+             *     file : Object|undefined {
+             *         name : String,
+             *         size : Number,
+             *         type : String,
+             *         mainType : String,
+             *         store : String,
+             *         data : String,
+             *         deleted : Boolean
+             *     },
+             *     created : String
              * }
              */
             receive : function(box, data, msgData){
@@ -140,7 +160,7 @@ CHAT.FileTransfer = {
 
         /**
          * Base64 kód tárolása db-ben
-         * @type Object
+         * @type {Object}
          */
         base64 : {
 
@@ -150,6 +170,20 @@ CHAT.FileTransfer = {
              * @param {Object} data
              * @param {FileReader} reader
              * @param {Blob} rawFile
+             * @description
+             * data = {
+             *     userId : Number,
+             *     fileData : {
+             *         name : String,
+             *         size : Number,
+             *         type : String
+             *     },
+             *     file : String,
+             *     store : String,
+             *     type : String,
+             *     time : Number,
+             *     roomName : String
+             * }
              */
             clientSend : function(box, data, reader, rawFile){
                 data.file = reader.result;
@@ -161,6 +195,20 @@ CHAT.FileTransfer = {
              * Fájlfogadás
              * @param {HTMLElement} box
              * @param {Object} data
+             * @description
+             * data = {
+             *     userId : Number,
+             *     fileData : {
+             *         name : String,
+             *         size : Number,
+             *         type : String
+             *     },
+             *     file : String,
+             *     store : String,
+             *     type : String,
+             *     time : Number,
+             *     roomName : String
+             * }
              */
             serverSend : function(box, data){
                 CHAT.Method.appendFile(box, data);
@@ -171,24 +219,55 @@ CHAT.FileTransfer = {
              * @param {HTMLElement} box
              * @param {Object} data
              * @param {Object} msgData
+             * @description
+             * data = {
+             *     userId : Number,
+             *     fileData : {
+             *         name : String,
+             *         size : Number,
+             *         type : String
+             *     },
+             *     file : String,
+             *     store : String,
+             *     type : String,
+             *     time : Number,
+             *     roomName : String
+             * }
+             * msgData = {
+             *     _id : ObjectID,
+             *     userId : Number,
+             *     userName : String,
+             *     room : String,
+             *     message : String|undefined,
+             *     file : Object|undefined {
+             *         name : String,
+             *         size : Number,
+             *         type : String,
+             *         mainType : String,
+             *         store : String,
+             *         data : String,
+             *         deleted : Boolean
+             *     },
+             *     created : String
+             * }
              */
             receive : function(box, data, msgData){
-                data.file = msgData.fileBase64;
+                data.file = msgData.file.data;
                 CHAT.Method.appendFile(box, data);
             }
 
         },
 
         /**
-         *
-         * @type Object
+         * Tömörített base64 kód tárolása db-ben
+         * @type {Object}
          */
         zip : {
 
             /**
-             * Tömörített base64 kód tárolása db-ben
+             * Fájlküldés
              * @param {HTMLElement} box
-             * @param {Object}data
+             * @param {Object} data
              * @param {FileReader} reader
              * @param {Blob} rawFile
              */
@@ -208,7 +287,7 @@ CHAT.FileTransfer = {
             },
 
             /**
-             *
+             * Fájlfogadás
              * @param {HTMLElement} box
              * @param {Object} data
              */
@@ -227,7 +306,7 @@ CHAT.FileTransfer = {
             },
 
             /**
-             *
+             * Korábban küldött fájl fogadása
              * @param {HTMLElement} box
              * @param {Object} data
              * @param {Object} msgData

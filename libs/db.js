@@ -43,19 +43,19 @@ var DB = {
 
     /**
      * DB-kapcsolat
-     * @type Object
+     * @type {Object}
      */
     connection : null,
 
     /**
      * Utoljára futtatott SQL lekérdezés
-     * @type String
+     * @type {String}
      */
     sql : null,
 
     /**
      * Utoljára futtatott SQL parancs ("SELECT", "INSERT", "UPDATE", "DELETE", ...)
-     * @type Boolean|String
+     * @type {Boolean|String}
      */
     command : false,
 

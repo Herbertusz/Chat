@@ -1,6 +1,6 @@
 /*!
  * HD-keret DOM v1.0.0
- * 2016.06.18.
+ * 2016.06.27.
  *
  * @description DOM-kezelő
  * @example
@@ -247,6 +247,19 @@ HD.DOM = function(identifier){
         },
 
         /**
+         * Elemhez kapcsolt adat törlése
+         * @param {String} name
+         * @returns {HD.DOM}
+         */
+        removeData : function(name){
+            // setter
+            this.elements.forEach(function(elem){
+                elem.removeAttribute(`data-${name}`);
+            });
+            return this;
+        },
+
+        /**
          * Elemhez kapcsolt logikai adat lekérdezése / módosítása
          * @param {String} name
          * @param {Boolean} [value]
@@ -267,7 +280,12 @@ HD.DOM = function(identifier){
             }
             else {
                 // setter
-                this.data(name, value ? "true" : "false");
+                if (value){
+                    this.data(name, "true");
+                }
+                else {
+                    this.removeData(name);
+                }
                 return this;
             }
         },
@@ -381,7 +399,7 @@ HD.DOM = function(identifier){
         },
 
         /**
-         * Elem tualjdonságának lekérdezése / módosítása
+         * Elem tulajdonságának lekérdezése / módosítása
          * @param {String} property
          * @param {Boolean} value
          * @returns {Boolean|HD.DOM}
@@ -402,7 +420,7 @@ HD.DOM = function(identifier){
 
         /**
          * Osztálylista módosítása
-         * @param {String} operation ("add"|"remove"|"toggle")
+         * @param {String} operation - "add"|"remove"|"toggle"
          * @param {String} className
          * @returns {HD.DOM}
          */
@@ -529,7 +547,7 @@ HD.DOM = function(identifier){
          * @param {String} eventName
          * @returns {HD.DOM}
          */
-        fire : function(eventName){
+        dispatch : function(eventName){
             let eventObj;
             if (typeof Event === "function"){
                 eventObj = new Event(eventName, {
@@ -555,12 +573,14 @@ HD.DOM = function(identifier){
  * Csatolt eseménykezelők belső tárolása
  * @type {Array.<Object>}
  * @private
- * @description szerkezet: [
+ * @description
+ * eventListeners = [
  *     {
  *         target : HTMLElement,
  *         eventName : String,
  *         handler : Function
- *     }
+ *     },
+ *     ...
  * ]
  */
 HD.DOM.eventListeners = [];
@@ -569,22 +589,29 @@ HD.DOM.eventListeners = [];
  * Csatolt adatok típusainak belső tárolása
  * @type {Array.<Object>}
  * @private
- * @description szerkezet: [
+ * @description
+ * dataObjects = [
  *     {
  *         element : HTMLElement,
  *         type : String,
  *         name : String,
  *         value : *
- *     }
+ *     },
+ *     ...
  * ]
  */
 HD.DOM.dataObjects = [];
 
 /**
  * Egér pozíciója egy elemhez képest
- * @param {Event} event egérhez kapcsolódó esemény
- * @param {HTMLElement} [elem=document.body] egy DOM elem
+ * @param {Event} event - egérhez kapcsolódó esemény
+ * @param {HTMLElement} [elem=document.body] - egy DOM elem
  * @returns {Object} egérpozíció
+ * @description
+ * return = {
+ *     x : Number,
+ *     y : Number
+ * }
  */
 HD.DOM.getMousePosition = function(event, elem){
     var offset = {x : 0, y : 0};
@@ -624,7 +651,7 @@ HD.DOM.protection = function(){
             event.preventDefault();
             event.stopPropagation();
         }
-    }).event("contextmenu", function(){
+    }).event("contextmenu", function(event){
         event.preventDefault();
         event.stopPropagation();
     });
@@ -632,9 +659,9 @@ HD.DOM.protection = function(){
 
 /**
  * Drag-n-drop kurzor létrehozása egy elemen
- * @param {HTMLElement} elem húzható elem
- * @param {String} openhand hover kurzor teljes elérési útja
- * @param {String} closehand drag kurzor teljes elérési útja
+ * @param {HTMLElement} elem - húzható elem
+ * @param {String} openhand - hover kurzor teljes elérési útja
+ * @param {String} closehand - drag kurzor teljes elérési útja
  */
 HD.DOM.grabCursor = function(elem, openhand, closehand){
     var cssValueOpen = `url(${openhand}), move`;

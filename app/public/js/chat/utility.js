@@ -27,7 +27,7 @@ CHAT.notificationStatus = false;
 
 /**
  * jQuery szelektorok
- * @type Object
+ * @type {Object}
  */
 CHAT.DOM = {
     idleCheck : 'body',
@@ -63,7 +63,7 @@ CHAT.DOM = {
 
 /**
  * Időméréshez használt változók
- * @type Object
+ * @type {Object}
  */
 CHAT.timer = {
     writing : {
@@ -85,7 +85,7 @@ CHAT.timer = {
 
 /**
  * Segédfüggvények
- * @type Object
+ * @type {Object}
  */
 CHAT.Util = {
 
@@ -111,7 +111,7 @@ CHAT.Util = {
 
     /**
      * Doboz scrollozása az aljára
-     * @param {HTMLElement} box doboz
+     * @param {HTMLElement} box - Chat-doboz
      */
     scrollToBottom : function(box){
         const list = HD.DOM(box).find(CHAT.DOM.list).elem();
@@ -120,9 +120,9 @@ CHAT.Util = {
 
     /**
      * Elem rekurzív másolása eseménykezelőkkel együtt
-     * @param {HTMLElement} element másolandó elem
-     * @param {HTMLElement} insert beszúrás helye
-     * @param {Boolean} [prepend=false] ha true, beszúrás az elejére
+     * @param {HTMLElement} element - másolandó elem
+     * @param {HTMLElement} insert - beszúrás helye
+     * @param {Boolean} [prepend=false] - ha true, beszúrás az elejére
      * @returns {HTMLElement} az elem másolata
      */
     cloneElement : function(element, insert, prepend){

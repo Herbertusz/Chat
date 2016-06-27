@@ -12,7 +12,7 @@ module.exports = function(app){
         WSPORT : global.WSPORT,
         menu : [
             {
-                text : 'Előszoba',
+                text : 'Főoldal',
                 url : '/index'
             },
             {

@@ -7,13 +7,20 @@ CHAT.Events = CHAT.Events || {};
 
 /**
  * Szerver által küldött események kezelése
- * @type Object
+ * @type {Object}
  */
 CHAT.Events.Server = {
 
     /**
      * Belépés a chat-be
      * @param {Object} data
+     * @description
+     * data = {
+     *     id : Number,      // user azonosító
+     *     name : String,    // user login név
+     *     status : String,  // user státusz ("on"|"busy"|"off")
+     *     isIdle : Boolean  // user státusz: "idle"
+     * }
      */
     userConnected : function(data){
         // CHAT.Method.appendSystemMessage(box, 'connect', data.id);
@@ -22,6 +29,13 @@ CHAT.Events.Server = {
     /**
      * Kilépés a chat-ből
      * @param {Object} data
+     * @description
+     * data = {
+     *     id : Number,      // user azonosító
+     *     name : String,    // user login név
+     *     status : String,  // user státusz ("on"|"busy"|"off")
+     *     isIdle : Boolean  // user státusz: "idle"
+     * }
      */
     disconnect : function(data){
         HD.DOM(CHAT.DOM.box).filter(':not(.cloneable)').elements.forEach(function(box){
@@ -36,6 +50,16 @@ CHAT.Events.Server = {
     /**
      * User-ek állapotváltozása
      * @param {Object} connectedUsers
+     * @description
+     * connectedUsers = {
+     *     <socket.id> : {
+     *         id : Number,      // user azonosító
+     *         name : String,    // user login név
+     *         status : String,  // user státusz ("on"|"busy"|"off")
+     *         isIdle : Boolean  // user státusz: "idle"
+     *     },
+     *     ...
+     * }
      */
     statusChanged : function(connectedUsers){
         HD.DOM(CHAT.DOM.online).dataObj("connected-users", connectedUsers);
@@ -45,6 +69,12 @@ CHAT.Events.Server = {
     /**
      * Csatorna létrehozása
      * @param {Object} roomData
+     * @description
+     * roomData = {
+     *     name : String,    // "room-x-y"; x: létrehozó userId, y: létrehozás timestamp
+     *     userIds : Array,  // csatornába rakott userId-k
+     *     starter : Number  // csatorna létrehozó userId
+     * }
      */
     roomCreated : function(roomData){
         let Box, Userlist;
@@ -58,12 +88,18 @@ CHAT.Events.Server = {
             CHAT.Method.generateUserList(Userlist.elem(), roomData.userIds);
             CHAT.Method.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj("connected-users"));
             CHAT.socket.emit('roomJoin', {roomName : roomData.name});
+            CHAT.Method.notification(Box.elem(), roomData.starter, "create");
         }
     },
 
     /**
-     * Csatornához csatlakozás
+     * Csatornához csatlakozás (belépés hatására)
      * @param {Object} roomData
+     * @description
+     * roomData = {
+     *     userId : Number,
+     *     roomData : Object
+     * }
      */
     roomJoined : function(roomData){
         let Box, Userlist;
@@ -82,16 +118,20 @@ CHAT.Events.Server = {
         else {
             // Csatlakozott a csatornához
             Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${roomData.name}"]`);
-            Userlist = Box.find(CHAT.DOM.users);
-            CHAT.Method.appendSystemMessage(Box.elem(), 'join', roomData.joinedUserId);
-            CHAT.Method.generateUserList(Userlist.elem(), roomData.userIds, true);
+            if (Box.elem()){
+                Userlist = Box.find(CHAT.DOM.users);
+                CHAT.Method.appendSystemMessage(Box.elem(), 'join', roomData.joinedUserId);
+                CHAT.Method.generateUserList(Userlist.elem(), roomData.userIds, true);
+                CHAT.Method.notification(Box.elem(), roomData.starter, "join");
+            }
         }
     },
 
     /**
      * Csatorna elhagyása
      * @param {Object} extData
-     * @description szerkezet: {
+     * @description
+     * extData = {
      *     userId : Number,
      *     roomData : Object
      * }
@@ -103,6 +143,7 @@ CHAT.Events.Server = {
             Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
             if (Box.elem()){
                 CHAT.Method.appendSystemMessage(Box.elem(), 'leave', extData.userId);
+                CHAT.Method.notification(Box.elem(), extData.userId, "leave");
             }
             Box.find(`[data-id="${extData.userId}"]`).remove();
         }
@@ -111,7 +152,8 @@ CHAT.Events.Server = {
     /**
      * Hozzáadás csatornához
      * @param {Object} extData
-     * @description szerkezet: {
+     * @description
+     * extData = {
      *     triggerId : Number,
      *     userId : Number,
      *     roomData : Object
@@ -124,7 +166,7 @@ CHAT.Events.Server = {
 
         if (extData.userId === CHAT.USER.id){
             // Csatlakoztattak a csatornához
-            if (Box.elem() > 0){
+            if (Box.elem()){
                 // Van a csatornához tartozó doboz (korábban ki lett dobva)
                 Userlist = Box.find(CHAT.DOM.users);
                 CHAT.Method.changeBoxStatus(Box.elem(), "enabled");
@@ -138,7 +180,7 @@ CHAT.Events.Server = {
                 );
                 Userlist = Box.find(CHAT.DOM.users);
                 Box.data("room", extData.roomData.name);
-                CHAT.Method.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj("connectedUsers"));
+                CHAT.Method.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj("connected-users"));
                 CHAT.Method.fillBox(Box.elem(), extData.roomData.name);
                 CHAT.Method.generateUserList(Userlist.elem(), extData.roomData.userIds);
                 CHAT.Method.appendSystemMessage(Box.elem(), 'forceJoinYou', extData.triggerId);
@@ -149,9 +191,8 @@ CHAT.Events.Server = {
             });
             CHAT.Method.notification(Box.elem(), extData.triggerId, "forceJoin");
         }
-        else {
+        else if (Box.elem()){
             // Új user csatlakozott a csatornához
-            Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
             Userlist = Box.find(CHAT.DOM.users);
             CHAT.Method.generateUserList(Userlist.elem(), extData.roomData.userIds, true);
             CHAT.Method.appendSystemMessage(Box.elem(), 'forceJoinOther', extData.triggerId, extData.userId);
@@ -161,7 +202,8 @@ CHAT.Events.Server = {
     /**
      * Kidobás csatornából
      * @param {Object} extData
-     * @description szerkezet: {
+     * @description
+     * extData = {
      *     triggerId : Number,
      *     userId : Number,
      *     roomData : Object
@@ -170,26 +212,29 @@ CHAT.Events.Server = {
     roomForceLeaved : function(extData){
         const Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
 
-        if (extData.userId === CHAT.USER.id){
-            CHAT.Method.appendSystemMessage(Box.elem(), 'forceLeaveYou', extData.triggerId);
-            CHAT.socket.emit('roomLeave', {
-                silent : true,
-                userId : CHAT.USER.id,
-                roomName : extData.roomData.name
-            });
-            CHAT.Method.changeBoxStatus(Box.elem(), "disabled");
-            CHAT.Method.notification(Box.elem(), extData.triggerId, "forceLeave");
+        if (Box.elem()){
+            if (extData.userId === CHAT.USER.id){
+                CHAT.Method.appendSystemMessage(Box.elem(), 'forceLeaveYou', extData.triggerId);
+                CHAT.socket.emit('roomLeave', {
+                    silent : true,
+                    userId : CHAT.USER.id,
+                    roomName : extData.roomData.name
+                });
+                CHAT.Method.changeBoxStatus(Box.elem(), "disabled");
+                CHAT.Method.notification(Box.elem(), extData.triggerId, "forceLeave");
+            }
+            else {
+                CHAT.Method.appendSystemMessage(Box.elem(), 'forceLeaveOther', extData.triggerId, extData.userId);
+            }
+            Box.find(`[data-id="${extData.userId}"]`).remove();
         }
-        else {
-            CHAT.Method.appendSystemMessage(Box.elem(), 'forceLeaveOther', extData.triggerId, extData.userId);
-        }
-        Box.find(`[data-id="${extData.userId}"]`).remove();
     },
 
     /**
      * Üzenetküldés
      * @param {Object} data
-     * @description data szerkezete: {
+     * @description
+     * data = {
      *     userId : Number,
      *     message : String,
      *     time : Number,
@@ -209,7 +254,8 @@ CHAT.Events.Server = {
     /**
      * Fájlfogadás folyamata
      * @param {Object} data
-     * @description data szerkezete: {
+     * @description
+     * data = {
      *     userId : Number,
      *     roomName : String,
      *     uploadedSize : Number,
@@ -220,7 +266,7 @@ CHAT.Events.Server = {
     fileReceive : function(data){
         const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`).elem();
 
-        if (CHAT.USER.id !== data.userId){
+        if (CHAT.USER.id !== data.userId && box){
             if (data.firstSend){
                 CHAT.Events.Server.barId = CHAT.Method.progressbar(
                     box, "get", data.uploadedSize / data.fileSize, null, false
@@ -237,7 +283,8 @@ CHAT.Events.Server = {
     /**
      * Fájlfogadás vége (a fájl átjött)
      * @param {Object} data
-     * @description data szerkezete: {
+     * @description
+     * data = {
      *     userId : Number,
      *     fileData : {
      *         name : String,
@@ -264,7 +311,8 @@ CHAT.Events.Server = {
     /**
      * Fájlátvitel megszakítása a fogadó oldalon
      * @param {Object} data
-     * @description data szerkezete: {
+     * @description
+     * data = {
      *     userId : Number,
      *     fileData : {
      *         name : String,
@@ -289,7 +337,8 @@ CHAT.Events.Server = {
     /**
      * Üzenetírás
      * @param {Object} data
-     * @description szerkezet: {
+     * @description
+     * data = {
      *     userId : Number,
      *     message : String,
      *     time : Number,

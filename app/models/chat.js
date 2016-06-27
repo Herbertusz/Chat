@@ -4,13 +4,19 @@
 
 var HD = require(`${appRoot}/libs/hd/hd.datetime.js`);
 
+/**
+ *
+ * @param {Object} db
+ * @returns {Object}
+ * @constructor
+ */
 var Model = function(db){
 
     return {
 
         /**
          * ?
-         * @param callback
+         * @param {Function} callback
          */
         getUsers : function(callback){
             db.collection("chat_users")
@@ -30,8 +36,8 @@ var Model = function(db){
 
         /**
          * ?
-         * @param roomName
-         * @param callback
+         * @param {String} roomName
+         * @param {Function} callback
          */
         getRoomMessages : function(roomName, callback){
             db.collection("chat_messages")
@@ -66,8 +72,12 @@ var Model = function(db){
 
         /**
          * ?
-         * @param data
-         * @param callback
+         * @param {Object} data
+         * @param {Function} callback
+         * @description
+         * data = {
+         *     // TODO
+         * }
          */
         setMessage : function(data, callback){
             let messageId, insertData;
@@ -100,8 +110,12 @@ var Model = function(db){
 
         /**
          * ?
-         * @param data
-         * @param callback
+         * @param {Object} data
+         * @param {Function} callback
+         * @description
+         * data = {
+         *     // TODO
+         * }
          */
         setFile : function(data, callback){
             this.setMessage({
@@ -124,8 +138,12 @@ var Model = function(db){
 
         /**
          * ?
-         * @param data
-         * @param callback
+         * @param {Object} data
+         * @param {Function} callback
+         * @description
+         * data = {
+         *     // TODO
+         * }
          */
         deleteFile : function(data, callback){
             db.collection("chat_messages")
@@ -157,8 +175,12 @@ var Model = function(db){
 
         /**
          * ?
-         * @param roomName
-         * @param callback
+         * @param {String} roomName
+         * @param {Function} callback
+         * @description
+         * data = {
+         *     // TODO
+         * }
          */
         deleteRoomFiles : function(roomName, callback){
             db.collection("chat_messages")

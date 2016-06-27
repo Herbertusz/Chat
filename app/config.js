@@ -36,8 +36,16 @@ CHAT.Config = {
         sound : {
             // Hangos értesítés engedélyezése
             allowed : true,
-            // Értesítés esetén lejátszandó hangfájl
-            audio : '/audio/notification.mp3'
+            // Különféle értesítések esetén lejátszódó hangfájlok
+            audio : {
+                'message'    : '/audio/send.mp3',
+                'file'       : '/audio/send.mp3',
+                'create'     : '/audio/join.mp3',
+                'join'       : '/audio/join.mp3',
+                'leave'      : '/audio/leave.mp3',
+                'forceJoin'  : '/audio/join.mp3',
+                'forceLeave' : '/audio/leave.mp3'
+            }
         }
     },
 

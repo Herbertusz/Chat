@@ -128,7 +128,7 @@ CHAT.Events.Client = {
     /**
      * Fájlküldés
      * @param {HTMLElement} box
-     * @param {Object} files
+     * @param {Object} files - FileList objektum
      */
     sendFile : function(box, files){
         const store = CHAT.Config.fileTransfer.store;

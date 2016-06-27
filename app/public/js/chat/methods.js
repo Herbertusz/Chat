@@ -6,7 +6,7 @@ var CHAT = window.CHAT || {};
 
 /**
  * Rendszer által kiírt szövegek
- * @type Object
+ * @type {Object}
  */
 CHAT.Labels = {
     // Rendszerüzenetek
@@ -44,6 +44,9 @@ CHAT.Labels = {
     'notification' : {
         'message' : (userName) => `${userName} üzenetet írt`,
         'file' : (userName) => `${userName} fájlt küldött`,
+        'create' : (userName) => `${userName} létrehozott egy csatornát`,
+        'join' : (userName) => `${userName} csatlakozott a csatornához`,
+        'leave' : (userName) => `${userName} elhagyta a csatornát`,
         'forceJoin' : (userName) => `${userName} csatlakoztatott egy csatornához`,
         'forceLeave' : (userName) => `${userName} kidobott egy csatornából`
     },
@@ -58,7 +61,7 @@ CHAT.Labels = {
 
 /**
  * Alkalmazásspecifikus függvények
- * @type Object
+ * @type {Object}
  */
 CHAT.Method = {
 
@@ -67,7 +70,8 @@ CHAT.Method = {
      * @param {HTMLElement} box
      * @param {Object} data
      * @param {Boolean} [highlighted=false]
-     * @description data szerkezete: {
+     * @description
+     * data = {
      *     userId : Number,
      *     message : String,
      *     time : Number,
@@ -80,15 +84,13 @@ CHAT.Method = {
         const userName = CHAT.Method.getUserName(data.userId);
         highlighted = HD.Function.param(highlighted, false);
 
-        if (List.elem()){
-            List.elem().innerHTML += `
-                <li>
-                    <span class="time">${time}</span>
-                    <strong class="${highlighted ? "self" : ""}">${CHAT.Util.escapeHtml(userName)}</strong>:
-                    <br />${CHAT.Method.replaceMessage(data.message)}
-                </li>
-            `;
-        }
+        List.elem().innerHTML += `
+            <li>
+                <span class="time">${time}</span>
+                <strong class="${highlighted ? "self" : ""}">${CHAT.Util.escapeHtml(userName)}</strong>:
+                <br />${CHAT.Method.replaceMessage(data.message)}
+            </li>
+        `;
         CHAT.Util.scrollToBottom(box);
     },
 
@@ -104,11 +106,9 @@ CHAT.Method = {
         const userName = CHAT.Method.getUserName(userId);
         const otherUserName = CHAT.Method.getUserName(otherUserId);
 
-        if (List.elem()){
-            List.elem().innerHTML += `
-                <li class="highlighted">${CHAT.Labels.system[type](userName, otherUserName)}</li>
-            `;
-        }
+        List.elem().innerHTML += `
+            <li class="highlighted">${CHAT.Labels.system[type](userName, otherUserName)}</li>
+        `;
         CHAT.Util.scrollToBottom(box);
     },
 
@@ -117,7 +117,8 @@ CHAT.Method = {
      * @param {HTMLElement} box
      * @param {Object} data
      * @param {Boolean} [highlighted=false]
-     * @description data szerkezete: {
+     * @description
+     * data = {
      *     userId : Number,
      *     fileData : {
      *         name : String,
@@ -178,7 +179,8 @@ CHAT.Method = {
      * @param {HTMLElement} box
      * @param {Object} data
      * @param {Boolean} [highlighted=false]
-     * @description data szerkezete: {
+     * @description
+     * data = {
      *     userId : Number,
      *     fileData : {
      *         name : String,
@@ -246,7 +248,6 @@ CHAT.Method = {
                     const Progressbar = HD.DOM(this).ancestor('.progressbar');
                     CHAT.Events.Client.abortFile(Progressbar.elem());
                     HD.DOM(this).class("add", "hidden");
-                    console.log(this);
                 });
             }
             else {
@@ -297,7 +298,7 @@ CHAT.Method = {
      * Értesítések megjelenítése
      * @param {HTMLElement|Boolean} [box]
      * @param {Number} [triggerId]
-     * @param {String} [operation] ("message", "file", "forceJoin", "forceLeave")
+     * @param {String} [operation] - "message"|"file"|"create"|"join"|"leave"|"forceJoin"|"forceLeave"
      */
     notification : function(box, triggerId, operation){
         const notif = CHAT.Config.notification;
@@ -336,7 +337,7 @@ CHAT.Method = {
                     audio.volume = 0.5;
                     audio.preload = "auto";
                     audio.style.display = "none";
-                    audio.src = notif.sound.audio;
+                    audio.src = notif.sound.audio[operation];
                     document.body.appendChild(audio);
                 }
                 else {
@@ -508,11 +509,11 @@ CHAT.Method = {
      */
     getStatus : function(elem){
         let n, status;
-        const StatusElem = HD.DOM(elem).find('.status');
+        const statusElem = HD.DOM(elem).find('.status').elem();
         const statuses = ["on", "busy", "idle", "inv", "off"];
 
         for (n = 0; n < statuses.length; n++){
-            if (StatusElem.class("contains", statuses[n])){
+            if (statusElem.classList.contains(statuses[n])){
                 status = statuses[n];
                 break;
             }
@@ -523,6 +524,16 @@ CHAT.Method = {
     /**
      * Státuszok frissítése
      * @param {Object} connectedUsers
+     * @description
+     * connectedUsers = {
+     *     <socket.id> : {
+     *         id : Number,      // user azonosító
+     *         name : String,    // user login név
+     *         status : String,  // user státusz ("on"|"busy"|"off")
+     *         isIdle : Boolean  // user státusz: "idle"
+     *     },
+     *     ...
+     * }
      */
     updateStatuses : function(connectedUsers){
         const onlineUserStatuses = {};
@@ -553,6 +564,16 @@ CHAT.Method = {
      * Felhasználó státuszának megváltoztatása
      * @param {String} newStatus
      * @returns {Object}
+     * @description
+     * return = {
+     *     <socket.id> : {
+     *         id : Number,      // user azonosító
+     *         name : String,    // user login név
+     *         status : String,  // user státusz ("on"|"busy"|"off")
+     *         isIdle : Boolean  // user státusz: "idle"
+     *     },
+     *     ...
+     * }
      */
     changeUserStatus : function(newStatus){
         let socketId;
@@ -584,7 +605,7 @@ CHAT.Method = {
     /**
      * Doboz aktiválása/inaktiválása
      * @param {HTMLElement} box
-     * @param {String} newStatus "enabled"|"disabled"
+     * @param {String} newStatus - "enabled"|"disabled"
      */
     changeBoxStatus : function(box, newStatus){
         const Box = HD.DOM(box);
@@ -618,30 +639,33 @@ CHAT.Method = {
                 roomName : roomName
             },
             dataType : "json",
+            /**
+             * Ajax válasz
+             * @param {Object} resp
+             * @description
+             * resp = {
+             *     messages : [
+             *         0 : {
+             *             _id : ObjectID,
+             *             userId : Number,
+             *             userName : String,
+             *             room : String,
+             *             message : String|undefined,
+             *             file : Object|undefined {
+             *                 name : String,
+             *                 size : Number,
+             *                 type : String,
+             *                 mainType : String,
+             *                 store : String,
+             *                 data : String,
+             *                 deleted : Boolean
+             *             },
+             *             created : String
+             *         }
+             *     ]
+             * }
+             */
             success : function(resp){
-                /**
-                 * @description resp : {
-                 *     messages : [
-                 *         0 : {
-                 *             _id : ObjectID,
-                 *             userId : Number,
-                 *             userName : String,
-                 *             room : String,
-                 *             message : String|undefined,
-                 *             file : Object|undefined {
-                 *                 name : String,
-                 *                 size : Number,
-                 *                 type : String,
-                 *                 mainType : String,
-                 *                 store : String,
-                 *                 data : String,
-                 *                 deleted : Boolean
-                 *             },
-                 *             created : String
-                 *         }
-                 *     ]
-                 * }
-                 */
                 resp.messages.forEach(function(msgData){
                     let data;
                     const timestamp = Date.parse(msgData.created.replace(/ /g, 'T')) / 1000;

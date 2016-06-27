@@ -6,6 +6,11 @@ var CHAT = window.CHAT || {};
 
 HD.DOM(document).event("DOMContentLoaded", function(){
 
+    /**
+     * Chat-dobozon belüli elemek
+     * @param {String} selector
+     * @returns {HD.DOM}
+     */
     var inBox = function(selector){
         return HD.DOM(CHAT.DOM.box).find(selector);
     };
@@ -99,7 +104,7 @@ HD.DOM(document).event("DOMContentLoaded", function(){
         CHAT.Events.Client.sendMessage(Box.elem());
     });
 
-    // Fájlküldés
+    // Fájlküldés (hagyományos)
     inBox(CHAT.DOM.fileTrigger).event("click", function(){
         const Trigger = HD.DOM(this);
         if (!Trigger.dataBool("disabled")){
@@ -112,11 +117,6 @@ HD.DOM(document).event("DOMContentLoaded", function(){
         if (files.length > 0){
             CHAT.Events.Client.sendFile(Box.elem(), files);
         }
-    });
-    HD.DOM(CHAT.DOM.box).event("click", function(event){
-        // if (event.target.getAttribute("class") === "notredirect"){
-        //     event.preventDefault();
-        // }
     });
 
     // Fájlküldés (drag-n-drop)

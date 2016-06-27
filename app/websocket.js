@@ -11,14 +11,22 @@ var Model;
 const fsAccess = promisify(fs.access);
 const fsUnlink = promisify(fs.unlink);
 
+/**
+ * Websocket vezérlés
+ * @param {Object} server - http szerver
+ * @param {Object} ioSession - express-session
+ * @param {Object} app - express
+ * @returns {*}
+ */
 module.exports = function(server, ioSession, app){
 
     Model = require(`${appRoot}/app/models/chat.js`)(app.get('db'));
 
     /**
      * Chat-be belépett userek
-     * @type Object
-     * @description szerkezet: {
+     * @type {Object}
+     * @description
+     * connectedUsers = {
      *     <socket.id> : {
      *         id : Number,      // user azonosító
      *         name : String,    // user login név
@@ -32,8 +40,9 @@ module.exports = function(server, ioSession, app){
 
     /**
      * Futó chat-csatornák
-     * @type Array
-     * @description szerkezet: [
+     * @type {Array}
+     * @description
+     * rooms = [
      *     {
      *         name : String,    // "room-x-y"; x: létrehozó userId, y: létrehozás timestamp
      *         userIds : Array,  // csatornába rakott userId-k
@@ -91,9 +100,9 @@ module.exports = function(server, ioSession, app){
 
     /**
      * Csatorna módosítása
-     * @param {String} operation művelet ("add"|"remove")
-     * @param {String} roomName csatorna azonosító
-     * @param {Number} userId user azonosító
+     * @param {String} operation - művelet ("add"|"remove")
+     * @param {String} roomName - csatorna azonosító
+     * @param {Number} userId - user azonosító
      */
     const roomUpdate = function(operation, roomName, userId){
         let userIdIndex = -1;
