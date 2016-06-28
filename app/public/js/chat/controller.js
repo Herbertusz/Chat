@@ -6,12 +6,17 @@ var CHAT = window.CHAT || {};
 
 HD.DOM(document).event("DOMContentLoaded", function(){
 
+    /**
+     * Chat-dobozon belüli elemek
+     * @param {String} selector
+     * @returns {HD.DOM}
+     */
     var inBox = function(selector){
         return HD.DOM(CHAT.DOM.box).find(selector);
     };
 
     // Értesítések állapotának beállítása
-    HD.DOM(document)
+    HD.DOM("body")
         .event("mouseenter", function(){
             CHAT.notificationStatus = false;
             CHAT.Method.notification();
@@ -27,21 +32,21 @@ HD.DOM(document).event("DOMContentLoaded", function(){
 
     // Kilépés csatornából
     inBox(CHAT.DOM.close).event("click", function(){
-        CHAT.Events.Client.leaveRoom(HD.DOM(this).ancestor(CHAT.DOM.box));
+        CHAT.Events.Client.leaveRoom(HD.DOM(this).ancestor(CHAT.DOM.box).elem());
     });
 
     // User hozzáadása csatornához
     HD.DOM(CHAT.DOM.userSelect).event("change", function(){
         if (HD.DOM(CHAT.DOM.selectedUsers).elements.length > 0){
-            HD.DOM(CHAT.DOM.box).filter(':not([data-disabled])').find(CHAT.DOM.addUser).class("remove", "hidden-weak");
+            HD.DOM(CHAT.DOM.box).filter(':not([data-disabled])').find(CHAT.DOM.addUser).class("remove", "hidden");
         }
         else {
-            inBox(CHAT.DOM.addUser).class("add", "hidden-weak");
+            inBox(CHAT.DOM.addUser).class("add", "hidden");
         }
     });
     inBox(CHAT.DOM.addUser).event("click", function(){
         const Add = HD.DOM(this);
-        if (!Add.getBoolData("disabled")){
+        if (!Add.dataBool("disabled")){
             HD.DOM(CHAT.DOM.selectedUsers).elements.forEach(function(selectedUser){
                 CHAT.Events.Client.forceJoinRoom(Add.elem(), Number(selectedUser.value));
             });
@@ -52,14 +57,14 @@ HD.DOM(document).event("DOMContentLoaded", function(){
     // User kidobása csatornából
     inBox(CHAT.DOM.userThrow).event("click", function(){
         const Remove = HD.DOM(this);
-        if (!Remove.getBoolData("disabled")){
+        if (!Remove.dataBool("disabled")){
             CHAT.Events.Client.forceLeaveRoom(Remove.elem());
         }
     });
 
     // Hibaüzenet eltüntetése
     inBox(CHAT.DOM.errorClose).event("click", function(){
-        HD.DOM(this).ancestor(CHAT.DOM.box).find(CHAT.DOM.error).class("add", "hidden-weak");
+        HD.DOM(this).ancestor(CHAT.DOM.box).find(CHAT.DOM.error).class("add", "hidden");
     });
 
     // Tétlen állapot TODO: saját kód
@@ -85,7 +90,6 @@ HD.DOM(document).event("DOMContentLoaded", function(){
     // Üzenetküldés indítása ENTER leütésére
     inBox(CHAT.DOM.message).event("keydown", function(event){
         const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
-        console.log(Box.elem());
         if (event.which === HD.Misc.keys.ENTER){
             if (!event.shiftKey && Box.find(CHAT.DOM.sendSwitch).prop("checked")){
                 CHAT.Events.Client.sendMessage(Box.elem());
@@ -100,10 +104,10 @@ HD.DOM(document).event("DOMContentLoaded", function(){
         CHAT.Events.Client.sendMessage(Box.elem());
     });
 
-    // Fájlküldés
+    // Fájlküldés (hagyományos)
     inBox(CHAT.DOM.fileTrigger).event("click", function(){
         const Trigger = HD.DOM(this);
-        if (!Trigger.getBoolData("disabled")){
+        if (!Trigger.dataBool("disabled")){
             Trigger.ancestor(CHAT.DOM.box).find(CHAT.DOM.file).trigger("click");
         }
     });
@@ -113,11 +117,6 @@ HD.DOM(document).event("DOMContentLoaded", function(){
         if (files.length > 0){
             CHAT.Events.Client.sendFile(Box.elem(), files);
         }
-    });
-    HD.DOM(CHAT.DOM.box).event("click", function(event){
-        // if (event.target.getAttribute("class") === "notredirect"){
-        //     event.preventDefault();
-        // }
     });
 
     // Fájlküldés (drag-n-drop)

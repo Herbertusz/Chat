@@ -425,7 +425,8 @@
       {
         "code": 120,
         "tabWidth": 4,
-        "ignoreUrls": true
+        "ignoreUrls": true,
+        "ignorePattern": "/.*?/g"
       }
     ],
     // enforce a maximum depth that callbacks can be nested

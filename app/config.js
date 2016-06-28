@@ -36,8 +36,16 @@ CHAT.Config = {
         sound : {
             // Hangos értesítés engedélyezése
             allowed : true,
-            // Értesítés esetén lejátszandó hangfájl
-            audio : '/audio/notification.mp3'
+            // Különféle értesítések esetén lejátszódó hangfájlok
+            audio : {
+                'message'    : '/audio/send.mp3',
+                'file'       : '/audio/send.mp3',
+                'create'     : '/audio/join.mp3',
+                'join'       : '/audio/join.mp3',
+                'leave'      : '/audio/leave.mp3',
+                'forceJoin'  : '/audio/join.mp3',
+                'forceLeave' : '/audio/leave.mp3'
+            }
         }
     },
 
@@ -47,15 +55,15 @@ CHAT.Config = {
         // HTML escape-elés a küldött üzenetben
         escapeHTML : true,
 
-        // A mintán belül nincs emoticon és bb-kód csere
+        // A mintán belül nincs kép- és szövegcsere
         replaceDisable : /`(.*)`/,
 
-        // Emoticon lecserélés
-        emoticonReplacement : {
-            // Emoticon lecserélés engedélyezése
+        // Képcsere (karakterláncok képekre cserélése, pl emoticon-ok)
+        imageReplacement : {
+            // Képcsere engedélyezése
             allowed : true,
             // Képekre cserélendő karakterláncok
-            emoticons : {
+            images : {
                 ':)'       : '/images/emoticons/01.gif',
                 ':D'       : '/images/emoticons/02.gif',
                 ':]'       : '/images/emoticons/03.gif',
@@ -76,12 +84,12 @@ CHAT.Config = {
             }
         },
 
-        // BB-kód lecserélés
-        bbCodeReplacement : {
-            // BB-kód lecserélés engedélyezése
+        // Szövegcsere (karakterláncok más karakterláncokra cserélése, pl BB-kódok)
+        stringReplacement : {
+            // Szöveglecsere engedélyezése
             allowed : true,
             // Karakterlánc cserék
-            bbCodes : [
+            strings : [
                 [/\*\*(.*?)\*\*/g,                 '<strong>$1</strong>'],
                 [/__(.*?)__/g,                     '<em>$1</em>'],
                 [/--(.*?)--/g,                     '<span style="text-decoration: line-through;">$1</span>'],
