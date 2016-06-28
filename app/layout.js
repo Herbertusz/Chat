@@ -10,6 +10,7 @@ module.exports = function(app){
     app.locals.layout = {
         DOMAIN : global.DOMAIN,
         WSPORT : global.WSPORT,
+        publicPath : app.get('public path'),
         menu : [
             {
                 text : 'Főoldal',
