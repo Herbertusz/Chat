@@ -4,7 +4,8 @@
             <ul>
                 <li data-id="<%- userId %>" data-name="<%= userName %>" class="self">
                     <label>
-                        <span class="status on"></span> <%= userName %>
+                        <svg class="status on"><use xlink:href="#on"></use></svg>
+                        <%= userName %>
                         <select class="status-change">
                             <option value="on" selected>Elérhető</option>
                             <option value="busy">Elfoglalt</option>
@@ -17,7 +18,8 @@
                         <li data-id="<%- user.id %>" data-name="<%= user.name %>" class="<% if (userId === user.id){ %>hidden<% } %>">
                             <label>
                                 <input class="user-select" type="checkbox" value="<%- user.id %>" />
-                                <span class="status off"></span> <%= user.name %>
+                                <svg class="status off"><use xlink:href="#off"></use></svg>
+                                <%= user.name %>
                             </label>
                         </li>
                     <% } %>
@@ -30,7 +32,7 @@
                 <div class="bar">
                     <span class="users">
                         <span class="user-item cloneable" data-id="">
-                            <span class="status"></span>
+                            <svg class="status"><use xlink:href="#off"></use></svg>
                             <span class="name"></span>
                             <span class="throw" title="Kidobás"></span>
                         </span>
@@ -42,8 +44,9 @@
                     <div class="error-list"></div>
                     <div class="error-close"></div>
                 </div>
-                <div class="progress hiddenX">
+                <div class="progress hidden">
                     <svg class="icon"><use xlink:href="#load"></use></svg>
+                    <span class="text"></span>
                 </div>
                 <div class="<% if (CHAT.Config.fileTransfer.dragndrop.allowed){ %>drop-file<% } %>">
                     <div class="drop-sign"><%= CHAT.Config.fileTransfer.dragndrop.html %></div>

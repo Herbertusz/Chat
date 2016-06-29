@@ -282,15 +282,15 @@ CHAT.Method = {
     progress : function(box, operation){
         const Progress = HD.DOM(box).find(CHAT.DOM.progress);
         const tpl = `
-            <span class="text">${CHAT.Labels.file.read()}</span>
+            ${CHAT.Labels.file.read()}
         `;
         if (operation === "show"){
-            Progress.elem().innerHTML = tpl;
+            Progress.find(CHAT.DOM.progressText).elem().innerHTML = tpl;
             Progress.class("remove", "hidden");
         }
         else {
             Progress.class("add", "hidden");
-            Progress.elem().innerHTML = '';
+            Progress.find(CHAT.DOM.progressText).elem().innerHTML = '';
         }
     },
 
@@ -314,10 +314,10 @@ CHAT.Method = {
             },
             box : function(activate){
                 if (activate){
-                    HD.DOM(box).css({"outline" : "2px dashed red"});
+                    HD.DOM(box).class("add", "notification"); // css({"outline" : "2px dashed red"});
                 }
                 else {
-                    HD.DOM(CHAT.DOM.box).css({"outline" : "0px solid transparent"});
+                    HD.DOM(CHAT.DOM.box).class("remove", "notification"); // css({"outline" : "0px solid transparent"});
                 }
             }
         };
@@ -474,7 +474,8 @@ CHAT.Method = {
                 user = CHAT.Util.cloneElement(HD.DOM(to).find('.cloneable').elem(), to, currentUserId === CHAT.USER.id);
                 const User = HD.DOM(user);
                 User.dataNum("id", currentUserId);
-                User.find('.status').class("add", CHAT.Method.getStatus(onlineListItem)).class("add", "run");
+                const statusElement = User.find(CHAT.DOM.status).class("add", "run");
+                CHAT.Method.setStatus(user, CHAT.Method.getStatus(onlineListItem));
                 User.find('.name').elem().innerHTML = CHAT.Method.getUserName(currentUserId);
             }
         });
@@ -487,7 +488,7 @@ CHAT.Method = {
      */
     setStatus : function(elem, status){
         let n;
-        const StatusElem = HD.DOM(elem).find('.status');
+        const StatusElem = HD.DOM(elem).find(CHAT.DOM.status);
         const statuses = ["on", "busy", "inv", "off"];
 
         if (status === "idle"){
@@ -500,6 +501,7 @@ CHAT.Method = {
             }
             StatusElem.class("add", status);
         }
+        StatusElem.find('use').elem().setAttribute("xlink:href", `#${status}`);
     },
 
     /**
@@ -509,7 +511,7 @@ CHAT.Method = {
      */
     getStatus : function(elem){
         let n, status;
-        const statusElem = HD.DOM(elem).find('.status').elem();
+        const statusElem = HD.DOM(elem).find(CHAT.DOM.status).elem();
         const statuses = ["on", "busy", "idle", "inv", "off"];
 
         for (n = 0; n < statuses.length; n++){

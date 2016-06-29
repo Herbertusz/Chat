@@ -20,25 +20,20 @@
 .status {
     display: inline-block;
     position: relative;
-    border-radius: 5px;
-    width: 16px;
-    height: 16px;
-    background: {
-        image: url("../images/chat.png");
-        repeat: no-repeat;
-    }
+    width: 14px;
+    height: 14px;
 
-    &.off      { background-position: -60px -21px; }
-    &.on       { background-position:   0px -21px; }
-    &.busy     { background-position: -20px -21px; }
-    &.idle     { background-position: -40px -21px; }
-    &.off.run  { background-position: -60px -42px; }
-    &.on.run   { background-position:   0px -42px; }
-    &.busy.run { background-position: -20px -42px; }
-    &.idle.run { background-position: -40px -42px; }
+    &.off      { fill: #9d9d9d; }
+    &.on       { fill: #33b40f; }
+    &.busy     { fill: #d42f1f; }
+    &.idle     { fill: #ff8600; }
+    &.off.run  { fill: #9d9d9d; }
+    &.on.run   { fill: #33b40f; }
+    &.busy.run { fill: #d42f1f; }
+    &.idle.run { fill: #ff8600; }
 
-    &.inv      { background-position: -60px -21px !important; }
-    &.inv.run  { background-position: -60px -42px !important; }
+    &.inv      { fill: #9d9d9d !important; }
+    &.inv.run  { fill: #9d9d9d !important; }
 }
 
 aside.online {
@@ -86,7 +81,7 @@ aside.online {
             }
 
             .status {
-                top: 4px;
+                top: 2px;
                 margin: 0 7px 0 0;
             }
 
@@ -115,6 +110,10 @@ aside.online {
         margin-left: 10px;
         width: 300px;
 
+        &.notification {
+            outline : 2px dashed red;
+        }
+
         .bar {
             position: relative;
             width: 100%;
@@ -134,7 +133,7 @@ aside.online {
                 padding: 5px;
 
                 .status {
-                    top: 4px;
+                    top: 2px;
                 }
 
                 .throw {
@@ -216,7 +215,7 @@ aside.online {
             .icon {
                 position: absolute;
                 left: 5px;
-                top: 3px;
+                top: 5px;
                 width: 20px;
                 height: 20px;
                 fill: #067fbc;

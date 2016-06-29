@@ -35,6 +35,7 @@ CHAT.DOM = {
     online : '.online',
     onlineListItems : '.online li',
     onlineSelfListItem : '.online li.self',
+    status : '.status',
     selfStatus : '.self .status',
     statusChange : '.status-change',
     userSelect : '.user-select',
@@ -58,7 +59,8 @@ CHAT.DOM = {
     error : '.error',
     errorList : '.error .error-list',
     errorClose : '.error .error-close',
-    progress : '.progress'
+    progress : '.progress',
+    progressText : '.text'
 };
 
 /**
