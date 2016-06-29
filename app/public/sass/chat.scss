@@ -213,8 +213,6 @@ aside.online {
             border-radius: 7px;
             background-color: #eeeeee;
 
-            @keyframes spin {100% { transform: rotate(360deg); }}
-
             .icon {
                 position: absolute;
                 left: 5px;
