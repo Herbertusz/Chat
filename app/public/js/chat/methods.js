@@ -231,7 +231,9 @@ CHAT.Method = {
                 <div class="progressbar" data-id="{BARID}">
                     <span class="label">${CHAT.Labels.file[direction]()}</span>
                     <span class="cancel" title="${CHAT.Labels.file.cancel()}"></span>
-                    <svg class="cancel"><title>${CHAT.Labels.file.cancel()}</title><use xlink:href="#cross"></use></svg>
+                    <span title="${CHAT.Labels.file.cancel()}">
+                        <svg class="cancel"><use xlink:href="#cross"></use></svg>
+                    </span>
                     <span class="linecontainer">
                         <span class="line" style="width: ${percent}%"></span>
                     </span>
@@ -475,7 +477,7 @@ CHAT.Method = {
                 user = CHAT.Util.cloneElement(HD.DOM(to).find('.cloneable').elem(), to, currentUserId === CHAT.USER.id);
                 const User = HD.DOM(user);
                 User.dataNum("id", currentUserId);
-                const statusElement = User.find(CHAT.DOM.status).class("add", "run");
+                User.find(CHAT.DOM.status).class("add", "run");
                 CHAT.Method.setStatus(user, CHAT.Method.getStatus(onlineListItem));
                 User.find('.name').elem().innerHTML = CHAT.Method.getUserName(currentUserId);
             }

@@ -34,10 +34,14 @@
                         <span class="user-item cloneable" data-id="">
                             <svg class="status"><use xlink:href="#off"></use></svg>
                             <span class="name"></span>
-                            <svg class="throw"><title>Kidobás</title><use xlink:href="#cross"></use></svg>
+                            <span title="Kidobás">
+                                <svg class="throw"><use xlink:href="#cross"></use></svg>
+                            </span>
                         </span>
                     </span>
-                    <svg class="close"><title>Kilépés</title><use xlink:href="#cross"></use></svg>
+                    <span title="Kilépés">
+                        <svg class="close"><use xlink:href="#cross"></use></svg>
+                    </span>
                     <button class="add-user hidden">Hozzáadás</button>
                 </div>
                 <div class="error hidden">
@@ -56,11 +60,9 @@
                     <div class="indicator"></div>
                     <textarea class="message" placeholder="Üzenet"></textarea>
                     <% if (CHAT.Config.fileTransfer.allowed){ %>
-                        <div class="fileuploader">
+                        <div class="fileuploader" title="Fájlküldés">
                             <input type="file" class="file" <% if (CHAT.Config.fileTransfer.multiple){ %>multiple<% } %> />
-                            <span class="trigger">
-                                <span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
-                            </span>
+                            <svg class="trigger"><use xlink:href="#picture"></use></svg>
                         </div>
                     <% } %>
                     <% if (CHAT.Config.messageSend.sendMode.allowed){ %>
