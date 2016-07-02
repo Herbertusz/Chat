@@ -231,6 +231,7 @@ CHAT.Method = {
                 <div class="progressbar" data-id="{BARID}">
                     <span class="label">${CHAT.Labels.file[direction]()}</span>
                     <span class="cancel" title="${CHAT.Labels.file.cancel()}"></span>
+                    <svg class="cancel"><title>${CHAT.Labels.file.cancel()}</title><use xlink:href="#cross"></use></svg>
                     <span class="linecontainer">
                         <span class="line" style="width: ${percent}%"></span>
                     </span>
