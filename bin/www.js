@@ -5,43 +5,16 @@
 
 'use strict';
 
-// var debug = require('debug')('nodeapp:server');
-
-/**
- * Normalize a port into a number, string, or false
- * @param {Number} val port
- * @returns {Boolean|Number}
- */
-var normalizePort = function(val){
-    var port = parseInt(val, 10);
-
-    if (isNaN(port)){
-        // named pipe
-        return val;
-    }
-
-    if (port >= 0){
-        // port number
-        return port;
-    }
-
-    return false;
-};
-
-// Környezet lekérdezése
-global.DOMAIN = process.env.NODE_ENV === 'production' ? 'gomoku-herbertusz.rhcloud.com' : 'localhost';
-global.WSPORT = process.env.NODE_ENV === 'production' ? '8000' : '3000';
-global.PORT = normalizePort(process.env.OPENSHIFT_NODEJS_PORT || '3000');
-global.IPADDRESS = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
+var ENV = require('../app/env.js');
 
 require('../app/app.js').then(function(app){
 
     // Port tárolása az Express-ben
-    app.set('port', global.PORT);
+    app.set('port', ENV.PORT);
 
     // Port figyelése
-    app.httpServer.listen(global.PORT, global.IPADDRESS, function(){
-        console.log(`Listening ${global.IPADDRESS}:${global.PORT}`);
+    app.httpServer.listen(ENV.PORT, ENV.IPADDRESS, function(){
+        console.log(`Listening ${ENV.IPADDRESS}:${ENV.PORT}`);
     });
 
 });

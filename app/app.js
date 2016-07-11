@@ -3,11 +3,9 @@
 'use strict';
 
 var io;
-var path = require('path');
 var http = require('http');
 var express = require('express');
 var favicon = require('serve-favicon');
-// var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var sessionModule = require('express-session');
@@ -15,8 +13,6 @@ var FileStore = require('session-file-store')(sessionModule);
 var MongoClient = require('mongodb').MongoClient;
 
 var app, server, routes, session, dbConnectionString;
-
-global.appRoot = path.resolve(`${__dirname}/..`);
 
 app = express();
 
@@ -62,8 +58,9 @@ const connectPromise = MongoClient
 
         // Route
         routes = [
-            ['/', require('./routes/index')],  // FIXME: az minden kérésnél lefut!!!
+            ['/', require('./routes/index')],  // FIXME: ez minden kérésnél lefut!!!
             ['/chat', require('./routes/chat')],
+            ['/videochat', require('./routes/videochat')],
             ['/login', require('./routes/login')],
             ['/logout', require('./routes/logout')]
         ];

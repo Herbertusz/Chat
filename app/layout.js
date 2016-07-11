@@ -2,14 +2,15 @@
 
 'use strict';
 
+var ENV = require(`${appRoot}/app/env.js`);
 var CHAT = require(`${appRoot}/app/config.js`);
 
 module.exports = function(app){
 
     app.locals.CHAT = CHAT;
     app.locals.layout = {
-        DOMAIN : global.DOMAIN,
-        WSPORT : global.WSPORT,
+        DOMAIN : ENV.DOMAIN,
+        WSPORT : ENV.WSPORT,
         publicPath : app.get('public path'),
         menu : [
             {
@@ -19,6 +20,10 @@ module.exports = function(app){
             {
                 text : 'Chat',
                 url : '/chat'
+            },
+            {
+                text : 'Videochat',
+                url : '/videochat'
             }
         ]
     };

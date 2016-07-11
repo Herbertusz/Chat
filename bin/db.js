@@ -1,5 +1,6 @@
 'use strict';
 
+var ENV = require('../app/env.js');
 var MongoClient = require('mongodb').MongoClient;
 var url = require('../app/models/dbconnect.js');
 
