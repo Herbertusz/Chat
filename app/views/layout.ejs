@@ -38,6 +38,10 @@
             <script src="/js/chat/events.server.js"></script>
             <script src="/js/chat/controller.js"></script>
             <title><%- CHAT.Config.defaultTitle %></title>
+        <% }else if (page === 'videochat'){ %>
+            <link rel="stylesheet" href="/css/videochat.css" />
+            <script src="/js/videochat/webcam.js"></script>
+            <title>Videochat</title>
         <% }else{ %>
             <title>DB</title>
         <% } %>

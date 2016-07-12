@@ -1,16 +1,40 @@
+/* global appRoot */
+
 'use strict';
 
+var ENV = require(`${appRoot}/app/env.js`);
 var dbUrl;
+let dbConn;
 
-const dbConn = {
-    host : process.env.OPENSHIFT_MONGODB_DB_HOST || 'localhost',
-    port : process.env.OPENSHIFT_MONGODB_DB_PORT || 27017,
-    user : process.env.OPENSHIFT_MONGODB_DB_USERNAME || '',
-    pass : process.env.OPENSHIFT_MONGODB_DB_PASSWORD || '',
-    app  : process.env.OPENSHIFT_APP_NAME || 'chat'
-};
+if (ENV.PROJECT === 'dev'){
+    dbConn = {
+        host : ENV.IPADDRESS,
+        port : 27017,
+        user : '',
+        pass : '',
+        app : 'chat'
+    };
+}
+else if (ENV.PROJECT === 'test'){
+    dbConn = {
+        host : ENV.IPADDRESS,
+        port : 27017,
+        user : 'chat',
+        pass : 'bALtiGqzKfSqdAN',
+        app : 'chat'
+    };
+}
+else if (ENV.PROJECT === 'prod'){
+    dbConn = {
+        host : ENV.IPADDRESS,
+        port : 27017,
+        user : 'chat',
+        pass : 'bALtiGqzKfSqdAN',
+        app : 'chat'
+    };
+}
 
-if (process.env.OPENSHIFT_APP_NAME){
+if (dbConn.user.length > 0){
     dbUrl = `mongodb://${dbConn.user}:${dbConn.pass}@${dbConn.host}:${dbConn.port}/${dbConn.app}`;
 }
 else {
