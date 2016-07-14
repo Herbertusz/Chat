@@ -4,6 +4,7 @@
 
 var express = require('express');
 var router = express.Router();
+var log = require(`${appRoot}/libs/log.js`);
 // var session = require('express-session');
 var Model;
 
@@ -72,7 +73,7 @@ router.get('/', function(req, res){
             messages = docs;
         })
         .catch(function(error){
-            console.log(error);
+            log.error(error);
         })
         .then(function(){
             res.render('layout', {

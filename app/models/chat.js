@@ -2,6 +2,7 @@
 
 'use strict';
 
+var log = require(`${appRoot}/libs/log.js`);
 var HD = require(`${appRoot}/libs/hd/hd.datetime.js`);
 
 /**
@@ -30,7 +31,7 @@ var Model = function(db){
                     callback(users);
                 })
                 .catch(function(error){
-                    console.log(error);
+                    log.error(error);
                 });
         },
 
@@ -66,7 +67,7 @@ var Model = function(db){
                     callback(messages);
                 })
                 .catch(function(error){
-                    console.log(error);
+                    log.error(error);
                 });
         },
 
@@ -104,7 +105,7 @@ var Model = function(db){
                     callback(messageId);
                 })
                 .catch(function(error){
-                    console.log(error);
+                    log.error(error);
                 });
         },
 
@@ -169,7 +170,7 @@ var Model = function(db){
                     callback(url);
                 })
                 .catch(function(error){
-                    console.log(error);
+                    log.error(error);
                 });
         },
 
@@ -208,7 +209,7 @@ var Model = function(db){
                     callback(urls);
                 })
                 .catch(function(error){
-                    console.log(error);
+                    log.error(error);
                 });
         }
 

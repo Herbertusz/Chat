@@ -11,6 +11,7 @@ var bodyParser = require('body-parser');
 var sessionModule = require('express-session');
 var FileStore = require('session-file-store')(sessionModule);
 var MongoClient = require('mongodb').MongoClient;
+var log = require(`${appRoot}/libs/log.js`);
 
 var app, server, routes, session, dbConnectionString;
 
@@ -87,7 +88,7 @@ const connectPromise = MongoClient
 
     })
     .catch(function(error){
-        console.log(error);
+        log.error(error);
     });
 
 module.exports = connectPromise;

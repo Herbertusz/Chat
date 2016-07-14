@@ -5,6 +5,7 @@
 var promisify = require('es6-promisify');
 var fs = require('fs');
 var ioExpressSession = require('socket.io-express-session');
+var log = require(`${appRoot}/libs/log.js`);
 var HD = require(`${appRoot}/libs/hd/hd.math.js`);
 var Model;
 
@@ -87,7 +88,7 @@ module.exports = function(server, ioSession, app){
                                 fsUnlink(path);
                             })
                             .catch(function(error){
-                                console.log(error);
+                                log.error(error);
                             });
                     }
                 });

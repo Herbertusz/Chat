@@ -2,6 +2,8 @@
 
 'use strict';
 
+var log = require(`${appRoot}/libs/log.js`);
+
 var Model = function(db){
 
     return {
@@ -28,7 +30,7 @@ var Model = function(db){
                     }
                 })
                 .catch(function(error){
-                    console.log(error);
+                    log.error(error);
                 });
         }
 
