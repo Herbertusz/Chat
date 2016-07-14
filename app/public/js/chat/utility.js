@@ -112,15 +112,6 @@ CHAT.Util = {
     },
 
     /**
-     * Doboz scrollozása az aljára
-     * @param {HTMLElement} box - Chat-doboz
-     */
-    scrollToBottom : function(box){
-        const list = HD.DOM(box).find(CHAT.DOM.list).elem();
-        list.scrollTop = list.scrollHeight;
-    },
-
-    /**
      * Elem rekurzív másolása eseménykezelőkkel együtt
      * @param {HTMLElement} element - másolandó elem
      * @param {HTMLElement} insert - beszúrás helye

@@ -88,7 +88,7 @@ CHAT.Events.Server = {
             CHAT.Method.generateUserList(Userlist.elem(), roomData.userIds);
             CHAT.Method.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj("connected-users"));
             CHAT.socket.emit('roomJoin', {roomName : roomData.name});
-            CHAT.Method.notification(Box.elem(), roomData.starter, "create");
+            CHAT.Method.notification(Box.elem(), "create", roomData.starter);
         }
     },
 
@@ -122,7 +122,7 @@ CHAT.Events.Server = {
                 Userlist = Box.find(CHAT.DOM.users);
                 CHAT.Method.appendSystemMessage(Box.elem(), 'join', roomData.joinedUserId);
                 CHAT.Method.generateUserList(Userlist.elem(), roomData.userIds, true);
-                CHAT.Method.notification(Box.elem(), roomData.starter, "join");
+                CHAT.Method.notification(Box.elem(), "join", roomData.starter);
             }
         }
     },
@@ -143,7 +143,7 @@ CHAT.Events.Server = {
             Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
             if (Box.elem()){
                 CHAT.Method.appendSystemMessage(Box.elem(), 'leave', extData.userId);
-                CHAT.Method.notification(Box.elem(), extData.userId, "leave");
+                CHAT.Method.notification(Box.elem(), "leave", extData.userId);
             }
             Box.find(`[data-id="${extData.userId}"]`).remove();
         }
@@ -189,13 +189,14 @@ CHAT.Events.Server = {
                 userId : CHAT.USER.id,
                 roomName : extData.roomData.name
             });
-            CHAT.Method.notification(Box.elem(), extData.triggerId, "forceJoin");
+            CHAT.Method.notification(Box.elem(), 'forceJoinYou', extData.triggerId);
         }
         else if (Box.elem()){
             // Új user csatlakozott a csatornához
             Userlist = Box.find(CHAT.DOM.users);
             CHAT.Method.generateUserList(Userlist.elem(), extData.roomData.userIds, true);
             CHAT.Method.appendSystemMessage(Box.elem(), 'forceJoinOther', extData.triggerId, extData.userId);
+            CHAT.Method.notification(Box.elem(), 'forceJoinOther', extData.triggerId, extData.userId);
         }
     },
 
@@ -221,10 +222,11 @@ CHAT.Events.Server = {
                     roomName : extData.roomData.name
                 });
                 CHAT.Method.changeBoxStatus(Box.elem(), "disabled");
-                CHAT.Method.notification(Box.elem(), extData.triggerId, "forceLeave");
+                CHAT.Method.notification(Box.elem(), "forceLeaveYou", extData.triggerId);
             }
             else {
                 CHAT.Method.appendSystemMessage(Box.elem(), 'forceLeaveOther', extData.triggerId, extData.userId);
+                CHAT.Method.notification(Box.elem(), "forceLeaveOther", extData.triggerId, extData.userId);
             }
             Box.find(`[data-id="${extData.userId}"]`).remove();
         }
@@ -247,7 +249,7 @@ CHAT.Events.Server = {
         if (box){
             CHAT.Method.appendUserMessage(box, data);
             CHAT.Method.stopWrite(box, data.userId, '');
-            CHAT.Method.notification(box, data.userId, "message");
+            CHAT.Method.notification(box, "message", data.userId);
         }
     },
 
@@ -304,7 +306,7 @@ CHAT.Events.Server = {
         if (box){
             CHAT.FileTransfer.action('serverSend', [box, data]);
             CHAT.Method.stopWrite(box, data.userId, '');
-            CHAT.Method.notification(box, data.userId, "file");
+            CHAT.Method.notification(box, "file", data.userId);
         }
     },
 

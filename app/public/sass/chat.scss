@@ -104,6 +104,26 @@ aside.online {
             outline : 2px dashed red;
         }
 
+        .local-notification {
+            position: absolute;
+            left: 0;
+            top: 33px;
+            z-index: 1;
+            padding: 5px;
+            width: 93%;
+            min-height: 20px;
+            border-radius: 7px;
+            background-color: #eeeeee;
+
+            .arrow-1 {
+                display:none;
+            }
+            .arrow-2 {
+                display:none;
+            }
+            .text {}
+        }
+
         .bar {
             position: relative;
             width: 100%;

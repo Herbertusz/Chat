@@ -12,17 +12,17 @@ CHAT.Labels = {
     // Rendszerüzenetek
     'system' : {
         'join' : (userName) =>
-            `${userName} csatlakozott!`,
+            `${userName} csatlakozott`,
         'leave' : (userName) =>
-            `${userName} kilépett!`,
+            `${userName} kilépett`,
         'forceJoinYou' : (userName) =>
-            `${userName} hozzáadott ehhez a csatornához!`,
+            `${userName} hozzáadott ehhez a csatornához`,
         'forceJoinOther' : (userName, otherUserName) =>
-            `${userName} hozzáadta ${otherUserName} felhasználót ehhez a csatornához!`,
+            `${userName} hozzáadta ${otherUserName} felhasználót ehhez a csatornához`,
         'forceLeaveYou' : (userName) =>
-            `${userName} kidobott!`,
+            `${userName} kidobott`,
         'forceLeaveOther' : (userName, otherUserName) =>
-            `${userName} kidobta ${otherUserName} felhasználót!`
+            `${userName} kidobta ${otherUserName} felhasználót`
     },
     // Fájlátvitel
     'file' : {
@@ -41,14 +41,43 @@ CHAT.Labels = {
         'stillWrite' : (userName) => `${userName} éppen ír...`,
         'stopWrite' : (userName) => `${userName} szöveget írt be`
     },
+    // Értesítések
     'notification' : {
-        'message' : (userName) => `${userName} üzenetet írt`,
-        'file' : (userName) => `${userName} fájlt küldött`,
-        'create' : (userName) => `${userName} létrehozott egy csatornát`,
-        'join' : (userName) => `${userName} csatlakozott a csatornához`,
-        'leave' : (userName) => `${userName} elhagyta a csatornát`,
-        'forceJoin' : (userName) => `${userName} csatlakoztatott egy csatornához`,
-        'forceLeave' : (userName) => `${userName} kidobott egy csatornából`
+        'message' : (userName) =>
+            `${userName} üzenetet írt`,
+        'file' : (userName) =>
+            `${userName} fájlt küldött`,
+        'create' : (userName) =>
+            `${userName} létrehozott egy csatornát`,
+        'join' : (userName) =>
+            `${userName} csatlakozott a csatornához`,
+        'leave' : (userName) =>
+            `${userName} elhagyta a csatornát`,
+        'forceJoinYou' : (userName) =>
+            `${userName} csatlakoztatott egy csatornához`,
+        'forceJoinOther' : (userName, otherUserName) =>
+            `${userName} hozzáadta ${otherUserName} felhasználót egy csatornához`,
+        'forceLeaveYou' : (userName) =>
+            `${userName} kidobott egy csatornából`,
+        'forceLeaveOther' : (userName, otherUserName) =>
+            `${userName} kidobta ${otherUserName} felhasználót az egyik csatornából`
+    },
+    // Helyi értesítések
+    'localNotification' : {
+        'message' : (userName) =>
+            `${userName} üzenetet írt`,
+        'file' : (userName) =>
+            `${userName} fájlt küldött`,
+        'join' : (userName) =>
+            `${userName} csatlakozott ehhez a csatornához`,
+        'leave' : (userName) =>
+            `${userName} elhagyta ezt a csatornát`,
+        'forceJoinOther' : (userName, otherUserName) =>
+            `${userName} hozzáadta ${otherUserName} felhasználót ehhez a csatornához`,
+        'forceLeaveYou' : (userName) =>
+            `${userName} kidobott`,
+        'forceLeaveOther' : (userName, otherUserName) =>
+            `${userName} kidobta ${otherUserName} felhasználót`
     },
     // Hibaüzenetek
     'error' : {
@@ -91,13 +120,13 @@ CHAT.Method = {
                 <br />${CHAT.Method.replaceMessage(data.message)}
             </li>
         `;
-        CHAT.Util.scrollToBottom(box);
+        CHAT.Method.localNotification(box, "message", data.userId);
     },
 
     /**
      * Rendszerüzenet beszúrása
      * @param {HTMLElement} box
-     * @param {String} type
+     * @param {String} type - "join"|"leave"|"forceJoinYou"|"forceJoinOther"|"forceLeaveYou"|"forceLeaveOther"
      * @param {Number} userId
      * @param {Number} [otherUserId]
      */
@@ -109,7 +138,7 @@ CHAT.Method = {
         List.elem().innerHTML += `
             <li class="highlighted">${CHAT.Labels.system[type](userName, otherUserName)}</li>
         `;
-        CHAT.Util.scrollToBottom(box);
+        CHAT.Method.localNotification(box, type, otherUserId, userId);
     },
 
     /**
@@ -169,13 +198,13 @@ CHAT.Method = {
         img.onload = function(){
             ListItem.find('.filedisplay').elem().innerHTML = tpl;
             List.elem().appendChild(ListItem.elem());
-            CHAT.Util.scrollToBottom(box);
+            CHAT.Method.localNotification(box, "file", data.userId);
         };
         img.src = imgSrc;
     },
 
     /**
-     * Fájl beszúrása
+     * Törölt fájl beszúrása
      * @param {HTMLElement} box
      * @param {Object} data
      * @param {Boolean} [highlighted=false]
@@ -210,7 +239,7 @@ CHAT.Method = {
         `);
 
         List.elem().appendChild(ListItem.elem());
-        CHAT.Util.scrollToBottom(box);
+        CHAT.Method.localNotification(box, "file", data.userId);
     },
 
     /**
@@ -245,7 +274,7 @@ CHAT.Method = {
         if (!barId){
             barId = HD.Number.getUniqueId();
             List.elem().innerHTML += tpl.replace("{BARID}", barId.toString());
-            CHAT.Util.scrollToBottom(box);
+            // CHAT.Method.localNotification(box, "file", null); TODO
             if (cancelable){
                 List.find('.cancel').event("click", function(){
                     const Progressbar = HD.DOM(this).ancestor('.progressbar');
@@ -300,16 +329,18 @@ CHAT.Method = {
     /**
      * Értesítések megjelenítése
      * @param {HTMLElement|Boolean} [box]
-     * @param {Number} [triggerId]
      * @param {String} [operation] - "message"|"file"|"create"|"join"|"leave"|"forceJoin"|"forceLeave"
+     * @param {Number} [triggerId]
+     * @param {Number} [affectedId]
      */
-    notification : function(box, triggerId, operation){
+    notification : function(box, operation, triggerId, affectedId){
         const notif = CHAT.Config.notification;
         const userName = CHAT.Method.getUserName(triggerId);
+        const affectedUserName = CHAT.Method.getUserName(affectedId);
         const visualEffects = {
             title : function(activate){
                 if (activate){
-                    document.title = CHAT.Labels.notification[operation](userName);
+                    document.title = CHAT.Labels.notification[operation](userName, affectedUserName);
                 }
                 else {
                     document.title = CHAT.Config.defaultTitle;
@@ -355,6 +386,39 @@ CHAT.Method = {
                     visualEffects[type](false);
                 });
             }
+        }
+    },
+
+    /**
+     * Értesítések megjelenítése
+     * @param {HTMLElement|Boolean} box
+     * @param {String} [operation] - "message"|"file"|"join"|"leave"|"forceJoinOther"|"forceLeaveYou"|"forceLeaveOther"
+     * @param {Number} [triggerId]
+     * @param {Number} [affectedId]
+     */
+    localNotification : function(box, operation, triggerId, affectedId){
+        const list = HD.DOM(box).find(CHAT.DOM.list).elem();
+        // TODO: a localNotification() hívásokat át kell ehlyezni az event.*.js-be
+        if (false /*triggerId === affectedId || list.scrollHeight - list.scrollTop < 50*/){
+            list.scrollTop = list.scrollHeight;
+        }
+        else {
+            const userName = CHAT.Method.getUserName(triggerId);
+            const affectedUserName = CHAT.Method.getUserName(affectedId);
+            const message = CHAT.Labels.localNotification[operation](userName, affectedUserName);
+            const ScrollDown = HD.DOM(`
+                <div class="local-notification">
+                    <svg class="arrow-1"><use xlink:href="#arrow-down"></use></svg>
+                    <span class="text">${message}</span>
+                    <svg class="arrow-2"><use xlink:href="#arrow-down"></use></svg>
+                </div>
+            `);
+
+            ScrollDown.event("click", function(){
+                list.scrollTop = list.scrollHeight;
+                HD.DOM(this).remove();
+            });
+            box.appendChild(ScrollDown.elem());
         }
     },
 

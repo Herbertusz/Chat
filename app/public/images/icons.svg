@@ -40,6 +40,10 @@
         <path d="M 10 20 L 20 10 L 50 40 L 80 10 L 90 20 L 60 50 L 90 80 L 80 90 L 50 60 L 20 90 L 10 80 L 40 50 Z" />
     </symbol>
 
+    <symbol id="arrow-down" viewBox="0 0 100 100">
+        <path d="M 10 20 L 20 10 L 50 40 L 80 10 L 90 20 L 60 50 L 40 50 Z" />
+    </symbol>
+
     <symbol id="picture" viewBox="0 0 100 100">
         <path d="M 0 0 H 100 V 100 H 0 Z" />
         <path fill="white" d="M 10 10 H 90 V 50 L 70 35 L 50 55 L 65 67 L 62 68 L 40 50 L 10 80 Z "/>
