@@ -88,7 +88,11 @@ CHAT.Events.Server = {
             CHAT.Method.generateUserList(Userlist.elem(), roomData.userIds);
             CHAT.Method.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj("connected-users"));
             CHAT.socket.emit('roomJoin', {roomName : roomData.name});
-            CHAT.Method.notification(Box.elem(), "create", roomData.starter);
+            CHAT.Method.notification(Box.elem(), {
+                type : "create",
+                fromId : roomData.starter,
+                local : false
+            });
         }
     },
 
@@ -102,7 +106,7 @@ CHAT.Events.Server = {
      * }
      */
     roomJoined : function(roomData){
-        let Box, Userlist;
+        let box, Box, Userlist;
 
         if (roomData.joinedUserId === CHAT.USER.id){
             // Létre kell hozni a dobozt a csatornához
@@ -118,11 +122,16 @@ CHAT.Events.Server = {
         else {
             // Csatlakozott a csatornához
             Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${roomData.name}"]`);
-            if (Box.elem()){
+            box = Box.elem();
+            if (box){
                 Userlist = Box.find(CHAT.DOM.users);
-                CHAT.Method.appendSystemMessage(Box.elem(), 'join', roomData.joinedUserId);
+                CHAT.Method.appendSystemMessage(box, 'join', roomData.joinedUserId);
                 CHAT.Method.generateUserList(Userlist.elem(), roomData.userIds, true);
-                CHAT.Method.notification(Box.elem(), "join", roomData.starter);
+                CHAT.Method.notification(box, {
+                    type : "join",
+                    fromId : roomData.joinedUserId,
+                    local : true
+                });
             }
         }
     },
@@ -137,13 +146,18 @@ CHAT.Events.Server = {
      * }
      */
     roomLeaved : function(extData){
-        let Box;
+        let box, Box;
 
         if (extData.roomData){
             Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
-            if (Box.elem()){
-                CHAT.Method.appendSystemMessage(Box.elem(), 'leave', extData.userId);
-                CHAT.Method.notification(Box.elem(), "leave", extData.userId);
+            box = Box.elem();
+            if (box){
+                CHAT.Method.appendSystemMessage(box, 'leave', extData.userId);
+                CHAT.Method.notification(box, {
+                    type : "leave",
+                    fromId : extData.userId,
+                    local : true
+                });
             }
             Box.find(`[data-id="${extData.userId}"]`).remove();
         }
@@ -160,43 +174,54 @@ CHAT.Events.Server = {
      * }
      */
     roomForceJoined : function(extData){
-        let Box, Userlist;
+        let box, Box, Userlist;
 
         Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
+        box = Box.elem();
 
         if (extData.userId === CHAT.USER.id){
             // Csatlakoztattak a csatornához
-            if (Box.elem()){
+            if (box){
                 // Van a csatornához tartozó doboz (korábban ki lett dobva)
                 Userlist = Box.find(CHAT.DOM.users);
-                CHAT.Method.changeBoxStatus(Box.elem(), "enabled");
+                CHAT.Method.changeBoxStatus(box, "enabled");
                 CHAT.Method.generateUserList(Userlist.elem(), extData.roomData.userIds, true);
-                CHAT.Method.appendSystemMessage(Box.elem(), 'forceJoinYou', extData.triggerId);
+                CHAT.Method.appendSystemMessage(box, 'forceJoinYou', extData.triggerId);
             }
             else {
                 // Létre kell hozni a dobozt a csatornához
                 Box = HD.DOM(
                     CHAT.Util.cloneElement(HD.DOM(CHAT.DOM.cloneBox).elem(), HD.DOM(CHAT.DOM.container).elem())
                 );
+                box = Box.elem();
                 Userlist = Box.find(CHAT.DOM.users);
                 Box.data("room", extData.roomData.name);
                 CHAT.Method.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj("connected-users"));
-                CHAT.Method.fillBox(Box.elem(), extData.roomData.name);
+                CHAT.Method.fillBox(box, extData.roomData.name);
                 CHAT.Method.generateUserList(Userlist.elem(), extData.roomData.userIds);
-                CHAT.Method.appendSystemMessage(Box.elem(), 'forceJoinYou', extData.triggerId);
+                CHAT.Method.appendSystemMessage(box, 'forceJoinYou', extData.triggerId);
             }
             CHAT.socket.emit('roomJoin', {
                 userId : CHAT.USER.id,
                 roomName : extData.roomData.name
             });
-            CHAT.Method.notification(Box.elem(), 'forceJoinYou', extData.triggerId);
+            CHAT.Method.notification(box, {
+                type : "forceJoinYou",
+                fromId : extData.triggerId,
+                local : false
+            });
         }
-        else if (Box.elem()){
+        else if (box){
             // Új user csatlakozott a csatornához
             Userlist = Box.find(CHAT.DOM.users);
             CHAT.Method.generateUserList(Userlist.elem(), extData.roomData.userIds, true);
-            CHAT.Method.appendSystemMessage(Box.elem(), 'forceJoinOther', extData.triggerId, extData.userId);
-            CHAT.Method.notification(Box.elem(), 'forceJoinOther', extData.triggerId, extData.userId);
+            CHAT.Method.appendSystemMessage(box, 'forceJoinOther', extData.triggerId, extData.userId);
+            CHAT.Method.notification(box, {
+                type : "forceJoinOther",
+                fromId : extData.triggerId,
+                toId : extData.userId,
+                local : true
+            });
         }
     },
 
@@ -212,21 +237,31 @@ CHAT.Events.Server = {
      */
     roomForceLeaved : function(extData){
         const Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
+        const box = Box.elem();
 
-        if (Box.elem()){
+        if (box){
             if (extData.userId === CHAT.USER.id){
-                CHAT.Method.appendSystemMessage(Box.elem(), 'forceLeaveYou', extData.triggerId);
+                CHAT.Method.appendSystemMessage(box, 'forceLeaveYou', extData.triggerId);
                 CHAT.socket.emit('roomLeave', {
                     silent : true,
                     userId : CHAT.USER.id,
                     roomName : extData.roomData.name
                 });
-                CHAT.Method.changeBoxStatus(Box.elem(), "disabled");
-                CHAT.Method.notification(Box.elem(), "forceLeaveYou", extData.triggerId);
+                CHAT.Method.changeBoxStatus(box, "disabled");
+                CHAT.Method.notification(box, {
+                    type : "forceLeaveYou",
+                    fromId : extData.triggerId,
+                    local : true
+                });
             }
             else {
-                CHAT.Method.appendSystemMessage(Box.elem(), 'forceLeaveOther', extData.triggerId, extData.userId);
-                CHAT.Method.notification(Box.elem(), "forceLeaveOther", extData.triggerId, extData.userId);
+                CHAT.Method.appendSystemMessage(box, 'forceLeaveOther', extData.triggerId, extData.userId);
+                CHAT.Method.notification(box, {
+                    type : "forceLeaveOther",
+                    fromId : extData.triggerId,
+                    toId : extData.userId,
+                    local : true
+                });
             }
             Box.find(`[data-id="${extData.userId}"]`).remove();
         }
@@ -249,7 +284,11 @@ CHAT.Events.Server = {
         if (box){
             CHAT.Method.appendUserMessage(box, data);
             CHAT.Method.stopWrite(box, data.userId, '');
-            CHAT.Method.notification(box, "message", data.userId);
+            CHAT.Method.notification(box, {
+                type : "message",
+                fromId : data.userId,
+                local : true
+            });
         }
     },
 
@@ -306,7 +345,11 @@ CHAT.Events.Server = {
         if (box){
             CHAT.FileTransfer.action('serverSend', [box, data]);
             CHAT.Method.stopWrite(box, data.userId, '');
-            CHAT.Method.notification(box, "file", data.userId);
+            CHAT.Method.notification(box, {
+                type : "file",
+                fromId : data.userId,
+                local : true
+            });
         }
     },
 

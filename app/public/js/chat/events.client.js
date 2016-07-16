@@ -121,6 +121,7 @@ CHAT.Events.Client = {
         if (data.message.trim().length > 0){
             CHAT.socket.emit('sendMessage', data);
             CHAT.Method.appendUserMessage(box, data, true);
+            CHAT.Util.scrollToBottom(box);
             Box.find(CHAT.DOM.message).elem().value = '';
         }
     },

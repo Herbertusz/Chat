@@ -24,6 +24,15 @@ CHAT.Config = {
     notification : {
         // Értesítések engedélyezése
         allowed : true,
+        // Helyi értesítések
+        local : {
+            // Helyi értesítések engedélyezése
+            allowed : true,
+            // Helyi értesítés és scrollozás választóvonala (px)
+            // Ha ennél nagyobb értékkel van feljebb görgetve a doboz, akkor értesítés érkezik, egyébként legörgeti a
+            // dobozt (egy üzenet magasságánál nagyobb érték javasolt)
+            scroll : 200
+        },
         // Vizuális értesítés
         visual : {
             // Vizuális értesítés engedélyezése
@@ -38,13 +47,15 @@ CHAT.Config = {
             allowed : true,
             // Különféle értesítések esetén lejátszódó hangfájlok
             audio : {
-                'message'    : '/audio/send.mp3',
-                'file'       : '/audio/send.mp3',
-                'create'     : '/audio/join.mp3',
-                'join'       : '/audio/join.mp3',
-                'leave'      : '/audio/leave.mp3',
-                'forceJoin'  : '/audio/join.mp3',
-                'forceLeave' : '/audio/leave.mp3'
+                'message'         : '/audio/send.mp3',
+                'file'            : '/audio/send.mp3',
+                'create'          : '/audio/join.mp3',
+                'join'            : '/audio/join.mp3',
+                'leave'           : '/audio/leave.mp3',
+                'forceJoinYou'    : '/audio/join.mp3',
+                'forceJoinOther'  : '/audio/leave.mp3',
+                'forceLeaveYou'   : '/audio/leave.mp3',
+                'forceLeaveOther' : '/audio/leave.mp3'
             }
         }
     },

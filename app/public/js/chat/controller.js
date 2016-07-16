@@ -67,6 +67,13 @@ HD.DOM(document).event("DOMContentLoaded", function(){
         HD.DOM(this).ancestor(CHAT.DOM.box).find(CHAT.DOM.error).class("add", "hidden");
     });
 
+    // Helyi értesítés eltüntetése
+    inBox(CHAT.DOM.list).event("scroll", function(){
+        if (this.scrollHeight - this.offsetHeight - this.scrollTop < CHAT.Config.notification.local.scroll){
+            HD.DOM(this).ancestor(CHAT.DOM.box).find('.local-notification').remove();
+        }
+    });
+
     // Tétlen állapot TODO: saját kód
     $(CHAT.DOM.idleCheck).idleTimer(CHAT.timer.idle);
     $(CHAT.DOM.idleCheck).on("idle.idleTimer", function(){

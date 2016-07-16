@@ -114,14 +114,20 @@ aside.online {
             min-height: 20px;
             border-radius: 7px;
             background-color: #eeeeee;
+            cursor: pointer;
 
-            .arrow-1 {
-                display:none;
+            .arrow {
+                padding: 2px;
+                width: 20px;
+                height: 20px;
+                fill: #17b800;
             }
-            .arrow-2 {
-                display:none;
+            .arrow-right {
+                float: right;
             }
-            .text {}
+            .text {
+                color: #777777;
+            }
         }
 
         .bar {

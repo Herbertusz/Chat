@@ -72,6 +72,7 @@ const connectPromise = MongoClient
         // Hibakezelők
         app.use(function(req, res, next){
             const err = new Error(`Not Found: ${req.originalUrl}`);
+            log.error(err);
             err.status = 404;
             next(err);
         });

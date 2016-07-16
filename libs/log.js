@@ -8,7 +8,7 @@ var Log = new (winston.Logger)({
     transports : [
         new winston.transports.File({
             filename : `${appRoot}/logs/debug.log`,
-            json : true,
+            json : false,
             handleExceptions : true,
             humanReadableUnhandledException : true
         })
@@ -16,7 +16,7 @@ var Log = new (winston.Logger)({
     exceptionHandlers : [
         new winston.transports.File({
             filename : `${appRoot}/logs/exception.log`,
-            json : true
+            json : false
         })
     ],
     exitOnError : false
