@@ -44,13 +44,20 @@
                     </span>
                     <button class="add-user hidden">Hozzáadás</button>
                 </div>
-                <div class="error hidden">
-                    <div class="error-list"></div>
-                    <svg class="error-close"><use xlink:href="#cross"></use></svg>
-                </div>
-                <div class="progress hidden">
-                    <svg class="icon"><use xlink:href="#load"></use></svg>
-                    <span class="text"></span>
+                <div class="system-message">
+                    <div class="error hidden">
+                        <div class="error-list"></div>
+                        <svg class="error-close"><use xlink:href="#cross"></use></svg>
+                    </div>
+                    <div class="progress hidden">
+                        <svg class="icon"><use xlink:href="#load"></use></svg>
+                        <span class="text"></span>
+                    </div>
+                    <div class="local-notification hidden">
+                        <svg class="arrow arrow-left"><use xlink:href="#arrow-down"></use></svg>
+                        <span class="text"></span>
+                        <svg class="arrow arrow-right"><use xlink:href="#arrow-down"></use></svg>
+                    </div>
                 </div>
                 <div class="<% if (CHAT.Config.fileTransfer.dragndrop.allowed){ %>drop-file<% } %>">
                     <div class="drop-sign"><%= CHAT.Config.fileTransfer.dragndrop.html %></div>
@@ -58,7 +65,7 @@
                 </div>
                 <div class="form">
                     <div class="indicator"></div>
-                    <textarea class="message" placeholder="Üzenet"></textarea>
+                    <textarea class="textarea" placeholder="Üzenet"></textarea>
                     <% if (CHAT.Config.fileTransfer.allowed){ %>
                         <div class="fileuploader" title="Fájlküldés">
                             <input type="file" class="file" <% if (CHAT.Config.fileTransfer.multiple){ %>multiple<% } %> />

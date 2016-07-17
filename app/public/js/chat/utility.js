@@ -49,18 +49,21 @@ CHAT.DOM = {
     close : '.close',
     addUser : '.add-user',
     list : '.list',
-    message : '.message',
+    textarea : '.textarea',
     file : '.fileuploader .file',
     fileTrigger : '.fileuploader .trigger',
     dropFile : '.drop-file',
     indicator : '.indicator',
     sendButton : '.send',
     sendSwitch : '.send-switch',
+    systemMessage : '.system-message',
     error : '.error',
     errorList : '.error .error-list',
     errorClose : '.error .error-close',
     progress : '.progress',
-    progressText : '.text'
+    progressText : '.text',
+    localNotification : '.local-notification',
+    text : '.text'
 };
 
 /**
@@ -114,10 +117,20 @@ CHAT.Util = {
     /**
      * Doboz scrollozása az aljára
      * @param {HTMLElement} box - Chat-doboz
+     * @param {Boolean} [conditional=false]
      */
-    scrollToBottom : function(box){
+    scrollToBottom : function(box, conditional){
         const list = HD.DOM(box).find(CHAT.DOM.list).elem();
-        list.scrollTop = list.scrollHeight;
+        conditional = HD.Function.param(conditional, false);
+
+        if (conditional){
+            if (list.scrollHeight - list.offsetHeight - list.scrollTop < CHAT.Config.notification.local.scroll){
+                list.scrollTop = list.scrollHeight;
+            }
+        }
+        else {
+            list.scrollTop = list.scrollHeight;
+        }
     },
 
     /**
@@ -129,8 +142,8 @@ CHAT.Util = {
      */
     cloneElement : function(element, insert, prepend){
         const Clone = HD.DOM(element).clone(true);
-
         prepend = HD.Function.param(prepend, false);
+
         if (prepend){
             insert.insertBefore(Clone.elem(), insert.firstChild);
         }

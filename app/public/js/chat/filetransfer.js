@@ -1,4 +1,4 @@
-/* global LZMA */
+/* global HD LZMA */
 
 "use strict";
 
@@ -40,6 +40,7 @@ CHAT.FileTransfer = {
              * @param {Object} data
              * @param {FileReader} reader
              * @param {Blob} rawFile
+             * @param {Function} [callback=function(){}]
              * @returns {XMLHttpRequest}
              * @description
              * data = {
@@ -56,10 +57,12 @@ CHAT.FileTransfer = {
              *     roomName : String
              * }
              */
-            clientSend : function(box, data, reader, rawFile){
+            clientSend : function(box, data, reader, rawFile, callback){
                 const fileData = JSON.stringify(data);
                 const barId = CHAT.Method.progressbar(box, "send", 0, null);
                 const xhr = new XMLHttpRequest();
+                callback = HD.Function.param(callback, function(){});
+
                 xhr.open("POST", "/chat/uploadfile");
                 xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
                 xhr.setRequestHeader('X-File-Data', encodeURIComponent(fileData));
@@ -78,7 +81,7 @@ CHAT.FileTransfer = {
                     const response = JSON.parse(xhr.responseText);
                     data.file = response.filePath;
                     CHAT.Method.progressbar(box, "send", 1, barId);
-                    CHAT.Method.appendFile(box, data, true);
+                    CHAT.Method.appendFile(box, data, true, callback);
                     CHAT.socket.emit('sendFile', data);
                 };
                 xhr.send(rawFile);
@@ -90,6 +93,7 @@ CHAT.FileTransfer = {
              * Fájlfogadás
              * @param {HTMLElement} box
              * @param {Object} data
+             * @param {Function} [callback=function(){}]
              * @description
              * data = {
              *     userId : Number,
@@ -105,8 +109,9 @@ CHAT.FileTransfer = {
              *     roomName : String
              * }
              */
-            serverSend : function(box, data){
-                CHAT.Method.appendFile(box, data);
+            serverSend : function(box, data, callback){
+                callback = HD.Function.param(callback, function(){});
+                CHAT.Method.appendFile(box, data, false, callback);
             },
 
             /**
@@ -170,6 +175,7 @@ CHAT.FileTransfer = {
              * @param {Object} data
              * @param {FileReader} reader
              * @param {Blob} rawFile
+             * @param {Function} [callback=function(){}]
              * @description
              * data = {
              *     userId : Number,
@@ -185,9 +191,11 @@ CHAT.FileTransfer = {
              *     roomName : String
              * }
              */
-            clientSend : function(box, data, reader, rawFile){
+            clientSend : function(box, data, reader, rawFile, callback){
+                callback = HD.Function.param(callback, function(){});
+
                 data.file = reader.result;
-                CHAT.Method.appendFile(box, data, true);
+                CHAT.Method.appendFile(box, data, true, callback);
                 CHAT.socket.emit('sendFile', data);
             },
 
@@ -195,6 +203,7 @@ CHAT.FileTransfer = {
              * Fájlfogadás
              * @param {HTMLElement} box
              * @param {Object} data
+             * @param {Function} [callback=function(){}]
              * @description
              * data = {
              *     userId : Number,
@@ -210,8 +219,9 @@ CHAT.FileTransfer = {
              *     roomName : String
              * }
              */
-            serverSend : function(box, data){
-                CHAT.Method.appendFile(box, data);
+            serverSend : function(box, data, callback){
+                callback = HD.Function.param(callback, function(){});
+                CHAT.Method.appendFile(box, data, false, callback);
             },
 
             /**
@@ -270,8 +280,11 @@ CHAT.FileTransfer = {
              * @param {Object} data
              * @param {FileReader} reader
              * @param {Blob} rawFile
+             * @param {Function} [callback=function(){}]
              */
-            clientSend : function(box, data, reader, rawFile){
+            clientSend : function(box, data, reader, rawFile, callback){
+                callback = HD.Function.param(callback, function(){});
+
                 CHAT.FileTransfer.LZMA.compress(reader.result, 1, function(result, error){
                     if (error){
                         console.log(error);
@@ -279,7 +292,7 @@ CHAT.FileTransfer = {
                     else {
                         data.file = result;
                     }
-                    CHAT.Method.appendFile(box, data, true);
+                    CHAT.Method.appendFile(box, data, true, callback);
                     CHAT.socket.emit('sendFile', data);
                 }, function(percent){
                     // TODO: progressbar
@@ -290,15 +303,18 @@ CHAT.FileTransfer = {
              * Fájlfogadás
              * @param {HTMLElement} box
              * @param {Object} data
+             * @param {Function} [callback=function(){}]
              */
-            serverSend : function(box, data){
+            serverSend : function(box, data, callback){
+                callback = HD.Function.param(callback, function(){});
+
                 CHAT.FileTransfer.LZMA.decompress(data.file, function(result, error){
                     if (error){
                         console.log(error);
                     }
                     else {
                         data.file = result;
-                        CHAT.Method.appendFile(box, data);
+                        CHAT.Method.appendFile(box, data, false, callback);
                     }
                 }, function(percent){
                     // TODO: progressbar

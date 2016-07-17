@@ -343,13 +343,14 @@ CHAT.Events.Server = {
         const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`).elem();
 
         if (box){
-            CHAT.FileTransfer.action('serverSend', [box, data]);
+            CHAT.FileTransfer.action('serverSend', [box, data, function(){
+                CHAT.Method.notification(box, {
+                    type : "file",
+                    fromId : data.userId,
+                    local : true
+                });
+            }]);
             CHAT.Method.stopWrite(box, data.userId, '');
-            CHAT.Method.notification(box, {
-                type : "file",
-                fromId : data.userId,
-                local : true
-            });
         }
     },
 

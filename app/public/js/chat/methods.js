@@ -144,6 +144,7 @@ CHAT.Method = {
      * @param {HTMLElement} box
      * @param {Object} data
      * @param {Boolean} [highlighted=false]
+     * @param {Function} [callback=function(){}]
      * @description
      * data = {
      *     userId : Number,
@@ -159,12 +160,13 @@ CHAT.Method = {
      *     roomName : String
      * }
      */
-    appendFile : function(box, data, highlighted){
+    appendFile : function(box, data, highlighted, callback){
         let tpl, imgSrc;
         const List = HD.DOM(box).find(CHAT.DOM.list);
         const time = HD.DateTime.format('H:i:s', data.time);
         const userName = CHAT.Method.getUserName(data.userId);
         highlighted = HD.Function.param(highlighted, false);
+        callback = HD.Function.param(callback, function(){});
 
         const ListItem = HD.DOM(`
             <li>
@@ -196,6 +198,7 @@ CHAT.Method = {
         img.onload = function(){
             ListItem.find('.filedisplay').elem().innerHTML = tpl;
             List.elem().appendChild(ListItem.elem());
+            callback();
         };
         img.src = imgSrc;
     },
@@ -270,6 +273,7 @@ CHAT.Method = {
         if (!barId){
             barId = HD.Number.getUniqueId();
             List.elem().innerHTML += tpl.replace("{BARID}", barId.toString());
+            CHAT.Util.scrollToBottom(box, true);
             if (cancelable){
                 List.find('.cancel').event("click", function(){
                     const Progressbar = HD.DOM(this).ancestor('.progressbar');
@@ -311,6 +315,7 @@ CHAT.Method = {
         const tpl = `
             ${CHAT.Labels.file.read()}
         `;
+
         if (operation === "show"){
             Progress.find(CHAT.DOM.progressText).elem().innerHTML = tpl;
             Progress.class("remove", "hidden");
@@ -357,6 +362,7 @@ CHAT.Method = {
                 }
             }
         };
+
         if (notif.allowed && CHAT.notificationStatus){
             if (notif.visual.allowed){
                 notif.visual.types.forEach(function(type){
@@ -393,40 +399,27 @@ CHAT.Method = {
         if (data.local && notif.local.allowed){
             // helyi értesítés
             const Box = HD.DOM(box);
-            const List = Box.find(CHAT.DOM.list);
-            const list = List.elem();
-            console.log(list.scrollHeight - list.offsetHeight - list.scrollTop);
+            const list = Box.find(CHAT.DOM.list).elem();
+
             if (list.scrollHeight - list.offsetHeight - list.scrollTop < notif.local.scroll){
                 list.scrollTop = list.scrollHeight;
             }
             else {
-                const message = CHAT.Labels.localNotification[data.type](fromUserName, toUserName);
-                const ScrollDown = HD.DOM(`
-                    <div class="local-notification">
-                        <svg class="arrow arrow-left"><use xlink:href="#arrow-down"></use></svg>
-                        <span class="text">${message}</span>
-                        <svg class="arrow arrow-right"><use xlink:href="#arrow-down"></use></svg>
-                    </div>
-                `);
+                const LocalNotification = Box.find(CHAT.DOM.localNotification);
+                const tpl = `
+                    ${CHAT.Labels.localNotification[data.type](fromUserName, toUserName)}
+                `;
 
-                ScrollDown.event("click", function(){
+                LocalNotification.find(CHAT.DOM.text).elem().innerHTML = tpl;
+                LocalNotification.class("remove", "hidden");
+
+                LocalNotification.event("click", function(){
                     list.scrollTop = list.scrollHeight;
-                    HD.DOM(this).remove();
+                    HD.DOM(this).class("add", "hidden");
+                    HD.DOM(this).find(CHAT.DOM.text).elem().innerHTML = '';
                 });
-                box.appendChild(ScrollDown.elem());
             }
         }
-    },
-
-    /**
-     * Értesítések megjelenítése
-     * @param {HTMLElement|Boolean} box
-     * @param {String} [operation] - "message"|"file"|"join"|"leave"|"forceJoinOther"|"forceLeaveYou"|"forceLeaveOther"
-     * @param {Number} [fromId]
-     * @param {Number} [toId]
-     */
-    localNotification : function(box, operation, fromId, toId){
-
     },
 
     /**
@@ -686,13 +679,13 @@ CHAT.Method = {
     changeBoxStatus : function(box, newStatus){
         const Box = HD.DOM(box);
         if (newStatus === "enabled"){
-            Box.find(CHAT.DOM.message).prop("disabled", false);
+            Box.find(CHAT.DOM.textarea).prop("disabled", false);
             Box.find(CHAT.DOM.userThrow).dataBool("disabled", false);
             Box.find(CHAT.DOM.fileTrigger).dataBool("disabled", false);
             Box.dataBool("disabled", false);
         }
         else if (newStatus === "disabled"){
-            Box.find(CHAT.DOM.message).prop("disabled", true);
+            Box.find(CHAT.DOM.textarea).prop("disabled", true);
             Box.find(CHAT.DOM.userThrow).dataBool("disabled", true);
             Box.find(CHAT.DOM.fileTrigger).dataBool("disabled", true);
             Box.dataBool("disabled", true);

@@ -70,7 +70,7 @@ HD.DOM(document).event("DOMContentLoaded", function(){
     // Helyi értesítés eltüntetése
     inBox(CHAT.DOM.list).event("scroll", function(){
         if (this.scrollHeight - this.offsetHeight - this.scrollTop < CHAT.Config.notification.local.scroll){
-            HD.DOM(this).ancestor(CHAT.DOM.box).find('.local-notification').remove();
+            HD.DOM(this).ancestor(CHAT.DOM.box).find(CHAT.DOM.localNotification).class("add", "hidden");
         }
     });
 
@@ -95,7 +95,7 @@ HD.DOM(document).event("DOMContentLoaded", function(){
     });
 
     // Üzenetküldés indítása ENTER leütésére
-    inBox(CHAT.DOM.message).event("keydown", function(event){
+    inBox(CHAT.DOM.textarea).event("keydown", function(event){
         const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
         if (event.which === HD.Misc.keys.ENTER){
             if (!event.shiftKey && Box.find(CHAT.DOM.sendSwitch).prop("checked")){
@@ -148,7 +148,7 @@ HD.DOM(document).event("DOMContentLoaded", function(){
         });
 
     // Üzenet gépelése
-    inBox(CHAT.DOM.message).event("keyup", function(event){
+    inBox(CHAT.DOM.textarea).event("keyup", function(event){
         const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
         if (event.which !== HD.Misc.keys.ENTER){
             CHAT.Events.Client.typeMessage(Box.elem());

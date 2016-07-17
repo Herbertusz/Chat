@@ -110,7 +110,7 @@ CHAT.Events.Client = {
      */
     sendMessage : function(box){
         const Box = HD.DOM(box);
-        const Message = Box.find(CHAT.DOM.message);
+        const Message = Box.find(CHAT.DOM.textarea);
         const data = {
             userId : CHAT.USER.id,
             message : Message.elem().value,
@@ -122,7 +122,7 @@ CHAT.Events.Client = {
             CHAT.socket.emit('sendMessage', data);
             CHAT.Method.appendUserMessage(box, data, true);
             CHAT.Util.scrollToBottom(box);
-            Box.find(CHAT.DOM.message).elem().value = '';
+            Box.find(CHAT.DOM.textarea).elem().value = '';
         }
     },
 
@@ -193,7 +193,10 @@ CHAT.Events.Client = {
                     reader.onload = resolve;
                 })).then((function(){
                     CHAT.Method.progress(box, "hide");
-                    return CHAT.FileTransfer.action('clientSend', [box, fileData, reader, rawFile]);
+                    CHAT.Util.scrollToBottom(box);
+                    return CHAT.FileTransfer.action('clientSend', [box, fileData, reader, rawFile, function(){
+                        CHAT.Util.scrollToBottom(box);
+                    }]);
                 }));
                 reader.readAsDataURL(rawFile);
             }
@@ -224,7 +227,7 @@ CHAT.Events.Client = {
      */
     typeMessage : function(box){
         const Box = HD.DOM(box);
-        const Message = Box.find(CHAT.DOM.message);
+        const Message = Box.find(CHAT.DOM.textarea);
         const data = {
             userId : CHAT.USER.id,
             message : Message.elem().value,
