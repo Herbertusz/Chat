@@ -191,13 +191,13 @@ CHAT.Events.Client = {
                 (new Promise(function(resolve){
                     CHAT.Method.progress(box, "show");
                     reader.onload = resolve;
-                })).then((function(){
+                })).then(function(){
                     CHAT.Method.progress(box, "hide");
                     CHAT.Util.scrollToBottom(box);
                     return CHAT.FileTransfer.action('clientSend', [box, fileData, reader, rawFile, function(){
                         CHAT.Util.scrollToBottom(box);
                     }]);
-                }));
+                });
                 reader.readAsDataURL(rawFile);
             }
             else {

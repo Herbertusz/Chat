@@ -26,7 +26,7 @@ CHAT.socket = io.connect(`http://${SERVER.domain}:${SERVER.wsport}/chat`);
 CHAT.notificationStatus = false;
 
 /**
- * jQuery szelektorok
+ * Szelektorok
  * @type {Object}
  */
 CHAT.DOM = {

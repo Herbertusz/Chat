@@ -144,7 +144,7 @@ CHAT.Method = {
      * @param {HTMLElement} box
      * @param {Object} data
      * @param {Boolean} [highlighted=false]
-     * @param {Function} [callback=function(){}]
+     * @returns {Promise}
      * @description
      * data = {
      *     userId : Number,
@@ -160,13 +160,12 @@ CHAT.Method = {
      *     roomName : String
      * }
      */
-    appendFile : function(box, data, highlighted, callback){
+    appendFile : function(box, data, highlighted){
         let tpl, imgSrc;
         const List = HD.DOM(box).find(CHAT.DOM.list);
         const time = HD.DateTime.format('H:i:s', data.time);
         const userName = CHAT.Method.getUserName(data.userId);
         highlighted = HD.Function.param(highlighted, false);
-        callback = HD.Function.param(callback, function(){});
 
         const ListItem = HD.DOM(`
             <li>
@@ -195,12 +194,15 @@ CHAT.Method = {
         }
 
         const img = document.createElement('img');
-        img.onload = function(){
+        const promise = (new Promise(function(resolve){
+            img.onload = resolve;
+        })).then(function(){
             ListItem.find('.filedisplay').elem().innerHTML = tpl;
             List.elem().appendChild(ListItem.elem());
-            callback();
-        };
+        });
         img.src = imgSrc;
+
+        return promise;
     },
 
     /**
