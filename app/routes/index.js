@@ -35,7 +35,7 @@ router.get('/', function(req, res){
         message : "Na mi a hézag?",
         time : 1463862537
     }, function(id){
-        console.log(id);
+        log.info(id);
     });
 
     Model.setFile({
@@ -51,11 +51,11 @@ router.get('/', function(req, res){
         "file" : "/upload/1463315457937-356.png",
         time : 1463862550
     }, function(id){
-        console.log(id);
+        log.info(id);
     });
 
     Model.deleteFile("room-1-1463862537235", function(urls){
-        console.log(urls);
+        log.info(urls);
     });
     */
 

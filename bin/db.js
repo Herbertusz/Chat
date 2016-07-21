@@ -65,6 +65,8 @@ var createDB = function(db, callback){
                 .catch(function(error){
                     console.log(error);
                 });
+        }).catch(function(error){
+            console.log(error);
         });
 
     db.createCollection('chat_messages');
@@ -103,6 +105,8 @@ var createDB = function(db, callback){
                 .catch(function(error){
                     console.log(error);
                 });
+        }).catch(function(error){
+            console.log(error);
         });
 };
 

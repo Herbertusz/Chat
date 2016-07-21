@@ -197,6 +197,8 @@ CHAT.Events.Client = {
                     return CHAT.FileTransfer.action('clientSend', [box, fileData, reader, rawFile, function(){
                         CHAT.Util.scrollToBottom(box);
                     }]);
+                }).catch(function(error){
+                    HD.Log.error(error);
                 });
                 reader.readAsDataURL(rawFile);
             }

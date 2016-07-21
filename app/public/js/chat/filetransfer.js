@@ -81,7 +81,11 @@ CHAT.FileTransfer = {
                     const response = JSON.parse(xhr.responseText);
                     data.file = response.filePath;
                     CHAT.Method.progressbar(box, "send", 1, barId);
-                    CHAT.Method.appendFile(box, data, true).then(callback);
+                    CHAT.Method.appendFile(box, data, true)
+                        .then(callback)
+                        .catch(function(error){
+                            HD.Log.error(error);
+                        });
                     CHAT.socket.emit('sendFile', data);
                 };
                 xhr.send(rawFile);
@@ -111,7 +115,11 @@ CHAT.FileTransfer = {
              */
             serverSend : function(box, data, callback){
                 callback = HD.Function.param(callback, function(){});
-                CHAT.Method.appendFile(box, data, false).then(callback);
+                CHAT.Method.appendFile(box, data, false)
+                    .then(callback)
+                    .catch(function(error){
+                        HD.Log.error(error);
+                    });
             },
 
             /**
@@ -157,7 +165,7 @@ CHAT.FileTransfer = {
                     return CHAT.Method.appendFile(box, data);
                 }
                 else {
-                    return Promise.resolve(null);
+                    return Promise.resolve();
                     // return CHAT.Method.appendDeletedFile(box, data);
                 }
             }
@@ -196,7 +204,11 @@ CHAT.FileTransfer = {
                 callback = HD.Function.param(callback, function(){});
 
                 data.file = reader.result;
-                CHAT.Method.appendFile(box, data, true).then(callback);
+                CHAT.Method.appendFile(box, data, true)
+                    .then(callback)
+                    .catch(function(error){
+                        HD.Log.error(error);
+                    });
                 CHAT.socket.emit('sendFile', data);
             },
 
@@ -222,7 +234,11 @@ CHAT.FileTransfer = {
              */
             serverSend : function(box, data, callback){
                 callback = HD.Function.param(callback, function(){});
-                CHAT.Method.appendFile(box, data, false).then(callback);
+                CHAT.Method.appendFile(box, data, false)
+                    .then(callback)
+                    .catch(function(error){
+                        HD.Log.error(error);
+                    });
             },
 
             /**
@@ -293,7 +309,11 @@ CHAT.FileTransfer = {
                     else {
                         data.file = result;
                     }
-                    CHAT.Method.appendFile(box, data, true).then(callback);
+                    CHAT.Method.appendFile(box, data, true)
+                        .then(callback)
+                        .catch(function(error){
+                            HD.Log.error(error);
+                        });
                     CHAT.socket.emit('sendFile', data);
                 }, function(percent){
                     // TODO: progressbar
@@ -315,7 +335,11 @@ CHAT.FileTransfer = {
                     }
                     else {
                         data.file = result;
-                        CHAT.Method.appendFile(box, data, false).then(callback);
+                        CHAT.Method.appendFile(box, data, false)
+                            .then(callback)
+                            .catch(function(error){
+                                HD.Log.error(error);
+                            });
                     }
                 }, function(percent){
                     // TODO: progressbar

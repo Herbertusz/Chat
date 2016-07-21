@@ -194,10 +194,15 @@ CHAT.Method = {
         }
 
         const img = document.createElement('img');
-        const promise = (new Promise(function(resolve){
+        const promise = (new Promise(function(resolve, reject){
             img.onload = resolve;
+            img.onerror = reject;
         })).then(function(){
             ListItem.find('.filedisplay').elem().innerHTML = tpl;
+            List.elem().appendChild(ListItem.elem());
+        }).catch(function(error){
+            HD.Log.error(error);
+            ListItem.find('.filedisplay').elem().innerHTML = 'Hiba'; // TODO
             List.elem().appendChild(ListItem.elem());
         });
         img.src = imgSrc;
@@ -698,11 +703,9 @@ CHAT.Method = {
      * Doboz kitöltése DB-ből származó adatokkal
      * @param {HTMLElement} box
      * @param {String} roomName
-     * @param {Function} [callback]
+     * @returns {Promise}
      */
-    fillBox : function(box, roomName, callback){
-        callback = HD.Function.param(callback, function(){});
-
+    fillBox : function(box, roomName){
         $.ajax({
             type : "POST",
             url : "/chat/getroommessages",
@@ -737,36 +740,41 @@ CHAT.Method = {
              * }
              */
             success : function(resp){
+                let sequence = Promise.resolve();
                 resp.messages.forEach(function(msgData){
-                    let data;
-                    const timestamp = Date.parse(msgData.created.replace(/ /g, 'T')) / 1000;
+                    sequence = sequence.then(function(){
+                        let data;
+                        const timestamp = Date.parse(msgData.created.replace(/ /g, 'T')) / 1000;
 
-                    if (typeof msgData.message !== "undefined"){
-                        CHAT.Method.appendUserMessage(box, {
-                            userId : msgData.userId,
-                            time : timestamp,
-                            message : msgData.message,
-                            roomName : roomName
-                        }, msgData.userId === CHAT.USER.id);
-                    }
-                    else {
-                        data = {
-                            userId : msgData.userId,
-                            fileData : {
-                                name : msgData.file.name,
-                                size : msgData.file.size,
-                                type : msgData.file.type,
-                                deleted : msgData.file.deleted
-                            },
-                            file : null,
-                            type : msgData.file.mainType,
-                            time : timestamp,
-                            roomName : roomName
-                        };
-                        CHAT.FileTransfer.action('receive', [box, data, msgData]);
-                    }
+                        if (typeof msgData.message !== "undefined"){
+                            CHAT.Method.appendUserMessage(box, {
+                                userId : msgData.userId,
+                                time : timestamp,
+                                message : msgData.message,
+                                roomName : roomName
+                            }, msgData.userId === CHAT.USER.id);
+                            return Promise.resolve();
+                        }
+                        else {
+                            data = {
+                                userId : msgData.userId,
+                                fileData : {
+                                    name : msgData.file.name,
+                                    size : msgData.file.size,
+                                    type : msgData.file.type,
+                                    deleted : msgData.file.deleted
+                                },
+                                file : null,
+                                type : msgData.file.mainType,
+                                time : timestamp,
+                                roomName : roomName
+                            };
+                            return CHAT.FileTransfer.action('receive', [box, data, msgData]);
+                        }
+                    }).catch(function(error){
+                        HD.Log.error(error);
+                    });
                 });
-                callback();
             }
         });
     }
