@@ -15,7 +15,7 @@ module.exports = function(app){
         menu : [
             {
                 text : 'Főoldal',
-                url : '/index'
+                url : '/'  // TODO: '/index'
             },
             {
                 text : 'Chat',

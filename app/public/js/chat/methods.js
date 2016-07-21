@@ -34,6 +34,7 @@ CHAT.Labels = {
         'getEnd' : () => `Fájlfogadás befejeződött`,
         'cancel' : () => `Megszakítás`,
         'percent' : (percent) => `${percent}%`,
+        'error' : `Hiba a fájl betöltése közben`,
         'deleted' : `A fájlküldés meg lett szakítva vagy a fájl törölve lett`
     },
     // Üzenetátvitel
@@ -175,6 +176,9 @@ CHAT.Method = {
                 <div class="filedisplay"></div>
             </li>
         `);
+        const tplError = `
+            <a href="${data.file}" target="_blank">${CHAT.Labels.file.error}</a>
+        `;
         if (data.type === "image"){
             imgSrc = data.file;
             tpl = `
@@ -202,7 +206,7 @@ CHAT.Method = {
             List.elem().appendChild(ListItem.elem());
         }).catch(function(error){
             HD.Log.error(error);
-            ListItem.find('.filedisplay').elem().innerHTML = 'Hiba'; // TODO
+            ListItem.find('.filedisplay').elem().innerHTML = tplError;
             List.elem().appendChild(ListItem.elem());
         });
         img.src = imgSrc;
