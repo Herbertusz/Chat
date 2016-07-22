@@ -109,7 +109,7 @@ CHAT.Method = {
      * }
      */
     appendUserMessage : function(box, data, highlighted){
-        const time = HD.DateTime.format('H:i:s', data.time);
+        const time = HD.DateTime.formatMS('Y-m-d H:i:s', data.time);
         const List = HD.DOM(box).find(CHAT.DOM.list);
         const userName = CHAT.Method.getUserName(data.userId);
         highlighted = HD.Function.param(highlighted, false);
@@ -164,7 +164,7 @@ CHAT.Method = {
     appendFile : function(box, data, highlighted){
         let tpl, imgSrc;
         const List = HD.DOM(box).find(CHAT.DOM.list);
-        const time = HD.DateTime.format('H:i:s', data.time);
+        const time = HD.DateTime.formatMS('Y-m-d H:i:s', data.time);
         const userName = CHAT.Method.getUserName(data.userId);
         highlighted = HD.Function.param(highlighted, false);
 
@@ -212,44 +212,6 @@ CHAT.Method = {
         img.src = imgSrc;
 
         return promise;
-    },
-
-    /**
-     * Törölt fájl beszúrása
-     * @param {HTMLElement} box
-     * @param {Object} data
-     * @param {Boolean} [highlighted=false]
-     * @description
-     * data = {
-     *     userId : Number,
-     *     fileData : {
-     *         name : String,
-     *         size : Number,
-     *         type : String
-     *     },
-     *     file : String,
-     *     store : String,
-     *     type : String,
-     *     time : Number,
-     *     roomName : String
-     * }
-     */
-    appendDeletedFile : function(box, data, highlighted){
-        const List = HD.DOM(box).find(CHAT.DOM.list);
-        const time = HD.DateTime.format('H:i:s', data.time);
-        const userName = CHAT.Method.getUserName(data.userId);
-        highlighted = HD.Function.param(highlighted, false);
-
-        const ListItem = HD.DOM(`
-            <li>
-                <span class="time">${time}</span>
-                <strong class="${highlighted ? "self" : ""}">${CHAT.Util.escapeHtml(userName)}</strong>:
-                <br />
-                <div class="filedisplay">${CHAT.Labels.file.deleted}</div>
-            </li>
-        `);
-
-        List.elem().appendChild(ListItem.elem());
     },
 
     /**
@@ -746,38 +708,39 @@ CHAT.Method = {
             success : function(resp){
                 let sequence = Promise.resolve();
                 resp.messages.forEach(function(msgData){
-                    sequence = sequence.then(function(){
-                        let data;
-                        const timestamp = Date.parse(msgData.created.replace(/ /g, 'T')) / 1000;
+                    sequence = sequence
+                        .then(function(){
+                            let data;
+                            const timestamp = msgData.created;
 
-                        if (typeof msgData.message !== "undefined"){
-                            CHAT.Method.appendUserMessage(box, {
-                                userId : msgData.userId,
-                                time : timestamp,
-                                message : msgData.message,
-                                roomName : roomName
-                            }, msgData.userId === CHAT.USER.id);
-                            return Promise.resolve();
-                        }
-                        else {
-                            data = {
-                                userId : msgData.userId,
-                                fileData : {
-                                    name : msgData.file.name,
-                                    size : msgData.file.size,
-                                    type : msgData.file.type,
-                                    deleted : msgData.file.deleted
-                                },
-                                file : null,
-                                type : msgData.file.mainType,
-                                time : timestamp,
-                                roomName : roomName
-                            };
-                            return CHAT.FileTransfer.action('receive', [box, data, msgData]);
-                        }
-                    }).catch(function(error){
-                        HD.Log.error(error);
-                    });
+                            if (typeof msgData.message !== "undefined"){
+                                CHAT.Method.appendUserMessage(box, {
+                                    userId : msgData.userId,
+                                    time : timestamp,
+                                    message : msgData.message,
+                                    roomName : roomName
+                                }, msgData.userId === CHAT.USER.id);
+                                return Promise.resolve();
+                            }
+                            else {
+                                data = {
+                                    userId : msgData.userId,
+                                    fileData : {
+                                        name : msgData.file.name,
+                                        size : msgData.file.size,
+                                        type : msgData.file.type,
+                                        deleted : msgData.file.deleted
+                                    },
+                                    file : null,
+                                    type : msgData.file.mainType,
+                                    time : timestamp,
+                                    roomName : roomName
+                                };
+                                return CHAT.FileTransfer.action('receive', [box, data, msgData]);
+                            }
+                        }).catch(function(error){
+                            HD.Log.error(error);
+                        });
                 });
             }
         });

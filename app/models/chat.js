@@ -87,16 +87,11 @@ var Model = function(db){
                     'userId' : data.userId,
                     'room' : data.room,
                     'message' : data.message,
-                    'created' : HD.DateTime.format('Y-m-d H:i:s', data.time)
+                    'created' : data.time
                 };
             }
             else if (data.file){
-                insertData = {
-                    'userId' : data.userId,
-                    'room' : data.room,
-                    'file' : data.file,
-                    'created' : HD.DateTime.format('Y-m-d H:i:s', data.time)
-                };
+                insertData = data;
             }
             db.collection("chat_messages")
                 .insertOne(insertData)
@@ -131,7 +126,7 @@ var Model = function(db){
                     'data' : data.file,
                     'deleted' : false
                 },
-                'created' : HD.DateTime.format('Y-m-d H:i:s', data.time)
+                'created' : data.time
             }, function(messageId){
                 callback(messageId);
             });

@@ -208,6 +208,16 @@ HD.DateTime = {
     },
 
     /**
+     * A PHP date() függvényének implementációja milliszekundumos timestamp-re
+     * @param {String} format
+     * @param {Number} millitimestamp
+     * @returns {String}
+     */
+    formatMS : function(format, millitimestamp){
+        return this.format(format, Math.floor(millitimestamp / 1000));
+    },
+
+    /**
      * A PHP date() függvényének implementációja
      * @copyright http://phpjs.org/functions/date
      * @param {String} format

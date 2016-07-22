@@ -311,8 +311,8 @@ CHAT.FileTransfer = {
                     }
                     CHAT.Method.appendFile(box, data, true)
                         .then(callback)
-                        .catch(function(error){
-                            HD.Log.error(error);
+                        .catch(function(subError){
+                            HD.Log.error(subError);
                         });
                     CHAT.socket.emit('sendFile', data);
                 }, function(percent){
@@ -337,8 +337,8 @@ CHAT.FileTransfer = {
                         data.file = result;
                         CHAT.Method.appendFile(box, data, false)
                             .then(callback)
-                            .catch(function(error){
-                                HD.Log.error(error);
+                            .catch(function(subError){
+                                HD.Log.error(subError);
                             });
                     }
                 }, function(percent){

@@ -18,16 +18,16 @@ var createDB = function(db, callback){
                         "id" : 1,
                         "name" : "Hörb",
                         "password" : "x",
-                        "lastActive" : "2016-05-15 22:53:00",
-                        "created" : "2016-05-14 22:53:00",
+                        "lastActive" : 1469215006264,
+                        "created" : 1469215006264,
                         "active" : true
                     },
                     {
                         "id" : 2,
                         "name" : "Dan",
                         "password" : "x",
-                        "lastActive" : "2016-05-16 10:53:00",
-                        "created" : "2016-05-14 23:07:00",
+                        "lastActive" : 1469215006264,
+                        "created" : 1469215006264,
                         "active" : true
                     },
                     {
@@ -35,7 +35,7 @@ var createDB = function(db, callback){
                         "name" : "Pistike",
                         "password" : "x",
                         "lastActive" : null,
-                        "created" : "2016-05-14 23:07:00",
+                        "created" : 1469215006264,
                         "active" : true
                     },
                     {
@@ -43,7 +43,7 @@ var createDB = function(db, callback){
                         "name" : "Kristóf",
                         "password" : "x",
                         "lastActive" : null,
-                        "created" : "2016-05-14 23:07:00",
+                        "created" : 1469215006264,
                         "active" : true
                     },
                     {
@@ -51,7 +51,7 @@ var createDB = function(db, callback){
                         "name" : "Richi",
                         "password" : "x",
                         "lastActive" : null,
-                        "created" : "2016-05-14 23:07:00",
+                        "created" : 1469215006264,
                         "active" : true
                     }
                 ])
@@ -79,7 +79,7 @@ var createDB = function(db, callback){
                         "userId" : 1,
                         "room" : "room-1-1464111342853",
                         "message" : "Hé, mi a pálya?",
-                        "created" : "2016-05-24 19:35:46"
+                        "created" : 1469215006264
                     }, {
                         "userId" : 1,
                         "room" : "room-1-1464111818071",
@@ -92,7 +92,7 @@ var createDB = function(db, callback){
                             "data" : "upload/1464111822726-805.jpg",
                             "deleted" : false
                         },
-                        "created" : "2016-05-24 19:43:42"
+                        "created" : 1469215245070
                     }
                 ])
                 .then(function(result){

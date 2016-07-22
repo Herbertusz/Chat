@@ -114,7 +114,7 @@ CHAT.Events.Client = {
         const data = {
             userId : CHAT.USER.id,
             message : Message.elem().value,
-            time : Math.round(Date.now() / 1000),
+            time : Date.now(),
             roomName : Box.data("room")
         };
 
@@ -181,7 +181,7 @@ CHAT.Events.Client = {
                 file : null,  // base64
                 store : store,
                 type : '',
-                time : Math.round(Date.now() / 1000),
+                time : Date.now(),
                 roomName : HD.DOM(box).data("room")
             };
             const errors = fileCheck(fileData, rawFile);
@@ -233,7 +233,7 @@ CHAT.Events.Client = {
         const data = {
             userId : CHAT.USER.id,
             message : Message.elem().value,
-            time : Math.round(Date.now() / 1000),
+            time : Date.now(),
             roomName : Box.data("room")
         };
 
