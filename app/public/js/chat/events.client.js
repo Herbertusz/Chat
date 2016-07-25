@@ -25,7 +25,7 @@ CHAT.Events.Client = {
         );
         const Userlist = Box.find(CHAT.DOM.users);
 
-        HD.DOM(CHAT.DOM.online).find(CHAT.DOM.selectedUsers).elements.forEach(function(selectedUser){
+        HD.DOM(CHAT.DOM.selectedUsers).elements.forEach(function(selectedUser){
             const userId = Number(selectedUser.value);
             roomData.userIds.push(userId);
         });

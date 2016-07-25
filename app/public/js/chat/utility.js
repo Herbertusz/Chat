@@ -31,15 +31,15 @@ CHAT.notificationStatus = false;
  */
 CHAT.DOM = {
     idleCheck : 'body',
+    // user-sáv
     start : '.online .start',
     online : '.online',
     onlineListItems : '.online li',
-    onlineSelfListItem : '.online li.self',
     status : '.status',
-    selfStatus : '.self .status',
     statusChange : '.status-change',
     userSelect : '.user-select',
     selectedUsers : '.user-select:checked',
+    // chat-dobozok
     container : '.chatcontainer',
     cloneBox : '.chat.cloneable',
     box : '.chat',
@@ -56,7 +56,6 @@ CHAT.DOM = {
     indicator : '.indicator',
     sendButton : '.send',
     sendSwitch : '.send-switch',
-    systemMessage : '.system-message',
     error : '.error',
     errorList : '.error .error-list',
     errorClose : '.error .error-close',
