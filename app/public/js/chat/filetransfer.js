@@ -59,7 +59,7 @@ CHAT.FileTransfer = {
              */
             clientSend : function(box, data, reader, rawFile, callback){
                 const fileData = JSON.stringify(data);
-                const barId = CHAT.Method.progressbar(box, "send", 0, null);
+                const barId = CHAT.Methods.progressbar(box, "send", 0, null);
                 const xhr = new XMLHttpRequest();
                 callback = HD.Function.param(callback, function(){});
 
@@ -70,18 +70,18 @@ CHAT.FileTransfer = {
                 xhr.upload.onprogress = function(event){
                     if (event.lengthComputable){
                         const percent = event.loaded / event.total;
-                        CHAT.Method.progressbar(box, "send", percent, barId);
+                        CHAT.Methods.progressbar(box, "send", percent, barId);
                     }
                 };
                 xhr.onabort = function(){
-                    CHAT.Method.progressbar(box, "abort", null, barId);
+                    CHAT.Methods.progressbar(box, "abort", null, barId);
                     CHAT.socket.emit('abortFile', data);
                 };
                 xhr.onload = function(){
                     const response = JSON.parse(xhr.responseText);
                     data.file = response.filePath;
-                    CHAT.Method.progressbar(box, "send", 1, barId);
-                    CHAT.Method.appendFile(box, data, true)
+                    CHAT.Methods.progressbar(box, "send", 1, barId);
+                    CHAT.Methods.appendFile(box, data, true)
                         .then(callback)
                         .catch(function(error){
                             HD.Log.error(error);
@@ -115,7 +115,7 @@ CHAT.FileTransfer = {
              */
             serverSend : function(box, data, callback){
                 callback = HD.Function.param(callback, function(){});
-                CHAT.Method.appendFile(box, data, false)
+                CHAT.Methods.appendFile(box, data, false)
                     .then(callback)
                     .catch(function(error){
                         HD.Log.error(error);
@@ -162,11 +162,10 @@ CHAT.FileTransfer = {
             receive : function(box, data, msgData){
                 data.file = msgData.file.data;
                 if (!data.fileData.deleted){
-                    return CHAT.Method.appendFile(box, data);
+                    return CHAT.Methods.appendFile(box, data);
                 }
                 else {
                     return Promise.resolve();
-                    // return CHAT.Method.appendDeletedFile(box, data);
                 }
             }
 
@@ -204,7 +203,7 @@ CHAT.FileTransfer = {
                 callback = HD.Function.param(callback, function(){});
 
                 data.file = reader.result;
-                CHAT.Method.appendFile(box, data, true)
+                CHAT.Methods.appendFile(box, data, true)
                     .then(callback)
                     .catch(function(error){
                         HD.Log.error(error);
@@ -234,7 +233,7 @@ CHAT.FileTransfer = {
              */
             serverSend : function(box, data, callback){
                 callback = HD.Function.param(callback, function(){});
-                CHAT.Method.appendFile(box, data, false)
+                CHAT.Methods.appendFile(box, data, false)
                     .then(callback)
                     .catch(function(error){
                         HD.Log.error(error);
@@ -280,7 +279,7 @@ CHAT.FileTransfer = {
              */
             receive : function(box, data, msgData){
                 data.file = msgData.file.data;
-                CHAT.Method.appendFile(box, data);
+                CHAT.Methods.appendFile(box, data);
             }
 
         },
@@ -309,7 +308,7 @@ CHAT.FileTransfer = {
                     else {
                         data.file = result;
                     }
-                    CHAT.Method.appendFile(box, data, true)
+                    CHAT.Methods.appendFile(box, data, true)
                         .then(callback)
                         .catch(function(subError){
                             HD.Log.error(subError);
@@ -335,7 +334,7 @@ CHAT.FileTransfer = {
                     }
                     else {
                         data.file = result;
-                        CHAT.Method.appendFile(box, data, false)
+                        CHAT.Methods.appendFile(box, data, false)
                             .then(callback)
                             .catch(function(subError){
                                 HD.Log.error(subError);
@@ -364,7 +363,7 @@ CHAT.FileTransfer = {
                     }
                     else {
                         data.file = file;
-                        CHAT.Method.appendFile(box, data);
+                        CHAT.Methods.appendFile(box, data);
                     }
                 }, function(percent){
                     console.log(percent);

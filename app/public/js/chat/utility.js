@@ -76,15 +76,7 @@ CHAT.timer = {
         event : false,
         message : ''
     },
-    drag : {
-        timerID : 0,
-        interval : 1000
-    },
-    drop : {
-        timerID : 0,
-        interval : 1000
-    },
-    idle : CHAT.Config.idleTime
+    idle : CHAT.Config.idle.time
 };
 
 /**
@@ -111,6 +103,15 @@ CHAT.Util = {
         });
         str = str.replace(/\n/g, '<br />');
         return str;
+    },
+
+    /**
+     * Chat-dobozon belüli elemek
+     * @param {String} selector
+     * @returns {HD.DOM}
+     */
+    inBox : function(selector){
+        return HD.DOM(CHAT.DOM.box).find(selector);
     },
 
     /**

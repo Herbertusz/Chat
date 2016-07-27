@@ -11,8 +11,13 @@ CHAT.Config = {
     // Alapértelmezett szöveg a title tegben
     defaultTitle : 'Chat',
 
-    // Várakozás tétlen állpotba állítás előtt ms-ban (5 perc)
-    idleTime : 300000,
+    // Tétlen állapot érzékelése
+    idle : {
+        // Tételen állapot érzékelésének engedélyezése
+        allowed : true,
+        // Várakozás tétlen állpotba állítás előtt ms-ban (5 perc)
+        time : 300000
+    },
 
     // Hibaüzenetek
     error : {

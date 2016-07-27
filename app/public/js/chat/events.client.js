@@ -29,7 +29,7 @@ CHAT.Events.Client = {
             const userId = Number(selectedUser.value);
             roomData.userIds.push(userId);
         });
-        CHAT.Method.generateUserList(Userlist.elem(), roomData.userIds);
+        CHAT.Methods.generateUserList(Userlist.elem(), roomData.userIds);
         roomData.name = `room-${roomData.starter}-${Date.now()}`;
         Box.data("room", roomData.name);
         CHAT.socket.emit('roomCreated', roomData);
@@ -65,7 +65,7 @@ CHAT.Events.Client = {
             currentUserIds.push(HD.DOM(user).dataNum("id"));
         });
         if (currentUserIds.indexOf(userId) === -1){
-            CHAT.Method.generateUserList(Userlist.elem(), [userId]);
+            CHAT.Methods.generateUserList(Userlist.elem(), [userId]);
             CHAT.socket.emit('roomForceJoin', {
                 triggerId : CHAT.USER.id,
                 userId : userId,
@@ -120,7 +120,7 @@ CHAT.Events.Client = {
 
         if (data.message.trim().length > 0){
             CHAT.socket.emit('sendMessage', data);
-            CHAT.Method.appendUserMessage(box, data, true);
+            CHAT.Methods.appendUserMessage(box, data, true);
             CHAT.Util.scrollToBottom(box);
             Box.find(CHAT.DOM.textarea).elem().value = '';
         }
@@ -189,10 +189,10 @@ CHAT.Events.Client = {
             if (errors.length === 0){
                 const reader = new FileReader();
                 (new Promise(function(resolve){
-                    CHAT.Method.progress(box, "show");
+                    CHAT.Methods.progress(box, "show");
                     reader.onload = resolve;
                 })).then(function(){
-                    CHAT.Method.progress(box, "hide");
+                    CHAT.Methods.progress(box, "hide");
                     CHAT.Util.scrollToBottom(box);
                     return CHAT.FileTransfer.action('clientSend', [box, fileData, reader, rawFile, function(){
                         CHAT.Util.scrollToBottom(box);
@@ -203,7 +203,7 @@ CHAT.Events.Client = {
                 reader.readAsDataURL(rawFile);
             }
             else {
-                CHAT.Method.showError(box, errors);
+                CHAT.Methods.showError(box, errors);
             }
         };
 

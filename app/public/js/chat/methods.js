@@ -93,7 +93,7 @@ CHAT.Labels = {
  * Alkalmazásspecifikus függvények
  * @type {Object}
  */
-CHAT.Method = {
+CHAT.Methods = {
 
     /**
      * Felhasználói üzenet beszúrása
@@ -111,14 +111,14 @@ CHAT.Method = {
     appendUserMessage : function(box, data, highlighted){
         const time = HD.DateTime.formatMS('Y-m-d H:i:s', data.time);
         const List = HD.DOM(box).find(CHAT.DOM.list);
-        const userName = CHAT.Method.getUserName(data.userId);
+        const userName = CHAT.Methods.getUserName(data.userId);
         highlighted = HD.Function.param(highlighted, false);
 
         List.elem().innerHTML += `
             <li>
                 <span class="time">${time}</span>
                 <strong class="${highlighted ? "self" : ""}">${CHAT.Util.escapeHtml(userName)}</strong>:
-                <br />${CHAT.Method.replaceMessage(data.message)}
+                <br />${CHAT.Methods.replaceMessage(data.message)}
             </li>
         `;
     },
@@ -132,8 +132,8 @@ CHAT.Method = {
      */
     appendSystemMessage : function(box, type, fromId, toId){
         const List = HD.DOM(box).find(CHAT.DOM.list);
-        const fromUserName = CHAT.Method.getUserName(fromId);
-        const toUserName = CHAT.Method.getUserName(toId);
+        const fromUserName = CHAT.Methods.getUserName(fromId);
+        const toUserName = CHAT.Methods.getUserName(toId);
 
         List.elem().innerHTML += `
             <li class="highlighted">${CHAT.Labels.system[type](fromUserName, toUserName)}</li>
@@ -165,7 +165,7 @@ CHAT.Method = {
         let tpl, imgSrc;
         const List = HD.DOM(box).find(CHAT.DOM.list);
         const time = HD.DateTime.formatMS('Y-m-d H:i:s', data.time);
-        const userName = CHAT.Method.getUserName(data.userId);
+        const userName = CHAT.Methods.getUserName(data.userId);
         highlighted = HD.Function.param(highlighted, false);
 
         const ListItem = HD.DOM(`
@@ -315,8 +315,8 @@ CHAT.Method = {
     notification : function(box, data){
         data = HD.Function.param(data, {});
         const notif = CHAT.Config.notification;
-        const fromUserName = CHAT.Method.getUserName(data.fromId);
-        const toUserName = CHAT.Method.getUserName(data.toId);
+        const fromUserName = CHAT.Methods.getUserName(data.fromId);
+        const toUserName = CHAT.Methods.getUserName(data.toId);
         const visualEffects = {
             title : function(activate){
                 if (activate){
@@ -442,7 +442,7 @@ CHAT.Method = {
      * @param {Number} userId
      */
     stillWrite : function(box, userId){
-        const userName = CHAT.Method.getUserName(userId);
+        const userName = CHAT.Methods.getUserName(userId);
         HD.DOM(box).find(CHAT.DOM.indicator).elem().innerHTML = CHAT.Labels.message.stillWrite(userName);
     },
 
@@ -453,7 +453,7 @@ CHAT.Method = {
      * @param {String} message
      */
     stopWrite : function(box, userId, message){
-        const userName = CHAT.Method.getUserName(userId);
+        const userName = CHAT.Methods.getUserName(userId);
 
         if (message.trim().length > 0){
             HD.DOM(box).find(CHAT.DOM.indicator).elem().innerHTML = CHAT.Labels.message.stopWrite(userName);
@@ -515,8 +515,8 @@ CHAT.Method = {
                 const User = HD.DOM(user);
                 User.dataNum("id", currentUserId);
                 User.find(CHAT.DOM.status).class("add", "run");
-                CHAT.Method.setStatus(user, CHAT.Method.getStatus(onlineListItem));
-                User.find('.name').elem().innerHTML = CHAT.Method.getUserName(currentUserId);
+                CHAT.Methods.setStatus(user, CHAT.Methods.getStatus(onlineListItem));
+                User.find('.name').elem().innerHTML = CHAT.Methods.getUserName(currentUserId);
             }
         });
     },
@@ -588,16 +588,16 @@ CHAT.Method = {
         HD.DOM(CHAT.DOM.onlineListItems).elements.forEach(function(onlineListItem){
             const currentId = HD.DOM(onlineListItem).dataNum("id");
             if (typeof onlineUserStatuses[currentId] !== "undefined"){
-                CHAT.Method.setStatus(onlineListItem, onlineUserStatuses[currentId]);
+                CHAT.Methods.setStatus(onlineListItem, onlineUserStatuses[currentId]);
             }
             else {
-                CHAT.Method.setStatus(onlineListItem, "off");
+                CHAT.Methods.setStatus(onlineListItem, "off");
             }
         });
         HD.DOM(CHAT.DOM.box).elements.forEach(function(box){
             HD.DOM(box).find(CHAT.DOM.userItems).elements.forEach(function(userItem){
                 const onlineStatus = onlineUserStatuses[HD.DOM(userItem).dataNum("id")];
-                CHAT.Method.setStatus(userItem, onlineStatus || "off");
+                CHAT.Methods.setStatus(userItem, onlineStatus || "off");
             });
         });
     },
@@ -714,7 +714,7 @@ CHAT.Method = {
                             const timestamp = msgData.created;
 
                             if (typeof msgData.message !== "undefined"){
-                                CHAT.Method.appendUserMessage(box, {
+                                CHAT.Methods.appendUserMessage(box, {
                                     userId : msgData.userId,
                                     time : timestamp,
                                     message : msgData.message,
