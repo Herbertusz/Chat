@@ -21,6 +21,7 @@ require('../app/app.js')
             console.log(`Listening ${ENV.IPADDRESS}:${ENV.PORT}`);
         });
 
-    }).catch(function(error){
+    })
+    .catch(function(error){
         log.error(error);
     });

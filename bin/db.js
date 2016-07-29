@@ -65,7 +65,8 @@ var createDB = function(db, callback){
                 .catch(function(error){
                     console.log(error);
                 });
-        }).catch(function(error){
+        })
+        .catch(function(error){
             console.log(error);
         });
 
@@ -105,7 +106,8 @@ var createDB = function(db, callback){
                 .catch(function(error){
                     console.log(error);
                 });
-        }).catch(function(error){
+        })
+        .catch(function(error){
             console.log(error);
         });
 };

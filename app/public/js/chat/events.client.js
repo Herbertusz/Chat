@@ -218,6 +218,7 @@ CHAT.Events.Client = {
      */
     abortFile : function(progressbar){
         const barId = HD.DOM(progressbar).dataNum("id");
+
         if (typeof CHAT.FileTransfer.XHR[barId] !== "undefined"){
             CHAT.FileTransfer.XHR[barId].abort();
         }

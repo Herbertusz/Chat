@@ -58,10 +58,10 @@ CHAT.FileTransfer = {
              * }
              */
             clientSend : function(box, data, reader, rawFile, callback){
+                callback = HD.Function.param(callback, function(){});
                 const fileData = JSON.stringify(data);
                 const barId = CHAT.Methods.progressbar(box, "send", 0, null);
                 const xhr = new XMLHttpRequest();
-                callback = HD.Function.param(callback, function(){});
 
                 xhr.open("POST", "/chat/uploadfile");
                 xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
@@ -115,6 +115,7 @@ CHAT.FileTransfer = {
              */
             serverSend : function(box, data, callback){
                 callback = HD.Function.param(callback, function(){});
+
                 CHAT.Methods.appendFile(box, data, false)
                     .then(callback)
                     .catch(function(error){
@@ -233,6 +234,7 @@ CHAT.FileTransfer = {
              */
             serverSend : function(box, data, callback){
                 callback = HD.Function.param(callback, function(){});
+
                 CHAT.Methods.appendFile(box, data, false)
                     .then(callback)
                     .catch(function(error){
@@ -301,22 +303,7 @@ CHAT.FileTransfer = {
             clientSend : function(box, data, reader, rawFile, callback){
                 callback = HD.Function.param(callback, function(){});
 
-                CHAT.FileTransfer.LZMA.compress(reader.result, 1, function(result, error){
-                    if (error){
-                        console.log(error);
-                    }
-                    else {
-                        data.file = result;
-                    }
-                    CHAT.Methods.appendFile(box, data, true)
-                        .then(callback)
-                        .catch(function(subError){
-                            HD.Log.error(subError);
-                        });
-                    CHAT.socket.emit('sendFile', data);
-                }, function(percent){
-                    // TODO: progressbar
-                });
+                // TODO
             },
 
             /**
@@ -328,21 +315,7 @@ CHAT.FileTransfer = {
             serverSend : function(box, data, callback){
                 callback = HD.Function.param(callback, function(){});
 
-                CHAT.FileTransfer.LZMA.decompress(data.file, function(result, error){
-                    if (error){
-                        console.log(error);
-                    }
-                    else {
-                        data.file = result;
-                        CHAT.Methods.appendFile(box, data, false)
-                            .then(callback)
-                            .catch(function(subError){
-                                HD.Log.error(subError);
-                            });
-                    }
-                }, function(percent){
-                    // TODO: progressbar
-                });
+                // TODO
             },
 
             /**
@@ -355,20 +328,8 @@ CHAT.FileTransfer = {
                 msgData.fileZip.data.forEach(function(element, index, arr){
                     arr[index] -= 128;
                 });
-                // FIXME: nem indul el a decompress
-                CHAT.FileTransfer.LZMA.decompress(msgData.fileZip, function(file, error){
-                    console.log(data);
-                    if (error){
-                        console.log(error);
-                    }
-                    else {
-                        data.file = file;
-                        CHAT.Methods.appendFile(box, data);
-                    }
-                }, function(percent){
-                    console.log(percent);
-                    // TODO: progressbar
-                });
+
+                // TODO
             }
 
         }

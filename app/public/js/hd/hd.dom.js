@@ -91,8 +91,8 @@ HD.DOM = function(identifier){
      * @private
      */
     const matches = function(element, selector){
-        var p = Element.prototype;
-        var f = p.matches || p.webkitMatchesSelector || p.mozMatchesSelector || p.msMatchesSelector || function(s){
+        const p = Element.prototype;
+        const f = p.matches || p.webkitMatchesSelector || p.mozMatchesSelector || p.msMatchesSelector || function(s){
             return [].indexOf.call(document.querySelectorAll(s), this) !== -1;
         };
         return f.call(element, selector);
@@ -169,6 +169,7 @@ HD.DOM = function(identifier){
          */
         find : function(selector){
             let find = [];
+
             this.elements.forEach(function(elem){
                 find = find.concat(Array.from(elem.querySelectorAll(selector)));
             });
@@ -183,6 +184,7 @@ HD.DOM = function(identifier){
         ancestor : function(selector){
             const elements = [];
             let parent = this.elem().parentNode;
+
             while (parent.nodeType !== Node.DOCUMENT_NODE){
                 if (matches(parent, selector)){
                     elements.push(parent);
@@ -212,6 +214,7 @@ HD.DOM = function(identifier){
          */
         getByData : function(name, value){
             let elements;
+
             if (typeof value === "undefined"){
                 elements = this.filter(`[data-${name}]`);
             }
@@ -320,6 +323,7 @@ HD.DOM = function(identifier){
                 // getter
                 let obj;
                 const data = this.data(name);
+
                 try {
                     obj = JSON.parse(data);
                 }
@@ -351,6 +355,7 @@ HD.DOM = function(identifier){
                 // getter
                 const element = this.elem();
                 const data = getDataObjects(element, name);
+
                 if (element.hasAttribute(`data-${name}`)){
                     value = element.getAttribute(`data-${name}`);
                     if (data){
@@ -376,6 +381,7 @@ HD.DOM = function(identifier){
                 // setter
                 const originalType = typeof value;
                 let storeValue;
+
                 if (originalType === "undefined" || value === null){
                     storeValue = null;
                 }
@@ -462,6 +468,7 @@ HD.DOM = function(identifier){
         clone : function(withEvents){
             withEvents = HD.Function.param(withEvents, false);
             const elementClone = this.elem().cloneNode(true);
+
             if (withEvents){
                 let elem, elemClone, listeners;
                 const iterator = document.createNodeIterator(this.elem(), NodeFilter.SHOW_ELEMENT);
@@ -469,6 +476,7 @@ HD.DOM = function(identifier){
                 const addEvent = function(listener){
                     HD.DOM(elemClone).event(listener.eventName, listener.handler);
                 };
+
                 while ((elem = iterator.nextNode())){
                     listeners = getHandlers(elem);
                     while ((elemClone = iteratorClone.nextNode())){
@@ -520,6 +528,7 @@ HD.DOM = function(identifier){
          */
         trigger : function(eventName){
             let handlers, eventObj;
+
             if (typeof Event === "function"){
                 eventObj = new Event(eventName, {
                     bubbles : true,
@@ -549,6 +558,7 @@ HD.DOM = function(identifier){
          */
         dispatch : function(eventName){
             let eventObj;
+
             if (typeof Event === "function"){
                 eventObj = new Event(eventName, {
                     bubbles : true,
@@ -614,7 +624,8 @@ HD.DOM.dataObjects = [];
  * }
  */
 HD.DOM.getMousePosition = function(event, elem){
-    var offset = {x : 0, y : 0};
+    const offset = {x : 0, y : 0};
+
     if (typeof elem === "undefined") elem = document.body;
     do {
         if (!isNaN(elem.offsetLeft)){
@@ -646,15 +657,17 @@ HD.DOM.protection = function(){
         '-khtml-user-select' : 'none',
         '-webkit-user-select' : 'none'
     });
-    HD.DOM('img').event("mouseup", function(event){
-        if (event.which === 3){
+    HD.DOM('img')
+        .event("mouseup", function(event){
+            if (event.which === 3){
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        })
+        .event("contextmenu", function(event){
             event.preventDefault();
             event.stopPropagation();
-        }
-    }).event("contextmenu", function(event){
-        event.preventDefault();
-        event.stopPropagation();
-    });
+        });
 };
 
 /**
@@ -664,23 +677,25 @@ HD.DOM.protection = function(){
  * @param {String} closehand - drag kurzor teljes elérési útja
  */
 HD.DOM.grabCursor = function(elem, openhand, closehand){
-    var cssValueOpen = `url(${openhand}), move`;
-    var cssValueClose = `url(${closehand}), move`;
-    HD.DOM(elem).css({
+    const cssValueOpen = `url(${openhand}), move`;
+    const cssValueClose = `url(${closehand}), move`;
+    const Elem = HD.DOM(elem);
+
+    Elem.css({
         "cursor" : cssValueOpen
     });
-    HD.DOM(elem).event("mouseover", function(){
-        $(this).css({
+    Elem.event("mouseover", function(){
+        Elem.css({
             "cursor" : cssValueOpen
         });
     });
-    HD.DOM(elem).event("mousedown", function(){
-        $(this).css({
+    Elem.event("mousedown", function(){
+        Elem.css({
             "cursor" : cssValueClose
         });
     });
-    HD.DOM(elem).event("mouseup", function(){
-        $(this).css({
+    Elem.event("mouseup", function(){
+        Elem.css({
             "cursor" : cssValueOpen
         });
     });

@@ -109,10 +109,10 @@ CHAT.Methods = {
      * }
      */
     appendUserMessage : function(box, data, highlighted){
+        highlighted = HD.Function.param(highlighted, false);
         const time = HD.DateTime.formatMS('Y-m-d H:i:s', data.time);
         const List = HD.DOM(box).find(CHAT.DOM.list);
         const userName = CHAT.Methods.getUserName(data.userId);
-        highlighted = HD.Function.param(highlighted, false);
 
         List.elem().innerHTML += `
             <li>
@@ -162,11 +162,11 @@ CHAT.Methods = {
      * }
      */
     appendFile : function(box, data, highlighted){
+        highlighted = HD.Function.param(highlighted, false);
         let tpl, imgSrc;
         const List = HD.DOM(box).find(CHAT.DOM.list);
         const time = HD.DateTime.formatMS('Y-m-d H:i:s', data.time);
         const userName = CHAT.Methods.getUserName(data.userId);
-        highlighted = HD.Function.param(highlighted, false);
 
         const ListItem = HD.DOM(`
             <li>
@@ -224,9 +224,9 @@ CHAT.Methods = {
      * @returns {Number|null}
      */
     progressbar : function(box, direction, percent, barId, cancelable){
-        const List = HD.DOM(box).find(CHAT.DOM.list);
         percent = Math.round(percent * 100);
         cancelable = HD.Function.param(cancelable, true);
+        const List = HD.DOM(box).find(CHAT.DOM.list);
         const tpl = `
             <li>
                 <div class="progressbar" data-id="{BARID}">
@@ -473,6 +473,7 @@ CHAT.Methods = {
     showError : function(box, errors){
         const Box = HD.DOM(box);
         const errorMessages = [];
+
         errors.forEach(function(error){
             errorMessages.push(CHAT.Labels.error[error.type](error.value, error.restrict));
         });
@@ -672,17 +673,18 @@ CHAT.Methods = {
      * @returns {Promise}
      */
     fillBox : function(box, roomName){
-        $.ajax({
-            type : "POST",
-            url : "/chat/getroommessages",
-            data : {
-                roomName : roomName
-            },
-            dataType : "json",
+
+        const xhr = new XMLHttpRequest();
+        const postData = `roomName=${roomName}`;
+
+        xhr.open("POST", "/chat/getroommessages");
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.onload = function(){
+            const resp = JSON.parse(xhr.responseText);
+            let sequence = Promise.resolve();
             /**
              * Ajax válasz
-             * @param {Object} resp
-             * @description
+             * @type {Object}
              * resp = {
              *     messages : [
              *         0 : {
@@ -705,45 +707,45 @@ CHAT.Methods = {
              *     ]
              * }
              */
-            success : function(resp){
-                let sequence = Promise.resolve();
-                resp.messages.forEach(function(msgData){
-                    sequence = sequence
-                        .then(function(){
-                            let data;
-                            const timestamp = msgData.created;
+            resp.messages.forEach(function(msgData){
+                sequence = sequence
+                    .then(function(){
+                        let data;
+                        const timestamp = msgData.created;
 
-                            if (typeof msgData.message !== "undefined"){
-                                CHAT.Methods.appendUserMessage(box, {
-                                    userId : msgData.userId,
-                                    time : timestamp,
-                                    message : msgData.message,
-                                    roomName : roomName
-                                }, msgData.userId === CHAT.USER.id);
-                                return Promise.resolve();
-                            }
-                            else {
-                                data = {
-                                    userId : msgData.userId,
-                                    fileData : {
-                                        name : msgData.file.name,
-                                        size : msgData.file.size,
-                                        type : msgData.file.type,
-                                        deleted : msgData.file.deleted
-                                    },
-                                    file : null,
-                                    type : msgData.file.mainType,
-                                    time : timestamp,
-                                    roomName : roomName
-                                };
-                                return CHAT.FileTransfer.action('receive', [box, data, msgData]);
-                            }
-                        }).catch(function(error){
-                            HD.Log.error(error);
-                        });
-                });
-            }
-        });
+                        if (typeof msgData.message !== "undefined"){
+                            CHAT.Methods.appendUserMessage(box, {
+                                userId : msgData.userId,
+                                time : timestamp,
+                                message : msgData.message,
+                                roomName : roomName
+                            }, msgData.userId === CHAT.USER.id);
+                            return Promise.resolve();
+                        }
+                        else {
+                            data = {
+                                userId : msgData.userId,
+                                fileData : {
+                                    name : msgData.file.name,
+                                    size : msgData.file.size,
+                                    type : msgData.file.type,
+                                    deleted : msgData.file.deleted
+                                },
+                                file : null,
+                                type : msgData.file.mainType,
+                                time : timestamp,
+                                roomName : roomName
+                            };
+                            return CHAT.FileTransfer.action('receive', [box, data, msgData]);
+                        }
+                    })
+                    .catch(function(error){
+                        HD.Log.error(error);
+                    });
+            });
+        };
+        xhr.send(postData);
+
     }
 
 };

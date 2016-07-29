@@ -6,7 +6,9 @@ var express = require('express');
 var router = express.Router();
 // var session = require('express-session');
 var fs = require('fs');
-var HD = require(`${appRoot}/libs/hd/hd.math.js`);
+var HDMath = require(`${appRoot}/libs/hd/hd.math.js`);
+var HD = require(`${appRoot}/libs/hd/hd.datetime.js`);
+var log = require(`${appRoot}/libs/log.js`);
 var Model;
 
 router.use(function(req, res, next){
@@ -46,7 +48,7 @@ router.post('/uploadfile', function(req, res){
         const io = req.app.get('io');
         const data = JSON.parse(decodeURIComponent(req.header('X-File-Data')));
         const userId = Number.parseInt(data.userId);
-        const fileName = `${Date.now()}-${HD.Math.rand(100, 999)}.${data.fileData.name.split('.').pop()}`;
+        const fileName = `${Date.now()}-${HDMath.Math.rand(100, 999)}.${data.fileData.name.split('.').pop()}`;
         const fileStream = fs.createWriteStream(`${appRoot}/app/public/upload/${fileName}`);
         const fileSize = Number.parseInt(data.fileData.size);
 
@@ -76,6 +78,29 @@ router.post('/uploadfile', function(req, res){
             fileStream.end();
         });
     }
+
+});
+
+router.post('/clientlog', function(req, res){
+
+    const name = decodeURIComponent(req.body.name);
+    const message = decodeURIComponent(req.body.message);
+    const stack = decodeURIComponent(req.body.stack);
+    const logMessage = `
+        ${HD.DateTime.formatMS('Y-m-d H:i:s', Date.now())}
+        name: ${name}
+        message: ${message}
+        stack:
+        ${stack}
+        -----
+    `.replace(/^\s+/gm, '');
+
+    fs.appendFile(`${appRoot}/logs/client.log`, logMessage, function(error){
+        if (error){
+            log.error(error);
+        }
+        res.send({});
+    });
 
 });
 

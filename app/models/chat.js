@@ -16,7 +16,7 @@ var Model = function(db){
     return {
 
         /**
-         * ?
+         * User-ek lekérdezése
          * @param {Function} callback
          */
         getUsers : function(callback){
@@ -36,7 +36,7 @@ var Model = function(db){
         },
 
         /**
-         * ?
+         * Egy csatorna üzeneteinek lekérdezése
          * @param {String} roomName
          * @param {Function} callback
          */
@@ -72,7 +72,7 @@ var Model = function(db){
         },
 
         /**
-         * ?
+         * Üzenet beszúrása csatornába
          * @param {Object} data
          * @param {Function} callback
          * @description
@@ -105,7 +105,7 @@ var Model = function(db){
         },
 
         /**
-         * ?
+         * Fájl typusú üzenet beszúrása csatornába
          * @param {Object} data
          * @param {Function} callback
          * @description
@@ -133,7 +133,7 @@ var Model = function(db){
         },
 
         /**
-         * ?
+         * Egy üzenethez tartozó fájl törlése
          * @param {Object} data
          * @param {Function} callback
          * @description
@@ -170,7 +170,7 @@ var Model = function(db){
         },
 
         /**
-         * ?
+         * Egy csatornához tartozó fájlok törlése
          * @param {String} roomName
          * @param {Function} callback
          * @description

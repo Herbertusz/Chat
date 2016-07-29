@@ -9,7 +9,7 @@ var Model = function(db){
     return {
 
         /**
-         * ?
+         * User lekérdezése login-account alapján
          * @param data
          * @param callback
          */

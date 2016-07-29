@@ -4,6 +4,10 @@
 
 var CHAT = window.CHAT || {};
 
+/**
+ * Rendszer vezérlése
+ * @type {Object}
+ */
 CHAT.Controller = {
 
     /**
@@ -59,6 +63,7 @@ CHAT.Controller = {
         });
         CHAT.Util.inBox(CHAT.DOM.addUser).event("click", function(){
             const Add = HD.DOM(this);
+
             if (!Add.dataBool("disabled")){
                 HD.DOM(CHAT.DOM.selectedUsers).elements.forEach(function(selectedUser){
                     CHAT.Events.Client.forceJoinRoom(Add.elem(), Number(selectedUser.value));
@@ -70,6 +75,7 @@ CHAT.Controller = {
         // User kidobása csatornából
         CHAT.Util.inBox(CHAT.DOM.userThrow).event("click", function(){
             const Remove = HD.DOM(this);
+
             if (!Remove.dataBool("disabled")){
                 CHAT.Events.Client.forceLeaveRoom(Remove.elem());
             }
@@ -111,6 +117,7 @@ CHAT.Controller = {
             moving : false,
             x : 0
         };
+
         CHAT.Util.inBox(CHAT.DOM.users).event("mousedown", function(event){
             event.preventDefault();
             userDrag.active = true;
@@ -141,6 +148,7 @@ CHAT.Controller = {
         // Üzenet gépelése
         CHAT.Util.inBox(CHAT.DOM.textarea).event("keyup", function(event){
             const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
+
             if (event.which !== HD.Misc.keys.ENTER){
                 CHAT.Events.Client.typeMessage(Box.elem());
             }
@@ -149,6 +157,7 @@ CHAT.Controller = {
         // Üzenetküldés indítása ENTER leütésére
         CHAT.Util.inBox(CHAT.DOM.textarea).event("keydown", function(event){
             const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
+
             if (event.which === HD.Misc.keys.ENTER){
                 if (!event.shiftKey && Box.find(CHAT.DOM.sendSwitch).prop("checked")){
                     CHAT.Events.Client.sendMessage(Box.elem());
@@ -176,6 +185,7 @@ CHAT.Controller = {
         // Fájlküldés (hagyományos)
         CHAT.Util.inBox(CHAT.DOM.fileTrigger).event("click", function(){
             const Trigger = HD.DOM(this);
+
             if (!Trigger.dataBool("disabled")){
                 Trigger.ancestor(CHAT.DOM.box).find(CHAT.DOM.file).trigger("click");
             }
@@ -183,6 +193,7 @@ CHAT.Controller = {
         CHAT.Util.inBox(CHAT.DOM.file).event("change", function(){
             const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
             const files = Box.find(CHAT.DOM.file).elem().files;
+
             if (files.length > 0){
                 CHAT.Events.Client.sendFile(Box.elem(), files);
             }

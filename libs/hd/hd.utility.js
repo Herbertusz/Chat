@@ -152,7 +152,7 @@ HD.Number = {
             }
             numberpart = numberpart.replace(" ", "");
         }
-        q = $.trim(this.reverse(q).toLowerCase());
+        q = this.reverse(q).toLowerCase().trim();
         if (q.length === 2){
             prefixum = q[0];
             if (pref.hasOwnProperty(prefixum)){

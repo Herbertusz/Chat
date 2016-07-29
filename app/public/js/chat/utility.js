@@ -120,8 +120,8 @@ CHAT.Util = {
      * @param {Boolean} [conditional=false]
      */
     scrollToBottom : function(box, conditional){
-        const list = HD.DOM(box).find(CHAT.DOM.list).elem();
         conditional = HD.Function.param(conditional, false);
+        const list = HD.DOM(box).find(CHAT.DOM.list).elem();
 
         if (conditional){
             if (list.scrollHeight - list.offsetHeight - list.scrollTop < CHAT.Config.notification.local.scroll){
@@ -141,8 +141,8 @@ CHAT.Util = {
      * @returns {HTMLElement} az elem másolata
      */
     cloneElement : function(element, insert, prepend){
-        const Clone = HD.DOM(element).clone(true);
         prepend = HD.Function.param(prepend, false);
+        const Clone = HD.DOM(element).clone(true);
 
         if (prepend){
             insert.insertBefore(Clone.elem(), insert.firstChild);
