@@ -158,7 +158,8 @@ CHAT.Methods = {
      *     store : String,
      *     type : String,
      *     time : Number,
-     *     roomName : String
+     *     roomName : String,
+     *     fileName : String
      * }
      */
     appendFile : function(box, data, highlighted){

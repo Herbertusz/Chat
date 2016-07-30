@@ -337,6 +337,7 @@ CHAT.Events.Server = {
      *     type : String,
      *     time : Number,
      *     roomName : String
+     *     fileName : String
      * }
      */
     sendFile : function(data){
@@ -369,7 +370,8 @@ CHAT.Events.Server = {
      *     store : String,
      *     type : String,
      *     time : Number,
-     *     roomName : String
+     *     roomName : String,
+     *     fileName : String
      * }
      */
     abortFile : function(data){

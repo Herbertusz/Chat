@@ -182,7 +182,8 @@ CHAT.Events.Client = {
                 store : store,
                 type : '',
                 time : Date.now(),
-                roomName : HD.DOM(box).data("room")
+                roomName : HD.DOM(box).data("room"),
+                fileName : `${Date.now()}-${HD.Math.rand(100, 999)}.${rawFile.name.split('.').pop()}`
             };
             const errors = fileCheck(fileData, rawFile);
 

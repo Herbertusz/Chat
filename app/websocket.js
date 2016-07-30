@@ -80,18 +80,19 @@ module.exports = function(server, ioSession, app){
         rooms.forEach(function(room, index){
             if (room.userIds.length === 0 || HD.Math.Set.intersection(room.userIds, onlineUserIds).length === 0){
                 // fájlok törlése
-                Model.deleteRoomFiles(room.name, function(urls){
-                    for (let i = 0; i < urls.length; i++){
-                        const path = `${app.get('public path')}/${urls[i]}`;
-                        fsAccess(path, fs.W_OK)
-                            .then(function(){
-                                fsUnlink(path);
-                            })
-                            .catch(function(error){
-                                log.error(error);
-                            });
-                    }
-                });
+                Model.deleteRoomFiles(room.name)
+                    .then(function(urls){
+                        for (let i = 0; i < urls.length; i++){
+                            const path = `${app.get('public path')}/${urls[i]}`;
+                            fsAccess(path, fs.W_OK)
+                                .then(function(){
+                                    fsUnlink(path);
+                                })
+                                .catch(function(error){
+                                    log.error(error);
+                                });
+                        }
+                    });
 
                 deleted.push(room.name);
                 rooms.splice(index, 1);
@@ -238,7 +239,7 @@ module.exports = function(server, ioSession, app){
                 room : data.roomName,
                 message : data.message,
                 time : data.time
-            }, () => {});
+            });
         });
 
         // Fájlküldés emitter
@@ -252,13 +253,23 @@ module.exports = function(server, ioSession, app){
                 mainType : data.type,
                 file : data.file,
                 time : data.time
-            }, () => {});
+            });
         });
 
         // Fájlátvitel megszakítás emitter
         socket.on('abortFile', function(data){
+            const filePath = `${app.get('public path')}/upload/${data.fileName}`;
             socket.broadcast.to(data.roomName).emit('abortFile', data);
-            // TODO: Model.deleteFile(data.time, () => {}); (nincs azonosító!)
+            Model.deleteFile(filePath)
+                .then(function(){
+                    fsAccess(filePath, fs.W_OK);
+                })
+                .then(function(){
+                    fsUnlink(filePath);
+                })
+                .catch(function(error){
+                    log.error(error);
+                });
         });
 
         // Üzenetírás emitter

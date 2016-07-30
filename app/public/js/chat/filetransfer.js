@@ -54,7 +54,8 @@ CHAT.FileTransfer = {
              *     store : String,
              *     type : String,
              *     time : Number,
-             *     roomName : String
+             *     roomName : String,
+             *     fileName : String
              * }
              */
             clientSend : function(box, data, reader, rawFile, callback){
@@ -110,7 +111,8 @@ CHAT.FileTransfer = {
              *     store : String,
              *     type : String,
              *     time : Number,
-             *     roomName : String
+             *     roomName : String,
+             *     fileName : String
              * }
              */
             serverSend : function(box, data, callback){
@@ -140,7 +142,8 @@ CHAT.FileTransfer = {
              *     store : String,
              *     type : String,
              *     time : Number,
-             *     roomName : String
+             *     roomName : String,
+             *     fileName : String
              * }
              * msgData = {
              *     _id : ObjectID,
@@ -197,7 +200,8 @@ CHAT.FileTransfer = {
              *     store : String,
              *     type : String,
              *     time : Number,
-             *     roomName : String
+             *     roomName : String,
+             *     fileName : String
              * }
              */
             clientSend : function(box, data, reader, rawFile, callback){
@@ -229,7 +233,8 @@ CHAT.FileTransfer = {
              *     store : String,
              *     type : String,
              *     time : Number,
-             *     roomName : String
+             *     roomName : String,
+             *     fileName : String
              * }
              */
             serverSend : function(box, data, callback){
@@ -259,7 +264,8 @@ CHAT.FileTransfer = {
              *     store : String,
              *     type : String,
              *     time : Number,
-             *     roomName : String
+             *     roomName : String,
+             *     fileName : String
              * }
              * msgData = {
              *     _id : ObjectID,
@@ -281,7 +287,12 @@ CHAT.FileTransfer = {
              */
             receive : function(box, data, msgData){
                 data.file = msgData.file.data;
-                CHAT.Methods.appendFile(box, data);
+                if (!data.fileData.deleted){
+                    return CHAT.Methods.appendFile(box, data);
+                }
+                else {
+                    return Promise.resolve();
+                }
             }
 
         },

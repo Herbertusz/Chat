@@ -168,7 +168,7 @@ CHAT.Config = {
         allowedTypes : ["image", "text", "pdf", "doc", "xls", "ppt", "zip", "audio", "video"],
 
         // Fájl maximális mérete
-        // Javaslat: "upload": <100MB; "base64": <10MB
+        // Javaslat: "upload": <100MB; "base64": <5MB
         maxSize : 100 * 1024 * 1024
 
     }

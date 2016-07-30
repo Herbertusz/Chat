@@ -6,7 +6,6 @@ var express = require('express');
 var router = express.Router();
 // var session = require('express-session');
 var fs = require('fs');
-var HDMath = require(`${appRoot}/libs/hd/hd.math.js`);
 var HD = require(`${appRoot}/libs/hd/hd.datetime.js`);
 var log = require(`${appRoot}/libs/log.js`);
 var Model;
@@ -33,11 +32,12 @@ router.get('/', function(req, res){
 
 router.post('/getroommessages', function(req, res){
 
-    Model.getRoomMessages(req.body.roomName, function(messages){
-        res.send({
-            messages : messages
+    Model.getRoomMessages(req.body.roomName)
+        .then(function(messages){
+            res.send({
+                messages : messages
+            });
         });
-    });
 
 });
 
@@ -48,11 +48,11 @@ router.post('/uploadfile', function(req, res){
         const io = req.app.get('io');
         const data = JSON.parse(decodeURIComponent(req.header('X-File-Data')));
         const userId = Number.parseInt(data.userId);
-        const fileName = `${Date.now()}-${HDMath.Math.rand(100, 999)}.${data.fileData.name.split('.').pop()}`;
-        const fileStream = fs.createWriteStream(`${appRoot}/app/public/upload/${fileName}`);
+        const fileStream = fs.createWriteStream(`${appRoot}/app/public/upload/${data.fileName}`);
         const fileSize = Number.parseInt(data.fileData.size);
 
         req.on('data', function(file){
+            // Fájlátvitel folyamatban
             const first = (uploadedSize === 0);
             uploadedSize += file.byteLength;
             io.of('/chat').to(data.roomName).emit('fileReceive', {
@@ -65,6 +65,7 @@ router.post('/uploadfile', function(req, res){
             fileStream.write(file);
         });
         req.on('end', function(){
+            // Fájlátvitel befejezve
             io.of('/chat').to(data.roomName).emit('fileReceive', {
                 userId : userId,
                 roomName : data.roomName,
@@ -73,8 +74,12 @@ router.post('/uploadfile', function(req, res){
                 firstSend : false
             });
             res.send({
-                filePath : `upload/${fileName}`
+                filePath : `upload/${data.fileName}`
             });
+            fileStream.end();
+        });
+        req.on('close', function(){
+            // Fájlátvitel megszakítva
             fileStream.end();
         });
     }
