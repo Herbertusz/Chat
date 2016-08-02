@@ -191,44 +191,52 @@ module.exports = function(server, ioSession, app){
             rooms.push(roomData);
             socket.join(roomData.name);
             socket.broadcast.emit('roomCreated', roomData);
+            Model.setEvent('roomCreated', roomData.name, roomData);
         });
 
         // Belépés csatornába
         socket.on('roomJoin', function(data){
             socket.join(data.roomName);
+            Model.setEvent('roomJoin', data.roomName, data);
         });
 
         // Kilépés csatornából
         socket.on('roomLeave', function(data){
+            const roomData = getRoom(data.roomName);
+            const emitData = {
+                userId : data.userId,
+                roomData : roomData
+            };
             if (!data.silent){
-                const roomData = getRoom(data.roomName);
-                socket.broadcast.emit('roomLeaved', {
-                    userId : data.userId,
-                    roomData : roomData
-                });
+                socket.broadcast.emit('roomLeaved', emitData);
             }
             roomUpdate('remove', data.roomName, data.userId);
             socket.leave(data.roomName, () => {});
+            Model.setEvent('roomLeave', data.roomName, emitData);
         });
 
         // Hozzáadás csatornához emitter
         socket.on('roomForceJoin', function(data){
-            roomUpdate('add', data.roomName, data.userId);
-            socket.broadcast.emit('roomForceJoined', {
+            const emitData = {
                 triggerId : data.triggerId,
                 userId : data.userId,
                 roomData : getRoom(data.roomName)
-            });
+            };
+            roomUpdate('add', data.roomName, data.userId);
+            socket.broadcast.emit('roomForceJoined', emitData);
+            Model.setEvent('roomForceJoin', data.roomName, emitData);
         });
 
         // Kidobás csatornából emitter
         socket.on('roomForceLeave', function(data){
-            roomUpdate('remove', data.roomName, data.userId);
-            socket.broadcast.emit('roomForceLeaved', {
+            const emitData = {
                 triggerId : data.triggerId,
                 userId : data.userId,
                 roomData : getRoom(data.roomName)
-            });
+            };
+            roomUpdate('remove', data.roomName, data.userId);
+            socket.broadcast.emit('roomForceLeaved', emitData);
+            Model.setEvent('roomForceLeave', data.roomName, emitData);
         });
 
         // Üzenetküldés emitter
@@ -260,6 +268,7 @@ module.exports = function(server, ioSession, app){
         socket.on('abortFile', function(data){
             const filePath = `${app.get('public path')}/upload/${data.fileName}`;
             socket.broadcast.to(data.roomName).emit('abortFile', data);
+            Model.setEvent('abortFile', data.roomName, data);
             Model.deleteFile(filePath)
                 .then(function(){
                     fsAccess(filePath, fs.W_OK);

@@ -79,6 +79,35 @@ var Model = function(db){
         },
 
         /**
+         * Esemény beszúrása adatbázisba
+         * @param {String} eventName
+         * @param {String} roomName
+         * @param {Object} data
+         * @param {Function} [callback]
+         * @returns {Promise}
+         */
+        setEvent : function(eventName, roomName, data, callback){
+            callback = HD.Function.param(callback, () => {});
+            const insertData = {
+                event : eventName,
+                room : roomName,
+                created : Date.now(),
+                data : data
+            };
+
+            return db.collection("chat_messages")
+                .insertOne(insertData)
+                .then(function(result){
+                    const docId = result.insertedId;
+                    callback(docId);
+                    return docId;
+                })
+                .catch(function(error){
+                    log.error(error);
+                });
+        },
+
+        /**
          * Üzenet beszúrása csatornába
          * @param {Object} data
          * @param {Function} [callback]
@@ -90,7 +119,7 @@ var Model = function(db){
          */
         setMessage : function(data, callback){
             callback = HD.Function.param(callback, () => {});
-            let messageId, insertData;
+            let insertData;
 
             if (data.message){
                 insertData = {
@@ -106,7 +135,7 @@ var Model = function(db){
             return db.collection("chat_messages")
                 .insertOne(insertData)
                 .then(function(result){
-                    messageId = result.insertedId;
+                    const messageId = result.insertedId;
                     callback(messageId);
                     return messageId;
                 })
