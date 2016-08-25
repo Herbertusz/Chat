@@ -141,6 +141,7 @@ module.exports = function(server, ioSession, app){
 
     // Belépés a chat-be
     io.of('/chat').on('connection', function(socket){
+
         let userData = null;
         const session = socket.handshake.session;
 
@@ -285,6 +286,29 @@ module.exports = function(server, ioSession, app){
         socket.on('typeMessage', function(data){
             socket.broadcast.to(data.roomName).emit('typeMessage', data);
         });
+
+    });
+
+    io.of('/videochat').on('connection', function(socket){
+
+        socket.on('message', function(message){
+            console.log('Got message: ', message);
+            socket.broadcast.emit('message', message);
+        });
+
+        if (numClients === 1){
+            socket.join(room);
+            socket.emit('created', room, socket.id);
+        }
+        else if (numClients === 2){
+            socket.join(room);
+            socket.emit('joined', room, socket.id);
+            io.sockets.in(room).emit('ready');
+        }
+        else { // max two clients
+            socket.emit('full', room);
+        }
+
     });
 
     return io;
