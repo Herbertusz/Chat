@@ -1,37 +1,3 @@
-/* global io */
-
-'use strict';
-
-var isInitiator;
-var room = prompt('Enter room name:');
-var socket = io.connect();
-
-if (room !== ""){
-    console.log(`Message from client: Asking to join room ${room}`);
-    socket.emit('create or join', room);
-}
-
-socket.on('created', function(channel, clientId){
-    isInitiator = true;
-});
-
-socket.on('full', function(channel){
-    console.log(`Message from client: Room ${channel} is full!`);
-});
-
-socket.on('ipaddr', function(ipaddr){
-    console.log(`Message from client: Server IP address is ${ipaddr}`);
-});
-
-socket.on('joined', function(channel, clientId){
-    isInitiator = false;
-});
-
-socket.on('log', function(array){
-    console.log.apply(console, array);
-});
-
-/*
 'use strict';
 
 var localConnection;
@@ -89,8 +55,8 @@ function createConnection() {
   remoteConnection.ondatachannel = receiveChannelCallback;
 
   localConnection.createOffer().then(
-    gotDescription1,
-    onCreateSessionDescriptionError
+      gotDescription1,
+      onCreateSessionDescriptionError
   );
   startButton.disabled = true;
   closeButton.disabled = false;
@@ -132,8 +98,8 @@ function gotDescription1(desc) {
   trace('Offer from localConnection \n' + desc.sdp);
   remoteConnection.setRemoteDescription(desc);
   remoteConnection.createAnswer().then(
-    gotDescription2,
-    onCreateSessionDescriptionError
+      gotDescription2,
+      onCreateSessionDescriptionError
   );
 }
 
@@ -147,10 +113,10 @@ function iceCallback1(event) {
   trace('local ice callback');
   if (event.candidate) {
     remoteConnection.addIceCandidate(
-      event.candidate
+        event.candidate
     ).then(
-      onAddIceCandidateSuccess,
-      onAddIceCandidateError
+        onAddIceCandidateSuccess,
+        onAddIceCandidateError
     );
     trace('Local ICE candidate: \n' + event.candidate.candidate);
   }
@@ -160,10 +126,10 @@ function iceCallback2(event) {
   trace('remote ice callback');
   if (event.candidate) {
     localConnection.addIceCandidate(
-      event.candidate
+        event.candidate
     ).then(
-      onAddIceCandidateSuccess,
-      onAddIceCandidateError
+        onAddIceCandidateSuccess,
+        onAddIceCandidateError
     );
     trace('Remote ICE candidate: \n ' + event.candidate.candidate);
   }
@@ -221,4 +187,3 @@ function trace(text) {
     console.log(text);
   }
 }
-*/
