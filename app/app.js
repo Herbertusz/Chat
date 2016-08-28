@@ -63,7 +63,8 @@ const connectPromise = MongoClient
             ['/chat', require('./routes/chat')],
             ['/videochat', require('./routes/videochat')],
             ['/login', require('./routes/login')],
-            ['/logout', require('./routes/logout')]
+            ['/logout', require('./routes/logout')],
+            ['/sitemap', require('./routes/sitemap')]
         ];
         routes.forEach(function(route){
             app.use(route[0], route[1]);
