@@ -31,7 +31,7 @@
             <link rel="stylesheet" href="/css/chat.css" />
             <script src="/js/libs/jquery.idle-timer.js"></script>
             <script src="/socket.io/socket.io.js"></script>
-            <script src="/js/compress/lzma_worker-min.js"></script>
+            <script src="/js/compress/lz-string.min.js"></script>
             <script src="/js/chat/utility.js"></script>
             <script src="/js/chat/filetransfer.js"></script>
             <script src="/js/chat/methods.js"></script>
@@ -41,7 +41,11 @@
             <title><%- CHAT.Config.defaultTitle %></title>
         <% }else if (page === 'videochat'){ %>
             <link rel="stylesheet" href="/css/videochat.css" />
+            <!-- <script src="/js/compress/lz-string.min.js"></script> -->
+            <script src="/socket.io/socket.io.js"></script>
+            <script src="/js/libs/rmc3.js"></script>
             <!-- <script src="/js/videochat/webcam.js"></script> -->
+            <script src="/js/videochat/webrtc.js"></script>
             <title>Videochat</title>
         <% }else{ %>
             <title>CHAT app</title>
@@ -99,10 +103,5 @@
             </footer>
 
         </div>
-        <% if (page === 'videochat'){ %>
-            <script src="/socket.io/socket.io.js"></script>
-            <script src="/js/libs/adapter.js"></script>
-            <script src="/js/videochat/main05.js"></script>
-        <% } %>
     </body>
 </html>

@@ -314,15 +314,12 @@ module.exports = function(server, ioSession, app){
                 clientLog(`Client ID ${socket.id} created room ${room}`);
                 socket.emit('created', room, socket.id);
             }
-            else if (numClients === 2){
+            else {
                 clientLog(`Client ID ${socket.id} joined room ${room}`);
                 socket.broadcast.to(room).emit('join', room);
                 socket.join(room);
                 socket.broadcast.to(room).emit('joined', room, socket.id);
                 socket.broadcast.to(room).emit('ready');
-            }
-            else {
-                socket.emit('full', room);
             }
 
         });

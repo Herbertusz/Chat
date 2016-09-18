@@ -15,6 +15,7 @@ router.use(function(req, res, next){
 router.get('/', function(req, res){
 
     Model.getUsers(function(users){
+        res.set('Access-Control-Allow-Origin', '213.181.208.32');
         res.render('layout', {
             page : 'videochat',
             users : users,

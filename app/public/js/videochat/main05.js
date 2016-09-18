@@ -249,7 +249,7 @@ const handleRemoteHangup = function(){
 
 const maybeStart = function(){
     console.log('>>>>>>> maybeStart() ', isStarted, localStream, isChannelReady);
-    if (!isStarted && typeof localStream !== 'undefined' && isChannelReady){
+    if (typeof localStream !== 'undefined'){
         console.log('>>>>>> creating peer connection');
         createPeerConnection();
         pc.addStream(localStream);
