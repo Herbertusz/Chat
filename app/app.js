@@ -13,7 +13,7 @@ var FileStore = require('session-file-store')(sessionModule);
 var MongoClient = require('mongodb').MongoClient;
 var log = require(`${appRoot}/libs/log.js`);
 
-var app, server, routes, session, dbConnectionString;
+var app, server, session, dbConnectionString;
 
 app = express();
 
@@ -44,13 +44,16 @@ const connectPromise = MongoClient
             reapInterval : -1,
             store : new FileStore({
                 path : `${appRoot}/tmp`,
-                ttl : 86400  // 1 nap
+                ttl : 86400,  // 1 nap
+                logFn : function(message){
+                    log.error(message);
+                }
             })
         });
         app.use(session);
 
         // Layout
-        require(`${appRoot}/app/layout.js`)(app);
+        require(`${appRoot}/app/routes/layout.js`)(app);
 
         // Websocket
         server = http.createServer(app);
@@ -58,16 +61,16 @@ const connectPromise = MongoClient
         app.set('io', io);
 
         // Route
-        routes = [
-            ['/', require('./routes/index')],  // FIXME: ez minden kérésnél lefut!!!
-            ['/chat', require('./routes/chat')],
-            ['/videochat', require('./routes/videochat')],
-            ['/login', require('./routes/login')],
-            ['/logout', require('./routes/logout')],
-            ['/sitemap', require('./routes/sitemap')]
+        const routes = [
+            ['/', './routes/index'],
+            ['/chat', './routes/chat'],
+            ['/videochat', './routes/videochat'],
+            ['/login', './routes/login'],
+            ['/logout', './routes/logout'],
+            ['/sitemap', './routes/sitemap']
         ];
         routes.forEach(function(route){
-            app.use(route[0], route[1]);
+            app.use(route[0], require(route[1]));
         });
 
         // Hibakezelők

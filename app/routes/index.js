@@ -14,6 +14,7 @@ router.use(function(req, res, next){
 });
 
 router.get('/', function(req, res){
+
     var message;
     if (!req.session.login){
         req.session.login = {
