@@ -40,20 +40,22 @@ ENV.PROJECT = 'dev';
 if (ENV.PROJECT === 'dev'){
     ENV.DOMAIN = 'localhost';
     ENV.WSPORT = '3000';
-    ENV.PORT = normalizePort('3000');
+    ENV.PORT = '3000';
     ENV.IPADDRESS = '127.0.0.1';
 }
 else if (ENV.PROJECT === 'test'){
     ENV.DOMAIN = '213.181.208.32';
     ENV.WSPORT = '3000';
-    ENV.PORT = normalizePort('3000');
+    ENV.PORT = '3000';
     ENV.IPADDRESS = '213.181.208.32';
 }
 else if (ENV.PROJECT === 'prod'){
-    ENV.DOMAIN = 'chat.webprog.biz';
+    ENV.DOMAIN = 'chat.web-prog.hu';
     ENV.WSPORT = '80';
-    ENV.PORT = normalizePort('80');
+    ENV.PORT = '80';
     ENV.IPADDRESS = '213.181.208.32';
 }
+
+ENV.PORT = normalizePort(ENV.PORT);
 
 module.exports = ENV;

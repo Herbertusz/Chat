@@ -17,7 +17,7 @@ const fsUnlink = promisify(fs.unlink);
  * @param {Object} server - http szerver
  * @param {Object} ioSession - express-session
  * @param {Object} app - express
- * @returns {*}
+ * @returns {Object}
  */
 module.exports = function(server, ioSession, app){
 

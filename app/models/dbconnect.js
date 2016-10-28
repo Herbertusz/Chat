@@ -4,35 +4,32 @@
 
 var ENV = require(`${appRoot}/app/env.js`);
 var dbUrl;
-let dbConn;
 
-if (ENV.PROJECT === 'dev'){
-    dbConn = {
+const connections = {
+    dev : {
         host : ENV.IPADDRESS,
         port : 27017,
         user : '',
         pass : '',
         app : 'chat'
-    };
-}
-else if (ENV.PROJECT === 'test'){
-    dbConn = {
+    },
+    test : {
         host : ENV.IPADDRESS,
         port : 27017,
         user : 'chat',
         pass : 'bALtiGqzKfSqdAN',
         app : 'chat'
-    };
-}
-else if (ENV.PROJECT === 'prod'){
-    dbConn = {
+    },
+    prod : {
         host : ENV.IPADDRESS,
         port : 27017,
         user : 'chat',
         pass : 'bALtiGqzKfSqdAN',
         app : 'chat'
-    };
-}
+    }
+};
+
+const dbConn = connections[ENV.PROJECT];
 
 if (dbConn.user.length > 0){
     dbUrl = `mongodb://${dbConn.user}:${dbConn.pass}@${dbConn.host}:${dbConn.port}/${dbConn.app}`;
