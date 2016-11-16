@@ -29,7 +29,7 @@ app.use(cookieParser());
 app.use(express.static(app.get('public path')));
 
 // Adatbázis kapcsolódás
-dbConnectionString = require(`../app/models/dbconnect.js`);
+dbConnectionString = require(`models/mongodb/dbconnect.js`);
 const connectPromise = MongoClient
     .connect(dbConnectionString)
     .then(function(db){

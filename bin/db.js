@@ -2,7 +2,7 @@
 
 var ENV = require('../app/env.js');
 var MongoClient = require('mongodb').MongoClient;
-var url = require('../app/models/dbconnect.js');
+var url = require('../app/models/mongodb/dbconnect.js');
 
 var createDB = function(db, callback){
     const collectionNum = 2;

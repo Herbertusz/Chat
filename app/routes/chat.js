@@ -11,7 +11,7 @@ var log = require(`../../libs/log.js`);
 var Model;
 
 router.use(function(req, res, next){
-    Model = require(`../../app/models/chat.js`)(req.app.get('db'));
+    Model = require(`../models/mongodb/chat.js`)(req.app.get('db'));
     next();
 });
 

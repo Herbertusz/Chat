@@ -21,7 +21,7 @@ const fsUnlink = promisify(fs.unlink);
  */
 module.exports = function(server, ioSession, app){
 
-    Model = require(`../app/models/chat.js`)(app.get('db'));
+    Model = require(`models/mongodb/chat.js`)(app.get('db'));
 
     /**
      * Chat-be belépett userek
