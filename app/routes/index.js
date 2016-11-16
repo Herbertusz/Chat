@@ -1,15 +1,15 @@
-/* global appRoot */
+/* global */
 
 'use strict';
 
 var express = require('express');
 var router = express.Router();
-var log = require(`${appRoot}/libs/log.js`);
+var log = require(`../../libs/log.js`);
 // var session = require('express-session');
 var Model;
 
 router.use(function(req, res, next){
-    Model = require(`${appRoot}/app/models/chat.js`)(req.app.get('db'));
+    Model = require(`../../app/models/chat.js`)(req.app.get('db'));
     next();
 });
 

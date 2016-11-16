@@ -1,10 +1,10 @@
-/* global appRoot */
+/* global */
 
 'use strict';
 
-var log = require(`${appRoot}/libs/log.js`);
-var HD = require(`${appRoot}/libs/hd/hd.utility.js`);
-var HDdt = require(`${appRoot}/libs/hd/hd.datetime.js`);
+var log = require(`../../libs/log.js`);
+var HD = require(`../../libs/hd/hd.utility.js`);
+var HDdt = require(`../../libs/hd/hd.datetime.js`);
 
 /**
  *

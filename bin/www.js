@@ -3,12 +3,12 @@
  * Copyright (c) 2016.04.27.
  */
 
-/* global appRoot */
+/* global */
 
 'use strict';
 
 var ENV = require('../app/env.js');
-var log = require(`${appRoot}/libs/log.js`);
+var log = require(`../libs/log.js`);
 
 require('../app/app.js')
     .then(function(app){

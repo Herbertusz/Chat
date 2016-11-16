@@ -1,4 +1,4 @@
-/* global appRoot */
+/* global */
 
 'use strict';
 
@@ -11,7 +11,7 @@ var bodyParser = require('body-parser');
 var sessionModule = require('express-session');
 var FileStore = require('session-file-store')(sessionModule);
 var MongoClient = require('mongodb').MongoClient;
-var log = require(`${appRoot}/libs/log.js`);
+var log = require(`../libs/log.js`);
 
 var app, server, session, dbConnectionString;
 
@@ -29,7 +29,7 @@ app.use(cookieParser());
 app.use(express.static(app.get('public path')));
 
 // Adatbázis kapcsolódás
-dbConnectionString = require(`${appRoot}/app/models/dbconnect.js`);
+dbConnectionString = require(`../app/models/dbconnect.js`);
 const connectPromise = MongoClient
     .connect(dbConnectionString)
     .then(function(db){
@@ -43,7 +43,7 @@ const connectPromise = MongoClient
             saveUninitialized : false,
             reapInterval : -1,
             store : new FileStore({
-                path : `${appRoot}/tmp`,
+                path : `../tmp`,
                 ttl : 86400,  // 1 nap
                 logFn : function(message){
                     log.error(message);
@@ -53,11 +53,11 @@ const connectPromise = MongoClient
         app.use(session);
 
         // Layout
-        require(`${appRoot}/app/routes/layout.js`)(app);
+        require(`../app/routes/layout.js`)(app);
 
         // Websocket
         server = http.createServer(app);
-        io = require(`${appRoot}/app/websocket.js`)(server, session, app);
+        io = require(`../app/websocket.js`)(server, session, app);
         app.set('io', io);
 
         // Route
@@ -74,18 +74,21 @@ const connectPromise = MongoClient
         });
 
         // Hibakezelők
-        app.use(function(req, res, next){
+        app.use(function(req, res){
             const err = new Error(`Not Found: ${req.originalUrl}`);
             log.error(err);
             err.status = 404;
-            next(err);
-        });
-        app.use(function(err, req, res){
-            res.status(err.status || 500);
-            res.render('error', {
+            res.status = 404;
+            res.render('layout', {
+                page : 'error',
+                pageType : 'error',
                 message : err.message,
                 error : err
             });
+        });
+        app.use(function(err, req, res){
+            res.status(err.status || 500);
+            log.error(err);
         });
 
         app.httpServer = server;

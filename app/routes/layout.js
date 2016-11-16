@@ -1,9 +1,9 @@
-/* global appRoot */
+/* global */
 
 'use strict';
 
-var ENV = require(`${appRoot}/app/env.js`);
-var CHAT = require(`${appRoot}/app/config.js`);
+var ENV = require(`../../app/env.js`);
+var CHAT = require(`../../app/config.js`);
 
 module.exports = function(app){
 

@@ -1,4 +1,4 @@
-/* global appRoot */
+/* global */
 
 'use strict';
 
@@ -6,12 +6,12 @@ var express = require('express');
 var router = express.Router();
 // var session = require('express-session');
 var fs = require('fs');
-var HD = require(`${appRoot}/libs/hd/hd.datetime.js`);
-var log = require(`${appRoot}/libs/log.js`);
+var HD = require(`../../libs/hd/hd.datetime.js`);
+var log = require(`../../libs/log.js`);
 var Model;
 
 router.use(function(req, res, next){
-    Model = require(`${appRoot}/app/models/chat.js`)(req.app.get('db'));
+    Model = require(`../../app/models/chat.js`)(req.app.get('db'));
     next();
 });
 
@@ -48,7 +48,7 @@ router.post('/uploadfile', function(req, res){
         const io = req.app.get('io');
         const data = JSON.parse(decodeURIComponent(req.header('X-File-Data')));
         const userId = Number.parseInt(data.userId);
-        const fileStream = fs.createWriteStream(`${appRoot}/app/public/upload/${data.fileName}`);
+        const fileStream = fs.createWriteStream(`../../app/public/upload/${data.fileName}`);
         const fileSize = Number.parseInt(data.fileData.size);
 
         req.on('data', function(file){
@@ -100,7 +100,7 @@ router.post('/clientlog', function(req, res){
         -----
     `.replace(/^\s+/gm, '');
 
-    fs.appendFile(`${appRoot}/logs/client.log`, logMessage, function(error){
+    fs.appendFile(`../../logs/client.log`, logMessage, function(error){
         if (error){
             log.error(error);
         }

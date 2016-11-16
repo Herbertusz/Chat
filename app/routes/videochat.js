@@ -1,4 +1,4 @@
-/* global appRoot */
+/* global */
 
 'use strict';
 
@@ -8,7 +8,7 @@ var router = express.Router();
 var Model;
 
 router.use(function(req, res, next){
-    Model = require(`${appRoot}/app/models/chat.js`)(req.app.get('db'));
+    Model = require(`../../app/models/chat.js`)(req.app.get('db'));
     next();
 });
 

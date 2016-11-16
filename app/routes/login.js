@@ -1,6 +1,6 @@
-'use strict';
+/* global */
 
-/* global appRoot */
+'use strict';
 
 var express = require('express');
 var router = express.Router();
@@ -8,7 +8,7 @@ var router = express.Router();
 var Model;
 
 router.use(function(req, res, next){
-    Model = require(`${appRoot}/app/models/login.js`)(req.app.get('db'));
+    Model = require(`../../app/models/login.js`)(req.app.get('db'));
     next();
 });
 

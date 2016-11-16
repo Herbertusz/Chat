@@ -5,8 +5,8 @@
 var promisify = require('es6-promisify');
 var fs = require('fs');
 var ioExpressSession = require('socket.io-express-session');
-var log = require(`${appRoot}/libs/log.js`);
-var HD = require(`${appRoot}/libs/hd/hd.math.js`);
+var log = require(`../libs/log.js`);
+var HD = require(`../libs/hd/hd.math.js`);
 var Model;
 
 const fsAccess = promisify(fs.access);
@@ -21,7 +21,7 @@ const fsUnlink = promisify(fs.unlink);
  */
 module.exports = function(server, ioSession, app){
 
-    Model = require(`${appRoot}/app/models/chat.js`)(app.get('db'));
+    Model = require(`../app/models/chat.js`)(app.get('db'));
 
     /**
      * Chat-be belépett userek

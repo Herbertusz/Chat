@@ -25,12 +25,6 @@ var normalizePort = function(val){
 };
 
 /**
- * Alkalmazás gyökérkönyvtár
- * @type {String}
- */
-global.appRoot = path.resolve(`${__dirname}/..`);
-
-/**
  * Alkalmazás státusza ("dev"|"test"|"prod")
  * @type {String}
  */

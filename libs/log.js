@@ -1,5 +1,3 @@
-/* global appRoot */
-
 'use strict';
 
 var winston = require('winston');
@@ -7,7 +5,7 @@ var winston = require('winston');
 var Log = new (winston.Logger)({
     transports : [
         new winston.transports.File({
-            filename : `${appRoot}/logs/debug.log`,
+            filename : '../logs/debug.log',
             json : false,
             handleExceptions : true,
             humanReadableUnhandledException : true
@@ -15,8 +13,9 @@ var Log = new (winston.Logger)({
     ],
     exceptionHandlers : [
         new winston.transports.File({
-            filename : `${appRoot}/logs/exception.log`,
-            json : false
+            filename : '../logs/exception.log',
+            json : false,
+            humanReadableUnhandledException : true
         })
     ],
     exitOnError : false

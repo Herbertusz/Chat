@@ -1,8 +1,8 @@
-/* global appRoot */
+/* global */
 
 'use strict';
 
-var log = require(`${appRoot}/libs/log.js`);
+var log = require(`../../libs/log.js`);
 
 var Model = function(db){
 

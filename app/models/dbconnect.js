@@ -1,8 +1,8 @@
-/* global appRoot */
+/* global */
 
 'use strict';
 
-var ENV = require(`${appRoot}/app/env.js`);
+var ENV = require(`../../app/env.js`);
 var dbUrl;
 
 const connections = {
