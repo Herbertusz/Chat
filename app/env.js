@@ -36,18 +36,21 @@ if (ENV.PROJECT === 'dev'){
     ENV.WSPORT = '3000';
     ENV.PORT = '3000';
     ENV.IPADDRESS = '127.0.0.1';
+    ENV.DBDRIVER = 'mongodb'; // 'mysql'
 }
 else if (ENV.PROJECT === 'test'){
     ENV.DOMAIN = '213.181.208.32';
     ENV.WSPORT = '3000';
     ENV.PORT = '3000';
     ENV.IPADDRESS = '213.181.208.32';
+    ENV.DBDRIVER = 'mongodb';
 }
 else if (ENV.PROJECT === 'prod'){
     ENV.DOMAIN = 'chat.web-prog.hu';
     ENV.WSPORT = '80';
     ENV.PORT = '80';
     ENV.IPADDRESS = '213.181.208.32';
+    ENV.DBDRIVER = 'mongodb';
 }
 
 ENV.PORT = normalizePort(ENV.PORT);

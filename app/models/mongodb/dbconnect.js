@@ -2,8 +2,8 @@
 
 'use strict';
 
-var ENV = require(`../../env.js`);
-var dbUrl;
+const ENV = require(`../../env.js`);
+let dbUrl;
 
 const connections = {
     dev : {

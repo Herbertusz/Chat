@@ -2,20 +2,26 @@
 
 'use strict';
 
-var io;
-var http = require('http');
-var express = require('express');
-var favicon = require('serve-favicon');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var sessionModule = require('express-session');
-var FileStore = require('session-file-store')(sessionModule);
-var MongoClient = require('mongodb').MongoClient;
-var log = require(`../libs/log.js`);
+const http = require('http');
+const express = require('express');
+const favicon = require('serve-favicon');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const sessionModule = require('express-session');
+const FileStore = require('session-file-store')(sessionModule);
+const log = require(`../libs/log.js`);
+const ENV = require(`../../env.js`);
 
-var app, server, session, dbConnectionString;
+let io, server, session, DB;
 
-app = express();
+if (ENV.DBDRIVER === 'mongodb'){
+    DB = require('mongodb').MongoClient;
+}
+else if (ENV.DBDRIVER === 'mysql'){
+    DB = require(`../libs/mysql.js`);
+}
+
+const app = express();
 
 app.set('views', `${__dirname}/views`);
 app.set('view engine', 'ejs');
@@ -29,8 +35,8 @@ app.use(cookieParser());
 app.use(express.static(app.get('public path')));
 
 // Adatbázis kapcsolódás
-dbConnectionString = require(`models/mongodb/dbconnect.js`);
-const connectPromise = MongoClient
+const dbConnectionString = require(`models/${ENV.DBDRIVER}/dbconnect.js`);
+const connectPromise = DB
     .connect(dbConnectionString)
     .then(function(db){
 
