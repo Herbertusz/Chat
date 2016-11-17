@@ -9,8 +9,8 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const sessionModule = require('express-session');
 const FileStore = require('session-file-store')(sessionModule);
-const log = require(`../libs/log.js`);
-const ENV = require(`../../env.js`);
+const log = require.main.require('../libs/log.js');
+const ENV = require.main.require('../app/env.js');
 
 let io, server, session, DB;
 
@@ -18,7 +18,7 @@ if (ENV.DBDRIVER === 'mongodb'){
     DB = require('mongodb').MongoClient;
 }
 else if (ENV.DBDRIVER === 'mysql'){
-    DB = require(`../libs/mysql.js`);
+    DB = require.main.require('../libs/mysql.js');
 }
 
 const app = express();
@@ -26,6 +26,7 @@ const app = express();
 app.set('views', `${__dirname}/views`);
 app.set('view engine', 'ejs');
 app.set('public path', `${__dirname}/public`);
+app.set('upload', `${__dirname}/../storage/upload`);
 
 app.use(favicon(`${__dirname}/public/favicon.png`));
 // app.use(logger('dev'));
@@ -35,7 +36,7 @@ app.use(cookieParser());
 app.use(express.static(app.get('public path')));
 
 // Adatbázis kapcsolódás
-const dbConnectionString = require(`models/${ENV.DBDRIVER}/dbconnect.js`);
+const dbConnectionString = require.main.require(`../app/models/${ENV.DBDRIVER}/dbconnect.js`);
 const connectPromise = DB
     .connect(dbConnectionString)
     .then(function(db){
@@ -44,12 +45,12 @@ const connectPromise = DB
 
         // Session
         session = sessionModule({
-            secret : "Kh5Cwxpe8wCXNaWJ075g",
+            secret : 'Kh5Cwxpe8wCXNaWJ075g',
             resave : false,
             saveUninitialized : false,
             reapInterval : -1,
             store : new FileStore({
-                path : `../tmp`,
+                path : '../tmp',
                 ttl : 86400,  // 1 nap
                 logFn : function(message){
                     log.error(message);
@@ -59,24 +60,24 @@ const connectPromise = DB
         app.use(session);
 
         // Layout
-        require(`../app/routes/layout.js`)(app);
+        require.main.require('../app/routes/layout.js')(app);
 
         // Websocket
         server = http.createServer(app);
-        io = require(`../app/websocket.js`)(server, session, app);
+        io = require.main.require('../app/websocket.js')(server, session, app);
         app.set('io', io);
 
         // Route
         const routes = [
-            ['/', './routes/index'],
-            ['/chat', './routes/chat'],
-            ['/videochat', './routes/videochat'],
-            ['/login', './routes/login'],
-            ['/logout', './routes/logout'],
-            ['/sitemap', './routes/sitemap']
+            ['/', 'routes/index'],
+            ['/chat', 'routes/chat'],
+            ['/videochat', 'routes/videochat'],
+            ['/login', 'routes/login'],
+            ['/logout', 'routes/logout'],
+            ['/sitemap', 'routes/sitemap']
         ];
         routes.forEach(function(route){
-            app.use(route[0], require(route[1]));
+            app.use(route[0], require.main.require(`../app/${route[1]}`));
         });
 
         // Hibakezelők
@@ -87,7 +88,10 @@ const connectPromise = DB
             res.status = 404;
             res.render('layout', {
                 page : 'error',
-                pageType : 'error',
+                login : req.session.login ? req.session.login.loginned : false,
+                userId : req.session.login ? req.session.login.userId : null,
+                userName : req.session.login ? req.session.login.userName : '',
+                loginMessage : null,
                 message : err.message,
                 error : err
             });

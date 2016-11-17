@@ -2,7 +2,7 @@
 
 'use strict';
 
-const ENV = require(`../../env.js`);
+const ENV = require.main.require('../app/env.js');
 let dbUrl;
 
 const connections = {

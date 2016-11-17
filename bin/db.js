@@ -1,8 +1,8 @@
 'use strict';
 
-var ENV = require('../app/env.js');
+var ENV = require.main.require('../app/env.js');
 var MongoClient = require('mongodb').MongoClient;
-var url = require('../app/models/mongodb/dbconnect.js');
+var url = require.main.require('../app/models/mongodb/dbconnect.js');
 
 var createDB = function(db, callback){
     const collectionNum = 2;

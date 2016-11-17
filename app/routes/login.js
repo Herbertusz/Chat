@@ -8,7 +8,7 @@ var router = express.Router();
 var Model;
 
 router.use(function(req, res, next){
-    Model = require(`../models/mongodb/login.js`)(req.app.get('db'));
+    Model = require.main.require('../app/models/mongodb/login.js')(req.app.get('db'));
     next();
 });
 

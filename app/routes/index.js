@@ -4,12 +4,12 @@
 
 var express = require('express');
 var router = express.Router();
-var log = require(`../../libs/log.js`);
+var log = require.main.require('../libs/log.js');
 // var session = require('express-session');
 var Model;
 
 router.use(function(req, res, next){
-    Model = require(`../models/mongodb/chat.js`)(req.app.get('db'));
+    Model = require.main.require('../app/models/mongodb/chat.js')(req.app.get('db'));
     next();
 });
 

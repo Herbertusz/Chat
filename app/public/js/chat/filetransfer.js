@@ -1,4 +1,4 @@
-/* global HD LZMA */
+/* global HD */
 
 "use strict";
 
@@ -15,12 +15,6 @@ CHAT.FileTransfer = {
      * @type {Object.<XMLHttpRequest>}
      */
     XHR : {},
-
-    /**
-     * Tömörítés
-     * @type {Object}
-     */
-    LZMA : LZMA,
 
     /**
      *

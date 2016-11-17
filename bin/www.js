@@ -7,10 +7,10 @@
 
 'use strict';
 
-var ENV = require('../app/env.js');
-var log = require(`../libs/log.js`);
+const ENV = require.main.require('../app/env.js');
+const log = require.main.require('../libs/log.js');
 
-require('../app/app.js')
+require.main.require('../app/app.js')
     .then(function(app){
 
         // Port tárolása az Express-ben

@@ -2,9 +2,9 @@
 
 'use strict';
 
-var log = require(`../../../libs/log.js`);
-var HD = require(`../../../libs/hd/hd.utility.js`);
-var HDdt = require(`../../../libs/hd/hd.datetime.js`);
+var log = require.main.require('../libs/log.js');
+var HD = require.main.require('../libs/hd/hd.utility.js');
+var HDdt = require.main.require('../libs/hd/hd.datetime.js');
 
 /**
  *

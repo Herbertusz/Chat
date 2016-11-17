@@ -2,7 +2,7 @@
 
 'use strict';
 
-var ENV = require(`../../app/env.js`);
+var ENV = require.main.require('../app/env.js');
 var express = require('express');
 var router = express.Router();
 

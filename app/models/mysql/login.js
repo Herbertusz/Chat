@@ -2,7 +2,7 @@
 
 'use strict';
 
-var log = require(`../../../libs/log.js`);
+var log = require.main.require('../libs/log.js');
 
 var Model = function(db){
 
