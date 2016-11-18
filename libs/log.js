@@ -5,7 +5,7 @@ var winston = require('winston');
 var Log = new (winston.Logger)({
     transports : [
         new winston.transports.File({
-            filename : '../logs/debug.log',
+            filename : `${__dirname}/../logs/debug.log`,
             json : false,
             handleExceptions : true,
             humanReadableUnhandledException : true
@@ -13,7 +13,7 @@ var Log = new (winston.Logger)({
     ],
     exceptionHandlers : [
         new winston.transports.File({
-            filename : '../logs/exception.log',
+            filename : `${__dirname}/../logs/exception.log`,
             json : false,
             humanReadableUnhandledException : true
         })
