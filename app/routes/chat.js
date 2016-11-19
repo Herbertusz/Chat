@@ -8,16 +8,17 @@ var router = express.Router();
 var fs = require('fs');
 var HD = require.main.require('../libs/hd/hd.datetime.js');
 var log = require.main.require('../libs/log.js');
-var Model;
+var UserModel, ChatModel;
 
 router.use(function(req, res, next){
-    Model = require.main.require('../app/models/mongodb/chat.js')(req.app.get('db'));
+    UserModel = require.main.require('../app/models/mongodb/user.js')(req.app.get('db'));
+    ChatModel = require.main.require('../app/models/mongodb/chat.js')(req.app.get('db'));
     next();
 });
 
 router.get('/', function(req, res){
 
-    Model.getUsers(function(users){
+    UserModel.getUsers(function(users){
         res.render('layout', {
             page : 'chat',
             users : users,
@@ -32,7 +33,7 @@ router.get('/', function(req, res){
 
 router.post('/getroommessages', function(req, res){
 
-    Model.getRoomMessages(req.body.roomName)
+    ChatModel.getRoomMessages(req.body.roomName)
         .then(function(messages){
             res.send({
                 messages : messages

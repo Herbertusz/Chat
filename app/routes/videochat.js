@@ -5,16 +5,17 @@
 var express = require('express');
 var router = express.Router();
 // var session = require('express-session');
-var Model;
+var ChatModel, UserModel;
 
 router.use(function(req, res, next){
-    Model = require.main.require('../app/models/mongodb/chat.js')(req.app.get('db'));
+    UserModel = require.main.require('../app/models/mongodb/user.js')(req.app.get('db'));
+    ChatModel = require.main.require('../app/models/mongodb/chat.js')(req.app.get('db'));
     next();
 });
 
 router.get('/', function(req, res){
 
-    Model.getUsers(function(users){
+    UserModel.getUsers(function(users){
         res.set('Access-Control-Allow-Origin', '213.181.208.32');
         res.render('layout', {
             page : 'videochat',

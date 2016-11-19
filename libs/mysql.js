@@ -85,13 +85,13 @@ var DB = {
                     return this.escapeId(values[key]);
                 }
                 return txt;
-            }.bind(db));
+            }.bind(this));
             query = query.replace(/:(\w+)/g, function(txt, key){
                 if (values.hasOwnProperty(key)){
                     return this.escape(values[key]);
                 }
                 return txt;
-            }.bind(db));
+            }.bind(this));
             return query;
         };
 
@@ -165,20 +165,17 @@ var DB = {
 //        this.statement = temp_res;
 //        return rownum;
 //    },
-//
-//    /**
-//     * Eredménytáblát ad vissza 2D-s tömbként (a sor az első kulcs)
-//     * @param string $sql lekérdezés
-//     * @param array $binds bindelő tömb
-//     * @returns array(array) lekérdezés eredménye
-//     */
-//    public static function getrows($sql, $binds = array()){
-//        self::query($sql, $binds);
-//        $rows = self::$statement->fetchAll(PDO::FETCH_ASSOC);
-//        self::$num_rows = count($rows);
-//        return $rows;
-//    }
-//
+
+    /**
+     * Eredménytáblát ad vissza 2D-s tömbként (a sor az első kulcs)
+     * @param {String} sql lekérdezés
+     * @param {Array} binds bindelő tömb
+     * @returns {Promise}
+     */
+    getRows : function(sql, binds){
+        return this.query(sql, binds);
+    },
+
 //    /**
 //     * Eredménytábla egy sorát adja vissza 1D-s tömbként
 //     * @param string $sql lekérdezés
@@ -186,7 +183,7 @@ var DB = {
 //     * @param int $rownum sor sorszáma
 //     * @returns array sor
 //     */
-//    public static function getrow($sql, $binds = array(), $rownum = 0){
+//    public static function getRow($sql, $binds = array(), $rownum = 0){
 //        self::query($sql, $binds);
 //        $rows = self::$statement->fetchAll(PDO::FETCH_ASSOC);
 //        self::$num_rows = count($rows);
@@ -199,7 +196,7 @@ var DB = {
 //     * @param array $binds bindelő tömb
 //     * @returns array lekérdezés eredménye elforgatva
 //     */
-//    public static function getcolumns($sql, $binds = array()){
+//    public static function getColumns($sql, $binds = array()){
 //        self::query($sql, $binds);
 //        $rows = self::$statement->fetchAll(PDO::FETCH_ASSOC);
 //        self::$num_rows = count($rows);
@@ -214,7 +211,7 @@ var DB = {
 //     * @param string $colname oszlop neve
 //     * @returns array oszlop
 //     */
-//    public static function getcolumn($sql, $binds = array(), $colname = ""){
+//    public static function getColumn($sql, $binds = array(), $colname = ""){
 //        self::query($sql, $binds);
 //        $rows = self::$statement->fetchAll(PDO::FETCH_ASSOC);
 //        self::$num_rows = count($rows);
@@ -230,7 +227,7 @@ var DB = {
 //     * @param int $rownum sor sorszáma
 //     * @returns string mezőben tárolt érték
 //     */
-//    public static function getfield($sql, $binds = array(), $colname = "", $rownum = 0){
+//    public static function getField($sql, $binds = array(), $colname = "", $rownum = 0){
 //        self::query($sql, $binds);
 //        $rows = self::$statement->fetchAll(PDO::FETCH_ASSOC);
 //        self::$num_rows = count($rows);
@@ -363,7 +360,7 @@ var DB = {
         const run = (typeof args[1] !== "undefined") ? args[1] : true;
         const callback = (typeof args[args.length - 1] === 'function') ? args[args.length - 1] : null;
 
-        // TODO: Ez miért van itt? Most van bibdelés vagy nincs?
+        // TODO: Ez miért van itt? Most van bindelés vagy nincs?
         // this.sql = mysql.format(sql, binds);
         // this.command = this._getCommand();
         // sql = this.sql;

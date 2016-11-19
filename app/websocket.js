@@ -7,7 +7,7 @@ var fs = require('fs');
 var ioExpressSession = require('socket.io-express-session');
 var log = require.main.require(`../libs/log.js`);
 var HD = require.main.require('../libs/hd/hd.math.js');
-var Model;
+var ChatModel;
 
 const fsAccess = promisify(fs.access);
 const fsUnlink = promisify(fs.unlink);
@@ -21,7 +21,7 @@ const fsUnlink = promisify(fs.unlink);
  */
 module.exports = function(server, ioSession, app){
 
-    Model = require.main.require('../app/models/mongodb/chat.js')(app.get('db'));
+    ChatModel = require.main.require('../app/models/mongodb/chat.js')(app.get('db'));
 
     /**
      * Chat-be belépett userek
@@ -80,7 +80,7 @@ module.exports = function(server, ioSession, app){
         rooms.forEach(function(room, index){
             if (room.userIds.length === 0 || HD.Math.Set.intersection(room.userIds, onlineUserIds).length === 0){
                 // fájlok törlése
-                Model.deleteRoomFiles(room.name)
+                ChatModel.deleteRoomFiles(room.name)
                     .then(function(urls){
                         for (let i = 0; i < urls.length; i++){
                             const path = `${app.get('public path')}/${urls[i]}`;
@@ -192,13 +192,13 @@ module.exports = function(server, ioSession, app){
             rooms.push(roomData);
             socket.join(roomData.name);
             socket.broadcast.emit('roomCreated', roomData);
-            Model.setEvent('roomCreated', roomData.name, roomData);
+            ChatModel.setEvent('roomCreated', roomData.name, roomData);
         });
 
         // Belépés csatornába
         socket.on('roomJoin', function(data){
             socket.join(data.roomName);
-            Model.setEvent('roomJoin', data.roomName, data);
+            ChatModel.setEvent('roomJoin', data.roomName, data);
         });
 
         // Kilépés csatornából
@@ -213,7 +213,7 @@ module.exports = function(server, ioSession, app){
             }
             roomUpdate('remove', data.roomName, data.userId);
             socket.leave(data.roomName, () => {});
-            Model.setEvent('roomLeave', data.roomName, emitData);
+            ChatModel.setEvent('roomLeave', data.roomName, emitData);
         });
 
         // Hozzáadás csatornához emitter
@@ -225,7 +225,7 @@ module.exports = function(server, ioSession, app){
             };
             roomUpdate('add', data.roomName, data.userId);
             socket.broadcast.emit('roomForceJoined', emitData);
-            Model.setEvent('roomForceJoin', data.roomName, emitData);
+            ChatModel.setEvent('roomForceJoin', data.roomName, emitData);
         });
 
         // Kidobás csatornából emitter
@@ -237,13 +237,13 @@ module.exports = function(server, ioSession, app){
             };
             roomUpdate('remove', data.roomName, data.userId);
             socket.broadcast.emit('roomForceLeaved', emitData);
-            Model.setEvent('roomForceLeave', data.roomName, emitData);
+            ChatModel.setEvent('roomForceLeave', data.roomName, emitData);
         });
 
         // Üzenetküldés emitter
         socket.on('sendMessage', function(data){
             socket.broadcast.to(data.roomName).emit('sendMessage', data);
-            Model.setMessage({
+            ChatModel.setMessage({
                 userId : userData.id,
                 room : data.roomName,
                 message : data.message,
@@ -254,7 +254,7 @@ module.exports = function(server, ioSession, app){
         // Fájlküldés emitter
         socket.on('sendFile', function(data){
             socket.broadcast.to(data.roomName).emit('sendFile', data);
-            Model.setFile({
+            ChatModel.setFile({
                 userId : userData.id,
                 room : data.roomName,
                 store : data.store,
@@ -269,8 +269,8 @@ module.exports = function(server, ioSession, app){
         socket.on('abortFile', function(data){
             const filePath = `${app.get('public path')}/upload/${data.fileName}`;
             socket.broadcast.to(data.roomName).emit('abortFile', data);
-            Model.setEvent('abortFile', data.roomName, data);
-            Model.deleteFile(filePath)
+            ChatModel.setEvent('abortFile', data.roomName, data);
+            ChatModel.deleteFile(filePath)
                 .then(function(){
                     fsAccess(filePath, fs.W_OK);
                 })

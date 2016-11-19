@@ -348,10 +348,7 @@
       "never"
     ],
     // enforce consistent naming when capturing the current execution context
-    "consistent-this": [
-      "warn",
-      "This"
-    ],
+    "consistent-this": "off",
     // enforce at least one newline at the end of files
     "eol-last": [
       "warn",

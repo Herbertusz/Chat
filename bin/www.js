@@ -1,6 +1,6 @@
 /*!
  * Chat v1.0.0 alpha
- * Copyright (c) 2016.04.27.
+ * Copyright (c) 2016.11.18.
  */
 
 /* global */

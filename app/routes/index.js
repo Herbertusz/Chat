@@ -2,14 +2,16 @@
 
 'use strict';
 
-var express = require('express');
-var router = express.Router();
-var log = require.main.require('../libs/log.js');
+const ENV = require.main.require('../app/env.js');
+const log = require.main.require('../libs/log.js');
+const express = require('express');
+const router = express.Router();
 // var session = require('express-session');
-var Model;
+let UserModel, ChatModel;
 
 router.use(function(req, res, next){
-    Model = require.main.require('../app/models/mongodb/chat.js')(req.app.get('db'));
+    UserModel = require.main.require(`../app/models/${ENV.DBDRIVER}/user.js`)(req.app.get('db'));
+    ChatModel = require.main.require(`../app/models/${ENV.DBDRIVER}/chat.js`)(req.app.get('db'));
     next();
 });
 
@@ -30,17 +32,16 @@ router.get('/', function(req, res){
     const db = req.app.get('db');
 
     let users, messages;
-    db.collection('chat_users')
-        .find()
-        .toArray()
-        .then(function(docs){
-            users = docs;
+
+    UserModel.getUsers()
+        .then(function(items){
+            users = items;
         })
         .then(function(){
-            return db.collection('chat_messages').find().toArray();
+            return ChatModel.getMessages(['message', 'file']);
         })
-        .then(function(docs){
-            messages = docs;
+        .then(function(items){
+            messages = items;
         })
         .catch(function(error){
             log.error(error);

@@ -27,16 +27,24 @@ var Model = function(db){
             const types = ['message', 'file', 'event'];
             types.forEach(function(item){
                 if (type.indexOf(item) > -1){
-                    conds.push({[item] : {'$exists' : true}});
+                    conds.push(`${item} IS NOT NULL`);
                 }
             });
-            return db.collection("chat_messages")
-                .find({'$or' : conds})
-                .sort({"created" : 1})
-                .toArray()
-                .then(function(messages){
-                    callback(messages);
-                    return messages;
+            const condition = `(${conds.join(') OR (')})`;
+            return db
+                .getRows(`
+                    SELECT
+                        *
+                    FROM
+                        chat_messages
+                    WHERE
+                        ${condition}
+                    ORDER BY
+                        created ASC
+                `)
+                .then(function(users){
+                    callback(users);
+                    return users;
                 })
                 .catch(function(error){
                     log.error(error);
