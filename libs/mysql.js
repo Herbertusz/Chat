@@ -1,7 +1,6 @@
 /*!
- * Adatbázis-kezelő modul
+ * MySQL adatbázis-kezelő modul
  * Függőségek:
- *  HD.Function
  *  mysql (https://github.com/felixge/node-mysql)
  *
  * Használat:
@@ -30,7 +29,6 @@
  *   DB.numRows();
  *   DB.affectedRows();
  *   DB.insertId();
- *   DB.countRows(table, where = null, binds = {}, callback(error, count));
  * Paraméterek:
  *  Opcionális paraméterek esetén ha valamelyiket használni akarjuk, az előtte lévőket mind meg kell adni.
  *  Ez alól kivétel a callback függvény.
@@ -38,9 +36,9 @@
 
 'use strict';
 
-var mysql = require('mysql');
+const mysql = require('mysql');
 
-var DB = {
+const DB = {
 
     /**
      * DB-kapcsolat
@@ -49,7 +47,13 @@ var DB = {
     connection : null,
 
     /**
-     * Utoljára futtatott SQL lekérdezés
+     * Utoljára futtatott SQL lekérdezés (bind paraméterekkel)
+     * @type String
+     */
+    rawsql : null,
+
+    /**
+     * Utoljára futtatott SQL lekérdezés (escape-elt)
      * @type String
      */
     sql : null,
@@ -143,28 +147,6 @@ var DB = {
 //        }
 //        return $id;
 //    }
-//
-//    /**
-//     * A tábla sorainak száma (nem módosítja a statement értékét)
-//     * @param {String table tábla neve
-//     * @param {String where where feltétel (csak azokat a sorokat számolja, amelyekre teljesül)
-//     * @param {Object} binds bindelő objektum
-//     * @returns int|bool sorok száma vagy false ha nem létezik a tábla
-//     */
-//    countRows : function(table, where, binds){
-//        where = HD.Function.param(where, null);
-//        binds = HD.Function.param(binds, {});
-//        var rownum = false;
-//        var temp_res = this.statement;
-//        if (where){
-//            rownum = this.getField("SELECT COUNT(*) AS `count` FROM `$table` WHERE $where", "count", 0, binds);
-//        }
-//        else{
-//            rownum = this.getField("SELECT COUNT(*) AS `count` FROM `$table`", "count", 0, binds);
-//        }
-//        this.statement = temp_res;
-//        return rownum;
-//    },
 
     /**
      * Eredménytáblát ad vissza 2D-s tömbként (a sor az első kulcs)
@@ -250,7 +232,7 @@ var DB = {
 //        if (isset($row[$field])){
 //            return $row[$field];
 //        }
-//        else{
+//        else {
 //            return false;
 //        }
 //    }
@@ -360,12 +342,9 @@ var DB = {
         const run = (typeof args[1] !== "undefined") ? args[1] : true;
         const callback = (typeof args[args.length - 1] === 'function') ? args[args.length - 1] : null;
 
-        // TODO: Ez miért van itt? Most van bindelés vagy nincs?
-        // this.sql = mysql.format(sql, binds);
-        // this.command = this._getCommand();
-        // sql = this.sql;
-
-        this.sql = sql;
+        this.command = this._getCommand();
+        this.rawsql = sql;
+        this.sql = mysql.format(sql, binds);
 
         if (run){
             const connection = this.connection;
@@ -397,8 +376,8 @@ var DB = {
      * @returns {String|Boolean} parancs típusa ("SELECT", "INSERT", "UPDATE", "DELETE", ...)
      */
     _getCommand : function(){
-        if (this.sql){
-            return this.sql.trim().split(' ')[0].toUpperCase();
+        if (this.rawsql){
+            return this.rawsql.trim().split(' ')[0].toUpperCase();
         }
         else {
             return false;

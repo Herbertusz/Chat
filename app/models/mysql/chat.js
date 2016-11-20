@@ -18,7 +18,7 @@ var Model = function(db){
         /**
          * Összes üzenet lekérdezése
          * @param {Array} type
-         * @param {Function} callback
+         * @param {Function} [callback]
          * @returns {Promise}
          */
         getMessages : function(type, callback){
@@ -59,28 +59,19 @@ var Model = function(db){
          */
         getRoomMessages : function(roomName, callback){
             callback = HD.Function.param(callback, () => {});
-            return db.collection("chat_messages")
-                .find({"room" : roomName})
-                .sort({"created" : 1})
-                .toArray()
-                .then(function(messages){
-                    const promises = [];
-                    messages.forEach(function(message){
-                        promises.push(
-                            new Promise(function(resolve){
-                                db.collection("chat_users")
-                                    .find({"id" : message.userId})
-                                    .limit(1)
-                                    .toArray()
-                                    .then(function(users){
-                                        message.userName = users.length ? users[0].name : '';
-                                        resolve(message);
-                                    });
-                            })
-                        );
-                    });
-                    return Promise.all(promises);
-                })
+            return db
+                .getRows(`
+                    SELECT
+                        cm.*,
+                        cu.name AS userName
+                    FROM
+                        chat_messages cm
+                        LEFT JOIN chat_users cu ON cm.userId = cm.id
+                    WHERE
+                        cm.room = :roomName
+                    ORDER BY
+                        cm.created ASC
+                `)
                 .then(function(messages){
                     callback(messages);
                     return messages;
