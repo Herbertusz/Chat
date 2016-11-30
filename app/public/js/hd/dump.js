@@ -7,7 +7,7 @@ var HD = namespace("HD");
 /**
  * Változó dump-olása
  * példa:
- * var obj = {x:1,y:{a:"valami",b:[1,function func(x, y){return 1;},"karakterlánc",44],c:{p:1,q:true}},z:null};
+ * const obj = {x:1,y:{a:"valami",b:[1,function func(x, y){return 1;},"karakterlánc",44],c:{p:1,q:true}},z:null};
  * alert(nt.var_dump(obj, true));
  * @param {Object} variable változó (bármilyen típus lehet)
  * @param {Boolean} [withType=true] típusok kiírása
@@ -26,7 +26,7 @@ HD.var_dump = function(variable, withType, maxDeep, maxNum, indent){
     let dump;
 
     const space = function(n){
-        var ret = "";
+        let ret = "";
         for (let x = 0; x < n; x++){
             ret += "    ";
         }

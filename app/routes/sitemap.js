@@ -2,9 +2,9 @@
 
 'use strict';
 
-var ENV = require.main.require('../app/env.js');
-var express = require('express');
-var router = express.Router();
+const ENV = require.main.require('../app/env.js');
+const express = require('express');
+const router = express.Router();
 
 router.get('/', function(req, res){
 

@@ -2,10 +2,10 @@
 
 'use strict';
 
-var log = require.main.require('../libs/log.js');
-var HD = require.main.require('../libs/hd/hd.utility.js');
+const log = require.main.require('../libs/log.js');
+const HD = require.main.require('../libs/hd/hd.utility.js');
 
-var Model = function(db){
+const Model = function(db){
 
     return {
 

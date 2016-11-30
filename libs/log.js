@@ -1,8 +1,8 @@
 'use strict';
 
-var winston = require('winston');
+const winston = require('winston');
 
-var Log = new (winston.Logger)({
+const Log = new (winston.Logger)({
     transports : [
         new winston.transports.File({
             filename : `${__dirname}/../logs/debug.log`,

@@ -2,8 +2,8 @@
 
 'use strict';
 
-var log = require.main.require('../libs/log.js');
-var HD = require.main.require('../libs/hd/hd.utility.js');
+const log = require.main.require('../libs/log.js');
+const HD = require.main.require('../libs/hd/hd.utility.js');
 
 /**
  *
@@ -11,12 +11,12 @@ var HD = require.main.require('../libs/hd/hd.utility.js');
  * @returns {Object}
  * @constructor
  */
-var Model = function(db){
+const Model = function(db){
 
     return {
 
         /**
-         * Összes üzenet lekérdezése
+         * Összes átvitel lekérdezése
          * @param {Array} type
          * @param {Function} callback
          * @returns {Promise}
@@ -30,7 +30,7 @@ var Model = function(db){
                     conds.push({[item] : {'$exists' : true}});
                 }
             });
-            return db.collection("chat_messages")
+            return db.collection("chat_transfers")
                 .find({'$or' : conds})
                 .sort({"created" : 1})
                 .toArray()
@@ -44,14 +44,14 @@ var Model = function(db){
         },
 
         /**
-         * Egy csatorna üzeneteinek lekérdezése
+         * Egy csatorna átviteleinek lekérdezése
          * @param {String} roomName
          * @param {Function} [callback]
          * @returns {Promise}
          */
         getRoomMessages : function(roomName, callback){
             callback = HD.Function.param(callback, () => {});
-            return db.collection("chat_messages")
+            return db.collection("chat_transfers")
                 .find({"room" : roomName})
                 .sort({"created" : 1})
                 .toArray()
@@ -83,6 +83,31 @@ var Model = function(db){
         },
 
         /**
+         * Egy fájl adatainak lekérése csatorna és fájlnév alapján
+         * @param {String} roomName
+         * @param {String} fileName
+         * @param {Function} [callback]
+         * TODO: find ellenőrzése
+         */
+        getFile : function(roomName, fileName, callback){
+            callback = HD.Function.param(callback, () => {});
+            return db.collection('chat_transfers')
+                .find({
+                    'room' : roomName,
+                    'file.data' : fileName
+                })
+                .toArray()
+                .then(function(file){
+                    const ret = file || false;
+                    callback(ret);
+                    return ret;
+                })
+                .catch(function(error){
+                    log.error(error);
+                });
+        },
+
+        /**
          * Esemény beszúrása adatbázisba
          * @param {String} eventName
          * @param {String} roomName
@@ -103,7 +128,7 @@ var Model = function(db){
                 'created' : Date.now()
             };
 
-            return db.collection("chat_messages")
+            return db.collection("chat_transfers")
                 .insertOne(insertData)
                 .then(function(result){
                     const docId = result.insertedId;
@@ -116,7 +141,7 @@ var Model = function(db){
         },
 
         /**
-         * Üzenet beszúrása csatornába
+         * Üzenet beszúrása adatbázisba
          * @param {Object} data
          * @param {Function} [callback]
          * @returns {Promise}
@@ -140,7 +165,7 @@ var Model = function(db){
             else if (data.file){
                 insertData = data;
             }
-            return db.collection("chat_messages")
+            return db.collection("chat_transfers")
                 .insertOne(insertData)
                 .then(function(result){
                     const messageId = result.insertedId;
@@ -153,7 +178,7 @@ var Model = function(db){
         },
 
         /**
-         * Fájl típusú üzenet beszúrása csatornába
+         * Fájl beszúrása adatbázisba
          * @param {Object} data
          * @param {Function} [callback]
          * @returns {Promise}
@@ -183,7 +208,7 @@ var Model = function(db){
         },
 
         /**
-         * Egy üzenethez tartozó fájl töröltre állítása
+         * Egy átvitelhez tartozó fájl töröltre állítása
          * @param {String} filePath
          * @param {Function} [callback]
          * @returns {Promise}
@@ -194,7 +219,7 @@ var Model = function(db){
          */
         deleteFile : function(filePath, callback){
             callback = HD.Function.param(callback, () => {});
-            return db.collection("chat_messages")
+            return db.collection("chat_transfers")
                 .find({"$and" : [
                     {"data" : filePath},
                     {"file" : {"$exists" : true}},
@@ -208,7 +233,7 @@ var Model = function(db){
                     let url = '';
                     if (docs.length){
                         url = docs[0].file.data;
-                        db.collection("chat_messages")
+                        db.collection("chat_transfers")
                             .updateOne({
                                 "_id" : docs[0]._id
                             }, {
@@ -237,7 +262,7 @@ var Model = function(db){
          */
         deleteRoomFiles : function(roomName, callback){
             callback = HD.Function.param(callback, () => {});
-            return db.collection("chat_messages")
+            return db.collection("chat_transfers")
                 .find({"$and" : [
                     {"room" : roomName},
                     {"file" : {"$exists" : true}},
@@ -250,7 +275,7 @@ var Model = function(db){
                     const urls = [];
                     docs.forEach(function(doc){
                         urls.push(doc.file.data);
-                        db.collection("chat_messages")
+                        db.collection("chat_transfers")
                             .updateOne({
                                 "_id" : doc._id
                             }, {

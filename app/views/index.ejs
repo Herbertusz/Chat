@@ -3,14 +3,14 @@
     <div class="list">
         <h3>Felhasználók:</h3>
         <% users.forEach(function(element){ %>
-            <% for (var i in element){ %>
+            <% for (let i in element){ %>
                 <%- i %>: <%- element[i] %><br />
             <% } %>
             <hr />
         <% }); %>
         <h3>Üzenetek:</h3>
         <% messages.forEach(function(element){ %>
-            <% for (var i in element){ %>
+            <% for (let i in element){ %>
                 <%- i %>: <%- element[i] %><br />
             <% } %>
             <hr />

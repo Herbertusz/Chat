@@ -2,12 +2,12 @@
 
 'use strict';
 
+let UserModel, ChatModel;
 const ENV = require.main.require('../app/env.js');
 const log = require.main.require('../libs/log.js');
 const express = require('express');
 const router = express.Router();
-// var session = require('express-session');
-let UserModel, ChatModel;
+// const session = require('express-session');
 
 router.use(function(req, res, next){
     UserModel = require.main.require(`../app/models/${ENV.DBDRIVER}/user.js`)(req.app.get('db'));
@@ -17,7 +17,6 @@ router.use(function(req, res, next){
 
 router.get('/', function(req, res){
 
-    var message;
     if (!req.session.login){
         req.session.login = {
             loginned : false,
@@ -26,7 +25,7 @@ router.get('/', function(req, res){
             error : null
         };
     }
-    message = req.session.login.error;
+    const message = req.session.login.error;
     req.session.login.error = null;
 
     const db = req.app.get('db');

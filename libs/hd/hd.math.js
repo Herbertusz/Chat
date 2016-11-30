@@ -92,8 +92,8 @@ HD.Math = {
          * @returns {Array} A|B
          */
         union : function(A, B){
-            var n;
-            var ret = A;
+            let n;
+            const ret = A;
             for (n = 0; n < B.length; n++){
                 if (ret.indexOf(B[n]) === -1){
                     ret.push(B[n]);
@@ -109,8 +109,8 @@ HD.Math = {
          * @returns {Array} A&B
          */
         intersection : function(A, B){
-            var n;
-            var ret = [];
+            let n;
+            const ret = [];
             for (n = 0; n < A.length; n++){
                 if (B.indexOf(A[n]) > -1){
                     ret.push(A[n]);
@@ -126,8 +126,8 @@ HD.Math = {
          * @returns {Array} A\B
          */
         difference : function(A, B){
-            var n;
-            var ret = [];
+            let n;
+            const ret = [];
             for (n = 0; n < A.length; n++){
                 if (B.indexOf(A[n]) === -1){
                     ret.push(A[n]);
@@ -143,7 +143,7 @@ HD.Math = {
          * @returns {Boolean} A === B sorrendtől eltekintve
          */
         equal : function(A, B){
-            var i;
+            let i;
             if (A === B) return true;
             if (A.length !== B.length) return false;
             A.sort();
@@ -182,8 +182,8 @@ HD.Math = {
          * @returns {Array} abszolút koordináták [{x : Number, y : Number}, ...]
          */
         getAbsoluteCoords : function(positions, w, h, xOffset, yOffset){
-            var coords = [];
-            var x, y;
+            let x, y;
+            const coords = [];
             if (typeof xOffset === "undefined") xOffset = 0;
             if (typeof yOffset === "undefined") yOffset = 0;
             positions.forEach(function(elem, index){

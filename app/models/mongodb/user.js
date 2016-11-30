@@ -2,11 +2,11 @@
 
 'use strict';
 
-var log = require.main.require('../libs/log.js');
-var HD = require.main.require('../libs/hd/hd.utility.js');
-var HDdt = require.main.require('../libs/hd/hd.datetime.js');
+const log = require.main.require('../libs/log.js');
+const HD = require.main.require('../libs/hd/hd.utility.js');
+const HDdt = require.main.require('../libs/hd/hd.datetime.js');
 
-var Model = function(db){
+const Model = function(db){
 
     return {
 

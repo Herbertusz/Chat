@@ -18,20 +18,20 @@ HD.Canvas = namespace("HD.Canvas");
  * @param {Layer} [layer] tetszőleges számú réteg
  * @returns {Object}
  */
-HD.Canvas.Layerset = function(canvas, layer){
+HD.Canvas.Layerset = function(canvas, ...layer){
 
     /**
      * Ciklusváltozó
      * @type {Number}
      */
-    var _i;
+    let _i;
 
     /**
      * A rétegek
      * @private
      * @type {Array.<Object>}
      */
-    var layers = [];
+    const layers = [];
 
     /**
      * Réteg keresése a layerset-ben
@@ -39,7 +39,7 @@ HD.Canvas.Layerset = function(canvas, layer){
      * @param {Layer} currentLayer a keresett réteg
      * @returns {Number|Boolean} a réteg indexe vagy false
      */
-    var getLayerIndex = function(currentLayer){
+    const getLayerIndex = function(currentLayer){
         for (let n = 0; n < layers.length; n++){
             if (layers[n] === currentLayer){
                 return n;
@@ -52,7 +52,7 @@ HD.Canvas.Layerset = function(canvas, layer){
      * A zAxis értékek beállítása a zIndex-ek alapján
      * @private
      */
-    var resetZAxis = function(){
+    const resetZAxis = function(){
         let n;
         layers.sort(function(a, b){
             if (a.zIndex === null) a.zIndex = 0;
@@ -70,7 +70,7 @@ HD.Canvas.Layerset = function(canvas, layer){
         }
     };
 
-    var Interface = {
+    const Interface = {
 
         /**
          * A canvas elem amelyikhez a layerset tartozik
@@ -188,7 +188,7 @@ HD.Canvas.Layerset = function(canvas, layer){
     };
 
     for (_i = 1; _i < arguments.length; _i++){
-        layers[_i - 1] = arguments[_i];
+        layers[_i - 1] = layer[_i];
         layers[_i - 1].ownerSet = Interface;
     }
     resetZAxis();
@@ -210,9 +210,9 @@ HD.Canvas.Layer = function(subCommand, z){
      * @private
      * @type {Array.<Function>}
      */
-    var drawing = [];
+    let drawing = [];
 
-    var Interface = {
+    const Interface = {
 
         /**
          * A Layerset amelyikhez a réteg tartozik

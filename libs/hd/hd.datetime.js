@@ -69,7 +69,7 @@ HD.DateTime = {
      * @returns {Number}
      */
     getCurrentWeekOfYear : function(){
-        var d = new Date();
+        const d = new Date();
         d.setHours(0, 0, 0);
         d.setDate(d.getDate() + 7 - (d.getDay() || 7));
         return Math.ceil((((d - new Date(d.getFullYear(), 0, 1)) / 86400000) + 1) / 7);
@@ -83,11 +83,10 @@ HD.DateTime = {
      * @returns {Number}
      */
     getWeekOfYear : function(year, month, day){
-        var d;
         year = parseInt(year);
         month = parseInt(month);
         day = parseInt(day);
-        d = new Date(year, month, day, 0, 0, 0);
+        const d = new Date(year, month, day, 0, 0, 0);
         d.setDate(day + 7 - (d.getDay() || 7));
         return Math.ceil((((d - new Date(year, 0, 1)) / 86400000) + 1) / 7);
     },
@@ -181,19 +180,19 @@ HD.DateTime = {
      * @returns {String} kiírható string
      */
     printTime : function(num, from, format){
-        var timeObj, h, m, s, H, M, S, hh, mm, ss;
+        let timeObj, h, m, s;
         if (from === "s") timeObj = new Date(num * 1000);
         if (from === "m") timeObj = new Date(num * 1000 * 60);
         if (from === "h") timeObj = new Date(num * 1000 * 60 * 60);
         h = timeObj.getHours() - 1;
         m = timeObj.getMinutes();
         s = timeObj.getSeconds();
-        H = h;
-        M = h * 60 + m;
-        S = h * 60 * 60 + m * 60 + s;
-        hh = (h < 10) ? `0${h}` : `${h}`;
-        mm = (m < 10) ? `0${m}` : `${m}`;
-        ss = (s < 10) ? `0${s}` : `${s}`;
+        const H = h;
+        const M = h * 60 + m;
+        const S = h * 60 * 60 + m * 60 + s;
+        const hh = (h < 10) ? `0${h}` : `${h}`;
+        const mm = (m < 10) ? `0${m}` : `${m}`;
+        const ss = (s < 10) ? `0${s}` : `${s}`;
         h = h.toString(); m = m.toString(); s = s.toString();
         format = format.replace("hh", hh);
         format = format.replace("mm", mm);

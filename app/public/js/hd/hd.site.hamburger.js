@@ -5,7 +5,7 @@
  * @description Összenyomható menü
  * @example
  *  HTML-CSS: public/sandbox/hamb.html
- *  var menucompress = new HD.Site.Hamburger({
+ *  const menucompress = new HD.Site.Hamburger({
  *      menu : '.menu:not(.menu-clone)',
  *      stretcher : '.stretcher',
  *      hamb : '.main > li.hamb',
@@ -47,7 +47,7 @@ HD.Site.Hamburger = function(options){
      *     maxDiff : Number           // Maximális tűréshatár (px)
      * }
      */
-    var defaultOptions = {
+    const defaultOptions = {
         menu : '',
         stretcher : '',
         hamb : '',
@@ -65,20 +65,20 @@ HD.Site.Hamburger = function(options){
      * Menü
      * @type {jQuery}
      */
-    var $menu = null;
+    let $menu = null;
 
     /**
      * Menü klón
      * @type {jQuery}
      */
-    var $menuClone = null;
+    let $menuClone = null;
 
     /**
      * Menüpont berakása a hamburgerjel alá
      * @param {Boolean} real true: menüben, false: menü-klónban
      */
-    var pushHamb = function(real){
-        var $thisMenu = real ? $menu : $menuClone;
+    const pushHamb = function(real){
+        const $thisMenu = real ? $menu : $menuClone;
         $thisMenu.find(options.hambList).prepend($thisMenu.find(options.item).last());
         $thisMenu.find(options.hamb).addClass(options.hambActiveClass);
     };
@@ -87,8 +87,8 @@ HD.Site.Hamburger = function(options){
      * Menüpont kiszedése a hamburgerjel alól
      * @param {Boolean} real true: menüben, false: menü-klónban
      */
-    var popHamb = function(real){
-        var $thisMenu = real ? $menu : $menuClone;
+    const popHamb = function(real){
+        const $thisMenu = real ? $menu : $menuClone;
         $thisMenu.find(options.hamb).before($thisMenu.find(options.hambItem).first());
         if ($thisMenu.find(options.hambItem).length === 0){
             $thisMenu.find(options.hamb).removeClass(options.hambActiveClass);
@@ -102,10 +102,11 @@ HD.Site.Hamburger = function(options){
     /**
      * Mérés és ettől függően menüpontok áthelyezése
      */
-    var menuCalc = function(){
-        var maxDiff = options.maxDiff;
-        var outerWidth = $menu.width();
-        var innerWidth = $menuClone.find(options.stretcher).width();
+    const menuCalc = function(){
+        let outerWidth = $menu.width();
+        let innerWidth = $menuClone.find(options.stretcher).width();
+        const maxDiff = options.maxDiff;
+
         while (outerWidth - innerWidth < maxDiff){
             outerWidth = $menu.width();
             innerWidth = $menuClone.find(options.stretcher).width();
@@ -130,7 +131,7 @@ HD.Site.Hamburger = function(options){
      * Publikus felület
      * @type {Object}
      */
-    var Interface = {
+    const Interface = {
 
         /**
          * Felülírt beállítások

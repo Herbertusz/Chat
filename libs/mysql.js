@@ -245,10 +245,9 @@ const DB = {
      * @returns {String} nyers lekérdezés
      */
     insert : function(table, data, callback){
-        var sql;
         callback = (typeof callback !== 'undefined') ? callback : () => {};
 
-        sql = `
+        const sql = `
             INSERT INTO
                 \`${table}\`
             (
@@ -337,7 +336,7 @@ const DB = {
      */
     query : function(sql, ...args){
 
-        var temp_sql, temp_command;
+        let temp_sql, temp_command;
         const binds = (typeof args[0] !== "undefined") ? args[0] : {};
         const run = (typeof args[1] !== "undefined") ? args[1] : true;
         const callback = (typeof args[args.length - 1] === 'function') ? args[args.length - 1] : null;

@@ -1,15 +1,15 @@
 'use strict';
 
-var ENV = {};
-var path = require('path');
+const ENV = {};
+const path = require('path');
 
 /**
  * Normalize a port into a number, string, or false
  * @param {Number|String} val port
  * @returns {Boolean|Number}
  */
-var normalizePort = function(val){
-    var port = Number.parseInt(val, 10);
+const normalizePort = function(val){
+    const port = Number.parseInt(val, 10);
 
     if (isNaN(port)){
         // named pipe

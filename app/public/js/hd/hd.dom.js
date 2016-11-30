@@ -6,7 +6,7 @@
  * @example
  *  HD.DOM('.class').event("click", function(){...});
  *  HD.DOM('.class').find('button').data("clickable", "true").trigger("click");
- *  var cloneElement = HD.DOM('.class').filter('[data-disabled]').clone(true).elem();
+ *  const cloneElement = HD.DOM('.class').filter('[data-disabled]').clone(true).elem();
  */
 
 /* global HD namespace */

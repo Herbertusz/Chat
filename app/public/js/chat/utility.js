@@ -1,4 +1,4 @@
-/* global HD, SERVER, io */
+/* global HD SERVER io */
 
 "use strict";
 

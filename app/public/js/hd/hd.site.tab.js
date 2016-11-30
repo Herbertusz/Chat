@@ -5,7 +5,7 @@
  * @description Tab-kezelő
  * @example
  *  HTML-CSS: http://blog.webprog.biz/jquery-tabok
- *  var tab = new HD.Site.Tab({
+ *  const tab = new HD.Site.Tab({
  *      $trigger : $('ul.tab li'),
  *      activeClass : "selected"
  *  });
@@ -25,13 +25,11 @@ HD.Site = namespace("HD.Site");
  */
 HD.Site.Tab = function(options){
 
-    var Interface;
-
     /**
      * Alapértelmezett beállítások
      * @type {Object}
      */
-    var defaultOptions = {
+    const defaultOptions = {
         $trigger : $(".tab"),
         activeClass : "active",
         dataGroup : "tabgroup",
@@ -44,7 +42,7 @@ HD.Site.Tab = function(options){
      * Publikus felület
      * @type {Object}
      */
-    Interface = {
+    const Interface = {
 
         /**
          * Felülírt beállítások
@@ -58,9 +56,9 @@ HD.Site.Tab = function(options){
          */
         init : function(){
             options.$trigger.click(function(){
-                var group = $(this).data(options.dataGroup);
-                var id = $(this).data(options.dataId);
-                var $all = $('*');
+                const group = $(this).data(options.dataGroup);
+                const id = $(this).data(options.dataId);
+                const $all = $('*');
                 $all.filter(function(){
                     return $(this).data(options.dataGroup) === group;
                 }).removeClass(options.activeClass);

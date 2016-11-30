@@ -2,8 +2,8 @@
 
 'use strict';
 
-var log = require.main.require('../libs/log.js');
-var HD = require.main.require('../libs/hd/hd.utility.js');
+const log = require.main.require('../libs/log.js');
+const HD = require.main.require('../libs/hd/hd.utility.js');
 
 /**
  *
@@ -11,12 +11,12 @@ var HD = require.main.require('../libs/hd/hd.utility.js');
  * @returns {Object}
  * @constructor
  */
-var Model = function(db){
+const Model = function(db){
 
     return {
 
         /**
-         * Összes üzenet lekérdezése
+         * Összes átvitel lekérdezése
          * @param {Array} type
          * @param {Function} [callback]
          * @returns {Promise}
@@ -36,7 +36,7 @@ var Model = function(db){
                     SELECT
                         *
                     FROM
-                        chat_messages
+                        chat_transfers
                     WHERE
                         ${condition}
                     ORDER BY
@@ -52,7 +52,7 @@ var Model = function(db){
         },
 
         /**
-         * Egy csatorna üzeneteinek lekérdezése
+         * Egy csatorna átviteleinek lekérdezése
          * @param {String} roomName
          * @param {Function} [callback]
          * @returns {Promise}
@@ -62,15 +62,15 @@ var Model = function(db){
             return db
                 .getRows(`
                     SELECT
-                        cm.*,
+                        ct.*,
                         cu.name AS userName
                     FROM
-                        chat_messages cm
-                        LEFT JOIN chat_users cu ON cm.userId = cm.id
+                        chat_transfers ct
+                        LEFT JOIN chat_users cu ON ct.userId = cu.id
                     WHERE
-                        cm.room = :roomName
+                        ct.room = :roomName
                     ORDER BY
-                        cm.created ASC
+                        ct.created ASC
                 `)
                 .then(function(messages){
                     callback(messages);
@@ -102,7 +102,7 @@ var Model = function(db){
                 'created' : Date.now()
             };
 
-            return db.collection("chat_messages")
+            return db.collection("chat_transfers")
                 .insertOne(insertData)
                 .then(function(result){
                     const docId = result.insertedId;
@@ -115,7 +115,7 @@ var Model = function(db){
         },
 
         /**
-         * Üzenet beszúrása csatornába
+         * Üzenet beszúrása adatbázisba
          * @param {Object} data
          * @param {Function} [callback]
          * @returns {Promise}
@@ -139,7 +139,7 @@ var Model = function(db){
             else if (data.file){
                 insertData = data;
             }
-            return db.collection("chat_messages")
+            return db.collection("chat_transfers")
                 .insertOne(insertData)
                 .then(function(result){
                     const messageId = result.insertedId;
@@ -152,7 +152,7 @@ var Model = function(db){
         },
 
         /**
-         * Fájl típusú üzenet beszúrása csatornába
+         * Fájl beszúrása adatbázisba
          * @param {Object} data
          * @param {Function} [callback]
          * @returns {Promise}
@@ -182,7 +182,7 @@ var Model = function(db){
         },
 
         /**
-         * Egy üzenethez tartozó fájl töröltre állítása
+         * Egy átvitelhez tartozó fájl töröltre állítása
          * @param {String} filePath
          * @param {Function} [callback]
          * @returns {Promise}
@@ -193,7 +193,7 @@ var Model = function(db){
          */
         deleteFile : function(filePath, callback){
             callback = HD.Function.param(callback, () => {});
-            return db.collection("chat_messages")
+            return db.collection("chat_transfers")
                 .find({"$and" : [
                     {"data" : filePath},
                     {"file" : {"$exists" : true}},
@@ -207,7 +207,7 @@ var Model = function(db){
                     let url = '';
                     if (docs.length){
                         url = docs[0].file.data;
-                        db.collection("chat_messages")
+                        db.collection("chat_transfers")
                             .updateOne({
                                 "_id" : docs[0]._id
                             }, {
@@ -236,7 +236,7 @@ var Model = function(db){
          */
         deleteRoomFiles : function(roomName, callback){
             callback = HD.Function.param(callback, () => {});
-            return db.collection("chat_messages")
+            return db.collection("chat_transfers")
                 .find({"$and" : [
                     {"room" : roomName},
                     {"file" : {"$exists" : true}},
@@ -249,7 +249,7 @@ var Model = function(db){
                     const urls = [];
                     docs.forEach(function(doc){
                         urls.push(doc.file.data);
-                        db.collection("chat_messages")
+                        db.collection("chat_transfers")
                             .updateOne({
                                 "_id" : doc._id
                             }, {

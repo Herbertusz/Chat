@@ -2,13 +2,13 @@
 
 'use strict';
 
-var express = require('express');
-var router = express.Router();
-// var session = require('express-session');
-var fs = require('fs');
-var HD = require.main.require('../libs/hd/hd.datetime.js');
-var log = require.main.require('../libs/log.js');
-var UserModel, ChatModel;
+let UserModel, ChatModel;
+const express = require('express');
+const router = express.Router();
+// const session = require('express-session');
+const fs = require('fs');
+const HD = require.main.require('../libs/hd/hd.datetime.js');
+const log = require.main.require('../libs/log.js');
 
 router.use(function(req, res, next){
     UserModel = require.main.require('../app/models/mongodb/user.js')(req.app.get('db'));
@@ -18,16 +18,21 @@ router.use(function(req, res, next){
 
 router.get('/', function(req, res){
 
-    UserModel.getUsers(function(users){
-        res.render('layout', {
-            page : 'chat',
-            users : users,
-            login : req.session.login ? req.session.login.loginned : false,
-            userId : req.session.login ? req.session.login.userId : null,
-            userName : req.session.login ? req.session.login.userName : '',
-            loginMessage : null
+    UserModel
+        .getUsers()
+        .then(function(users){
+            res.render('layout', {
+                page : 'chat',
+                users : users,
+                login : req.session.login ? req.session.login.loginned : false,
+                userId : req.session.login ? req.session.login.userId : null,
+                userName : req.session.login ? req.session.login.userName : '',
+                loginMessage : null
+            });
+        })
+        .catch(function(error){
+            log.error(error);
         });
-    });
 
 });
 
@@ -38,6 +43,22 @@ router.post('/getroommessages', function(req, res){
             res.send({
                 messages : messages
             });
+        })
+        .catch(function(error){
+            log.error(error);
+        });
+
+});
+
+router.get('/file/(:roomName)/(:fileName)', function(req, res, next){
+
+    ChatModel
+        .getFile(req.param.roomName, req.param.fileName)
+        .then(function(file){
+            // TODO: fájl megjelenítése
+        })
+        .catch(function(error){
+            log.error(error);
         });
 
 });

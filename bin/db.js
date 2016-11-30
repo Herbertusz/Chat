@@ -1,10 +1,9 @@
 'use strict';
 
-var ENV = require.main.require('../app/env.js');
-var MongoClient = require('mongodb').MongoClient;
-var url = require.main.require('../app/models/mongodb/dbconnect.js');
+const MongoClient = require('mongodb').MongoClient;
+const url = require.main.require('../app/models/mongodb/dbconnect.js');
 
-var createDB = function(db, callback){
+const createDB = function(db, callback){
     const collectionNum = 2;
     let completed = 0;
 
@@ -70,11 +69,11 @@ var createDB = function(db, callback){
             console.log(error);
         });
 
-    db.createCollection('chat_messages');
-    db.collection('chat_messages')
+    db.createCollection('chat_transfers');
+    db.collection('chat_transfers')
         .deleteMany({})
         .then(function(){
-            db.collection('chat_messages')
+            db.collection('chat_transfers')
                 .insertMany([
                     {
                         "userId" : 1,
@@ -98,7 +97,7 @@ var createDB = function(db, callback){
                 ])
                 .then(function(result){
                     completed++;
-                    console.log(`chat_messages: ${result.insertedCount}`);
+                    console.log(`chat_transfers: ${result.insertedCount}`);
                     if (completed === collectionNum){
                         callback();
                     }

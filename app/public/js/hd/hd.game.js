@@ -18,7 +18,7 @@ HD.Game = namespace("HD.Game");
  */
 HD.Game.Canvas2D = function(selector, gameStartFunc){
 
-    var Game = HD.Game;
+    const Game = HD.Game;
     Game.canvas = document.querySelector(selector);
     Game.originalWidth = Game.canvas.width;
     Game.originalHeight = Game.canvas.height;
@@ -35,7 +35,7 @@ HD.Game.Canvas2D = function(selector, gameStartFunc){
  */
 HD.Game.Canvas3D = function(selector, gameStartFunc, gameFallbackFunc){
 
-    var Game = HD.Game;
+    const Game = HD.Game;
     if (typeof gameFallbackFunc === "undefined") gameFallbackFunc = function(){};
 
     Game.canvas = document.querySelector(selector);
@@ -62,7 +62,7 @@ HD.Game.Canvas3D = function(selector, gameStartFunc, gameFallbackFunc){
  */
 HD.Game.SVG = function(selector, gameStartFunc){
 
-    var Game = HD.Game;
+    const Game = HD.Game;
     Game.svg = document.querySelector(selector);
     gameStartFunc.call(Game);
 
@@ -75,7 +75,7 @@ HD.Game.SVG = function(selector, gameStartFunc){
  */
 HD.Game.DOM = function(selector, gameStartFunc){
 
-    var Game = HD.Game;
+    const Game = HD.Game;
     Game.node = document.querySelector(selector);
     gameStartFunc.call(Game);
 

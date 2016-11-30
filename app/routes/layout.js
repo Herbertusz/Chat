@@ -2,8 +2,8 @@
 
 'use strict';
 
-var ENV = require.main.require('../app/env.js');
-var CHAT = require.main.require('../app/config.js');
+const ENV = require.main.require('../app/env.js');
+const CHAT = require.main.require('../app/config.js');
 
 module.exports = function(app){
 

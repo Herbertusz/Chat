@@ -2,10 +2,10 @@
 
 'use strict';
 
-var express = require('express');
-var router = express.Router();
-// var session = require('express-session');
-var ChatModel, UserModel;
+let ChatModel, UserModel;
+const express = require('express');
+const router = express.Router();
+// const session = require('express-session');
 
 router.use(function(req, res, next){
     UserModel = require.main.require('../app/models/mongodb/user.js')(req.app.get('db'));

@@ -5,7 +5,7 @@
  * @description Tooltip-kezelő
  * @requires jQuery UI position
  * @example
- *  var tooltip = new HD.Site.Tooltip({
+ *  const tooltip = new HD.Site.Tooltip({
  *      position : {
  *          my : "left center",
  *          at : "right center",
@@ -15,6 +15,8 @@
  *  });
  *  tooltip.init();
  */
+
+/* global HD namespace */
 
 "use strict";
 
@@ -31,11 +33,11 @@ HD.Site.Tooltip = function(options){
      * Alapértelmezett beállítások
      * @type {Object}
      */
-    var defaultOptions = {
+    const defaultOptions = {
         $trigger : $(".tooltip"),
         $boxElement : $("#tooltipbox"),
         boxContent : function($trigger){
-            var text = $trigger.attr("title");
+            const text = $trigger.attr("title");
             $trigger.removeAttr("title");
             return text;
         },
@@ -46,14 +48,14 @@ HD.Site.Tooltip = function(options){
         },
         positionMouse : true,
         drag : false,
-        afterInit : function(options){}
+        afterInit : function(){}
     };
 
     /**
      * Jelenleg látható-e a tooltip
      * @type {Boolean}
      */
-    var visible = false;
+    let visible = false;
 
     options = $.extend({}, defaultOptions, options);
 
@@ -61,10 +63,9 @@ HD.Site.Tooltip = function(options){
      * Tooltip pozicionálása
      * @param {jQuery.Event|HTMLElement} positionOf
      */
-    var setPosition = function(positionOf){
-        var position;
+    const setPosition = function(positionOf){
         if (visible){
-            position = options.position;
+            const position = options.position;
             position.of = positionOf;
             options.$boxElement.position(position);
         }
@@ -76,7 +77,7 @@ HD.Site.Tooltip = function(options){
      * @param {jQuery.Event} event
      * @param {HTMLElement} element
      */
-    var show = function(text, event, element){
+    const show = function(text, event, element){
         if (typeof text !== "undefined" && text.length > 0){
             options.$boxElement.show().html(text);
             visible = true;
@@ -92,7 +93,7 @@ HD.Site.Tooltip = function(options){
     /**
      * Tooltip eltüntetése
      */
-    var hide = function(){
+    const hide = function(){
         options.$boxElement.hide().html("");
         visible = false;
     };
@@ -101,7 +102,7 @@ HD.Site.Tooltip = function(options){
      * Publikus felület
      * @type {Object}
      */
-    var Interface = {
+    const Interface = {
 
         /**
          * Felülírt beállítások
@@ -114,9 +115,9 @@ HD.Site.Tooltip = function(options){
          * @public
          */
         init : function(){
-            var $trigger = options.$trigger;
+            const $trigger = options.$trigger;
             $trigger.each(function(){
-                var text = options.boxContent($(this));
+                const text = options.boxContent($(this));
                 $(this).data("text", text);
             });
             $trigger.mouseover(function(event){

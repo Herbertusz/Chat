@@ -1,4 +1,4 @@
-/* global HD, LZString */
+/* global HD LZString */
 
 "use strict";
 

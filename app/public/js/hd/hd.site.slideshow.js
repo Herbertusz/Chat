@@ -5,7 +5,7 @@
  * @description Slideshow-kezelő
  * @example
  *  // Beállítások
- *  var carousel = new HD.Site.Slideshow({
+ *  const carousel = new HD.Site.Slideshow({
  *      items : '#slideshow .item',
  *      stepper : {
  *          left : $('#slideshow .step-left'),
@@ -74,7 +74,7 @@ HD.Site.Slideshow = function(options){
      *     dataJumper : String       // Jumperek data-* attribútumának neve (névütközés esetén cserélhető)
      * }
      */
-    var defaultOptions = {
+    const defaultOptions = {
         items : '',
         stepper : {
             left : null,
@@ -98,22 +98,22 @@ HD.Site.Slideshow = function(options){
      * Jelenleg látható slide
      * @type {Number}
      */
-    var current = 0;
+    let current = 0;
 
     /**
      * Időzítő
      * @type {Number}
      */
-    var timer = null;
+    let timer = null;
 
     /**
      * Jumper-ek létrehozása
      * @param {Number} num
      * @returns {jQuery} jumper-ek
      */
-    var setJumper = function(num){
-        var $jumpers = options.jumpers.elements ? $(options.jumpers.elements) : null;
-        var $activeJumper;
+    const setJumper = function(num){
+        let $activeJumper;
+        const $jumpers = options.jumpers.elements ? $(options.jumpers.elements) : null;
         if ($jumpers && $jumpers.length > 0){
             $jumpers.removeClass(options.jumpers.activeClass);
             if (typeof $jumpers.data(options.dataJumper) !== "undefined"){
@@ -132,7 +132,7 @@ HD.Site.Slideshow = function(options){
     /**
      * Automatikus léptetés időzítőjének újraindítása
      */
-    var timerRestart = function(){
+    const timerRestart = function(){
         window.clearTimeout(timer);
         if (!options.timeout) return;
         timer = window.setTimeout(function(){
@@ -145,7 +145,7 @@ HD.Site.Slideshow = function(options){
      * @param {jQuery} $itemfrom jelenleg aktív elem
      * @param {jQuery} $itemto következő elem
      */
-    var cycling = function($itemfrom, $itemto){
+    const cycling = function($itemfrom, $itemto){
         $(options.items).first().before($itemto);
         $(options.items).first().before($itemfrom);
     };
@@ -154,7 +154,7 @@ HD.Site.Slideshow = function(options){
      * Publikus felület
      * @type {Object}
      */
-    var Interface = {
+    const Interface = {
 
         /**
          * Felülírt beállítások
@@ -179,12 +179,12 @@ HD.Site.Slideshow = function(options){
          * @param {Number|String} loc pozíció ("left"|"right"|Number)
          */
         step : function(loc){
-            var $items = $(options.items);
-            var itemnum = $items.length;
-            var $itemfrom = $items.filter(function(){
+            const $items = $(options.items);
+            const itemnum = $items.length;
+            const $itemfrom = $items.filter(function(){
                 return $(this).data(options.dataItem) === current;
             });
-            var $itemto;
+
             if (loc === "left"){
                 current = (current + (itemnum - 1)) % itemnum;
             }
@@ -194,7 +194,7 @@ HD.Site.Slideshow = function(options){
             else {
                 current = loc;
             }
-            $itemto = $items.filter(function(){
+            const $itemto = $items.filter(function(){
                 return $(this).data(options.dataItem) === current;
             });
             timerRestart();
@@ -229,10 +229,11 @@ HD.Site.Slideshow = function(options){
          * @public
          */
         init : function(){
-            var $items = $(options.items);
-            var $stepperleft = options.stepper.left ? $(options.stepper.left) : null;
-            var $stepperright = options.stepper.right ? $(options.stepper.right) : null;
-            var $jumpers = setJumper(current);
+            const $items = $(options.items);
+            const $stepperleft = options.stepper.left ? $(options.stepper.left) : null;
+            const $stepperright = options.stepper.right ? $(options.stepper.right) : null;
+            const $jumpers = setJumper(current);
+
             $items.each(function(index){
                 $(this).data(options.dataItem, index);
             });
@@ -248,7 +249,7 @@ HD.Site.Slideshow = function(options){
             }
             if ($jumpers && $jumpers.length > 0){
                 $jumpers.click(function(){
-                    var num = 0;
+                    let num = 0;
                     if (typeof $jumpers.data(options.dataJumper) !== "undefined"){
                         num = $(this).data(options.dataJumper);
                     }

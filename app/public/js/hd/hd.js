@@ -19,10 +19,10 @@ var HD = window.HD || {};
  * @returns {Object}
  */
 var namespace = function(namespaceString){
-    var parts = namespaceString.split(".");
-    var parent = window;
-    var currentPart = "";
-    var i, length;
+    let i, length;
+    let parent = window;
+    let currentPart = "";
+    const parts = namespaceString.split(".");
 
     for (i = 0, length = parts.length; i < length; i++){
         currentPart = parts[i];
@@ -41,7 +41,7 @@ var namespace = function(namespaceString){
 //  * @returns {Boolean} true, ha a szelektorra illeszkedik az aktuális DOM elem
 //  */
 // $.expr[":"].data = function(obj, index, meta){
-//     var args = meta[3].split(",");
+//     const args = meta[3].split(",");
 //     if (args.length === 1){
 //         return (typeof $(obj).data($.trim(args[0])) !== "undefined");
 //     }
@@ -59,9 +59,9 @@ var namespace = function(namespaceString){
  */
 HD.Web = function(){
 
-    var i;
-    var documentReady = [];
-    var windowLoad = [];
+    let i;
+    const documentReady = [];
+    const windowLoad = [];
 
     return {
 

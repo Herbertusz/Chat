@@ -4,7 +4,7 @@
  *
  * @description időmérő
  * @example
- *  var timer = new HD.DateTime.Timer(-1);
+ *  const timer = new HD.DateTime.Timer(-1);
  *  timer.set("00:10");
  *  timer.start(function(){
  *      element.innerHTML = this.get("mm:ss");
@@ -28,8 +28,6 @@ HD.DateTime = namespace("HD.DateTime");
  */
 HD.DateTime.Timer = function(add, stepInterval){
 
-    var T, timerID, run, events, step, parse, print, Interface;
-
     if (typeof stepInterval === "undefined") stepInterval = 1000;
 
     /**
@@ -37,21 +35,21 @@ HD.DateTime.Timer = function(add, stepInterval){
      * @type {Number}
      * @private
      */
-    T = 0;
+    let T = 0;
 
     /**
      * Timeout ID
      * @type {Number}
      * @private
      */
-    timerID = null;
+    let timerID = null;
 
     /**
      * Időmérő állapota
      * @type {Boolean}
      * @private
      */
-    run = false;
+    let run = false;
 
     /**
      * Eseménykezelők
@@ -64,13 +62,13 @@ HD.DateTime.Timer = function(add, stepInterval){
      *     }
      * ]
      */
-    events = [];
+    const events = [];
 
     /**
      * Léptetés
      */
-    step = function(){
-        var n;
+    const step = function(){
+        let n;
         T += add;
         if (events.length > 0){
             for (n = 0; n < events.length; n++){
@@ -86,16 +84,15 @@ HD.DateTime.Timer = function(add, stepInterval){
      * @param {String} str időt leíró string (formátum: "hh:mm:ss"|"mm:ss"|"ss")
      * @returns {Number} időegység értéke
      */
-    parse = function(str){
-        var segments = str.split(":");
-        var ms;
+    const parse = function(str){
+        const segments = str.split(":");
         if (segments.length === 1){
             str = `00:00:${str}`;
         }
         else if (segments.length === 2){
             str = `00:${str}`;
         }
-        ms = Date.parse(`1 Jan 1970 ${str} GMT`);
+        const ms = Date.parse(`1 Jan 1970 ${str} GMT`);
         return Math.round(ms / 1000);
     };
 
@@ -105,17 +102,17 @@ HD.DateTime.Timer = function(add, stepInterval){
      * @param {String} format formátum (makrók: h, m, s, H, M, S, hh, mm, ss)
      * @returns {String} kiírható string
      */
-    print = function(num, format){
-        var timeObj = new Date(num * 1000);
-        var h = timeObj.getHours() - 1;
-        var m = timeObj.getMinutes();
-        var s = timeObj.getSeconds();
-        var H = h;
-        var M = h * 60 + m;
-        var S = h * 60 * 60 + m * 60 + s;
-        var hh = (h < 10) ? `0${h}` : `${h}`;
-        var mm = (m < 10) ? `0${m}` : `${m}`;
-        var ss = (s < 10) ? `0${s}` : `${s}`;
+    const print = function(num, format){
+        const timeObj = new Date(num * 1000);
+        let h = timeObj.getHours() - 1;
+        let m = timeObj.getMinutes();
+        let s = timeObj.getSeconds();
+        const H = h;
+        const M = h * 60 + m;
+        const S = h * 60 * 60 + m * 60 + s;
+        const hh = (h < 10) ? `0${h}` : `${h}`;
+        const mm = (m < 10) ? `0${m}` : `${m}`;
+        const ss = (s < 10) ? `0${s}` : `${s}`;
         h = h.toString(); m = m.toString(); s = s.toString();
         format = format.replace("hh", hh);
         format = format.replace("mm", mm);
@@ -129,7 +126,7 @@ HD.DateTime.Timer = function(add, stepInterval){
         return format;
     };
 
-    Interface = {
+    const Interface = {
 
         /**
          * Beállítás

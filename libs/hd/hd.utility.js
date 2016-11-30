@@ -46,7 +46,7 @@ HD.Misc = {
      * @returns {*}
      */
     switching : function(variable, relations, defaultValue){
-        var index;
+        let index;
         if (typeof defaultValue === "undefined") defaultValue = null;
         for (index in relations){
             if (variable === index){
@@ -79,9 +79,9 @@ HD.Number = {
      * @returns {String} nullákkal feltöltött szám
      */
     fillZero : function(num, len){
-        var numStr = "";
-        var originalNumStr = num.toString();
-        var originalLen = originalNumStr.length;
+        let numStr = "";
+        const originalNumStr = num.toString();
+        const originalLen = originalNumStr.length;
         for (let n = originalLen; n < len; n++){
             numStr += "0";
         }
@@ -96,9 +96,9 @@ HD.Number = {
      * @returns {String} olvasható érték
      */
     displaySize : function(size, precision, prefixLimit){
-        var n = 1.0;
-        var pref = ["", "", "k", "M", "G", "T", "P", "E", "Z", "Y"];
-        var k, i;
+        let n = 1.0;
+        let k, i;
+        const pref = ["", "", "k", "M", "G", "T", "P", "E", "Z", "Y"];
         if (typeof precision === "undefined") precision = 2;
         if (typeof prefixLimit === "undefined") prefixLimit = 0.5;
         for (k = 0; k < precision; k++){
@@ -119,9 +119,9 @@ HD.Number = {
      * @returns {Number} értéke bájtban
      */
     recoverSize : function(size){
-        var numberpart, multiply, offset, prefixum, index, n;
-        var q = "";
-        var pref = {
+        let numberpart, multiply, offset, prefixum, index, n;
+        let q = "";
+        const pref = {
             none : 1,
             k : 1024,
             M : 1048576,
@@ -285,7 +285,7 @@ HD.Function = {
 
     /**
      * Alapértelmezett paraméterérték megadása függvényben
-     * @example par = funcParam(par, 0);
+     * @example par = param(par, 0);
      * @param {mixed} param paraméter
      * @param {mixed} value alapértelmezett érték
      * @returns {mixed} ezt kell értékül adni a paraméternek
@@ -343,7 +343,7 @@ HD.Array = {
      * @returns {Boolean}
      */
     inArray : function(needle, haystack){
-        var len, i;
+        let len, i;
         if (haystack){
             if (Array.prototype.indexOf){
                 return (Array.prototype.indexOf.call(haystack, needle) > -1);
@@ -366,7 +366,7 @@ HD.Array = {
      * @returns {Number}
      */
     indexOf : function(val, arr, comparer){
-        var i, len;
+        let len, i;
         for (i = 0, len = arr.length; i < len; ++i){
             if (i in arr && comparer(arr[i], val)){
                 return i;
@@ -395,7 +395,7 @@ HD.Array = {
      * @returns {Array} módosított tömb
      */
     removeByVal : function(arr, val){
-        var index = arr.indexOf(val);
+        const index = arr.indexOf(val);
         if (index > -1){
             arr.slice(index, 1);
         }
@@ -417,7 +417,7 @@ HD.Object = {
      * @returns {Boolean} a keresett objektum tartalmazza a keresendő részt
      */
     objectPartialMatch : function(partialObject, fullObject){
-        var properties = Object.keys(fullObject);
+        const properties = Object.keys(fullObject);
         for (let n = 0; n < properties.length; n++){
             if (typeof partialObject[properties[n]] !== "undefined" &&
                 partialObject[properties[n]] !== fullObject[properties[n]]){

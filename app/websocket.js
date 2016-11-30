@@ -2,12 +2,12 @@
 
 'use strict';
 
-var promisify = require('es6-promisify');
-var fs = require('fs');
-var ioExpressSession = require('socket.io-express-session');
-var log = require.main.require(`../libs/log.js`);
-var HD = require.main.require('../libs/hd/hd.math.js');
-var ChatModel;
+let ChatModel;
+const promisify = require('es6-promisify');
+const fs = require('fs');
+const ioExpressSession = require('socket.io-express-session');
+const log = require.main.require(`../libs/log.js`);
+const HD = require.main.require('../libs/hd/hd.math.js');
 
 const fsAccess = promisify(fs.access);
 const fsUnlink = promisify(fs.unlink);
@@ -293,7 +293,7 @@ module.exports = function(server, ioSession, app){
 
         // convenience function to log server messages on the client
         const clientLog = function(...args){
-            var array = ['Message from server:'];
+            const array = ['Message from server:'];
             array.push(...args);
             socket.emit('log', array);
         };
