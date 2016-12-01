@@ -111,7 +111,7 @@ CHAT.Config = {
                 [/--(.*?)--/g,                     '<span style="text-decoration: line-through;">$1</span>'],
                 [/\[color=(.*?)](.*?)\[\/color]/g, '<span style="color: $1;">$2</span>'],
                 [
-                    /((https?:)?\/\/(www\.)?([-a-zA-Z0-9@:%._\+~#=]{2,256})\.([a-z]{2,6})\b([-a-zA-Z0-9@:%_\+.~#?&\/=]*))/g,
+                    /((https?:)?\/\/(www\.)?([-a-zA-Z0-9@:%._+~#=]{2,256})\.([a-z]{2,6})\b([-a-zA-Z0-9@:%_+.~#?&/=]*))/g,
                     '<a href="$1" target="_blank">$1</a>'
                 ]
             ]

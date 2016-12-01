@@ -122,7 +122,7 @@ router.post('/clientlog', function(req, res){
         -----
     `.replace(/^\s+/gm, '');
 
-    fs.appendFile('../../logs/client.log', logMessage, function(error){
+    fs.appendFile(`${__dirname}/../../logs/client.log`, logMessage, function(error){
         if (error){
             log.error(error);
         }

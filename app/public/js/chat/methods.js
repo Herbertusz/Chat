@@ -411,7 +411,7 @@ CHAT.Methods = {
             let image;
             const images = CHAT.Config.messageSend.imageReplacement.images;
             for (image in images){
-                const escapedIcon = image.replace(/([.*+?^=!:${}()|[]\/\\])/g, "\\$1");
+                const escapedIcon = image.replace(/([.*+?^=!:${}()|[\]/\\])/g, "\\$1");
                 messageArray[0] = messageArray[0].replace(
                     new RegExp(escapedIcon, 'g'),
                     `<img alt="${image}" src="${images[image]}" />`

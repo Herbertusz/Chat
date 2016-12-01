@@ -43,7 +43,7 @@ const Model = function(db){
          */
         getUser : function(data, callback){
             callback = HD.Function.param(callback, () => {});
-            db.collection("chat_users")
+            return db.collection("chat_users")
                 .find({
                     "name" : data.username,
                     "password" : data.password
@@ -53,9 +53,11 @@ const Model = function(db){
                 .then(function(docs){
                     if (docs.length > 0){
                         callback(docs[0]);
+                        return docs[0];
                     }
                     else {
                         callback(false);
+                        return false;
                     }
                 })
                 .catch(function(error){

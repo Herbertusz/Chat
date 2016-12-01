@@ -36,7 +36,7 @@ if (ENV.PROJECT === 'dev'){
     ENV.WSPORT = '3000';
     ENV.PORT = '3000';
     ENV.IPADDRESS = '127.0.0.1';
-    ENV.DBDRIVER = 'mysql'; // 'mysql'
+    ENV.DBDRIVER = 'mongodb'; // mongodb|mysql
 }
 else if (ENV.PROJECT === 'test'){
     ENV.DOMAIN = '213.181.208.32';
