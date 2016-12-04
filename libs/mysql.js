@@ -2,6 +2,7 @@
  * MySQL adatbázis-kezelő modul
  * Függőségek:
  *  mysql (https://github.com/felixge/node-mysql)
+ *  log (../libs/log.js)
  *
  * Használat:
  *  Kapcsolat:
@@ -36,6 +37,7 @@
 
 'use strict';
 
+const log = require.main.require('../libs/log.js');
 const mysql = require('mysql');
 
 const DB = {
@@ -150,28 +152,32 @@ const DB = {
 
     /**
      * Eredménytáblát ad vissza 2D-s tömbként (a sor az első kulcs)
-     * @param {String} sql lekérdezés
-     * @param {Array} binds bindelő tömb
+     * @param {String} sql - lekérdezés
+     * @param {Array} binds - bindelő tömb
      * @returns {Promise}
      */
     getRows : function(sql, binds){
         return this.query(sql, binds);
     },
 
-//    /**
-//     * Eredménytábla egy sorát adja vissza 1D-s tömbként
-//     * @param string $sql lekérdezés
-//     * @param array $binds bindelő tömb
-//     * @param int $rownum sor sorszáma
-//     * @returns array sor
-//     */
-//    public static function getRow($sql, $binds = array(), $rownum = 0){
-//        self::query($sql, $binds);
-//        $rows = self::$statement->fetchAll(PDO::FETCH_ASSOC);
-//        self::$num_rows = count($rows);
-//        return $rows[$rownum];
-//    }
-//
+    /**
+     * Eredménytábla egy sorát adja vissza 1D-s tömbként
+     * @param {String} sql - lekérdezés
+     * @param {Array} binds - bindelő tömb
+     * @param {Number} [rownum=0] - sor sorszáma
+     * @returns {Promise}
+     */
+    getRow : function(sql, binds, rownum){
+        if (typeof rownum === 'undefined') rownum = 0;
+        return this.query(sql, binds)
+            .then(function(rows){
+                return rows[rownum];
+            })
+            .catch(function(error){
+                log.error(error);
+            });
+    },
+
 //    /**
 //     * Eredménytáblát ad vissza 2D-s tömbként (az oszlop az első kulcs)
 //     * @param string $sql lekérdezés
@@ -241,7 +247,7 @@ const DB = {
      * INSERT futtatása
      * @param {String} table
      * @param {Object} data
-     * @param {Function} [callback=function(){}] lefutás után meghívandó függvény
+     * @param {Function} [callback=function(){}] - lefutás után meghívandó függvény
      * @returns {String} nyers lekérdezés
      */
     insert : function(table, data, callback){
@@ -327,11 +333,11 @@ const DB = {
 
     /**
      * Lekérdezés előkészítése és futtatása
-     * @param {String} sql lekérdezés (bindelés esetén "... :name1 ... :name2 ...")
+     * @param {String} sql - lekérdezés (bindelés esetén "... :name1 ... :name2 ...")
      * @param {Object|Boolean|Function} [args]
-     *  {Object} [binds={}] bindelő tömb ({'name1' : '...', 'name2' : '...'})
-     *  {Boolean} [run=true] futtatás (ha false, nem lesz lefuttatva, csak előkészítve)
-     *  {Function} [callback=function(){}] lefutás után meghívandó függvény
+     *  {Object} [binds={}] - bindelő tömb ({'name1' : '...', 'name2' : '...'})
+     *  {Boolean} [run=true] - futtatás (ha false, nem lesz lefuttatva, csak előkészítve)
+     *  {Function} [callback=function(){}] - lefutás után meghívandó függvény
      * @returns {Promise}
      */
     query : function(sql, ...args){

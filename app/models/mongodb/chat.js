@@ -30,7 +30,8 @@ const Model = function(db){
                     conds.push({[item] : {'$exists' : true}});
                 }
             });
-            return db.collection("chat_transfers")
+
+            return db.collection("chat_messages")
                 .find({'$or' : conds})
                 .sort({"created" : 1})
                 .toArray()
@@ -51,7 +52,7 @@ const Model = function(db){
          */
         getRoomMessages : function(roomName, callback){
             callback = HD.Function.param(callback, () => {});
-            return db.collection("chat_transfers")
+            return db.collection("chat_messages")
                 .find({"room" : roomName})
                 .sort({"created" : 1})
                 .toArray()
@@ -91,7 +92,7 @@ const Model = function(db){
          */
         getFile : function(roomName, fileName, callback){
             callback = HD.Function.param(callback, () => {});
-            return db.collection('chat_transfers')
+            return db.collection('chat_messages')
                 .find({
                     'room' : roomName,
                     'file.data' : fileName
@@ -128,7 +129,7 @@ const Model = function(db){
                 'created' : Date.now()
             };
 
-            return db.collection("chat_transfers")
+            return db.collection("chat_messages")
                 .insertOne(insertData)
                 .then(function(result){
                     const docId = result.insertedId;
@@ -165,7 +166,7 @@ const Model = function(db){
             else if (data.file){
                 insertData = data;
             }
-            return db.collection("chat_transfers")
+            return db.collection("chat_messages")
                 .insertOne(insertData)
                 .then(function(result){
                     const messageId = result.insertedId;
@@ -219,7 +220,7 @@ const Model = function(db){
          */
         deleteFile : function(filePath, callback){
             callback = HD.Function.param(callback, () => {});
-            return db.collection("chat_transfers")
+            return db.collection("chat_messages")
                 .find({"$and" : [
                     {"data" : filePath},
                     {"file" : {"$exists" : true}},
@@ -233,7 +234,7 @@ const Model = function(db){
                     let url = '';
                     if (docs.length){
                         url = docs[0].file.data;
-                        db.collection("chat_transfers")
+                        db.collection("chat_messages")
                             .updateOne({
                                 "_id" : docs[0]._id
                             }, {
@@ -262,7 +263,7 @@ const Model = function(db){
          */
         deleteRoomFiles : function(roomName, callback){
             callback = HD.Function.param(callback, () => {});
-            return db.collection("chat_transfers")
+            return db.collection("chat_messages")
                 .find({"$and" : [
                     {"room" : roomName},
                     {"file" : {"$exists" : true}},
@@ -275,7 +276,7 @@ const Model = function(db){
                     const urls = [];
                     docs.forEach(function(doc){
                         urls.push(doc.file.data);
-                        db.collection("chat_transfers")
+                        db.collection("chat_messages")
                             .updateOne({
                                 "_id" : doc._id
                             }, {

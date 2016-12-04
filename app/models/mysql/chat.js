@@ -27,16 +27,16 @@ const Model = function(db){
             const types = ['message', 'file', 'event'];
             types.forEach(function(item){
                 if (type.indexOf(item) > -1){
-                    conds.push(`${item} IS NOT NULL`);
+                    conds.push(`type = '${item}'`);
                 }
             });
             const condition = `(${conds.join(') OR (')})`;
-            return db
-                .getRows(`
+
+            return db.getRows(`
                     SELECT
                         *
                     FROM
-                        chat_transfers
+                        chat_messages
                     WHERE
                         ${condition}
                     ORDER BY
@@ -59,18 +59,17 @@ const Model = function(db){
          */
         getRoomMessages : function(roomName, callback){
             callback = HD.Function.param(callback, () => {});
-            return db
-                .getRows(`
+            return db.getRows(`
                     SELECT
-                        ct.*,
+                        cm.*,
                         cu.name AS userName
                     FROM
-                        chat_transfers ct
-                        LEFT JOIN chat_users cu ON ct.userId = cu.id
+                        chat_messages cm
+                        LEFT JOIN chat_users cu ON cm.userId = cu.id
                     WHERE
-                        ct.room = :roomName
+                        cm.room = :roomName
                     ORDER BY
-                        ct.created ASC
+                        cm.created ASC
                 `)
                 .then(function(messages){
                     callback(messages);
@@ -95,19 +94,48 @@ const Model = function(db){
          */
         setEvent : function(eventName, roomName, data, callback){
             callback = HD.Function.param(callback, () => {});
-            const insertData = {
-                'event' : eventName,
-                'room' : roomName,
-                'data' : data,
-                'created' : Date.now()
-            };
+            const time = Date.now();
 
-            return db.collection("chat_transfers")
-                .insertOne(insertData)
+            return db.query(`
+                    INSERT INTO
+                        chat_messages_events
+                    (
+                        type,
+                        data
+                    ) VALUES (
+                        :type,
+                        :data
+                    )
+                `, {
+                    'type' : eventName,
+                    'data' : JSON.stringify(data)
+                })
                 .then(function(result){
-                    const docId = result.insertedId;
-                    callback(docId);
-                    return docId;
+                    return db.query(`
+                        INSERT INTO
+                            chat_messages
+                        (
+                            userId,
+                            room,
+                            type,
+                            transferId,
+                            created
+                        ) VALUES (
+                            NULL,
+                            :room,
+                            'event',
+                            :id,
+                            :created
+                        )
+                    `, {
+                        'room' : roomName,
+                        'id' : result.insertId,
+                        'created' : time
+                    });
+                })
+                .then(function(result){
+                    callback(result.insertId);
+                    return result.insertId;
                 })
                 .catch(function(error){
                     log.error(error);
@@ -126,25 +154,45 @@ const Model = function(db){
          */
         setMessage : function(data, callback){
             callback = HD.Function.param(callback, () => {});
-            let insertData;
 
-            if (data.message){
-                insertData = {
-                    'userId' : data.userId,
-                    'room' : data.room,
-                    'message' : data.message,
-                    'created' : data.time
-                };
-            }
-            else if (data.file){
-                insertData = data;
-            }
-            return db.collection("chat_transfers")
-                .insertOne(insertData)
+            return db.query(`
+                    INSERT INTO
+                        chat_messages_texts
+                    (
+                        message
+                    ) VALUES (
+                        :message
+                    )
+                `, {
+                    'message' : data.message
+                })
                 .then(function(result){
-                    const messageId = result.insertedId;
-                    callback(messageId);
-                    return messageId;
+                    return db.query(`
+                        INSERT INTO
+                            chat_messages
+                        (
+                            userId,
+                            room,
+                            type,
+                            transferId,
+                            created
+                        ) VALUES (
+                            :userId,
+                            :room,
+                            'message',
+                            :id,
+                            :created
+                        )
+                    `, {
+                        'userId' : data.userId,
+                        'room' : data.room,
+                        'id' : result.insertId,
+                        'created' : data.time
+                    });
+                })
+                .then(function(result){
+                    callback(result.insertId);
+                    return result.insertId;
                 })
                 .catch(function(error){
                     log.error(error);
@@ -163,22 +211,66 @@ const Model = function(db){
          */
         setFile : function(data, callback){
             callback = HD.Function.param(callback, () => {});
-            return this.setMessage({
-                'userId' : data.userId,
-                'room' : data.room,
-                'file' : {
+
+            return db.query(`
+                    INSERT INTO
+                        chat_messages_files
+                    (
+                        name,
+                        size,
+                        type,
+                        mainType,
+                        store,
+                        data,
+                        deleted
+                    ) VALUES (
+                        :name,
+                        :size,
+                        :type,
+                        :mainType,
+                        :store,
+                        :data,
+                        0
+                    )
+                `, {
                     'name' : data.fileData.name,
                     'size' : data.fileData.size,
                     'type' : data.fileData.type,
                     'mainType' : data.mainType,
                     'store' : data.store,
-                    'data' : data.file,
-                    'deleted' : false
-                },
-                'created' : data.time
-            }, function(messageId){
-                callback(messageId);
-            });
+                    'data' : data.file
+                })
+                .then(function(result){
+                    return db.query(`
+                        INSERT INTO
+                            chat_messages
+                        (
+                            userId,
+                            room,
+                            type,
+                            transferId,
+                            created
+                        ) VALUES (
+                            :userId,
+                            :room,
+                            'message',
+                            :id,
+                            :created
+                        )
+                    `, {
+                        'userId' : data.userId,
+                        'room' : data.room,
+                        'id' : result.insertId,
+                        'created' : data.time
+                    });
+                })
+                .then(function(result){
+                    callback(result.insertId);
+                    return result.insertId;
+                })
+                .catch(function(error){
+                    log.error(error);
+                });
         },
 
         /**
@@ -193,28 +285,36 @@ const Model = function(db){
          */
         deleteFile : function(filePath, callback){
             callback = HD.Function.param(callback, () => {});
-            return db.collection("chat_transfers")
-                .find({"$and" : [
-                    {"data" : filePath},
-                    {"file" : {"$exists" : true}},
-                    {"file.store" : "upload"}
-                ]}, {
-                    "file" : 1
+
+            return db.getRow(`
+                    SELECT
+                        cmf.*
+                    FROM
+                        chat_messages cm
+                        LEFT JOIN chat_messages_files cmf ON cm.transferId = cmf.id
+                    WHERE
+                        cm.type = 'file' AND
+                        cmf.store = 'upload' AND
+                        cmf.data = :filePath
+                    LIMIT
+                        1
+                `, {
+                    'filePath' : filePath
                 })
-                .limit(1)
-                .toArray()
-                .then(function(docs){
+                .then(function(file){
                     let url = '';
-                    if (docs.length){
-                        url = docs[0].file.data;
-                        db.collection("chat_transfers")
-                            .updateOne({
-                                "_id" : docs[0]._id
-                            }, {
-                                "$set" : {
-                                    "file.deleted" : true
-                                }
-                            });
+                    if (file.id){
+                        url = file.data;
+                        db.query(`
+                            UPDATE
+                                chat_messages_files
+                            SET
+                                deleted = 0
+                            WHERE
+                                id = :id
+                        `, {
+                            'id' : file.id
+                        });
                     }
                     callback(url);
                     return url;
@@ -236,7 +336,7 @@ const Model = function(db){
          */
         deleteRoomFiles : function(roomName, callback){
             callback = HD.Function.param(callback, () => {});
-            return db.collection("chat_transfers")
+            return db.collection("chat_messages")
                 .find({"$and" : [
                     {"room" : roomName},
                     {"file" : {"$exists" : true}},
@@ -249,7 +349,7 @@ const Model = function(db){
                     const urls = [];
                     docs.forEach(function(doc){
                         urls.push(doc.file.data);
-                        db.collection("chat_transfers")
+                        db.collection("chat_messages")
                             .updateOne({
                                 "_id" : doc._id
                             }, {

@@ -69,11 +69,11 @@ const createDB = function(db, callback){
             console.log(error);
         });
 
-    db.createCollection('chat_transfers');
-    db.collection('chat_transfers')
+    db.createCollection('chat_messages');
+    db.collection('chat_messages')
         .deleteMany({})
         .then(function(){
-            db.collection('chat_transfers')
+            db.collection('chat_messages')
                 .insertMany([
                     {
                         "userId" : 1,
@@ -97,7 +97,7 @@ const createDB = function(db, callback){
                 ])
                 .then(function(result){
                     completed++;
-                    console.log(`chat_transfers: ${result.insertedCount}`);
+                    console.log(`chat_messages: ${result.insertedCount}`);
                     if (completed === collectionNum){
                         callback();
                     }
