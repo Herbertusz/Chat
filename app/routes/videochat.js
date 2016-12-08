@@ -3,13 +3,14 @@
 'use strict';
 
 let ChatModel, UserModel;
+const ENV = require.main.require('../app/env.js');
 const express = require('express');
 const router = express.Router();
 // const session = require('express-session');
 
 router.use(function(req, res, next){
-    UserModel = require.main.require('../app/models/mongodb/user.js')(req.app.get('db'));
-    ChatModel = require.main.require('../app/models/mongodb/chat.js')(req.app.get('db'));
+    UserModel = require.main.require(`../app/models/${ENV.DBDRIVER}/user.js`)(req.app.get('db'));
+    ChatModel = require.main.require(`../app/models/${ENV.DBDRIVER}/chat.js`)(req.app.get('db'));
     next();
 });
 

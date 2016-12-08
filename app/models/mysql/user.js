@@ -16,8 +16,7 @@ const Model = function(db){
          */
         getUsers : function(callback){
             callback = HD.Function.param(callback, () => {});
-            return db
-                .getRows(`
+            return db.getRows(`
                     SELECT
                         *
                     FROM
@@ -49,8 +48,7 @@ const Model = function(db){
          */
         getUser : function(data, callback){
             callback = HD.Function.param(callback, () => {});
-            return db
-                .getRows(`
+            return db.getRows(`
                     SELECT
                         *
                     FROM

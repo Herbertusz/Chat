@@ -3,6 +3,7 @@
 'use strict';
 
 let ChatModel;
+const ENV = require.main.require('../app/env.js');
 const promisify = require('es6-promisify');
 const fs = require('fs');
 const ioExpressSession = require('socket.io-express-session');
@@ -21,7 +22,7 @@ const fsUnlink = promisify(fs.unlink);
  */
 module.exports = function(server, ioSession, app){
 
-    ChatModel = require.main.require('../app/models/mongodb/chat.js')(app.get('db'));
+    ChatModel = require.main.require(`../app/models/${ENV.DBDRIVER}/chat.js`)(app.get('db'));
 
     /**
      * Chat-be belépett userek
@@ -150,7 +151,7 @@ module.exports = function(server, ioSession, app){
             userData = {
                 id : session.login.userId,
                 name : session.login.userName,
-                status : "on",
+                status : 'on',
                 isIdle : false
             };
         }

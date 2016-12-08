@@ -253,7 +253,7 @@ const Model = function(db){
                         ) VALUES (
                             :userId,
                             :room,
-                            'message',
+                            'file',
                             :id,
                             :created
                         )
@@ -309,7 +309,7 @@ const Model = function(db){
                             UPDATE
                                 chat_messages_files
                             SET
-                                deleted = 0
+                                deleted = 1
                             WHERE
                                 id = :id
                         `, {
@@ -336,27 +336,34 @@ const Model = function(db){
          */
         deleteRoomFiles : function(roomName, callback){
             callback = HD.Function.param(callback, () => {});
-            return db.collection("chat_messages")
-                .find({"$and" : [
-                    {"room" : roomName},
-                    {"file" : {"$exists" : true}},
-                    {"file.store" : "upload"}
-                ]}, {
-                    "file" : 1
+
+            return db.getRows(`
+                    SELECT
+                        cmf.*
+                    FROM
+                        chat_messages cm
+                        LEFT JOIN chat_messages_files cmf ON cm.transferId = cmf.id
+                    WHERE
+                        cm.type = 'file' AND
+                        cmf.store = 'upload' AND
+                        cm.room = :roomName
+                `, {
+                    'roomName' : roomName
                 })
-                .toArray()
-                .then(function(docs){
+                .then(function(files){
                     const urls = [];
-                    docs.forEach(function(doc){
-                        urls.push(doc.file.data);
-                        db.collection("chat_messages")
-                            .updateOne({
-                                "_id" : doc._id
-                            }, {
-                                "$set" : {
-                                    "file.deleted" : true
-                                }
-                            });
+                    files.forEach(function(file){
+                        urls.push(file.data);
+                        db.query(`
+                            UPDATE
+                                chat_messages_files
+                            SET
+                                deleted = 1
+                            WHERE
+                                id = :id
+                        `, {
+                            'id' : file.id
+                        });
                     });
                     callback(urls);
                     return urls;
