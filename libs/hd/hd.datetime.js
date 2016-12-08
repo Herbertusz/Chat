@@ -224,11 +224,12 @@ HD.DateTime = {
      * @returns {String}
      */
     format : function(format, timestamp){
-        var This = this;
-        var jsdate, f;
+        var f;
+        let This = this;
+        let jsdate;
         // Keep this here (works, but for code commented-out below for file size reasons)
         // var tal= [];
-        var txt_words = [
+        const txt_words = [
             'Sun', 'Mon', 'Tues', 'Wednes', 'Thurs', 'Fri', 'Satur',
             'January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December'
@@ -236,11 +237,11 @@ HD.DateTime = {
         // trailing backslash -> (dropped)
         // a backslash followed by any character (including backslash) -> the character
         // empty string -> empty string
-        var formatChr = /\\?(.?)/gi;
-        var formatChrCb = function(t, s){
+        const formatChr = /\\?(.?)/gi;
+        const formatChrCb = function(t, s){
             return f[t] ? f[t]() : s;
         };
-        var _pad = function(n, c){
+        const _pad = function(n, c){
             n = String(n);
             while (n.length < c){
                 n = `0${n}`;
@@ -271,8 +272,8 @@ HD.DateTime = {
             },
             S : function(){
                 // Ordinal suffix for day of month; st, nd, rd, th
-                var j = f.j();
-                var i = j % 10;
+                const j = f.j();
+                let i = j % 10;
                 if (i <= 3 && parseInt((j % 100) / 10, 10) === 1){
                     i = 0;
                 }
@@ -284,16 +285,16 @@ HD.DateTime = {
             },
             z : function(){
                 // Day of year; 0..365
-                var a = new Date(f.Y(), f.n() - 1, f.j());
-                var b = new Date(f.Y(), 0, 1);
+                const a = new Date(f.Y(), f.n() - 1, f.j());
+                const b = new Date(f.Y(), 0, 1);
                 return Math.round((a - b) / 864e5);
             },
 
             // Week
             W : function(){
                 // ISO-8601 week number
-                var a = new Date(f.Y(), f.n() - 1, f.j() - f.N() + 3);
-                var b = new Date(a.getFullYear(), 0, 4);
+                const a = new Date(f.Y(), f.n() - 1, f.j() - f.N() + 3);
+                const b = new Date(a.getFullYear(), 0, 4);
                 return _pad(1 + Math.round((a - b) / 864e5 / 7), 2);
             },
 
@@ -324,14 +325,14 @@ HD.DateTime = {
             // Year
             L : function(){
                 // Is leap year?; 0 or 1
-                var j = f.Y();
+                const j = f.Y();
                 return j % 4 === 0 & j % 100 !== 0 | j % 400 === 0;
             },
             o : function(){
                 // ISO-8601 year
-                var n = f.n();
-                var W = f.W();
-                var Y = f.Y();
+                const n = f.n();
+                const W = f.W();
+                const Y = f.Y();
                 return Y + (n === 12 && W < 9 ? 1 : n === 1 && W > 9 ? -1 : 0);
             },
             Y : function(){
@@ -356,12 +357,12 @@ HD.DateTime = {
             },
             B : function(){
                 // Swatch Internet time; 000..999
-                var H = jsdate.getUTCHours() * 36e2;
+                const H = jsdate.getUTCHours() * 36e2;
                 // Hours
-                var i = jsdate.getUTCMinutes() * 60;
+                const i = jsdate.getUTCMinutes() * 60;
                 // Minutes
                 // Seconds
-                var s = jsdate.getUTCSeconds();
+                const s = jsdate.getUTCSeconds();
                 return _pad(Math.floor((H + i + s + 36e2) / 86.4) % 1e3, 3);
             },
             g : function(){
@@ -400,31 +401,31 @@ HD.DateTime = {
                 // timezone_abbreviations_list() function.
                 /*                            return This.date_default_timezone_get();
                  */
-                throw 'Not supported (see source code of date() for timezone on how to add support)';
+                throw new Error('Not supported (see source code of date() for timezone on how to add support)');
             },
             I : function(){
                 // DST observed?; 0 or 1
                 // Compares Jan 1 minus Jan 1 UTC to Jul 1 minus Jul 1 UTC.
                 // If they are not equal, then DST is observed.
-                var a = new Date(f.Y(), 0);
+                const a = new Date(f.Y(), 0);
                 // Jan 1
-                var c = Date.UTC(f.Y(), 0);
+                const c = Date.UTC(f.Y(), 0);
                 // Jan 1 UTC
-                var b = new Date(f.Y(), 6);
+                const b = new Date(f.Y(), 6);
                 // Jul 1
                 // Jul 1 UTC
-                var d = Date.UTC(f.Y(), 6);
+                const d = Date.UTC(f.Y(), 6);
                 return ((a - c) !== (b - d)) ? 1 : 0;
             },
             O : function(){
                 // Difference to GMT in hour format; e.g. +0200
-                var tzo = jsdate.getTimezoneOffset();
-                var a = Math.abs(tzo);
+                const tzo = jsdate.getTimezoneOffset();
+                const a = Math.abs(tzo);
                 return (tzo > 0 ? '-' : '+') + _pad(Math.floor(a / 60) * 100 + a % 60, 4);
             },
             P : function(){
                 // Difference to GMT w/colon; e.g. +02:00
-                var O = f.O();
+                const O = f.O();
                 return (O.substr(0, 3) + ':' + O.substr(3, 2));
             },
             T : function(){

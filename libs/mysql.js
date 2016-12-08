@@ -9,16 +9,16 @@
  *   DB.connect('host', 'user', 'pass', 'dbname');
  *   DB.close();
  *  Lekérdezés futtatása:
- *   sql = DB.query("lekérdezés", binds = {}, run = true, preserve = false, callback(error, result));
+ *   sql = DB.query('lekérdezés', binds = {}, run = true, preserve = false, callback(error, result));
  *  Eredménytábla lekérdezése:
- *   sql = DB.getRows("SELECT ...", binds = {}, callback(error, rows));
- *   sql = DB.getRow("SELECT ...", binds = {}, rownum = 0, callback(error, row));
- *   sql = DB.getColumns("SELECT ...", binds = {}, callback(error, columns));
- *   sql = DB.getColumn("SELECT ...", binds = {}, columnName, callback(error, column));
- *   sql = DB.getField("SELECT ...", binds = {}, columnName, rownum = 0, callback(error, field));
+ *   sql = DB.getRows(`SELECT ...`, binds = {}, callback(error, rows));
+ *   sql = DB.getRow(`SELECT ...`, binds = {}, rownum = 0, callback(error, row));
+ *   sql = DB.getColumns(`SELECT ...`, binds = {}, callback(error, columns));
+ *   sql = DB.getColumn(`SELECT ...`, binds = {}, columnName, callback(error, column));
+ *   sql = DB.getField(`SELECT ...`, binds = {}, columnName, rownum = 0, callback(error, field));
  *  Mező lekérdezése:
  *  Eredmény iteráció:
- *   DB.query("SELECT ...", ..., function(error, result){
+ *   DB.query(`SELECT ...`, ..., function(error, result){
  *       while (row = DB.fetch()){ ... }
  *   });
  *  Shortcut műveletek:
@@ -61,7 +61,7 @@ const DB = {
     sql : null,
 
     /**
-     * Utoljára futtatott SQL parancs ("SELECT", "INSERT", "UPDATE", "DELETE", ...)
+     * Utoljára futtatott SQL parancs ('SELECT', 'INSERT', 'UPDATE', 'DELETE', ...)
      * @type Boolean|String
      */
     command : false,
@@ -115,7 +115,7 @@ const DB = {
 
 //    /**
 //     * Legutóbbi lekérdezés által lekérdezett sorok száma
-//     * A query("SELECT ...") alakú hívás üríti, a get*() függvények feltöltik
+//     * A query(`SELECT ...`) alakú hívás üríti, a get*() függvények feltöltik
 //     * @returns int lekérdezett sorok száma
 //     */
 //    numRows : function(){
@@ -248,7 +248,7 @@ const DB = {
      * @param {String} table
      * @param {Object} data
      * @param {Function} [callback=function(){}] - lefutás után meghívandó függvény
-     * @returns {String} nyers lekérdezés
+     * @returns {Promise}
      */
     insert : function(table, data, callback){
         callback = (typeof callback !== 'undefined') ? callback : () => {};
@@ -257,9 +257,9 @@ const DB = {
             INSERT INTO
                 \`${table}\`
             (
-                \`${Object.keys(data).join("`,`")}\`
-            ) VALUE (
-                :${Object.keys(data).join(",:")}
+                \`${Object.keys(data).join('`,`')}\`
+            ) VALUES (
+                :${Object.keys(data).join(',:')}
             )
         `;
         return this.query(sql, data, callback);
@@ -274,7 +274,7 @@ const DB = {
      * @description args:
      *  {Object} [binds={}]
      *  {Function} [callback=function(){}] lefutás után meghívandó függvény
-     * @returns {String} nyers lekérdezés
+     * @returns {Promise}
      */
     update : function(table, data, where, ...args){
         const rows = [];
@@ -288,7 +288,7 @@ const DB = {
             UPDATE
                 \`${table}\`
             SET
-                ${rows.join(",")}
+                ${rows.join(',')}
             WHERE
                 ${where}
         `;
@@ -303,7 +303,7 @@ const DB = {
      * @description args:
      *  {Object} [binds={}]
      *  {Function} [callback=function(){}] lefutás után meghívandó függvény
-     * @returns {String} nyers lekérdezés
+     * @returns {Promise}
      */
     delete : function(table, where, ...args){
         const binds = (typeof args[0] !== 'undefined') ? args[0] : {};
@@ -333,7 +333,7 @@ const DB = {
 
     /**
      * Lekérdezés előkészítése és futtatása
-     * @param {String} sql - lekérdezés (bindelés esetén "... :name1 ... :name2 ...")
+     * @param {String} sql - lekérdezés (bindelés esetén '... :name1 ... :name2 ...')
      * @param {Object|Boolean|Function} [args]
      *  {Object} [binds={}] - bindelő tömb ({'name1' : '...', 'name2' : '...'})
      *  {Boolean} [run=true] - futtatás (ha false, nem lesz lefuttatva, csak előkészítve)
@@ -342,9 +342,8 @@ const DB = {
      */
     query : function(sql, ...args){
 
-        let temp_sql, temp_command;
-        const binds = (typeof args[0] !== "undefined") ? args[0] : {};
-        const run = (typeof args[1] !== "undefined") ? args[1] : true;
+        const binds = (typeof args[0] !== 'undefined') ? args[0] : {};
+        const run = (typeof args[1] !== 'undefined') ? args[1] : true;
         const callback = (typeof args[args.length - 1] === 'function') ? args[args.length - 1] : null;
 
         this.command = this._getCommand();
@@ -378,7 +377,7 @@ const DB = {
 
     /**
      * Utoljára futtatott SQL parancs meghatározása
-     * @returns {String|Boolean} parancs típusa ("SELECT", "INSERT", "UPDATE", "DELETE", ...)
+     * @returns {String|Boolean} parancs típusa ('SELECT', 'INSERT', 'UPDATE', 'DELETE', ...)
      */
     _getCommand : function(){
         if (this.rawsql){

@@ -286,9 +286,9 @@ HD.Function = {
     /**
      * Alapértelmezett paraméterérték megadása függvényben
      * @example par = param(par, 0);
-     * @param {mixed} param paraméter
-     * @param {mixed} value alapértelmezett érték
-     * @returns {mixed} ezt kell értékül adni a paraméternek
+     * @param {*} param paraméter
+     * @param {*} value alapértelmezett érték
+     * @returns {*} ezt kell értékül adni a paraméternek
      */
     param : function(param, value){
         if (typeof param === "undefined"){

@@ -582,7 +582,6 @@ HD.DOM = function(identifier){
 /**
  * Csatolt eseménykezelők belső tárolása
  * @type {Array.<Object>}
- * @private
  * @description
  * eventListeners = [
  *     {
@@ -598,7 +597,6 @@ HD.DOM.eventListeners = [];
 /**
  * Csatolt adatok típusainak belső tárolása
  * @type {Array.<Object>}
- * @private
  * @description
  * dataObjects = [
  *     {
