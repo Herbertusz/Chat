@@ -5,7 +5,7 @@
 
 /* global HD */
 
-"use strict";
+'use strict';
 
 var HD = global.HD || {};
 
@@ -32,10 +32,10 @@ HD.Misc = {
      * @type {Object}
      */
     letters : {
-        "a" : 65, "b" : 66, "c" : 67, "d" : 68, "e" : 69, "f" : 70, "g" : 71, "h" : 72, "i" : 73,
-        "j" : 74, "k" : 75, "l" : 76, "m" : 77, "n" : 78, "o" : 79, "p" : 80, "q" : 81, "r" : 82,
-        "s" : 83, "t" : 84, "u" : 85, "v" : 86, "w" : 87, "x" : 88, "y" : 89, "z" : 90,
-        "0" : 48, "1" : 49, "2" : 50, "3" : 51, "4" : 52, "5" : 53, "6" : 54, "7" : 55, "8" : 56, "9" : 57
+        'a' : 65, 'b' : 66, 'c' : 67, 'd' : 68, 'e' : 69, 'f' : 70, 'g' : 71, 'h' : 72, 'i' : 73,
+        'j' : 74, 'k' : 75, 'l' : 76, 'm' : 77, 'n' : 78, 'o' : 79, 'p' : 80, 'q' : 81, 'r' : 82,
+        's' : 83, 't' : 84, 'u' : 85, 'v' : 86, 'w' : 87, 'x' : 88, 'y' : 89, 'z' : 90,
+        '0' : 48, '1' : 49, '2' : 50, '3' : 51, '4' : 52, '5' : 53, '6' : 54, '7' : 55, '8' : 56, '9' : 57
     },
 
     /**
@@ -47,7 +47,7 @@ HD.Misc = {
      */
     switching : function(variable, relations, defaultValue){
         let index;
-        if (typeof defaultValue === "undefined") defaultValue = null;
+        if (typeof defaultValue === 'undefined') defaultValue = null;
         for (index in relations){
             if (variable === index){
                 return relations[index];
@@ -79,11 +79,11 @@ HD.Number = {
      * @returns {String} nullákkal feltöltött szám
      */
     fillZero : function(num, len){
-        let numStr = "";
+        let numStr = '';
         const originalNumStr = num.toString();
         const originalLen = originalNumStr.length;
         for (let n = originalLen; n < len; n++){
-            numStr += "0";
+            numStr += '0';
         }
         return numStr + originalNumStr;
     },
@@ -98,9 +98,9 @@ HD.Number = {
     displaySize : function(size, precision, prefixLimit){
         let n = 1.0;
         let k, i;
-        const pref = ["", "", "k", "M", "G", "T", "P", "E", "Z", "Y"];
-        if (typeof precision === "undefined") precision = 2;
-        if (typeof prefixLimit === "undefined") prefixLimit = 0.5;
+        const pref = ['', '', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
+        if (typeof precision === 'undefined') precision = 2;
+        if (typeof prefixLimit === 'undefined') prefixLimit = 0.5;
         for (k = 0; k < precision; k++){
             n *= 10.0;
         }
@@ -114,13 +114,13 @@ HD.Number = {
 
     /**
      * Fájlméret visszafejtése (a displaysize inverze)
-     * Pl.: "10.5 MB", "1000kB", "3 400 000 B", "2,7 GB"
+     * Pl.: '10.5 MB', '1000kB', '3 400 000 B', '2,7 GB'
      * @param {String} size méret olvasható formában
      * @returns {Number} értéke bájtban
      */
     recoverSize : function(size){
         let numberpart, multiply, offset, prefixum, index, n;
-        let q = "";
+        let q = '';
         const pref = {
             none : 1,
             k : 1024,
@@ -147,10 +147,10 @@ HD.Number = {
                 offset = size.length - q.length;
             }
             numberpart = size.substr(0, offset);
-            if (size.indexOf(".") === -1 && size.indexOf(",") > -1){
-                numberpart = numberpart.replace(",", ".");
+            if (size.indexOf('.') === -1 && size.indexOf(',') > -1){
+                numberpart = numberpart.replace(',', '.');
             }
-            numberpart = numberpart.replace(" ", "");
+            numberpart = numberpart.replace(' ', '');
         }
         q = this.reverse(q).toLowerCase().trim();
         if (q.length === 2){
@@ -238,9 +238,9 @@ HD.String = {
      * @returns {String} karakterlánc visszafelé
      */
     reverse : function(str){
-        const splitext = str.split("");
+        const splitext = str.split('');
         const revertext = splitext.reverse();
-        return revertext.join("");
+        return revertext.join('');
     },
 
     /**
@@ -266,12 +266,12 @@ HD.String = {
 
     /**
      * Karakterlánc átalakítása RegExp objektummá
-     * @param {String} str pl.: "/x/gi"
+     * @param {String} str pl.: '/x/gi'
      * @returns {RegExp}
      */
     createRegExp : function(str){
-        const pattern = str.replace(/^\/(.*)\/[gimuy]*$/, "$1");
-        const flags = str.replace(/^\/.*\/([gimuy]*)$/, "$1");
+        const pattern = str.replace(/^\/(.*)\/[gimuy]*$/, '$1');
+        const flags = str.replace(/^\/.*\/([gimuy]*)$/, '$1');
         return new RegExp(pattern, flags);
     }
 
@@ -291,7 +291,7 @@ HD.Function = {
      * @returns {*} ezt kell értékül adni a paraméternek
      */
     param : function(param, value){
-        if (typeof param === "undefined"){
+        if (typeof param === 'undefined'){
             return value;
         }
         else {
@@ -305,11 +305,11 @@ HD.Function = {
      * @returns {Array} paraméterek értékei
      * @description
      * HD.Misc.funcMultiParam({
-     *     sql      : [sql, "string"],
-     *     binds    : [binds, "object", {}],
-     *     run      : [run, "boolean", true],
-     *     preserve : [preserve, "boolean", false],
-     *     callback : [callback, "function"]
+     *     sql      : [sql, 'string'],
+     *     binds    : [binds, 'object', {}],
+     *     run      : [run, 'boolean', true],
+     *     preserve : [preserve, 'boolean', false],
+     *     callback : [callback, 'function']
      * });
      * név : [érték, typus, alapértelmezett érték]
      */
@@ -318,7 +318,7 @@ HD.Function = {
         let n;
         let currentParamNum = 0;
         for (n in params){
-            if (typeof params[n][0] !== params[n][1] && typeof params[n][2] !== "undefined"){
+            if (typeof params[n][0] !== params[n][1] && typeof params[n][2] !== 'undefined'){
                 newParams[n] = params[2];
             }
             else {
@@ -419,7 +419,7 @@ HD.Object = {
     objectPartialMatch : function(partialObject, fullObject){
         const properties = Object.keys(fullObject);
         for (let n = 0; n < properties.length; n++){
-            if (typeof partialObject[properties[n]] !== "undefined" &&
+            if (typeof partialObject[properties[n]] !== 'undefined' &&
                 partialObject[properties[n]] !== fullObject[properties[n]]){
                 return false;
             }

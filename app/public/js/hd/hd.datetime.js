@@ -5,9 +5,9 @@
 
 /* global HD namespace */
 
-"use strict";
+'use strict';
 
-var HD = namespace("HD");
+var HD = namespace('HD');
 
 /**
  * Dátum műveletek (Date objektum kiegészítései)
@@ -20,27 +20,27 @@ HD.DateTime = {
      * @type {Array}
      */
     months : [
-        "január", "február", "március", "április", "május", "június", "július",
-        "augusztus", "szeptember", "október", "november", "december"
+        'január', 'február', 'március', 'április', 'május', 'június', 'július',
+        'augusztus', 'szeptember', 'október', 'november', 'december'
     ],
 
     /**
      * Hónapok sorszámai
      * @type {Array}
      */
-    monthSigns : ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"],
+    monthSigns : ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
 
     /**
      * Napok nevei
      * @type {Array}
      */
-    days : ["vasárnap", "hétfő", "kedd", "szerda", "csütörtök", "péntek", "szombat"],
+    days : ['vasárnap', 'hétfő', 'kedd', 'szerda', 'csütörtök', 'péntek', 'szombat'],
 
     /**
      * Napok rövid nevei
      * @type {Array}
      */
-    shortDays : ["V", "H", "K", "Sze", "Cs", "P", "Szo"],
+    shortDays : ['V', 'H', 'K', 'Sze', 'Cs', 'P', 'Szo'],
 
     /**
      * yyyy-mm-dd forma előállítása
@@ -49,7 +49,7 @@ HD.DateTime = {
      * @returns {String}
      */
     progFormat : function(date, separator){
-        if (typeof separator === "undefined") separator = "-";
+        if (typeof separator === 'undefined') separator = '-';
         const y = date.getFullYear();
         const m = this.monthSigns[date.getMonth()];
         const d = HD.Number.fillZero(date.getDate(), 2);
@@ -98,44 +98,44 @@ HD.DateTime = {
      * @returns {Object}
      */
     getDaysOfYearWeek : function(year, week){
-        if (typeof year === "undefined") year = (new Date()).getFullYear();
-        if (typeof week === "undefined") year = this.getCurrentWeekOfYear();
+        if (typeof year === 'undefined') year = (new Date()).getFullYear();
+        if (typeof week === 'undefined') year = this.getCurrentWeekOfYear();
         const dayMS = 86400000;
         const d = new Date(`Jan 01, ${year} 01:00:00`);
         const corr = (d.getDay() || 7) - 1;
         const w = d.getTime() + (7 * (week - 1) - corr) * dayMS;
         return {
-            "H"   : new Date(w),
-            "K"   : new Date(w + dayMS),
-            "Sze" : new Date(w + 2 * dayMS),
-            "Cs"  : new Date(w + 3 * dayMS),
-            "P"   : new Date(w + 4 * dayMS),
-            "Szo" : new Date(w + 5 * dayMS),
-            "V"   : new Date(w + 6 * dayMS)
+            'H'   : new Date(w),
+            'K'   : new Date(w + dayMS),
+            'Sze' : new Date(w + 2 * dayMS),
+            'Cs'  : new Date(w + 3 * dayMS),
+            'P'   : new Date(w + 4 * dayMS),
+            'Szo' : new Date(w + 5 * dayMS),
+            'V'   : new Date(w + 6 * dayMS)
         };
     },
 
     /**
      * Idő beolvasása
-     * @param {String} str időt leíró string (formátum: "hh:mm:ss"|"mm:ss"|"ss")
-     * @param {String} [from="s"] bemenet utolsó szegmensének mértékegysége ("s"|"m"|"h")
-     *                 1 szegmens: "s"|"m"|"h", 2 szegmens: "s"|"m", 3 szegmens: "s"
-     * @param {String} [to="s"] visszatérési mértékegység megadása ("ms"|"s"|"m"|"h")
+     * @param {String} str időt leíró string (formátum: 'hh:mm:ss'|'mm:ss'|'ss')
+     * @param {String} [from='s'] bemenet utolsó szegmensének mértékegysége ('s'|'m'|'h')
+     *                 1 szegmens: 's'|'m'|'h', 2 szegmens: 's'|'m', 3 szegmens: 's'
+     * @param {String} [to='s'] visszatérési mértékegység megadása ('ms'|'s'|'m'|'h')
      * @returns {Number} milliszekundumok/másodpercek/percek/órák száma
      */
     parseTime : function(str, from, to){
-        if (typeof from === "undefined") from = "s";
-        if (typeof to === "undefined") to = "s";
-        let h = "00";
-        let m = "00";
-        let s = "00";
-        const segments = str.split(":");
+        if (typeof from === 'undefined') from = 's';
+        if (typeof to === 'undefined') to = 's';
+        let h = '00';
+        let m = '00';
+        let s = '00';
+        const segments = str.split(':');
         let ret;
         if (segments.length === 1){
-            if (from === "s"){
+            if (from === 's'){
                 s = segments[0];
             }
-            else if (from === "m"){
+            else if (from === 'm'){
                 m = segments[0];
             }
             else {
@@ -143,11 +143,11 @@ HD.DateTime = {
             }
         }
         else if (segments.length === 2){
-            if (from === "s"){
+            if (from === 's'){
                 m = segments[0];
                 s = segments[1];
             }
-            else if (from === "m"){
+            else if (from === 'm'){
                 h = segments[0];
                 m = segments[1];
             }
@@ -155,7 +155,7 @@ HD.DateTime = {
                 return null;
             }
         }
-        else if (from === "s"){
+        else if (from === 's'){
             h = segments[0];
             m = segments[1];
             s = segments[2];
@@ -165,25 +165,25 @@ HD.DateTime = {
         }
         const ms = Date.parse(`1 Jan 1970 ${h}:${m}:${s} GMT`);
         ret = null;
-        if (to === "ms") ret = ms;
-        if (to === "s") ret = Math.round(ms / 1000);
-        if (to === "m") ret = Math.round(ms / 60000);
-        if (to === "h") ret = Math.round(ms / 3600000);
+        if (to === 'ms') ret = ms;
+        if (to === 's') ret = Math.round(ms / 1000);
+        if (to === 'm') ret = Math.round(ms / 60000);
+        if (to === 'h') ret = Math.round(ms / 3600000);
         return ret;
     },
 
     /**
      * Idő kiírása olvasható formában
      * @param {Number} num időegység értéke
-     * @param {String} from bemenet mértékegysége ("s"|"m"|"h")
+     * @param {String} from bemenet mértékegysége ('s'|'m'|'h')
      * @param {String} format formátum (makrók: h, m, s, H, M, S, hh, mm, ss)
      * @returns {String} kiírható string
      */
     printTime : function(num, from, format){
         let timeObj, h, m, s;
-        if (from === "s") timeObj = new Date(num * 1000);
-        if (from === "m") timeObj = new Date(num * 1000 * 60);
-        if (from === "h") timeObj = new Date(num * 1000 * 60 * 60);
+        if (from === 's') timeObj = new Date(num * 1000);
+        if (from === 'm') timeObj = new Date(num * 1000 * 60);
+        if (from === 'h') timeObj = new Date(num * 1000 * 60 * 60);
         h = timeObj.getHours() - 1;
         m = timeObj.getMinutes();
         s = timeObj.getSeconds();
@@ -194,15 +194,15 @@ HD.DateTime = {
         const mm = (m < 10) ? `0${m}` : `${m}`;
         const ss = (s < 10) ? `0${s}` : `${s}`;
         h = h.toString(); m = m.toString(); s = s.toString();
-        format = format.replace("hh", hh);
-        format = format.replace("mm", mm);
-        format = format.replace("ss", ss);
-        format = format.replace("h", h);
-        format = format.replace("m", m);
-        format = format.replace("s", s);
-        format = format.replace("H", H);
-        format = format.replace("M", M);
-        format = format.replace("S", S);
+        format = format.replace('hh', hh);
+        format = format.replace('mm', mm);
+        format = format.replace('ss', ss);
+        format = format.replace('h', h);
+        format = format.replace('m', m);
+        format = format.replace('s', s);
+        format = format.replace('H', H);
+        format = format.replace('M', M);
+        format = format.replace('S', S);
         return format;
     },
 
@@ -478,7 +478,7 @@ HD.DateTime = {
         };
         this.date = function(form, stamp){
             This = this;
-            if (typeof stamp === "undefined"){
+            if (typeof stamp === 'undefined'){
                 jsdate = new Date(); // Not provided
             }
             else if (stamp instanceof Date){

@@ -5,7 +5,7 @@
 
 /* global HD */
 
-"use strict";
+'use strict';
 
 var HD = global.HD || {};
 
@@ -184,8 +184,8 @@ HD.Math = {
         getAbsoluteCoords : function(positions, w, h, xOffset, yOffset){
             let x, y;
             const coords = [];
-            if (typeof xOffset === "undefined") xOffset = 0;
-            if (typeof yOffset === "undefined") yOffset = 0;
+            if (typeof xOffset === 'undefined') xOffset = 0;
+            if (typeof yOffset === 'undefined') yOffset = 0;
             positions.forEach(function(elem, index){
                 x = elem[0] / 100;
                 y = elem[1] / 100;
@@ -216,14 +216,14 @@ HD.Math = {
      * @param {Function} callback az animáció végén meghívott függvény
      * @param {Number} delay animáció hossza (ms)
      * @param {Number} [range=1] maximális animációs érték
-     * @param {String} [easing="swing"] animációs függvény
+     * @param {String} [easing='swing'] animációs függvény
      */
     animate : function(func, callback, delay, range, easing){
         let i, len;
         let value = 0;
         const steps = delay / 20;
-        if (typeof range === "undefined") range = 1;
-        if (typeof easing === "undefined") easing = "swing";
+        if (typeof range === 'undefined') range = 1;
+        if (typeof easing === 'undefined') easing = 'swing';
 
         const Easings = {
             /**
@@ -242,17 +242,18 @@ HD.Math = {
             }
         };
 
-        // TODO: felül kell vizsgálni ezt a szerkezetet
+        const makeStep = function(val, currentStep){
+            window.setTimeout(function(){
+                func.call(this, val);
+                if (currentStep === len && typeof callback === 'function'){
+                    callback.call(this);
+                }
+            }.bind(this), delay / steps * i);
+        };
+
         for (i = 0, len = Math.floor(steps); i <= len; i++){
             value = Easings[easing](i, 0, range, steps);
-            (function(val, currentStep){
-                window.setTimeout(function(){
-                    func.call(this, val);
-                    if (currentStep === len && typeof callback === "function"){
-                        callback.call(this);
-                    }
-                }.bind(this), delay / steps * i);
-            })(value, i);
+            makeStep(value, i);
         }
     }
 

@@ -25,7 +25,7 @@ const normalizePort = function(val){
 };
 
 /**
- * Alkalmazás státusza ("dev"|"test"|"prod")
+ * Alkalmazás státusza ('dev'|'test'|'prod')
  * @type {String}
  */
 ENV.PROJECT = 'dev';

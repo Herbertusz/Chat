@@ -5,7 +5,7 @@
  * @requires jQuery
  */
 
-"use strict";
+'use strict';
 
 /**
  * Globális HD névtér
@@ -21,8 +21,8 @@ var HD = window.HD || {};
 var namespace = function(namespaceString){
     let i, length;
     let parent = window;
-    let currentPart = "";
-    const parts = namespaceString.split(".");
+    let currentPart = '';
+    const parts = namespaceString.split('.');
 
     for (i = 0, length = parts.length; i < length; i++){
         currentPart = parts[i];
@@ -40,10 +40,10 @@ var namespace = function(namespaceString){
 //  * @param {Array} meta szelektor adatai
 //  * @returns {Boolean} true, ha a szelektorra illeszkedik az aktuális DOM elem
 //  */
-// $.expr[":"].data = function(obj, index, meta){
-//     const args = meta[3].split(",");
+// $.expr[':'].data = function(obj, index, meta){
+//     const args = meta[3].split(',');
 //     if (args.length === 1){
-//         return (typeof $(obj).data($.trim(args[0])) !== "undefined");
+//         return (typeof $(obj).data($.trim(args[0])) !== 'undefined');
 //     }
 //     else if (args.length === 2){
 //         return ($(obj).data($.trim(args[0])) == $.trim(args[1]));
@@ -74,12 +74,12 @@ HD.Web = function(){
         },
 
         init : function(){
-            document.addEventListener("DOMContentLoaded", function(){
+            document.addEventListener('DOMContentLoaded', function(){
                 for (i = 0; i < documentReady.length; i++){
                     documentReady[i].call(HD.Web);
                 }
             });
-            window.addEventListener("load", function(){
+            window.addEventListener('load', function(){
                 for (i = 0; i < windowLoad.length; i++){
                     windowLoad[i].call(HD.Web);
                 }

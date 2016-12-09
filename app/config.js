@@ -43,7 +43,7 @@ CHAT.Config = {
             // Vizuális értesítés engedélyezése
             allowed : true,
             // Vizuális értesítés typusai
-            // "title": <title> teg változtatésa; "box": chat-doboz kiemelése
+            // 'title': <title> teg változtatésa; 'box': chat-doboz kiemelése
             types : ['title', 'box']
         },
         // Hangos értesítés
@@ -122,7 +122,7 @@ CHAT.Config = {
             // Üzenetküldési mód változtatási lehetősége
             allowed : true,
             // Alapértelmezett üzenetküldési mód
-            // "enter": enter megnyomására; "button": gombra kattintva
+            // 'enter': enter megnyomására; 'button': gombra kattintva
             default : 'enter'
         }
 
@@ -135,7 +135,7 @@ CHAT.Config = {
         allowed : true,
 
         // Fájl átviteli módja
-        // "upload": feltöltés szerverre; "base64": base64 string átvitele; "zip": tömörített base64 átvitele
+        // 'upload': feltöltés szerverre; 'base64': base64 string átvitele; 'zip': tömörített base64 átvitele
         store : 'upload',
 
         // Egyszerre több fájl átvitelének engedélyezése
@@ -165,10 +165,10 @@ CHAT.Config = {
         },
 
         // Engedélyezett fájltípusok a types tulajdonságban definiáltak közül
-        allowedTypes : ["image", "text", "pdf", "doc", "xls", "ppt", "zip", "audio", "video"],
+        allowedTypes : ['image', 'text', 'pdf', 'doc', 'xls', 'ppt', 'zip', 'audio', 'video'],
 
         // Fájl maximális mérete
-        // Javaslat: "upload": <100MB; "base64": <5MB
+        // Javaslat: 'upload': <100MB; 'base64': <5MB
         maxSize : 100 * 1024 * 1024
 
     }

@@ -199,7 +199,7 @@ const DB = {
 //     * @param string $colname oszlop neve
 //     * @returns array oszlop
 //     */
-//    public static function getColumn($sql, $binds = array(), $colname = ""){
+//    public static function getColumn($sql, $binds = array(), $colname = ''){
 //        self::query($sql, $binds);
 //        $rows = self::$statement->fetchAll(PDO::FETCH_ASSOC);
 //        self::$num_rows = count($rows);
@@ -215,7 +215,7 @@ const DB = {
 //     * @param int $rownum sor sorszáma
 //     * @returns string mezőben tárolt érték
 //     */
-//    public static function getField($sql, $binds = array(), $colname = "", $rownum = 0){
+//    public static function getField($sql, $binds = array(), $colname = '', $rownum = 0){
 //        self::query($sql, $binds);
 //        $rows = self::$statement->fetchAll(PDO::FETCH_ASSOC);
 //        self::$num_rows = count($rows);

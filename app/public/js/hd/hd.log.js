@@ -5,9 +5,9 @@
 
 /* global HD namespace */
 
-"use strict";
+'use strict';
 
-var HD = namespace("HD");
+var HD = namespace('HD');
 
 /**
  * Kliens oldali logolás
@@ -26,7 +26,7 @@ HD.Log = {
         const errorStack = encodeURIComponent(data.stack);
         const postData = `name=${errorName}&message=${errorMessage}&stack=${errorStack}`;
 
-        xhr.open("POST", "/chat/clientlog");
+        xhr.open('POST', '/chat/clientlog');
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         xhr.send(postData);
     }

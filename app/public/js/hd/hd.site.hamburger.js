@@ -12,8 +12,8 @@
  *      item : '.main > li:not(.hamb)',
  *      hambList : '.sub',
  *      hambItem : '.sub > li',
- *      hambActiveClass : "active",
- *      cloneClass : "menu-clone",
+ *      hambActiveClass : 'active',
+ *      cloneClass : 'menu-clone',
  *      maxDiff : 10
  *  });
  *  menucompress.init();
@@ -21,9 +21,9 @@
 
 /* global HD namespace */
 
-"use strict";
+'use strict';
 
-HD.Site = namespace("HD.Site");
+HD.Site = namespace('HD.Site');
 
 /**
  * Tab objektum (Module minta)
@@ -54,8 +54,8 @@ HD.Site.Hamburger = function(options){
         item : '',
         hambList : '',
         hambItem : '',
-        hambActiveClass : "",
-        cloneClass : "",
+        hambActiveClass : '',
+        cloneClass : '',
         maxDiff : 10
     };
 
@@ -146,8 +146,8 @@ HD.Site.Hamburger = function(options){
         init : function(){
             $menu = $(options.menu);
             $menuClone = $menu.clone().css({
-                visibility : "hidden",
-                position : "absolute"
+                visibility : 'hidden',
+                position : 'absolute'
             }).appendTo('body').addClass(options.cloneClass);
 
             menuCalc();

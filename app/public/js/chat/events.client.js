@@ -1,6 +1,6 @@
 /* global HD */
 
-"use strict";
+'use strict';
 
 var CHAT = window.CHAT || {};
 CHAT.Events = CHAT.Events || {};
@@ -16,7 +16,7 @@ CHAT.Events.Client = {
      */
     createRoom : function(){
         const roomData = {
-            name : "",
+            name : '',
             userIds : [CHAT.USER.id],
             starter : CHAT.USER.id
         };
@@ -31,7 +31,7 @@ CHAT.Events.Client = {
         });
         CHAT.Methods.generateUserList(Userlist.elem(), roomData.userIds);
         roomData.name = `room-${roomData.starter}-${Date.now()}`;
-        Box.data("room", roomData.name);
+        Box.data('room', roomData.name);
         CHAT.socket.emit('roomCreated', roomData);
     },
 
@@ -41,7 +41,7 @@ CHAT.Events.Client = {
      */
     leaveRoom : function(box){
         const Box = HD.DOM(box);
-        const roomName = Box.data("room");
+        const roomName = Box.data('room');
 
         Box.remove();
         CHAT.socket.emit('roomLeave', {
@@ -59,10 +59,10 @@ CHAT.Events.Client = {
         const Box = HD.DOM(add).ancestor(CHAT.DOM.box);
         const Userlist = Box.find(CHAT.DOM.users);
         const currentUserIds = [];
-        const roomName = Box.data("room");
+        const roomName = Box.data('room');
 
         Userlist.find(CHAT.DOM.userItems).filter(':not(.cloneable)').elements.forEach(function(user){
-            currentUserIds.push(HD.DOM(user).dataNum("id"));
+            currentUserIds.push(HD.DOM(user).dataNum('id'));
         });
         if (currentUserIds.indexOf(userId) === -1){
             CHAT.Methods.generateUserList(Userlist.elem(), [userId]);
@@ -82,8 +82,8 @@ CHAT.Events.Client = {
         const Close = HD.DOM(close);
         const Box = Close.ancestor(CHAT.DOM.box);
         const User = Close.ancestor(CHAT.DOM.userItems);
-        const roomName = Box.data("room");
-        const userId = User.dataNum("id");
+        const roomName = Box.data('room');
+        const userId = User.dataNum('id');
 
         if (userId === CHAT.USER.id){
             // kilépés
@@ -115,7 +115,7 @@ CHAT.Events.Client = {
             userId : CHAT.USER.id,
             message : Message.elem().value,
             time : Date.now(),
-            roomName : Box.data("room")
+            roomName : Box.data('room')
         };
 
         if (data.message.trim().length > 0){
@@ -149,7 +149,7 @@ CHAT.Events.Client = {
             const errors = [];
             if (rawFile.size > maxSize){
                 errors.push({
-                    type : "fileSize",
+                    type : 'fileSize',
                     value : rawFile.size,
                     restrict : maxSize
                 });
@@ -162,7 +162,7 @@ CHAT.Events.Client = {
             }
             if (allowedTypes.indexOf(fileData.type) === -1){
                 errors.push({
-                    type : "fileType",
+                    type : 'fileType',
                     value : fileData.type,
                     restrict : allowedTypes
                 });
@@ -182,7 +182,7 @@ CHAT.Events.Client = {
                 store : store,
                 type : '',
                 time : Date.now(),
-                roomName : HD.DOM(box).data("room"),
+                roomName : HD.DOM(box).data('room'),
                 fileName : `${Date.now()}-${HD.Math.rand(100, 999)}.${rawFile.name.split('.').pop()}`
             };
             const errors = fileCheck(fileData, rawFile);
@@ -190,10 +190,10 @@ CHAT.Events.Client = {
             if (errors.length === 0){
                 const reader = new FileReader();
                 (new Promise(function(resolve){
-                    CHAT.Methods.progress(box, "show");
+                    CHAT.Methods.progress(box, 'show');
                     reader.onload = resolve;
                 })).then(function(){
-                    CHAT.Methods.progress(box, "hide");
+                    CHAT.Methods.progress(box, 'hide');
                     CHAT.Util.scrollToBottom(box);
                     return CHAT.FileTransfer.action('clientSend', [box, fileData, reader, rawFile, function(){
                         CHAT.Util.scrollToBottom(box);
@@ -218,9 +218,9 @@ CHAT.Events.Client = {
      * @param {HTMLElement} progressbar
      */
     abortFile : function(progressbar){
-        const barId = HD.DOM(progressbar).dataNum("id");
+        const barId = HD.DOM(progressbar).dataNum('id');
 
-        if (typeof CHAT.FileTransfer.XHR[barId] !== "undefined"){
+        if (typeof CHAT.FileTransfer.XHR[barId] !== 'undefined'){
             CHAT.FileTransfer.XHR[barId].abort();
         }
     },
@@ -236,7 +236,7 @@ CHAT.Events.Client = {
             userId : CHAT.USER.id,
             message : Message.elem().value,
             time : Date.now(),
-            roomName : Box.data("room")
+            roomName : Box.data('room')
         };
 
         CHAT.socket.emit('typeMessage', data);
@@ -250,11 +250,11 @@ CHAT.Events.Client = {
         const Change = HD.DOM(change);
         const Box = Change.ancestor(CHAT.DOM.box);
 
-        if (Change.prop("checked")){
-            Box.find(CHAT.DOM.sendButton).class("add", "hidden");
+        if (Change.prop('checked')){
+            Box.find(CHAT.DOM.sendButton).class('add', 'hidden');
         }
         else {
-            Box.find(CHAT.DOM.sendButton).class("remove", "hidden");
+            Box.find(CHAT.DOM.sendButton).class('remove', 'hidden');
         }
     }
 

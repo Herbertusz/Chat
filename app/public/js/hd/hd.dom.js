@@ -4,16 +4,16 @@
  *
  * @description DOM-kezelő
  * @example
- *  HD.DOM('.class').event("click", function(){...});
- *  HD.DOM('.class').find('button').data("clickable", "true").trigger("click");
+ *  HD.DOM('.class').event('click', function(){...});
+ *  HD.DOM('.class').find('button').data('clickable', 'true').trigger('click');
  *  const cloneElement = HD.DOM('.class').filter('[data-disabled]').clone(true).elem();
  */
 
 /* global HD namespace */
 
-"use strict";
+'use strict';
 
-var HD = namespace("HD");
+var HD = namespace('HD');
 
 /**
  * DOM elemek kezelését segítő objektum (Module minta)
@@ -28,15 +28,15 @@ HD.DOM = function(identifier){
      * @returns {Boolean}
      */
     const acceptableObject = function(ident){
-        if (typeof ident === "object"){
+        if (typeof ident === 'object'){
             if (
-                typeof ident.nodeType === "number" &&
+                typeof ident.nodeType === 'number' &&
                 (ident.nodeType === Node.ELEMENT_NODE || ident.nodeType === Node.DOCUMENT_NODE)
             ){
                 // HTMLElement | document
                 return true;
             }
-            else if (typeof ident.self !== "undefined" && ident.self === ident){
+            else if (typeof ident.self !== 'undefined' && ident.self === ident){
                 // window
                 return true;
             }
@@ -51,7 +51,7 @@ HD.DOM = function(identifier){
      * @private
      */
     const getHandlers = function(element, eventName){
-        if (typeof eventName === "string"){
+        if (typeof eventName === 'string'){
             return HD.DOM.eventListeners.filter(function(listener){
                 return listener.target === element && listener.eventName === eventName;
             });
@@ -71,7 +71,7 @@ HD.DOM = function(identifier){
      * @private
      */
     const getDataObjects = function(element, name){
-        if (typeof name === "string"){
+        if (typeof name === 'string'){
             return HD.DOM.dataObjects.find(function(data){
                 return data.element === element && data.name === name;
             });
@@ -105,10 +105,10 @@ HD.DOM = function(identifier){
          * @type {Array.<HTMLElement>}
          */
         elements : (function(ident){
-            if (typeof ident === "string"){
-                if (ident.indexOf("<") > -1){
+            if (typeof ident === 'string'){
+                if (ident.indexOf('<') > -1){
                     // HTML kód
-                    const div = document.createElement("div");
+                    const div = document.createElement('div');
                     div.innerHTML = ident;
                     return Array.from(div.children);
                 }
@@ -117,7 +117,7 @@ HD.DOM = function(identifier){
                     return Array.from(document.querySelectorAll(ident));
                 }
             }
-            else if (typeof ident === "object"){
+            else if (typeof ident === 'object'){
                 if (ident instanceof Array){
                     // Tömb
                     const accept = ident.every(function(elem){
@@ -154,7 +154,7 @@ HD.DOM = function(identifier){
          * @returns {HTMLElement|null}
          */
         elem : function(){
-            if (typeof this.elements[0] !== "undefined"){
+            if (typeof this.elements[0] !== 'undefined'){
                 return this.elements[0];
             }
             else {
@@ -215,7 +215,7 @@ HD.DOM = function(identifier){
         getByData : function(name, value){
             let elements;
 
-            if (typeof value === "undefined"){
+            if (typeof value === 'undefined'){
                 elements = this.filter(`[data-${name}]`);
             }
             else {
@@ -231,7 +231,7 @@ HD.DOM = function(identifier){
          * @returns {String|HD.DOM}
          */
         data : function(name, value){
-            if (typeof value === "undefined"){
+            if (typeof value === 'undefined'){
                 // getter
                 if (this.elem().hasAttribute(`data-${name}`)){
                     return this.elem().getAttribute(`data-${name}`);
@@ -269,22 +269,22 @@ HD.DOM = function(identifier){
          * @returns {Boolean|HD.DOM}
          */
         dataBool : function(name, value){
-            if (typeof value === "undefined"){
+            if (typeof value === 'undefined'){
                 // getter
                 const data = this.data(name);
                 return !(
                     data === null ||
-                    data === "" ||
-                    data === "0" ||
-                    data === "false" ||
-                    data === "null" ||
-                    data === "undefined"
+                    data === '' ||
+                    data === '0' ||
+                    data === 'false' ||
+                    data === 'null' ||
+                    data === 'undefined'
                 );
             }
             else {
                 // setter
                 if (value){
-                    this.data(name, "true");
+                    this.data(name, 'true');
                 }
                 else {
                     this.removeData(name);
@@ -300,7 +300,7 @@ HD.DOM = function(identifier){
          * @returns {Number|HD.DOM}
          */
         dataNum : function(name, value){
-            if (typeof value === "undefined"){
+            if (typeof value === 'undefined'){
                 // getter
                 const data = this.data(name);
                 return Number(data);
@@ -319,7 +319,7 @@ HD.DOM = function(identifier){
          * @returns {Object|HD.DOM}
          */
         dataObj : function(name, value){
-            if (typeof value === "undefined"){
+            if (typeof value === 'undefined'){
                 // getter
                 let obj;
                 const data = this.data(name);
@@ -351,7 +351,7 @@ HD.DOM = function(identifier){
          * @returns {*|HD.DOM}
          */
         dataX : function(name, value){
-            if (typeof value === "undefined"){
+            if (typeof value === 'undefined'){
                 // getter
                 const element = this.elem();
                 const data = getDataObjects(element, name);
@@ -360,12 +360,12 @@ HD.DOM = function(identifier){
                     value = element.getAttribute(`data-${name}`);
                     if (data){
                         value = HD.Misc.switching(data.type, {
-                            "undefined" : null,
-                            "boolean" : Boolean(value),
-                            "number" : Number(value),
-                            "string" : String(value),
-                            "symbol" : Symbol(value),
-                            "object" : JSON.parse(value)
+                            'undefined' : null,
+                            'boolean' : Boolean(value),
+                            'number' : Number(value),
+                            'string' : String(value),
+                            'symbol' : Symbol(value),
+                            'object' : JSON.parse(value)
                         }, value);
                         if (data.value === null){
                             value = null;
@@ -382,10 +382,10 @@ HD.DOM = function(identifier){
                 const originalType = typeof value;
                 let storeValue;
 
-                if (originalType === "undefined" || value === null){
+                if (originalType === 'undefined' || value === null){
                     storeValue = null;
                 }
-                else if (originalType === "object"){
+                else if (originalType === 'object'){
                     storeValue = JSON.stringify(value);
                 }
                 else {
@@ -411,7 +411,7 @@ HD.DOM = function(identifier){
          * @returns {Boolean|HD.DOM}
          */
         prop : function(property, value){
-            if (typeof value === "undefined"){
+            if (typeof value === 'undefined'){
                 // getter
                 return this.elem()[property];
             }
@@ -426,7 +426,7 @@ HD.DOM = function(identifier){
 
         /**
          * Osztálylista módosítása
-         * @param {String} operation - "add"|"remove"|"toggle"
+         * @param {String} operation - 'add'|'remove'|'toggle'
          * @param {String} className
          * @returns {HD.DOM}
          */
@@ -443,7 +443,7 @@ HD.DOM = function(identifier){
          * @returns {String|HD.DOM}
          */
         css : function(properties){
-            if (typeof properties === "string"){
+            if (typeof properties === 'string'){
                 // getter
                 return window.getComputedStyle(this.elem()).getPropertyValue(properties);
             }
@@ -509,7 +509,7 @@ HD.DOM = function(identifier){
          */
         event : function(eventNames, handler){
             this.elements.forEach(function(target){
-                eventNames.split(" ").forEach(function(eventName){
+                eventNames.split(' ').forEach(function(eventName){
                     target.addEventListener(eventName, handler.bind(target), false);
                     HD.DOM.eventListeners.push({
                         target : target,
@@ -529,14 +529,14 @@ HD.DOM = function(identifier){
         trigger : function(eventName){
             let handlers, eventObj;
 
-            if (typeof Event === "function"){
+            if (typeof Event === 'function'){
                 eventObj = new Event(eventName, {
                     bubbles : true,
                     cancelable : true
                 });
             }
             else {
-                eventObj = document.createEvent("Event");
+                eventObj = document.createEvent('Event');
                 eventObj.initEvent(eventName, true, true);
             }
             this.elements.forEach(function(target){
@@ -544,7 +544,7 @@ HD.DOM = function(identifier){
                 handlers.forEach(function(handlerObj){
                     handlerObj.handler.call(target, eventObj);
                 });
-                if (!eventObj.isDefaultPrevented && typeof target[eventName] === "function"){
+                if (!eventObj.isDefaultPrevented && typeof target[eventName] === 'function'){
                     target[eventName]();
                 }
             });
@@ -559,14 +559,14 @@ HD.DOM = function(identifier){
         dispatch : function(eventName){
             let eventObj;
 
-            if (typeof Event === "function"){
+            if (typeof Event === 'function'){
                 eventObj = new Event(eventName, {
                     bubbles : true,
                     cancelable : true
                 });
             }
             else {
-                eventObj = document.createEvent("Event");
+                eventObj = document.createEvent('Event');
                 eventObj.initEvent(eventName, true, true);
             }
             this.elements.forEach(function(target){
@@ -624,7 +624,7 @@ HD.DOM.dataObjects = [];
 HD.DOM.getMousePosition = function(event, elem){
     const offset = {x : 0, y : 0};
 
-    if (typeof elem === "undefined") elem = document.body;
+    if (typeof elem === 'undefined') elem = document.body;
     do {
         if (!isNaN(elem.offsetLeft)){
             offset.x += elem.offsetLeft;
@@ -643,7 +643,7 @@ HD.DOM.getMousePosition = function(event, elem){
  * Szövegkijelölés és képletöltés tiltása
  */
 HD.DOM.protection = function(){
-    HD.DOM('p').event("mousedown", function(event){
+    HD.DOM('p').event('mousedown', function(event){
         event.preventDefault();
     });
     document.onselectstart = function(){ return false; };
@@ -656,13 +656,13 @@ HD.DOM.protection = function(){
         '-webkit-user-select' : 'none'
     });
     HD.DOM('img')
-        .event("mouseup", function(event){
+        .event('mouseup', function(event){
             if (event.which === 3){
                 event.preventDefault();
                 event.stopPropagation();
             }
         })
-        .event("contextmenu", function(event){
+        .event('contextmenu', function(event){
             event.preventDefault();
             event.stopPropagation();
         });
@@ -680,21 +680,21 @@ HD.DOM.grabCursor = function(elem, openhand, closehand){
     const Elem = HD.DOM(elem);
 
     Elem.css({
-        "cursor" : cssValueOpen
+        'cursor' : cssValueOpen
     });
-    Elem.event("mouseover", function(){
+    Elem.event('mouseover', function(){
         Elem.css({
-            "cursor" : cssValueOpen
+            'cursor' : cssValueOpen
         });
     });
-    Elem.event("mousedown", function(){
+    Elem.event('mousedown', function(){
         Elem.css({
-            "cursor" : cssValueClose
+            'cursor' : cssValueClose
         });
     });
-    Elem.event("mouseup", function(){
+    Elem.event('mouseup', function(){
         Elem.css({
-            "cursor" : cssValueOpen
+            'cursor' : cssValueOpen
         });
     });
 };

@@ -1,6 +1,6 @@
 /* global HD */
 
-"use strict";
+'use strict';
 
 var CHAT = window.CHAT || {};
 
@@ -55,27 +55,27 @@ CHAT.FileTransfer = {
             clientSend : function(box, data, reader, rawFile, callback){
                 callback = HD.Function.param(callback, function(){});
                 const fileData = JSON.stringify(data);
-                const barId = CHAT.Methods.progressbar(box, "send", 0, null);
+                const barId = CHAT.Methods.progressbar(box, 'send', 0, null);
                 const xhr = new XMLHttpRequest();
 
-                xhr.open("POST", "/chat/uploadfile");
+                xhr.open('POST', '/chat/uploadfile');
                 xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
                 xhr.setRequestHeader('X-File-Data', encodeURIComponent(fileData));
                 xhr.setRequestHeader('Content-Type', 'application/octet-stream');
                 xhr.upload.onprogress = function(event){
                     if (event.lengthComputable){
                         const percent = event.loaded / event.total;
-                        CHAT.Methods.progressbar(box, "send", percent, barId);
+                        CHAT.Methods.progressbar(box, 'send', percent, barId);
                     }
                 };
                 xhr.onabort = function(){
-                    CHAT.Methods.progressbar(box, "abort", null, barId);
+                    CHAT.Methods.progressbar(box, 'abort', null, barId);
                     CHAT.socket.emit('abortFile', data);
                 };
                 xhr.onload = function(){
                     const response = JSON.parse(xhr.responseText);
                     data.file = response.filePath;
-                    CHAT.Methods.progressbar(box, "send", 1, barId);
+                    CHAT.Methods.progressbar(box, 'send', 1, barId);
                     CHAT.Methods.appendFile(box, data, true)
                         .then(callback)
                         .catch(function(error){

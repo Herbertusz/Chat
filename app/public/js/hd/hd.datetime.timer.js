@@ -5,9 +5,9 @@
  * @description időmérő
  * @example
  *  const timer = new HD.DateTime.Timer(-1);
- *  timer.set("00:10");
+ *  timer.set('00:10');
  *  timer.start(function(){
- *      element.innerHTML = this.get("mm:ss");
+ *      element.innerHTML = this.get('mm:ss');
  *  }).reach(0, function(){
  *      this.stop();
  *  });
@@ -15,20 +15,20 @@
 
 /* global HD namespace */
 
-"use strict";
+'use strict';
 
-var HD = namespace("HD");
-HD.DateTime = namespace("HD.DateTime");
+var HD = namespace('HD');
+HD.DateTime = namespace('HD.DateTime');
 
 /**
  * Időmérő objektum (Module minta)
  * @param {Number} add lépegetés (pl: stoppernél 1, visszaszámlálónál -1)
  * @param {Number} [stepInterval=1000] lépések között eltelt idő (ms)
- * @returns {Timer} timer felület
+ * @returns {Object} timer felület
  */
 HD.DateTime.Timer = function(add, stepInterval){
 
-    if (typeof stepInterval === "undefined") stepInterval = 1000;
+    if (typeof stepInterval === 'undefined') stepInterval = 1000;
 
     /**
      * Eltelt időegység (másodpercben)
@@ -39,7 +39,7 @@ HD.DateTime.Timer = function(add, stepInterval){
 
     /**
      * Timeout ID
-     * @type {Number}
+     * @type {Object}
      * @private
      */
     let timerID = null;
@@ -81,11 +81,11 @@ HD.DateTime.Timer = function(add, stepInterval){
 
     /**
      * Bevitt idő beolvasása
-     * @param {String} str időt leíró string (formátum: "hh:mm:ss"|"mm:ss"|"ss")
+     * @param {String} str időt leíró string (formátum: 'hh:mm:ss'|'mm:ss'|'ss')
      * @returns {Number} időegység értéke
      */
     const parse = function(str){
-        const segments = str.split(":");
+        const segments = str.split(':');
         if (segments.length === 1){
             str = `00:00:${str}`;
         }
@@ -114,15 +114,15 @@ HD.DateTime.Timer = function(add, stepInterval){
         const mm = (m < 10) ? `0${m}` : `${m}`;
         const ss = (s < 10) ? `0${s}` : `${s}`;
         h = h.toString(); m = m.toString(); s = s.toString();
-        format = format.replace("hh", hh);
-        format = format.replace("mm", mm);
-        format = format.replace("ss", ss);
-        format = format.replace("h", `${h}`);
-        format = format.replace("m", `${m}`);
-        format = format.replace("s", `${s}`);
-        format = format.replace("H", `${H}`);
-        format = format.replace("M", `${M}`);
-        format = format.replace("S", `${S}`);
+        format = format.replace('hh', hh);
+        format = format.replace('mm', mm);
+        format = format.replace('ss', ss);
+        format = format.replace('h', `${h}`);
+        format = format.replace('m', `${m}`);
+        format = format.replace('s', `${s}`);
+        format = format.replace('H', `${H}`);
+        format = format.replace('M', `${M}`);
+        format = format.replace('S', `${S}`);
         return format;
     };
 
@@ -134,7 +134,7 @@ HD.DateTime.Timer = function(add, stepInterval){
          * @returns {Object} Timer objektum
          */
         set : function(value){
-            if (typeof value === "string"){
+            if (typeof value === 'string'){
                 T = parse(value);
             }
             else {
@@ -149,7 +149,7 @@ HD.DateTime.Timer = function(add, stepInterval){
          * @returns {Number|String} aktuális idő
          */
         get : function(format){
-            if (typeof format === "undefined"){
+            if (typeof format === 'undefined'){
                 return T;
             }
             else {
@@ -206,7 +206,7 @@ HD.DateTime.Timer = function(add, stepInterval){
          * @returns {Object} Timer objektum
          */
         reach : function(value, callback){
-            if (typeof value === "string"){
+            if (typeof value === 'string'){
                 value = parse(value);
             }
             events.push({

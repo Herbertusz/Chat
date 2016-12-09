@@ -17,9 +17,9 @@ const Model = function(db){
          */
         getUsers : function(callback){
             callback = HD.Function.param(callback, () => {});
-            return db.collection("chat_users")
-                .find({"active" : true})
-                .sort({"name" : 1})
+            return db.collection('chat_users')
+                .find({'active' : true})
+                .sort({'name' : 1})
                 .toArray()
                 .then(function(users){
                     callback(users);
@@ -43,10 +43,10 @@ const Model = function(db){
          */
         getUser : function(data, callback){
             callback = HD.Function.param(callback, () => {});
-            return db.collection("chat_users")
+            return db.collection('chat_users')
                 .find({
-                    "name" : data.username,
-                    "password" : data.password
+                    'name' : data.username,
+                    'password' : data.password
                 })
                 .limit(1)
                 .toArray()

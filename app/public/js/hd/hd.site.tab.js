@@ -7,16 +7,16 @@
  *  HTML-CSS: http://blog.webprog.biz/jquery-tabok
  *  const tab = new HD.Site.Tab({
  *      $trigger : $('ul.tab li'),
- *      activeClass : "selected"
+ *      activeClass : 'selected'
  *  });
  *  tab.init();
  */
 
 /* global HD namespace */
 
-"use strict";
+'use strict';
 
-HD.Site = namespace("HD.Site");
+HD.Site = namespace('HD.Site');
 
 /**
  * Tab objektum (Module minta)
@@ -30,10 +30,10 @@ HD.Site.Tab = function(options){
      * @type {Object}
      */
     const defaultOptions = {
-        $trigger : $(".tab"),
-        activeClass : "active",
-        dataGroup : "tabgroup",
-        dataId : "tabid"
+        $trigger : $('.tab'),
+        activeClass : 'active',
+        dataGroup : 'tabgroup',
+        dataId : 'tabid'
     };
 
     options = $.extend({}, defaultOptions, options);

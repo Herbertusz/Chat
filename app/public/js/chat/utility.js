@@ -1,6 +1,6 @@
 /* global HD SERVER io */
 
-"use strict";
+'use strict';
 
 var CHAT = window.CHAT || {};
 
@@ -92,9 +92,9 @@ CHAT.Util = {
      */
     escapeHtml : function(string){
         const entityMap = {
-            "&" : "&amp;",
-            "<" : "&lt;",
-            ">" : "&gt;"
+            '&' : '&amp;',
+            '<' : '&lt;',
+            '>' : '&gt;'
         };
         let str;
 
@@ -150,7 +150,7 @@ CHAT.Util = {
         else {
             insert.appendChild(Clone.elem());
         }
-        Clone.class("remove", "cloneable");
+        Clone.class('remove', 'cloneable');
         return Clone.elem();
     }
 

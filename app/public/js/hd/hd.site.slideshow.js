@@ -13,14 +13,14 @@
  *      },
  *      jumpers : {
  *          elements : $('#slideshow .jump'),
- *          activeClass : "active"
+ *          activeClass : 'active'
  *      },
  *      timeout : 5000,
  *      cycle : true
  *    });
  *  // Beállítás felülírása
  *  carousel.options.default = function(){
- *      carousel.step("right");
+ *      carousel.step('right');
  *  };
  *  // Effekt felülírása
  *  carousel.effect = function($itemfrom, $itemto){
@@ -43,9 +43,9 @@
 
 /* global HD namespace */
 
-"use strict";
+'use strict';
 
-HD.Site = namespace("HD.Site");
+HD.Site = namespace('HD.Site');
 
 /**
  * Slideshow objektum (Module minta)
@@ -82,14 +82,14 @@ HD.Site.Slideshow = function(options){
         },
         jumpers : {
             elements : null,
-            activeClass : "active"
+            activeClass : 'active'
         },
         default : function(){},
         timeout : null,
         cycle : true,
         // DOM elemekhez kapcsolt adattárolók
-        dataItem : "hd-site-slideshow-item",
-        dataJumper : "hd-site-slideshow-jump"
+        dataItem : 'hd-site-slideshow-item',
+        dataJumper : 'hd-site-slideshow-jump'
     };
 
     options = $.extend({}, defaultOptions, options);
@@ -102,7 +102,7 @@ HD.Site.Slideshow = function(options){
 
     /**
      * Időzítő
-     * @type {Number}
+     * @type {Object}
      */
     let timer = null;
 
@@ -116,7 +116,7 @@ HD.Site.Slideshow = function(options){
         const $jumpers = options.jumpers.elements ? $(options.jumpers.elements) : null;
         if ($jumpers && $jumpers.length > 0){
             $jumpers.removeClass(options.jumpers.activeClass);
-            if (typeof $jumpers.data(options.dataJumper) !== "undefined"){
+            if (typeof $jumpers.data(options.dataJumper) !== 'undefined'){
                 $activeJumper = $jumpers.filter(function(){
                     return $(this).data(options.dataJumper) === current;
                 });
@@ -176,7 +176,7 @@ HD.Site.Slideshow = function(options){
         /**
          * Slideshow léptetése
          * @public
-         * @param {Number|String} loc pozíció ("left"|"right"|Number)
+         * @param {Number|String} loc pozíció ('left'|'right'|Number)
          */
         step : function(loc){
             const $items = $(options.items);
@@ -185,10 +185,10 @@ HD.Site.Slideshow = function(options){
                 return $(this).data(options.dataItem) === current;
             });
 
-            if (loc === "left"){
+            if (loc === 'left'){
                 current = (current + (itemnum - 1)) % itemnum;
             }
-            else if (loc === "right"){
+            else if (loc === 'right'){
                 current = (current + 1) % itemnum;
             }
             else {
@@ -239,18 +239,18 @@ HD.Site.Slideshow = function(options){
             });
             if ($stepperleft && $stepperleft.length > 0){
                 $stepperleft.click(function(){
-                    Interface.step("left");
+                    Interface.step('left');
                 });
             }
             if ($stepperright && $stepperright.length > 0){
                 $stepperright.click(function(){
-                    Interface.step("right");
+                    Interface.step('right');
                 });
             }
             if ($jumpers && $jumpers.length > 0){
                 $jumpers.click(function(){
                     let num = 0;
-                    if (typeof $jumpers.data(options.dataJumper) !== "undefined"){
+                    if (typeof $jumpers.data(options.dataJumper) !== 'undefined'){
                         num = $(this).data(options.dataJumper);
                     }
                     else {

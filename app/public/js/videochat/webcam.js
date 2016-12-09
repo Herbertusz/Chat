@@ -1,8 +1,8 @@
 /* global HD LZString */
 
-"use strict";
+'use strict';
 
-HD.DOM(document).event("DOMContentLoaded", function(){
+HD.DOM(document).event('DOMContentLoaded', function(){
 
     const constraints = {
         video : true,
@@ -17,16 +17,16 @@ HD.DOM(document).event("DOMContentLoaded", function(){
         const videoWidth = videoElement.clientWidth;
         const videoHeight = videoElement.clientHeight;
         const ratio = videoWidth / videoHeight;
-        if (typeof maxWidth !== "undefined"){
+        if (typeof maxWidth !== 'undefined'){
             width = (videoWidth <= maxWidth) ? videoWidth : maxWidth;
             height = width / ratio;
         }
-        if (typeof maxHeight !== "undefined" && height > maxHeight){
+        if (typeof maxHeight !== 'undefined' && height > maxHeight){
             height = maxHeight;
             width = height * ratio;
         }
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
         canvas.width = width;
         canvas.height = height;
         ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);

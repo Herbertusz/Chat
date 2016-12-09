@@ -1,6 +1,6 @@
 /* global HD */
 
-"use strict";
+'use strict';
 
 var CHAT = window.CHAT || {};
 
@@ -117,7 +117,7 @@ CHAT.Methods = {
         List.elem().innerHTML += `
             <li>
                 <span class="time">${time}</span>
-                <strong class="${highlighted ? "self" : ""}">${CHAT.Util.escapeHtml(userName)}</strong>:
+                <strong class="${highlighted ? 'self' : ''}">${CHAT.Util.escapeHtml(userName)}</strong>:
                 <br />${CHAT.Methods.replaceMessage(data.message)}
             </li>
         `;
@@ -126,7 +126,7 @@ CHAT.Methods = {
     /**
      * Rendszerüzenet beszúrása
      * @param {HTMLElement} box
-     * @param {String} type - "join"|"leave"|"forceJoinYou"|"forceJoinOther"|"forceLeaveYou"|"forceLeaveOther"
+     * @param {String} type - 'join'|'leave'|'forceJoinYou'|'forceJoinOther'|'forceLeaveYou'|'forceLeaveOther'
      * @param {Number} fromId
      * @param {Number} [toId]
      */
@@ -172,7 +172,7 @@ CHAT.Methods = {
         const ListItem = HD.DOM(`
             <li>
                 <span class="time">${time}</span>
-                <strong class="${highlighted ? "self" : ""}">${CHAT.Util.escapeHtml(userName)}</strong>:
+                <strong class="${highlighted ? 'self' : ''}">${CHAT.Util.escapeHtml(userName)}</strong>:
                 <br />
                 <div class="filedisplay"></div>
             </li>
@@ -180,7 +180,7 @@ CHAT.Methods = {
         const tplError = `
             <a href="${data.file}" target="_blank">${CHAT.Labels.file.error}</a>
         `;
-        if (data.type === "image"){
+        if (data.type === 'image'){
             imgSrc = data.file;
             tpl = `
                 <a href="${data.file}" target="_blank">
@@ -246,33 +246,33 @@ CHAT.Methods = {
 
         if (!barId){
             barId = HD.Number.getUniqueId();
-            List.elem().innerHTML += tpl.replace("{BARID}", barId.toString());
+            List.elem().innerHTML += tpl.replace('{BARID}', barId.toString());
             CHAT.Util.scrollToBottom(box, true);
             if (cancelable){
-                List.find('.cancel').event("click", function(){
+                List.find('.cancel').event('click', function(){
                     const Progressbar = HD.DOM(this).ancestor('.progressbar');
                     CHAT.Events.Client.abortFile(Progressbar.elem());
-                    HD.DOM(this).class("add", "hidden");
+                    HD.DOM(this).class('add', 'hidden');
                 });
             }
             else {
-                List.find('.cancel').class("add", "hidden");
+                List.find('.cancel').class('add', 'hidden');
             }
             return barId;
         }
         else {
             const Progressbar = List.find('.progressbar').filter(`[data-id="${barId}"]`);
-            if (direction === "abort"){
+            if (direction === 'abort'){
                 Progressbar.find('.label').elem().innerHTML = CHAT.Labels.file[direction]();
-                Progressbar.find('.line').class("add", "aborted");
+                Progressbar.find('.line').class('add', 'aborted');
             }
             else {
                 if (percent === 100){
                     Progressbar.find('.label').elem().innerHTML = CHAT.Labels.file[`${direction}End`]();
-                    Progressbar.find('.line').class("add", "finished");
-                    Progressbar.find('.cancel').class("add", "hidden");
+                    Progressbar.find('.line').class('add', 'finished');
+                    Progressbar.find('.cancel').class('add', 'hidden');
                 }
-                Progressbar.find('.line').css({"width" : `${percent}%`});
+                Progressbar.find('.line').css({'width' : `${percent}%`});
                 Progressbar.find('.numeric').elem().innerHTML = CHAT.Labels.file.percent(percent);
             }
             return null;
@@ -290,12 +290,12 @@ CHAT.Methods = {
             ${CHAT.Labels.file.read()}
         `;
 
-        if (operation === "show"){
+        if (operation === 'show'){
             Progress.find(CHAT.DOM.progressText).elem().innerHTML = tpl;
-            Progress.class("remove", "hidden");
+            Progress.class('remove', 'hidden');
         }
         else {
-            Progress.class("add", "hidden");
+            Progress.class('add', 'hidden');
             Progress.find(CHAT.DOM.progressText).elem().innerHTML = '';
         }
     },
@@ -306,8 +306,8 @@ CHAT.Methods = {
      * @param {Object} [data]
      * @description
      * data = {
-     *     type : String,   // "message"|"file"|"create"|"join"|"leave"|
-     *                      // "forceJoinYou"|"forceJoinOther"|"forceLeaveYou"|"forceLeaveOther"
+     *     type : String,   // 'message'|'file'|'create'|'join'|'leave'|
+     *                      // 'forceJoinYou'|'forceJoinOther'|'forceLeaveYou'|'forceLeaveOther'
      *     fromId : Number,
      *     toId : Number,
      *     local : Boolean
@@ -329,10 +329,10 @@ CHAT.Methods = {
             },
             box : function(activate){
                 if (activate){
-                    HD.DOM(box).class("add", "notification"); // css({"outline" : "2px dashed red"});
+                    HD.DOM(box).class('add', 'notification'); // css({'outline' : '2px dashed red'});
                 }
                 else {
-                    HD.DOM(CHAT.DOM.box).class("remove", "notification"); // css({"outline" : "0px solid transparent"});
+                    HD.DOM(CHAT.DOM.box).class('remove', 'notification'); // css({'outline' : '0px solid transparent'});
                 }
             }
         };
@@ -346,13 +346,13 @@ CHAT.Methods = {
             if (notif.sound.allowed){
                 let audio = HD.DOM('#notification-audio').elem();
                 if (!audio){
-                    audio = document.createElement("audio");
+                    audio = document.createElement('audio');
                     audio.oncanplaythrough = function(){
                         audio.play();
                     };
                     audio.volume = 0.5;
-                    audio.preload = "auto";
-                    audio.style.display = "none";
+                    audio.preload = 'auto';
+                    audio.style.display = 'none';
                     audio.src = notif.sound.audio[data.type];
                     document.body.appendChild(audio);
                 }
@@ -385,11 +385,11 @@ CHAT.Methods = {
                 `;
 
                 LocalNotification.find(CHAT.DOM.text).elem().innerHTML = tpl;
-                LocalNotification.class("remove", "hidden");
+                LocalNotification.class('remove', 'hidden');
 
-                LocalNotification.event("click", function(){
+                LocalNotification.event('click', function(){
                     list.scrollTop = list.scrollHeight;
-                    HD.DOM(this).class("add", "hidden");
+                    HD.DOM(this).class('add', 'hidden');
                     HD.DOM(this).find(CHAT.DOM.text).elem().innerHTML = '';
                 });
             }
@@ -411,7 +411,7 @@ CHAT.Methods = {
             let image;
             const images = CHAT.Config.messageSend.imageReplacement.images;
             for (image in images){
-                const escapedIcon = image.replace(/([.*+?^=!:${}()|[\]/\\])/g, "\\$1");
+                const escapedIcon = image.replace(/([.*+?^=!:${}()|[\]/\\])/g, '\\$1');
                 messageArray[0] = messageArray[0].replace(
                     new RegExp(escapedIcon, 'g'),
                     `<img alt="${image}" src="${images[image]}" />`
@@ -478,10 +478,10 @@ CHAT.Methods = {
         errors.forEach(function(error){
             errorMessages.push(CHAT.Labels.error[error.type](error.value, error.restrict));
         });
-        Box.find(CHAT.DOM.errorList).elem().innerHTML = errorMessages.join("<br />");
-        Box.find(CHAT.DOM.error).class("remove", "hidden");
+        Box.find(CHAT.DOM.errorList).elem().innerHTML = errorMessages.join('<br />');
+        Box.find(CHAT.DOM.error).class('remove', 'hidden');
         window.setTimeout(function(){
-            Box.find(CHAT.DOM.error).class("add", "hidden");
+            Box.find(CHAT.DOM.error).class('add', 'hidden');
             Box.find(CHAT.DOM.errorList).elem().innerHTML = '';
         }, CHAT.Config.error.messageWait);
     },
@@ -492,9 +492,9 @@ CHAT.Methods = {
      * @returns {String}
      */
     getUserName : function(userId){
-        if (!userId) return "";
+        if (!userId) return '';
         const Element = HD.DOM(CHAT.DOM.onlineListItems).filter(`[data-id="${userId}"]`);
-        return Element.data("name");
+        return Element.data('name');
     },
 
     /**
@@ -511,12 +511,12 @@ CHAT.Methods = {
         }
         HD.DOM(CHAT.DOM.onlineListItems).elements.forEach(function(onlineListItem){
             let user;
-            const currentUserId = HD.DOM(onlineListItem).dataNum("id");
+            const currentUserId = HD.DOM(onlineListItem).dataNum('id');
             if (userIds.indexOf(currentUserId) > -1){
                 user = CHAT.Util.cloneElement(HD.DOM(to).find('.cloneable').elem(), to, currentUserId === CHAT.USER.id);
                 const User = HD.DOM(user);
-                User.dataNum("id", currentUserId);
-                User.find(CHAT.DOM.status).class("add", "run");
+                User.dataNum('id', currentUserId);
+                User.find(CHAT.DOM.status).class('add', 'run');
                 CHAT.Methods.setStatus(user, CHAT.Methods.getStatus(onlineListItem));
                 User.find('.name').elem().innerHTML = CHAT.Methods.getUserName(currentUserId);
             }
@@ -531,19 +531,19 @@ CHAT.Methods = {
     setStatus : function(elem, status){
         let n;
         const StatusElem = HD.DOM(elem).find(CHAT.DOM.status);
-        const statuses = ["on", "busy", "inv", "off"];
+        const statuses = ['on', 'busy', 'inv', 'off'];
 
-        if (status === "idle"){
-            StatusElem.class("add", "idle");
+        if (status === 'idle'){
+            StatusElem.class('add', 'idle');
         }
         else {
-            StatusElem.class("remove", "idle");
+            StatusElem.class('remove', 'idle');
             for (n = 0; n < statuses.length; n++){
-                StatusElem.class("remove", statuses[n]);
+                StatusElem.class('remove', statuses[n]);
             }
-            StatusElem.class("add", status);
+            StatusElem.class('add', status);
         }
-        StatusElem.find('use').elem().setAttribute("xlink:href", `#${status}`);
+        StatusElem.find('use').elem().setAttribute('xlink:href', `#${status}`);
     },
 
     /**
@@ -554,7 +554,7 @@ CHAT.Methods = {
     getStatus : function(elem){
         let n, status;
         const statusElem = HD.DOM(elem).find(CHAT.DOM.status).elem();
-        const statuses = ["on", "busy", "idle", "inv", "off"];
+        const statuses = ['on', 'busy', 'idle', 'inv', 'off'];
 
         for (n = 0; n < statuses.length; n++){
             if (statusElem.classList.contains(statuses[n])){
@@ -573,8 +573,8 @@ CHAT.Methods = {
      *     <socket.id> : {
      *         id : Number,      // user azonosító
      *         name : String,    // user login név
-     *         status : String,  // user státusz ("on"|"busy"|"off")
-     *         isIdle : Boolean  // user státusz: "idle"
+     *         status : String,  // user státusz ('on'|'busy'|'off')
+     *         isIdle : Boolean  // user státusz: 'idle'
      *     },
      *     ...
      * }
@@ -585,21 +585,21 @@ CHAT.Methods = {
 
         for (socketId in connectedUsers){
             isIdle = connectedUsers[socketId].isIdle;
-            onlineUserStatuses[connectedUsers[socketId].id] = isIdle ? "idle" : connectedUsers[socketId].status;
+            onlineUserStatuses[connectedUsers[socketId].id] = isIdle ? 'idle' : connectedUsers[socketId].status;
         }
         HD.DOM(CHAT.DOM.onlineListItems).elements.forEach(function(onlineListItem){
-            const currentId = HD.DOM(onlineListItem).dataNum("id");
-            if (typeof onlineUserStatuses[currentId] !== "undefined"){
+            const currentId = HD.DOM(onlineListItem).dataNum('id');
+            if (typeof onlineUserStatuses[currentId] !== 'undefined'){
                 CHAT.Methods.setStatus(onlineListItem, onlineUserStatuses[currentId]);
             }
             else {
-                CHAT.Methods.setStatus(onlineListItem, "off");
+                CHAT.Methods.setStatus(onlineListItem, 'off');
             }
         });
         HD.DOM(CHAT.DOM.box).elements.forEach(function(box){
             HD.DOM(box).find(CHAT.DOM.userItems).elements.forEach(function(userItem){
-                const onlineStatus = onlineUserStatuses[HD.DOM(userItem).dataNum("id")];
-                CHAT.Methods.setStatus(userItem, onlineStatus || "off");
+                const onlineStatus = onlineUserStatuses[HD.DOM(userItem).dataNum('id')];
+                CHAT.Methods.setStatus(userItem, onlineStatus || 'off');
             });
         });
     },
@@ -613,8 +613,8 @@ CHAT.Methods = {
      *     <socket.id> : {
      *         id : Number,      // user azonosító
      *         name : String,    // user login név
-     *         status : String,  // user státusz ("on"|"busy"|"off")
-     *         isIdle : Boolean  // user státusz: "idle"
+     *         status : String,  // user státusz ('on'|'busy'|'off')
+     *         isIdle : Boolean  // user státusz: 'idle'
      *     },
      *     ...
      * }
@@ -622,7 +622,7 @@ CHAT.Methods = {
     changeUserStatus : function(newStatus){
         let socketId;
         let thisSocket = null;
-        const connectedUsers = HD.DOM(CHAT.DOM.online).dataObj("connected-users");
+        const connectedUsers = HD.DOM(CHAT.DOM.online).dataObj('connected-users');
 
         for (socketId in connectedUsers){
             if (connectedUsers[socketId].id === CHAT.USER.id){
@@ -631,10 +631,10 @@ CHAT.Methods = {
             }
         }
         if (thisSocket){
-            if (newStatus === "idle"){
+            if (newStatus === 'idle'){
                 connectedUsers[thisSocket].isIdle = true;
             }
-            else if (newStatus === "notidle"){
+            else if (newStatus === 'notidle'){
                 connectedUsers[thisSocket].isIdle = false;
             }
             else {
@@ -642,28 +642,28 @@ CHAT.Methods = {
                 connectedUsers[thisSocket].status = newStatus;
             }
         }
-        HD.DOM(CHAT.DOM.online).dataObj("connected-users", connectedUsers);
+        HD.DOM(CHAT.DOM.online).dataObj('connected-users', connectedUsers);
         return connectedUsers;
     },
 
     /**
      * Doboz aktiválása/inaktiválása
      * @param {HTMLElement} box
-     * @param {String} newStatus - "enabled"|"disabled"
+     * @param {String} newStatus - 'enabled'|'disabled'
      */
     changeBoxStatus : function(box, newStatus){
         const Box = HD.DOM(box);
-        if (newStatus === "enabled"){
-            Box.find(CHAT.DOM.textarea).prop("disabled", false);
-            Box.find(CHAT.DOM.userThrow).dataBool("disabled", false);
-            Box.find(CHAT.DOM.fileTrigger).dataBool("disabled", false);
-            Box.dataBool("disabled", false);
+        if (newStatus === 'enabled'){
+            Box.find(CHAT.DOM.textarea).prop('disabled', false);
+            Box.find(CHAT.DOM.userThrow).dataBool('disabled', false);
+            Box.find(CHAT.DOM.fileTrigger).dataBool('disabled', false);
+            Box.dataBool('disabled', false);
         }
-        else if (newStatus === "disabled"){
-            Box.find(CHAT.DOM.textarea).prop("disabled", true);
-            Box.find(CHAT.DOM.userThrow).dataBool("disabled", true);
-            Box.find(CHAT.DOM.fileTrigger).dataBool("disabled", true);
-            Box.dataBool("disabled", true);
+        else if (newStatus === 'disabled'){
+            Box.find(CHAT.DOM.textarea).prop('disabled', true);
+            Box.find(CHAT.DOM.userThrow).dataBool('disabled', true);
+            Box.find(CHAT.DOM.fileTrigger).dataBool('disabled', true);
+            Box.dataBool('disabled', true);
         }
     },
 
@@ -678,7 +678,7 @@ CHAT.Methods = {
         const xhr = new XMLHttpRequest();
         const postData = `roomName=${roomName}`;
 
-        xhr.open("POST", "/chat/getroommessages");
+        xhr.open('POST', '/chat/getroommessages');
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         xhr.onload = function(){
             const resp = JSON.parse(xhr.responseText);
@@ -714,7 +714,7 @@ CHAT.Methods = {
                         let data;
                         const timestamp = msgData.created;
 
-                        if (typeof msgData.message !== "undefined"){
+                        if (typeof msgData.message !== 'undefined'){
                             CHAT.Methods.appendUserMessage(box, {
                                 userId : msgData.userId,
                                 time : timestamp,

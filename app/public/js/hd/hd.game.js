@@ -7,9 +7,9 @@
 
 /* global HD namespace */
 
-"use strict";
+'use strict';
 
-HD.Game = namespace("HD.Game");
+HD.Game = namespace('HD.Game');
 
 /**
  * Canvas 2D alapú játék
@@ -22,7 +22,7 @@ HD.Game.Canvas2D = function(selector, gameStartFunc){
     Game.canvas = document.querySelector(selector);
     Game.originalWidth = Game.canvas.width;
     Game.originalHeight = Game.canvas.height;
-    Game.ctx = Game.canvas.getContext("2d");
+    Game.ctx = Game.canvas.getContext('2d');
     gameStartFunc.call(Game);
 
 };
@@ -36,13 +36,13 @@ HD.Game.Canvas2D = function(selector, gameStartFunc){
 HD.Game.Canvas3D = function(selector, gameStartFunc, gameFallbackFunc){
 
     const Game = HD.Game;
-    if (typeof gameFallbackFunc === "undefined") gameFallbackFunc = function(){};
+    if (typeof gameFallbackFunc === 'undefined') gameFallbackFunc = function(){};
 
     Game.canvas = document.querySelector(selector);
     Game.originalWidth = Game.canvas.width;
     Game.originalHeight = Game.canvas.height;
     try {
-        Game.gl = Game.canvas.getContext("webgl") || Game.canvas.getContext("experimental-webgl");
+        Game.gl = Game.canvas.getContext('webgl') || Game.canvas.getContext('experimental-webgl');
     }
     catch (e){}
 

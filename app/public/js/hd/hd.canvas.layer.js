@@ -8,30 +8,17 @@
 
 /* global HD namespace */
 
-"use strict";
+'use strict';
 
-HD.Canvas = namespace("HD.Canvas");
+HD.Canvas = namespace('HD.Canvas');
 
 /**
  * Rétegcsoportokat kezelő objektum (Module minta)
- * @param {HTMLCanvasElement} canvas a canvas elem amelyikhez a layerset tartozik
- * @param {Layer} [layer] tetszőleges számú réteg
+ * @param {HTMLCanvasElement} canvas - a canvas elem amelyikhez a layerset tartozik
+ * @param {Layer} [layers] - tetszőleges számú réteg
  * @returns {Object}
  */
-HD.Canvas.Layerset = function(canvas, ...layer){
-
-    /**
-     * Ciklusváltozó
-     * @type {Number}
-     */
-    let _i;
-
-    /**
-     * A rétegek
-     * @private
-     * @type {Array.<Object>}
-     */
-    const layers = [];
+HD.Canvas.Layerset = function(canvas, ...layers){
 
     /**
      * Réteg keresése a layerset-ben
@@ -81,20 +68,20 @@ HD.Canvas.Layerset = function(canvas, ...layer){
         /**
          * Réteg beszúrása
          * @param {Layer} currentLayer az új réteg
-         * @param {Number|String} [zOverwrite="remain"] az új réteg helye (Number|"remain"|"top"|"bg")
+         * @param {Number|String} [zOverwrite='remain'] az új réteg helye (Number|'remain'|'top'|'bg')
          * @returns {Layerset}
          */
         pushLayer : function(currentLayer, zOverwrite){
-            if (typeof zOverwrite === "undefined") zOverwrite = "remain";
-            if (zOverwrite === "top"){
+            if (typeof zOverwrite === 'undefined') zOverwrite = 'remain';
+            if (zOverwrite === 'top'){
                 // legfelső réteg
                 layers.push(currentLayer);
             }
-            else if (zOverwrite === "bg"){
+            else if (zOverwrite === 'bg'){
                 // háttérréteg
                 layers.unshift(currentLayer);
             }
-            else if (zOverwrite === "remain"){
+            else if (zOverwrite === 'remain'){
                 // beszúrás a benne tárolt zIndex alapján
                 resetZAxis();
             }
@@ -124,38 +111,38 @@ HD.Canvas.Layerset = function(canvas, ...layer){
         /**
          * Réteg mozgatása a z-tengelyen
          * @param {Layer} currentLayer a mozdítandó réteg
-         * @param {String} location mozgatás iránya ("down"|"up"|"bg"|"top")
+         * @param {String} location mozgatás iránya ('down'|'up'|'bg'|'top')
          * @param {Number} [num=1] down és up esetében a lépések száma
          * @returns {Layerset}
          */
         moveLayer : function(currentLayer, location, num){
-            if (typeof num === "undefined") num = 1;
+            if (typeof num === 'undefined') num = 1;
             let temp, i;
             const max = layers.length - 1;
             let n = getLayerIndex(currentLayer);
             if (n !== false){
-                if (location === "up"){
+                if (location === 'up'){
                     for (i = 0; n < max && i < num; n++, i++){
                         temp = layers[n + 1];
                         layers[n + 1] = layers[n];
                         layers[n] = temp;
                     }
                 }
-                else if (location === "down"){
+                else if (location === 'down'){
                     for (i = 0; n > 0 && i < num; n--, i++){
                         temp = layers[n - 1];
                         layers[n - 1] = layers[n];
                         layers[n] = temp;
                     }
                 }
-                else if (location === "top"){
+                else if (location === 'top'){
                     for (; n < max; n++){
                         temp = layers[n + 1];
                         layers[n + 1] = layers[n];
                         layers[n] = temp;
                     }
                 }
-                else if (location === "bg" && n > 0){
+                else if (location === 'bg' && n > 0){
                     for (; n > 0; n--){
                         temp = layers[n - 1];
                         layers[n - 1] = layers[n];
@@ -173,7 +160,7 @@ HD.Canvas.Layerset = function(canvas, ...layer){
          * @returns {Layerset}
          */
         reDraw : function(except){
-            if (typeof except === "undefined") except = [];
+            if (typeof except === 'undefined') except = [];
             let n;
             resetZAxis();
             for (n = 0; n < layers.length; n++){
@@ -187,10 +174,9 @@ HD.Canvas.Layerset = function(canvas, ...layer){
 
     };
 
-    for (_i = 1; _i < arguments.length; _i++){
-        layers[_i - 1] = layer[_i];
-        layers[_i - 1].ownerSet = Interface;
-    }
+    layers.forEach(function(layer, i){
+        layer.ownerSet = Interface;
+    });
     resetZAxis();
 
     return Interface;
@@ -285,7 +271,7 @@ HD.Canvas.Layer = function(subCommand, z){
          */
         hide : function(){
             const canvas = this.ownerSet.canvas;
-            const ctx = canvas.getContext("2d");
+            const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             this.hidden = true;
             this.ownerSet.reDraw();
@@ -308,7 +294,7 @@ HD.Canvas.Layer = function(subCommand, z){
          */
         erase : function(){
             const canvas = this.ownerSet.canvas;
-            const ctx = canvas.getContext("2d");
+            const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             this.ownerSet.reDraw();
             return this;
@@ -320,7 +306,7 @@ HD.Canvas.Layer = function(subCommand, z){
          */
         clear : function(){
             const canvas = this.ownerSet.canvas;
-            const ctx = canvas.getContext("2d");
+            const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawing = [];
             this.ownerSet.reDraw();
@@ -338,7 +324,7 @@ HD.Canvas.Layer = function(subCommand, z){
 
         /**
          * Réteg mozgatása a z-tengelyen
-         * @param {String} location mozgatás iránya ("down"|"up"|"bg"|"top")
+         * @param {String} location mozgatás iránya ('down'|'up'|'bg'|'top')
          * @param {Number} [num=1] down és up esetében a lépések száma
          * @returns {Layer}
          */
@@ -349,10 +335,10 @@ HD.Canvas.Layer = function(subCommand, z){
 
     };
 
-    if (typeof subCommand === "function"){
+    if (typeof subCommand === 'function'){
         Interface.subCommand = subCommand;
     }
-    if (typeof z !== "undefined"){
+    if (typeof z !== 'undefined'){
         Interface.zIndex = z;
     }
 

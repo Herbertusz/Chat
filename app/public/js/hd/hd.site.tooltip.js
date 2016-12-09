@@ -7,9 +7,9 @@
  * @example
  *  const tooltip = new HD.Site.Tooltip({
  *      position : {
- *          my : "left center",
- *          at : "right center",
- *          collision : "flip fit"
+ *          my : 'left center',
+ *          at : 'right center',
+ *          collision : 'flip fit'
  *      },
  *      positionMouse : false
  *  });
@@ -18,9 +18,9 @@
 
 /* global HD namespace */
 
-"use strict";
+'use strict';
 
-HD.Site = namespace("HD.Site");
+HD.Site = namespace('HD.Site');
 
 /**
  * Tooltip objektum (Module minta)
@@ -34,17 +34,17 @@ HD.Site.Tooltip = function(options){
      * @type {Object}
      */
     const defaultOptions = {
-        $trigger : $(".tooltip"),
-        $boxElement : $("#tooltipbox"),
+        $trigger : $('.tooltip'),
+        $boxElement : $('#tooltipbox'),
         boxContent : function($trigger){
-            const text = $trigger.attr("title");
-            $trigger.removeAttr("title");
+            const text = $trigger.attr('title');
+            $trigger.removeAttr('title');
             return text;
         },
         position : {
-            my : "left+15 top+10",
-            at : "right bottom",
-            collision : "flip fit"
+            my : 'left+15 top+10',
+            at : 'right bottom',
+            collision : 'flip fit'
         },
         positionMouse : true,
         drag : false,
@@ -78,7 +78,7 @@ HD.Site.Tooltip = function(options){
      * @param {HTMLElement} element
      */
     const show = function(text, event, element){
-        if (typeof text !== "undefined" && text.length > 0){
+        if (typeof text !== 'undefined' && text.length > 0){
             options.$boxElement.show().html(text);
             visible = true;
             if (options.positionMouse){
@@ -94,7 +94,7 @@ HD.Site.Tooltip = function(options){
      * Tooltip eltüntetése
      */
     const hide = function(){
-        options.$boxElement.hide().html("");
+        options.$boxElement.hide().html('');
         visible = false;
     };
 
@@ -118,10 +118,10 @@ HD.Site.Tooltip = function(options){
             const $trigger = options.$trigger;
             $trigger.each(function(){
                 const text = options.boxContent($(this));
-                $(this).data("text", text);
+                $(this).data('text', text);
             });
             $trigger.mouseover(function(event){
-                show($(this).data("text"), event, this);
+                show($(this).data('text'), event, this);
             });
             $trigger.mouseout(function(event){
                 hide();

@@ -32,8 +32,8 @@ module.exports = function(server, ioSession, app){
      *     <socket.id> : {
      *         id : Number,      // user azonosító
      *         name : String,    // user login név
-     *         status : String,  // user státusz ("on"|"busy"|"off")
-     *         isIdle : Boolean  // user státusz: "idle"
+     *         status : String,  // user státusz ('on'|'busy'|'off')
+     *         isIdle : Boolean  // user státusz: 'idle'
      *     },
      *     ...
      * }
@@ -46,7 +46,7 @@ module.exports = function(server, ioSession, app){
      * @description
      * rooms = [
      *     {
-     *         name : String,    // "room-x-y"; x: létrehozó userId, y: létrehozás timestamp
+     *         name : String,    // 'room-x-y'; x: létrehozó userId, y: létrehozás timestamp
      *         userIds : Array,  // csatornába rakott userId-k
      *         starter : Number  // csatorna létrehozó userId
      *     },
@@ -103,7 +103,7 @@ module.exports = function(server, ioSession, app){
 
     /**
      * Csatorna módosítása
-     * @param {String} operation - művelet ("add"|"remove")
+     * @param {String} operation - művelet ('add'|'remove')
      * @param {String} roomName - csatorna azonosító
      * @param {Number} userId - user azonosító
      */

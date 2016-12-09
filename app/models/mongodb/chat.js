@@ -31,9 +31,9 @@ const Model = function(db){
                 }
             });
 
-            return db.collection("chat_messages")
+            return db.collection('chat_messages')
                 .find({'$or' : conds})
-                .sort({"created" : 1})
+                .sort({'created' : 1})
                 .toArray()
                 .then(function(messages){
                     callback(messages);
@@ -52,17 +52,17 @@ const Model = function(db){
          */
         getRoomMessages : function(roomName, callback){
             callback = HD.Function.param(callback, () => {});
-            return db.collection("chat_messages")
-                .find({"room" : roomName})
-                .sort({"created" : 1})
+            return db.collection('chat_messages')
+                .find({'room' : roomName})
+                .sort({'created' : 1})
                 .toArray()
                 .then(function(messages){
                     const promises = [];
                     messages.forEach(function(message){
                         promises.push(
                             new Promise(function(resolve){
-                                db.collection("chat_users")
-                                    .find({"id" : message.userId})
+                                db.collection('chat_users')
+                                    .find({'id' : message.userId})
                                     .limit(1)
                                     .toArray()
                                     .then(function(users){
@@ -129,7 +129,7 @@ const Model = function(db){
                 'created' : Date.now()
             };
 
-            return db.collection("chat_messages")
+            return db.collection('chat_messages')
                 .insertOne(insertData)
                 .then(function(result){
                     const docId = result.insertedId;
@@ -166,7 +166,7 @@ const Model = function(db){
             else if (data.file){
                 insertData = data;
             }
-            return db.collection("chat_messages")
+            return db.collection('chat_messages')
                 .insertOne(insertData)
                 .then(function(result){
                     const messageId = result.insertedId;
@@ -220,13 +220,13 @@ const Model = function(db){
          */
         deleteFile : function(filePath, callback){
             callback = HD.Function.param(callback, () => {});
-            return db.collection("chat_messages")
-                .find({"$and" : [
-                    {"data" : filePath},
-                    {"file" : {"$exists" : true}},
-                    {"file.store" : "upload"}
+            return db.collection('chat_messages')
+                .find({'$and' : [
+                    {'data' : filePath},
+                    {'file' : {'$exists' : true}},
+                    {'file.store' : 'upload'}
                 ]}, {
-                    "file" : 1
+                    'file' : 1
                 })
                 .limit(1)
                 .toArray()
@@ -234,12 +234,12 @@ const Model = function(db){
                     let url = '';
                     if (docs.length){
                         url = docs[0].file.data;
-                        db.collection("chat_messages")
+                        db.collection('chat_messages')
                             .updateOne({
-                                "_id" : docs[0]._id
+                                '_id' : docs[0]._id
                             }, {
-                                "$set" : {
-                                    "file.deleted" : true
+                                '$set' : {
+                                    'file.deleted' : true
                                 }
                             });
                     }
@@ -263,25 +263,25 @@ const Model = function(db){
          */
         deleteRoomFiles : function(roomName, callback){
             callback = HD.Function.param(callback, () => {});
-            return db.collection("chat_messages")
-                .find({"$and" : [
-                    {"room" : roomName},
-                    {"file" : {"$exists" : true}},
-                    {"file.store" : "upload"}
+            return db.collection('chat_messages')
+                .find({'$and' : [
+                    {'room' : roomName},
+                    {'file' : {'$exists' : true}},
+                    {'file.store' : 'upload'}
                 ]}, {
-                    "file" : 1
+                    'file' : 1
                 })
                 .toArray()
                 .then(function(docs){
                     const urls = [];
                     docs.forEach(function(doc){
                         urls.push(doc.file.data);
-                        db.collection("chat_messages")
+                        db.collection('chat_messages')
                             .updateOne({
-                                "_id" : doc._id
+                                '_id' : doc._id
                             }, {
-                                "$set" : {
-                                    "file.deleted" : true
+                                '$set' : {
+                                    'file.deleted' : true
                                 }
                             });
                     });
