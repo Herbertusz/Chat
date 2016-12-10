@@ -37,6 +37,32 @@ router.get('/', function(req, res){
 
 });
 
+router.get('/remote/:userId', function(req, res){
+
+    const userId = Number(req.params.userId);
+
+    req.app.set('userId', userId);
+
+    UserModel
+        .getUsers()
+        .then(function(users){
+            res.render('layout_iframe', {
+                page : 'chat',
+                users : users,
+                login : true,
+                userId : userId,
+                userName : users.find(function(user){
+                    return user.id === userId;
+                }).name,
+                loginMessage : null
+            });
+        })
+        .catch(function(error){
+            log.error(error);
+        });
+
+});
+
 router.post('/getroommessages', function(req, res){
 
     ChatModel.getRoomMessages(req.body.roomName)
@@ -51,7 +77,7 @@ router.post('/getroommessages', function(req, res){
 
 });
 
-router.get('/file/(:roomName)/(:fileName)', function(req, res, next){
+router.get('/file/:roomName/:fileName', function(req, res, next){
 
     ChatModel
         .getFile(req.param.roomName, req.param.fileName)
@@ -97,7 +123,7 @@ router.post('/uploadfile', function(req, res){
                 firstSend : false
             });
             res.send({
-                filePath : `upload/${data.fileName}`
+                filePath : `/upload/${data.fileName}`
             });
             fileStream.end();
         });

@@ -13,10 +13,7 @@
             var SERVER = {
                 domain : '<%- layout.DOMAIN %>',
                 wsport : '<%- layout.WSPORT %>',
-                userData : {
-                    id : Number('<%- userId ? userId : 0 %>'),
-                    name : '<%- userName %>'
-                }
+                userId : Number('<%- userId ? userId : 0 %>')
             };
             var CHAT = <%- JSON.stringify(CHAT) %>;
         </script>
@@ -70,7 +67,7 @@
 
             <h1 class="game">Chat</h1>
 
-            <% if (!login){ %>
+            <% if (typeof(login) === 'undefined' || !login){ %>
                 <div class="login">
                     <form method="post" action="/login">
                         <% if (loginMessage){ %>

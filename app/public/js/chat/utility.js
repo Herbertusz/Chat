@@ -8,10 +8,7 @@ var CHAT = window.CHAT || {};
  * Az aktuális kliensoldali user adatai
  * @type {Object}
  */
-CHAT.USER = {
-    id : SERVER.userData.id,
-    name : SERVER.userData.name
-};
+CHAT.userId = SERVER.userId;
 
 /**
  * Socket objektum

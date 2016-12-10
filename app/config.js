@@ -58,7 +58,7 @@ CHAT.Config = {
                 'join'            : '/audio/join.mp3',
                 'leave'           : '/audio/leave.mp3',
                 'forceJoinYou'    : '/audio/join.mp3',
-                'forceJoinOther'  : '/audio/leave.mp3',
+                'forceJoinOther'  : '/audio/join.mp3',
                 'forceLeaveYou'   : '/audio/leave.mp3',
                 'forceLeaveOther' : '/audio/leave.mp3'
             }

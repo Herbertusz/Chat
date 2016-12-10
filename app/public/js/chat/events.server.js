@@ -79,7 +79,7 @@ CHAT.Events.Server = {
     roomCreated : function(roomData){
         let Box, Userlist;
 
-        if (roomData.userIds.indexOf(CHAT.USER.id) > -1){
+        if (roomData.userIds.indexOf(CHAT.userId) > -1){
             Box = HD.DOM(
                 CHAT.Util.cloneElement(HD.DOM(CHAT.DOM.cloneBox).elem(), HD.DOM(CHAT.DOM.container).elem())
             );
@@ -108,7 +108,7 @@ CHAT.Events.Server = {
     roomJoined : function(roomData){
         let box, Box, Userlist;
 
-        if (roomData.joinedUserId === CHAT.USER.id){
+        if (roomData.joinedUserId === CHAT.userId){
             // Létre kell hozni a dobozt a csatornához
             Box = HD.DOM(
                 CHAT.Util.cloneElement(HD.DOM(CHAT.DOM.cloneBox).elem(), HD.DOM(CHAT.DOM.container).elem())
@@ -179,7 +179,7 @@ CHAT.Events.Server = {
         Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
         box = Box.elem();
 
-        if (extData.userId === CHAT.USER.id){
+        if (extData.userId === CHAT.userId){
             // Csatlakoztattak a csatornához
             if (box){
                 // Van a csatornához tartozó doboz (korábban ki lett dobva)
@@ -202,7 +202,7 @@ CHAT.Events.Server = {
                 CHAT.Methods.appendSystemMessage(box, 'forceJoinYou', extData.triggerId);
             }
             CHAT.socket.emit('roomJoin', {
-                userId : CHAT.USER.id,
+                userId : CHAT.userId,
                 roomName : extData.roomData.name
             });
             CHAT.Methods.notification(box, {
@@ -240,11 +240,11 @@ CHAT.Events.Server = {
         const box = Box.elem();
 
         if (box){
-            if (extData.userId === CHAT.USER.id){
+            if (extData.userId === CHAT.userId){
                 CHAT.Methods.appendSystemMessage(box, 'forceLeaveYou', extData.triggerId);
                 CHAT.socket.emit('roomLeave', {
                     silent : true,
-                    userId : CHAT.USER.id,
+                    userId : CHAT.userId,
                     roomName : extData.roomData.name
                 });
                 CHAT.Methods.changeBoxStatus(box, 'disabled');
@@ -307,7 +307,7 @@ CHAT.Events.Server = {
     fileReceive : function(data){
         const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`).elem();
 
-        if (CHAT.USER.id !== data.userId && box){
+        if (CHAT.userId !== data.userId && box){
             if (data.firstSend){
                 CHAT.Events.Server.barId = CHAT.Methods.progressbar(
                     box, 'get', data.uploadedSize / data.fileSize, null, false

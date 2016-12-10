@@ -17,8 +17,8 @@ CHAT.Events.Client = {
     createRoom : function(){
         const roomData = {
             name : '',
-            userIds : [CHAT.USER.id],
-            starter : CHAT.USER.id
+            userIds : [CHAT.userId],
+            starter : CHAT.userId
         };
         const Box = HD.DOM(
             CHAT.Util.cloneElement(HD.DOM(CHAT.DOM.cloneBox).elem(), HD.DOM(CHAT.DOM.container).elem())
@@ -45,7 +45,7 @@ CHAT.Events.Client = {
 
         Box.remove();
         CHAT.socket.emit('roomLeave', {
-            userId : CHAT.USER.id,
+            userId : CHAT.userId,
             roomName : roomName
         });
     },
@@ -67,7 +67,7 @@ CHAT.Events.Client = {
         if (currentUserIds.indexOf(userId) === -1){
             CHAT.Methods.generateUserList(Userlist.elem(), [userId]);
             CHAT.socket.emit('roomForceJoin', {
-                triggerId : CHAT.USER.id,
+                triggerId : CHAT.userId,
                 userId : userId,
                 roomName : roomName
             });
@@ -85,11 +85,11 @@ CHAT.Events.Client = {
         const roomName = Box.data('room');
         const userId = User.dataNum('id');
 
-        if (userId === CHAT.USER.id){
+        if (userId === CHAT.userId){
             // kilépés
             Box.remove();
             CHAT.socket.emit('roomLeave', {
-                userId : CHAT.USER.id,
+                userId : CHAT.userId,
                 roomName : roomName
             });
         }
@@ -97,7 +97,7 @@ CHAT.Events.Client = {
             // másik felhasználó kidobása
             User.remove();
             CHAT.socket.emit('roomForceLeave', {
-                triggerId : CHAT.USER.id,
+                triggerId : CHAT.userId,
                 userId : userId,
                 roomName : roomName
             });
@@ -112,7 +112,7 @@ CHAT.Events.Client = {
         const Box = HD.DOM(box);
         const Message = Box.find(CHAT.DOM.textarea);
         const data = {
-            userId : CHAT.USER.id,
+            userId : CHAT.userId,
             message : Message.elem().value,
             time : Date.now(),
             roomName : Box.data('room')
@@ -172,7 +172,7 @@ CHAT.Events.Client = {
 
         const filePrepare = function(rawFile){
             const fileData = {
-                userId : CHAT.USER.id,
+                userId : CHAT.userId,
                 fileData : {
                     name : rawFile.name,
                     size : rawFile.size,
@@ -233,7 +233,7 @@ CHAT.Events.Client = {
         const Box = HD.DOM(box);
         const Message = Box.find(CHAT.DOM.textarea);
         const data = {
-            userId : CHAT.USER.id,
+            userId : CHAT.userId,
             message : Message.elem().value,
             time : Date.now(),
             roomName : Box.data('room')
