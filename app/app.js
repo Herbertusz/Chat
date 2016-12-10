@@ -70,6 +70,7 @@ const connectPromise = DB
         const routes = [
             ['/', 'routes/index'],
             ['/chat', 'routes/chat'],
+            ['/iframe', 'routes/iframe'],
             ['/videochat', 'routes/videochat'],
             ['/login', 'routes/login'],
             ['/logout', 'routes/logout'],

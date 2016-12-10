@@ -320,12 +320,15 @@ CHAT.Methods = {
         const toUserName = CHAT.Methods.getUserName(data.toId);
         const visualEffects = {
             title : function(activate){
+                let newTitle;
                 if (activate){
-                    document.title = CHAT.Labels.notification[data.type](fromUserName, toUserName);
+                    newTitle = CHAT.Labels.notification[data.type](fromUserName, toUserName);
                 }
                 else {
-                    document.title = CHAT.Config.defaultTitle;
+                    newTitle = CHAT.Config.defaultTitle;
                 }
+                window.document.title = newTitle;
+                window.parent.document.title = newTitle;
             },
             box : function(activate){
                 if (activate){
@@ -513,7 +516,7 @@ CHAT.Methods = {
             let user;
             const currentUserId = HD.DOM(onlineListItem).dataNum('id');
             if (userIds.indexOf(currentUserId) > -1){
-                user = CHAT.Util.cloneElement(HD.DOM(to).find('.cloneable').elem(), to, currentUserId === CHAT.USER.id);
+                user = CHAT.Util.cloneElement(HD.DOM(to).find('.cloneable').elem(), to, currentUserId === CHAT.userId);
                 const User = HD.DOM(user);
                 User.dataNum('id', currentUserId);
                 User.find(CHAT.DOM.status).class('add', 'run');
@@ -625,7 +628,7 @@ CHAT.Methods = {
         const connectedUsers = HD.DOM(CHAT.DOM.online).dataObj('connected-users');
 
         for (socketId in connectedUsers){
-            if (connectedUsers[socketId].id === CHAT.USER.id){
+            if (connectedUsers[socketId].id === CHAT.userId){
                 thisSocket = socketId;
                 break;
             }
@@ -715,15 +718,17 @@ CHAT.Methods = {
                         const timestamp = msgData.created;
 
                         if (typeof msgData.message !== 'undefined'){
+                            // szöveges üzenet
                             CHAT.Methods.appendUserMessage(box, {
                                 userId : msgData.userId,
                                 time : timestamp,
                                 message : msgData.message,
                                 roomName : roomName
-                            }, msgData.userId === CHAT.USER.id);
+                            }, msgData.userId === CHAT.userId);
                             return Promise.resolve();
                         }
-                        else {
+                        else if (typeof msgData.file !== 'undefined'){
+                            // fájlküldés
                             data = {
                                 userId : msgData.userId,
                                 fileData : {
@@ -738,6 +743,10 @@ CHAT.Methods = {
                                 roomName : roomName
                             };
                             return CHAT.FileTransfer.action('receive', [box, data, msgData]);
+                        }
+                        else {
+                            // esemény
+                            return Promise.resolve();
                         }
                     })
                     .catch(function(error){

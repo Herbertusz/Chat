@@ -22,6 +22,14 @@ module.exports = function(app){
                 url : '/chat'
             },
             {
+                text : 'Iframe-1',
+                url : '/iframe/1'
+            },
+            {
+                text : 'Iframe-2',
+                url : '/iframe/2'
+            },
+            {
                 text : 'Videochat',
                 url : '/videochat'
             }

@@ -146,15 +146,23 @@ module.exports = function(server, ioSession, app){
         let userData = null;
         const session = socket.handshake.session;
 
+        // user azonosítása
         if (session.login && session.login.loginned){
             // belépett user
             userData = {
                 id : session.login.userId,
-                name : session.login.userName,
                 status : 'on',
                 isIdle : false
             };
         }
+        else if (app.get('userId')){
+            userData = {
+                id : app.get('userId'),
+                status : 'on',
+                isIdle : false
+            };
+        }
+
         if (userData){
             // csatlakozás emitter
             connectedUsers[socket.id] = userData;
