@@ -20,7 +20,7 @@ HD.Site = namespace('HD.Site');
 
 /**
  * Tab objektum (Module minta)
- * @param {Object} options beállítások
+ * @param {Object} options - beállítások
  * @returns {Object} tab-kezelő felület
  */
 HD.Site.Tab = function(options){

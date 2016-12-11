@@ -23,7 +23,7 @@ HD.Canvas.Layerset = function(canvas, ...layers){
     /**
      * Réteg keresése a layerset-ben
      * @private
-     * @param {Layer} currentLayer a keresett réteg
+     * @param {Layer} currentLayer - a keresett réteg
      * @returns {Number|Boolean} a réteg indexe vagy false
      */
     const getLayerIndex = function(currentLayer){
@@ -67,8 +67,8 @@ HD.Canvas.Layerset = function(canvas, ...layers){
 
         /**
          * Réteg beszúrása
-         * @param {Layer} currentLayer az új réteg
-         * @param {Number|String} [zOverwrite='remain'] az új réteg helye (Number|'remain'|'top'|'bg')
+         * @param {Layer} currentLayer - az új réteg
+         * @param {Number|String} [zOverwrite='remain'] - az új réteg helye (Number|'remain'|'top'|'bg')
          * @returns {Layerset}
          */
         pushLayer : function(currentLayer, zOverwrite){
@@ -95,7 +95,7 @@ HD.Canvas.Layerset = function(canvas, ...layers){
 
         /**
          * Réteg törlése
-         * @param {Layer} currentLayer az eltávolítandó réteg
+         * @param {Layer} currentLayer - az eltávolítandó réteg
          * @returns {Layerset}
          */
         removeLayer : function(currentLayer){
@@ -110,9 +110,9 @@ HD.Canvas.Layerset = function(canvas, ...layers){
 
         /**
          * Réteg mozgatása a z-tengelyen
-         * @param {Layer} currentLayer a mozdítandó réteg
-         * @param {String} location mozgatás iránya ('down'|'up'|'bg'|'top')
-         * @param {Number} [num=1] down és up esetében a lépések száma
+         * @param {Layer} currentLayer - a mozdítandó réteg
+         * @param {String} location - mozgatás iránya ('down'|'up'|'bg'|'top')
+         * @param {Number} [num=1] - down és up esetében a lépések száma
          * @returns {Layerset}
          */
         moveLayer : function(currentLayer, location, num){
@@ -156,7 +156,7 @@ HD.Canvas.Layerset = function(canvas, ...layers){
 
         /**
          * Újrarajzolás
-         * @param {Array.<Layer>} [except=[]] ezeket a rétegeket nem rajzolja újra
+         * @param {Array.<Layer>} [except=[]] - ezeket a rétegeket nem rajzolja újra
          * @returns {Layerset}
          */
         reDraw : function(except){
@@ -185,8 +185,8 @@ HD.Canvas.Layerset = function(canvas, ...layers){
 
 /**
  * Rétegeket kezelő objektum (Module minta)
- * @param {Function} [subCommand] műveletek
- * @param {Number} [z] előírt zIndex érték (különben a Layerset-ben megadott sorrend határozza meg)
+ * @param {Function} [subCommand] - műveletek
+ * @param {Number} [z] - előírt zIndex érték (különben a Layerset-ben megadott sorrend határozza meg)
  * @returns {Object}
  */
 HD.Canvas.Layer = function(subCommand, z){
@@ -246,7 +246,7 @@ HD.Canvas.Layer = function(subCommand, z){
 
         /**
          * Művelet beszúrása a sorba
-         * @param {Function} command műveletek
+         * @param {Function} command - műveletek
          * @returns {Layer}
          */
         push : function(command){
@@ -256,7 +256,7 @@ HD.Canvas.Layer = function(subCommand, z){
 
         /**
          * Művelet beszúrása és végrehajtása
-         * @param {Function} command műveletek
+         * @param {Function} command - műveletek
          * @returns {Layer}
          */
         draw : function(command){
@@ -324,8 +324,8 @@ HD.Canvas.Layer = function(subCommand, z){
 
         /**
          * Réteg mozgatása a z-tengelyen
-         * @param {String} location mozgatás iránya ('down'|'up'|'bg'|'top')
-         * @param {Number} [num=1] down és up esetében a lépések száma
+         * @param {String} location - mozgatás iránya ('down'|'up'|'bg'|'top')
+         * @param {Number} [num=1] - down és up esetében a lépések száma
          * @returns {Layer}
          */
         move : function(location, num){

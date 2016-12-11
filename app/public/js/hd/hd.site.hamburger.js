@@ -27,7 +27,7 @@ HD.Site = namespace('HD.Site');
 
 /**
  * Tab objektum (Module minta)
- * @param {Object} options beállítások
+ * @param {Object} options - beállítások
  * @returns {Object} felület
  */
 HD.Site.Hamburger = function(options){
@@ -75,7 +75,7 @@ HD.Site.Hamburger = function(options){
 
     /**
      * Menüpont berakása a hamburgerjel alá
-     * @param {Boolean} real true: menüben, false: menü-klónban
+     * @param {Boolean} real - true: menüben, false: menü-klónban
      */
     const pushHamb = function(real){
         const $thisMenu = real ? $menu : $menuClone;
@@ -85,7 +85,7 @@ HD.Site.Hamburger = function(options){
 
     /**
      * Menüpont kiszedése a hamburgerjel alól
-     * @param {Boolean} real true: menüben, false: menü-klónban
+     * @param {Boolean} real - true: menüben, false: menü-klónban
      */
     const popHamb = function(real){
         const $thisMenu = real ? $menu : $menuClone;

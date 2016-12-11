@@ -13,8 +13,8 @@ HD.Game = namespace('HD.Game');
 
 /**
  * Canvas 2D alapú játék
- * @param {String} selector a canvas elem szelektora
- * @param {Function} gameStartFunc játék indítása
+ * @param {String} selector - a canvas elem szelektora
+ * @param {Function} gameStartFunc - játék indítása
  */
 HD.Game.Canvas2D = function(selector, gameStartFunc){
 
@@ -29,8 +29,8 @@ HD.Game.Canvas2D = function(selector, gameStartFunc){
 
 /**
  * Canvas 3D alapú játék
- * @param {String} selector a canvas elem szelektora
- * @param {Function} gameStartFunc játék indítása
+ * @param {String} selector - a canvas elem szelektora
+ * @param {Function} gameStartFunc - játék indítása
  * @param {Function} [gameFallbackFunc=function(){}] fallback
  */
 HD.Game.Canvas3D = function(selector, gameStartFunc, gameFallbackFunc){
@@ -57,8 +57,8 @@ HD.Game.Canvas3D = function(selector, gameStartFunc, gameFallbackFunc){
 
 /**
  * SVG alapú játék
- * @param {String} selector az svg elem szelektora
- * @param {Function} gameStartFunc játék indítása
+ * @param {String} selector - az svg elem szelektora
+ * @param {Function} gameStartFunc - játék indítása
  */
 HD.Game.SVG = function(selector, gameStartFunc){
 
@@ -70,8 +70,8 @@ HD.Game.SVG = function(selector, gameStartFunc){
 
 /**
  * DOM alapú játék (pl. div, table, ...)
- * @param {String} selector a DOM elem szelektora
- * @param {Function} gameStartFunc játék indítása
+ * @param {String} selector - a DOM elem szelektora
+ * @param {Function} gameStartFunc - játék indítása
  */
 HD.Game.DOM = function(selector, gameStartFunc){
 

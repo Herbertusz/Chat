@@ -40,10 +40,17 @@ HD.Misc = {
 
     /**
      * Switch szerkezetet helyettesítő függvény
-     * @param {*} variable változó
-     * @param {Object} relations változó különböző értékeihez rendelt visszatérési értékek
-     * @param {*} [defaultValue=null] alapértelmezett érték (default)
+     * @param {*} variable - változó
+     * @param {Object} relations - változó különböző értékeihez rendelt visszatérési értékek
+     * @param {*} [defaultValue=null] - alapértelmezett érték (default)
      * @returns {*}
+     * @example
+     *  control = HD.Misc.switching(key, {
+     *      'W' : 'accelerate',
+     *      'A' : 'turnLeft',
+     *      'S' : 'brake',
+     *      'D' : 'turnRight'
+     *  }, null);
      */
     switching : function(variable, relations, defaultValue){
         let index;
@@ -74,8 +81,8 @@ HD.Number = {
 
     /**
      * Szám elejének feltöltése nullákkal
-     * @param {Number} num szám
-     * @param {Number} len kívánt hossz
+     * @param {Number} num - szám
+     * @param {Number} len - kívánt hossz
      * @returns {String} nullákkal feltöltött szám
      */
     fillZero : function(num, len){
@@ -90,9 +97,9 @@ HD.Number = {
 
     /**
      * Fájlméret kiírása
-     * @param {Number} size méret bájtokban
-     * @param {Number} [precision=2] pontosság (tizedesjegyek száma)
-     * @param {Number} [prefixLimit=0.5] ha ennél kisebb, az alacsonyabb prefixum használata
+     * @param {Number} size - méret bájtokban
+     * @param {Number} [precision=2] - pontosság (tizedesjegyek száma)
+     * @param {Number} [prefixLimit=0.5] - ha ennél kisebb, az alacsonyabb prefixum használata
      * @returns {String} olvasható érték
      */
     displaySize : function(size, precision, prefixLimit){
@@ -115,7 +122,7 @@ HD.Number = {
     /**
      * Fájlméret visszafejtése (a displaysize inverze)
      * Pl.: '10.5 MB', '1000kB', '3 400 000 B', '2,7 GB'
-     * @param {String} size méret olvasható formában
+     * @param {String} size - méret olvasható formában
      * @returns {Number} értéke bájtban
      */
     recoverSize : function(size){
@@ -196,18 +203,6 @@ HD.Number = {
 HD.String = {
 
     /**
-     * Egyedi (pszeudo) GUID generálása
-     * @returns {String}
-     */
-    getGuid : function(){
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){
-            const r = Math.floor(Math.random() * 16);
-            const v = (c === 'x') ? r : (r & 0x3 | 0x8);
-            return v.toString(16);
-        });
-    },
-
-    /**
      * Első karakter nagybetűssé alakítása
      * @param {String} str
      * @returns {String}
@@ -234,7 +229,7 @@ HD.String = {
 
     /**
      * Karakterlánc megfordítása
-     * @param {String} str karakterlánc
+     * @param {String} str - karakterlánc
      * @returns {String} karakterlánc visszafelé
      */
     reverse : function(str){
@@ -245,8 +240,8 @@ HD.String = {
 
     /**
      * Előtag eltávolítása a karakterláncról
-     * @param {String} str karakterlánc
-     * @param {String} separator előtag kapcsoló karakter
+     * @param {String} str - karakterlánc
+     * @param {String} separator - előtag kapcsoló karakter
      * @returns {String} maradék karakterlánc
      */
     removePrefix : function(str, separator){
@@ -257,7 +252,7 @@ HD.String = {
 
     /**
      * E-mail cím ellenőrzés
-     * @param {String} email e-mail cím
+     * @param {String} email - e-mail cím
      * @returns {Boolean} true, ha jó a formátum
      */
     validateEmail : function(email){
@@ -266,14 +261,111 @@ HD.String = {
 
     /**
      * Karakterlánc átalakítása RegExp objektummá
-     * @param {String} str pl.: '/x/gi'
+     * @param {String} str - pl.: '/x/gi'
      * @returns {RegExp}
      */
     createRegExp : function(str){
         const pattern = str.replace(/^\/(.*)\/[gimuy]*$/, '$1');
         const flags = str.replace(/^\/.*\/([gimuy]*)$/, '$1');
         return new RegExp(pattern, flags);
+    },
+
+    /**
+     * Ékezetes betűk (magyar) és írásjelek kiszedése (pl. "Űkuöí Owá-43" -> "Ukuoi_Owa_43")
+     * az írásjeleket az exceptions-ben lévő karakterek kivételével a replace-re cseréli
+     * @param {String} str - átalakítandó karakterlánc
+     * @param {String} [replace='_'] - karakterlánc, amire az írásjelek cserélődnek
+     * @param {Object} [options] - egyéb beállítások
+     * @returns {String} átalakított karakterlánc
+     */
+    strtocanonic : function(str, replace, options){
+        if (typeof replace === 'undefined') replace = '_';
+        if (typeof options === 'undefined'){
+            options = {
+                exceptions : '',
+                tolower : false,
+                trim : true,
+                chars : 'a-zA-Z0-9'
+            };
+        }
+        let n;
+        let canonic = '';
+        let second;
+
+        [...str].forEach(function(c){
+            canonic += HD.Misc.switching(c, {
+                'á' : 'a', 'é' : 'e', 'í' : 'i', 'ó' : 'o', 'ö' : 'o', 'ő' : 'o', 'ú' : 'u', 'ü' : 'u', 'ű' : 'u',
+                'Á' : 'A', 'É' : 'E', 'Í' : 'I', 'Ó' : 'O', 'Ö' : 'O', 'Ő' : 'O', 'Ú' : 'U', 'Ü' : 'U', 'Ű' : 'U'
+            }, c);
+        });
+
+        if (options.trim) canonic = canonic.trim();
+        canonic = canonic.replace(new RegExp(`/[^${options.chars}${options.exceptions}]+/`), replace);
+        if (options.tolower) canonic = canonic.toLowerCase();
+        return canonic;
+    },
+
+    /**
+     * len hosszúságú karakterlánc generálása (pl jelszóhoz)
+     * @param {Number} len - hossz
+     * @param {String} type - írásjelek használhatóak
+     * @returns {String} generált karakterlánc
+     */
+    generatepwd : function(len, type){
+        if (typeof type === 'undefined') type = '1aA';
+        let n;
+        let chars = '';
+        let ret = '';
+        const nums = '0123456789';
+        const lowchars = 'abcdefghijklmnopqrstuvwxyz';
+        const upchars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const signs = '\'"+!%/=()~^`$<>#&@{}[]\\|,.-?:_;*';
+
+        if (type.indexOf('1') > -1){
+            chars += nums;
+        }
+        if (type.indexOf('a') > -1){
+            chars += lowchars;
+        }
+        if (type.indexOf('A') > -1){
+            chars += upchars;
+        }
+        if (type.indexOf('s') > -1){
+            chars += signs;
+        }
+
+        for (n = 0; n < len; n++){
+            ret += chars[Math.floor(Math.random() * chars.length)];
+        }
+        return ret;
     }
+
+    // /**
+    //  * Jelszó kódolása
+    //  * @param {String} pwd - kódolandó jelszó
+    //  * @param {String} [salt] - só
+    //  * @returns {String} kódolt jelszó
+    //  */
+    // pwdcode : function(pwd, salt){
+    //     var sha1 = (s) => s;
+    //     var PROJECT_NAME = '';
+    //
+    //     if (typeof salt === 'undefined'){
+    //         pwd = sha1(pwd);
+    //     }
+    //     else {
+    //         let i;
+    //         let salt2 = '';
+    //         const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    //         const salt1 = salt;
+    //         const salt2_original = PROJECT_NAME;
+    //         for (i = 0; i < salt2_original.length; i++){
+    //             salt2 += chars[chars.indexOf(salt2_original[i]) + 1 % chars.length];
+    //         }
+    //         pwd = sha1(salt1 + pwd + salt2);
+    //     }
+    //     return pwd;
+    // }
 
 };
 
@@ -286,8 +378,8 @@ HD.Function = {
     /**
      * Alapértelmezett paraméterérték megadása függvényben
      * @example par = param(par, 0);
-     * @param {*} param paraméter
-     * @param {*} value alapértelmezett érték
+     * @param {*} param - paraméter
+     * @param {*} value - alapértelmezett érték
      * @returns {*} ezt kell értékül adni a paraméternek
      */
     param : function(param, value){
@@ -301,7 +393,7 @@ HD.Function = {
 
     /**
      * Alapértelmezett paraméterértékek megadása függvényben
-     * @param {Object} params argumentumok adatai
+     * @param {Object} params - argumentumok adatai
      * @returns {Array} paraméterek értékei
      * @description
      * HD.Misc.funcMultiParam({
@@ -338,8 +430,8 @@ HD.Array = {
 
     /**
      * A PHP in_array() függvénye (indexOf boolean változata)
-     * @param {*} needle keresendő elem
-     * @param {Array} haystack tömb
+     * @param {*} needle - keresendő elem
+     * @param {Array} haystack - tömb
      * @returns {Boolean}
      */
     inArray : function(needle, haystack){
@@ -360,9 +452,9 @@ HD.Array = {
 
     /**
      * Általános indexOf
-     * @param {Object} val keresendő elem
-     * @param {Array} arr tömb
-     * @param {Function} comparer összehasonlító függvény
+     * @param {Object} val - keresendő elem
+     * @param {Array} arr - tömb
+     * @param {Function} comparer - összehasonlító függvény
      * @returns {Number}
      */
     indexOf : function(val, arr, comparer){
@@ -377,8 +469,8 @@ HD.Array = {
 
     /**
      * Hozzáadás tömbhöz, ha még nem tartalmazza az adott értéket
-     * @param {Array} arr tömb
-     * @param {*} val érték
+     * @param {Array} arr - tömb
+     * @param {*} val - érték
      * @returns {Array} módosított tömb
      */
     addByVal : function(arr, val){
@@ -390,8 +482,8 @@ HD.Array = {
 
     /**
      * Érték eltávolítása a tömbből
-     * @param {Array} arr tömb
-     * @param {*} val érték
+     * @param {Array} arr - tömb
+     * @param {*} val - érték
      * @returns {Array} módosított tömb
      */
     removeByVal : function(arr, val){
@@ -412,8 +504,8 @@ HD.Object = {
 
     /**
      * Objektumok közti részleges egyezés vizsgálata
-     * @param {Object} partialObject keresendő rész
-     * @param {Object} fullObject keresett objektum
+     * @param {Object} partialObject - keresendő rész
+     * @param {Object} fullObject - keresett objektum
      * @returns {Boolean} a keresett objektum tartalmazza a keresendő részt
      */
     objectPartialMatch : function(partialObject, fullObject){

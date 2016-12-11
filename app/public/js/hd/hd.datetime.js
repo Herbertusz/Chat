@@ -44,8 +44,8 @@ HD.DateTime = {
 
     /**
      * yyyy-mm-dd forma előállítása
-     * @param {Date} date JS dátum objektum
-     * @param {String} separator elválasztó
+     * @param {Date} date - JS dátum objektum
+     * @param {String} separator - elválasztó
      * @returns {String}
      */
     progFormat : function(date, separator){
@@ -78,8 +78,8 @@ HD.DateTime = {
     /**
      * Adott nap az év hanyadik hetében van
      * @param {Number} year
-     * @param {Number} month (0-11)
-     * @param {Number} day (1-31)
+     * @param {Number} month - (0-11)
+     * @param {Number} day - (1-31)
      * @returns {Number}
      */
     getWeekOfYear : function(year, month, day){
@@ -117,10 +117,10 @@ HD.DateTime = {
 
     /**
      * Idő beolvasása
-     * @param {String} str időt leíró string (formátum: 'hh:mm:ss'|'mm:ss'|'ss')
-     * @param {String} [from='s'] bemenet utolsó szegmensének mértékegysége ('s'|'m'|'h')
+     * @param {String} str - időt leíró string (formátum: 'hh:mm:ss'|'mm:ss'|'ss')
+     * @param {String} [from='s'] - bemenet utolsó szegmensének mértékegysége ('s'|'m'|'h')
      *                 1 szegmens: 's'|'m'|'h', 2 szegmens: 's'|'m', 3 szegmens: 's'
-     * @param {String} [to='s'] visszatérési mértékegység megadása ('ms'|'s'|'m'|'h')
+     * @param {String} [to='s'] - visszatérési mértékegység megadása ('ms'|'s'|'m'|'h')
      * @returns {Number} milliszekundumok/másodpercek/percek/órák száma
      */
     parseTime : function(str, from, to){
@@ -174,9 +174,9 @@ HD.DateTime = {
 
     /**
      * Idő kiírása olvasható formában
-     * @param {Number} num időegység értéke
-     * @param {String} from bemenet mértékegysége ('s'|'m'|'h')
-     * @param {String} format formátum (makrók: h, m, s, H, M, S, hh, mm, ss)
+     * @param {Number} num - időegység értéke
+     * @param {String} from - bemenet mértékegysége ('s'|'m'|'h')
+     * @param {String} format - formátum (makrók: h, m, s, H, M, S, hh, mm, ss)
      * @returns {String} kiírható string
      */
     printTime : function(num, from, format){

@@ -49,7 +49,7 @@ HD.Site = namespace('HD.Site');
 
 /**
  * Slideshow objektum (Module minta)
- * @param {Object} options beállítások
+ * @param {Object} options - beállítások
  * @returns {Object} felület
  */
 HD.Site.Slideshow = function(options){
@@ -176,7 +176,7 @@ HD.Site.Slideshow = function(options){
         /**
          * Slideshow léptetése
          * @public
-         * @param {Number|String} loc pozíció ('left'|'right'|Number)
+         * @param {Number|String} loc - pozíció ('left'|'right'|Number)
          */
         step : function(loc){
             const $items = $(options.items);
@@ -217,7 +217,7 @@ HD.Site.Slideshow = function(options){
         /**
          * Slideshow alapértelmezett műveletének folytatása
          * @public
-         * @param {Number} t új timeout érték
+         * @param {Number} t - új timeout érték
          */
         resume : function(t){
             options.timeout = t;

@@ -24,7 +24,7 @@ HD.Site = namespace('HD.Site');
 
 /**
  * Tooltip objektum (Module minta)
- * @param {Object} options beállítások
+ * @param {Object} options - beállítások
  * @returns {Object} tooltip felület
  */
 HD.Site.Tooltip = function(options){

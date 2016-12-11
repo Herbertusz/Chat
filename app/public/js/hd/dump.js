@@ -9,11 +9,11 @@ var HD = namespace('HD');
  * példa:
  * const obj = {x:1,y:{a:'valami',b:[1,function func(x, y){return 1;},'karakterlánc',44],c:{p:1,q:true}},z:null};
  * alert(nt.var_dump(obj, true));
- * @param {Object} variable változó (bármilyen típus lehet)
- * @param {Boolean} [withType=true] típusok kiírása
- * @param {Number} [maxDeep=5] maximális rekurzív ménység
- * @param {Number} [maxNum=30] maximális elemszám objektumon és tömbön belül
- * @param {Number} [indent] belső használatú argumentum
+ * @param {Object} variable - változó (bármilyen típus lehet)
+ * @param {Boolean} [withType=true] - típusok kiírása
+ * @param {Number} [maxDeep=5] - maximális rekurzív ménység
+ * @param {Number} [maxNum=30] - maximális elemszám objektumon és tömbön belül
+ * @param {Number} [indent] - belső használatú argumentum
  * @returns {String} formázott alak
  */
 HD.var_dump = function(variable, withType, maxDeep, maxNum, indent){

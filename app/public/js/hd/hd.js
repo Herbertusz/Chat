@@ -35,9 +35,9 @@ var namespace = function(namespaceString){
 
 // /**
 //  * jQuery data attribútum szelektor :data(név,érték)
-//  * @param {HTMLElement} obj aktuális DOM elem
+//  * @param {HTMLElement} obj - aktuális DOM elem
 //  * @param {Number} index
-//  * @param {Array} meta szelektor adatai
+//  * @param {Array} meta - szelektor adatai
 //  * @returns {Boolean} true, ha a szelektorra illeszkedik az aktuális DOM elem
 //  */
 // $.expr[':'].data = function(obj, index, meta){

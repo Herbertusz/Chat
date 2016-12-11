@@ -17,8 +17,8 @@ HD.Math = {
 
     /**
      * Véletlenszám a és b között
-     * @param {Number} min egész szám
-     * @param {Number} max egész szám
+     * @param {Number} min - egész szám
+     * @param {Number} max - egész szám
      * @returns {Number} egész szám
      */
     rand : function(min, max){
@@ -27,9 +27,9 @@ HD.Math = {
 
     /**
      * Tizes számrendszerbeli kerekítés
-     * @param {String} type kjerekítés típusa
-     * @param {*} value szám
-     * @param {Number} [exp=0] exponens (...|-2|-1|0|1|2|...) (a kerekítési alap 10-es alapú logaritmusa)
+     * @param {String} type - kjerekítés típusa
+     * @param {*} value - szám
+     * @param {Number} [exp=0] - exponens (...|-2|-1|0|1|2|...) (a kerekítési alap 10-es alapú logaritmusa)
      * @returns {Number} kerekített érték
      */
     _decimalAdjust : function(type, value, exp){
@@ -53,8 +53,8 @@ HD.Math = {
 
     /**
      * Szám kerekítése
-     * @param {Number} value szám
-     * @param {Number} [exp=0] pontosság (helyiérték csúsztatása)
+     * @param {Number} value - szám
+     * @param {Number} [exp=0] - pontosság (helyiérték csúsztatása)
      * @returns {Number} kerekített érték
      */
     round : function(value, exp){
@@ -62,8 +62,8 @@ HD.Math = {
     },
     /**
      * Szám lefelé kerekítése
-     * @param {Number} value szám
-     * @param {Number} [exp=0] pontosság (helyiérték csúsztatása)
+     * @param {Number} value - szám
+     * @param {Number} [exp=0] - pontosság (helyiérték csúsztatása)
      * @returns {Number} kerekített érték
      */
     floor : function(value, exp){
@@ -71,8 +71,8 @@ HD.Math = {
     },
     /**
      * Szám felfelé kerekítése
-     * @param {Number} value szám
-     * @param {Number} [exp=0] pontosság (helyiérték csúsztatása)
+     * @param {Number} value - szám
+     * @param {Number} [exp=0] - pontosság (helyiérték csúsztatása)
      * @returns {Number} kerekített érték
      */
     ceil : function(value, exp){
@@ -164,8 +164,8 @@ HD.Math = {
 
         /**
          * Két pont távolsága
-         * @param {Object} a pont {x : Number, y : Number}
-         * @param {Object} b pont {x : Number, y : Number}
+         * @param {Object} a - pont {x : Number, y : Number}
+         * @param {Object} b - pont {x : Number, y : Number}
          * @returns {Number} távolság
          */
         distance : function(a, b){
@@ -174,11 +174,11 @@ HD.Math = {
 
         /**
          * Abszolút koordináták kiszámítása (csomópontok, korongok, stb)
-         * @param {Array} positions relatív koordináták [[Number, Number], ...]
-         * @param {Number} w abszolút szélesség
-         * @param {Number} h abszolút magasság
-         * @param {Number} [xOffset=0] abszolút vízszintes eltolás
-         * @param {Number} [yOffset=0] abszolút függőleges eltolás
+         * @param {Array} positions - relatív koordináták [[Number, Number], ...]
+         * @param {Number} w - abszolút szélesség
+         * @param {Number} h - abszolút magasság
+         * @param {Number} [xOffset=0] - abszolút vízszintes eltolás
+         * @param {Number} [yOffset=0] - abszolút függőleges eltolás
          * @returns {Array} abszolút koordináták [{x : Number, y : Number}, ...]
          */
         getAbsoluteCoords : function(positions, w, h, xOffset, yOffset){
@@ -199,8 +199,8 @@ HD.Math = {
 
         /**
          * Pont benne van-e egy téglalapban
-         * @param {Object} point {x : Number, y : Number}
-         * @param {Object} rectangle {x : Number, y : Number, w : Number, h : Number}
+         * @param {Object} point - {x : Number, y : Number}
+         * @param {Object} rectangle - {x : Number, y : Number, w : Number, h : Number}
          * @returns {Boolean}
          */
         isPointInsideRectangle : function(point, rectangle){
@@ -212,11 +212,11 @@ HD.Math = {
 
     /**
      * Általános animáció futtató
-     * @param {Function} func minden lépésnél meghívott függvény (megkapja az animáció értékét)
-     * @param {Function} callback az animáció végén meghívott függvény
-     * @param {Number} delay animáció hossza (ms)
-     * @param {Number} [range=1] maximális animációs érték
-     * @param {String} [easing='swing'] animációs függvény
+     * @param {Function} func - minden lépésnél meghívott függvény (megkapja az animáció értékét)
+     * @param {Function} callback - az animáció végén meghívott függvény
+     * @param {Number} delay - animáció hossza (ms)
+     * @param {Number} [range=1] - maximális animációs érték
+     * @param {String} [easing='swing'] - animációs függvény
      * TODO: tesztelés
      */
     animate : function(func, callback, delay, range, easing){
@@ -229,10 +229,10 @@ HD.Math = {
         const Easings = {
             /**
              * Easing függvény (továbbiak: https://github.com/danro/jquery-easing/blob/master/jquery.easing.js)
-             * @param {Number} t független változó (idő)
-             * @param {Number} b kezdeti érték y(t0)
-             * @param {Number} c érték változása y(t1) - y(t0)
-             * @param {Number} d időtartam (t1 - t0)
+             * @param {Number} t - független változó (idő)
+             * @param {Number} b - kezdeti érték y(t0)
+             * @param {Number} c - érték változása y(t1) - y(t0)
+             * @param {Number} d - időtartam (t1 - t0)
              * @returns {Number} függvény értéke y(t)
              */
             linear : function(t, b, c, d){

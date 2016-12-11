@@ -5,7 +5,7 @@ const path = require('path');
 
 /**
  * Normalize a port into a number, string, or false
- * @param {Number|String} val port
+ * @param {Number|String} val - port
  * @returns {Boolean|Number}
  */
 const normalizePort = function(val){

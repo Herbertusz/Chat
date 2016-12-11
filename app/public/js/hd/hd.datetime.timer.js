@@ -22,8 +22,8 @@ HD.DateTime = namespace('HD.DateTime');
 
 /**
  * Időmérő objektum (Module minta)
- * @param {Number} add lépegetés (pl: stoppernél 1, visszaszámlálónál -1)
- * @param {Number} [stepInterval=1000] lépések között eltelt idő (ms)
+ * @param {Number} add - lépegetés (pl: stoppernél 1, visszaszámlálónál -1)
+ * @param {Number} [stepInterval=1000] - lépések között eltelt idő (ms)
  * @returns {Object} timer felület
  */
 HD.DateTime.Timer = function(add, stepInterval){
@@ -56,8 +56,8 @@ HD.DateTime.Timer = function(add, stepInterval){
      * @type {Array}
      * @description szerkezet: [
      *     {
-     *         value : Number,        // érték
-     *         handler : Function,    // eseménykezelő
+     *         value : Number,     // érték
+     *         handler : Function, // eseménykezelő
      *         context : Object    // this = Timer
      *     }
      * ]
@@ -81,7 +81,7 @@ HD.DateTime.Timer = function(add, stepInterval){
 
     /**
      * Bevitt idő beolvasása
-     * @param {String} str időt leíró string (formátum: 'hh:mm:ss'|'mm:ss'|'ss')
+     * @param {String} str - időt leíró string (formátum: 'hh:mm:ss'|'mm:ss'|'ss')
      * @returns {Number} időegység értéke
      */
     const parse = function(str){
@@ -98,8 +98,8 @@ HD.DateTime.Timer = function(add, stepInterval){
 
     /**
      * Idő kiírása olvasható formában
-     * @param {Number} num időegység értéke
-     * @param {String} format formátum (makrók: h, m, s, H, M, S, hh, mm, ss)
+     * @param {Number} num - időegység értéke
+     * @param {String} format - formátum (makrók: h, m, s, H, M, S, hh, mm, ss)
      * @returns {String} kiírható string
      */
     const print = function(num, format){
@@ -130,7 +130,7 @@ HD.DateTime.Timer = function(add, stepInterval){
 
         /**
          * Beállítás
-         * @param {Number|String} value kezdőérték
+         * @param {Number|String} value - kezdőérték
          * @returns {Object} Timer objektum
          */
         set : function(value){
@@ -145,7 +145,7 @@ HD.DateTime.Timer = function(add, stepInterval){
 
         /**
          * Aktuális idő
-         * @param {String} [format] fomrátum
+         * @param {String} [format] - fomrátum
          * @returns {Number|String} aktuális idő
          */
         get : function(format){
@@ -159,7 +159,7 @@ HD.DateTime.Timer = function(add, stepInterval){
 
         /**
          * Időmérés indítása
-         * @param {Function} callback minden lépés után meghívott függvény
+         * @param {Function} callback - minden lépés után meghívott függvény
          * @returns {Object} Timer objektum
          */
         start : function(callback){
@@ -201,8 +201,8 @@ HD.DateTime.Timer = function(add, stepInterval){
 
         /**
          * Eseménykezelő csatolása
-         * @param {Number|String} value időpont
-         * @param {Function} callback eseménykezelő
+         * @param {Number|String} value - időpont
+         * @param {Function} callback - eseménykezelő
          * @returns {Object} Timer objektum
          */
         reach : function(value, callback){
