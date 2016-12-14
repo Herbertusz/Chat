@@ -636,7 +636,7 @@
     // require braces around arrow function bodies
     "arrow-body-style": "off",
     // require parentheses around arrow function arguments
-    "arrow-parens": "warn",
+    "arrow-parens": "off",
     // enforce consistent spacing before and after the arrow in arrow functions
     "arrow-spacing": [
       "warn",

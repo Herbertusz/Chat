@@ -16,7 +16,9 @@ CHAT.Config = {
         // Tételen állapot érzékelésének engedélyezése
         allowed : true,
         // Várakozás tétlen állpotba állítás előtt ms-ban (5 perc)
-        time : 300000
+        time : 5000, // 300000
+        // Tétlen vagy offline állapotba lépés óta eltelt idő mérése
+        timeCounter : true
     },
 
     // Hibaüzenetek

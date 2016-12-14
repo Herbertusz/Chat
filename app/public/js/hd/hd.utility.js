@@ -277,6 +277,7 @@ HD.String = {
      * @param {String} [replace='_'] - karakterlánc, amire az írásjelek cserélődnek
      * @param {Object} [options] - egyéb beállítások
      * @returns {String} átalakított karakterlánc
+     * TODO: tesztelés
      */
     strtocanonic : function(str, replace, options){
         if (typeof replace === 'undefined') replace = '_';
@@ -306,10 +307,11 @@ HD.String = {
     },
 
     /**
-     * len hosszúságú karakterlánc generálása (pl jelszóhoz)
+     * Megadott hosszúságú karakterlánc generálása (pl jelszóhoz)
      * @param {Number} len - hossz
      * @param {String} type - írásjelek használhatóak
      * @returns {String} generált karakterlánc
+     * TODO: tesztelés
      */
     generatepwd : function(len, type){
         if (typeof type === 'undefined') type = '1aA';

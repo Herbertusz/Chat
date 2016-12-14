@@ -18,7 +18,7 @@ require.main.require('../app/app.js')
 
         // Port figyelése
         app.httpServer.listen(ENV.PORT, ENV.IPADDRESS, function(){
-            console.log(`Listening ${ENV.IPADDRESS}:${ENV.PORT}`);
+            console.log(`Listening ${ENV.IPADDRESS}:${ENV.PORT}  driver: ${ENV.DBDRIVER}`);
         });
 
     })

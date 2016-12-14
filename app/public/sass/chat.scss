@@ -7,6 +7,10 @@
 
 @import "_utility.scss";
 
+.chat-outer-container {
+    margin: 10px;
+}
+
 .status {
     display: inline-block;
     position: relative;
@@ -68,6 +72,10 @@ aside.online {
                 &:hover {
                     background-color: #dddddd;
                 }
+
+                .idle-timer {
+                    float: right;
+                }
             }
 
             .status {
@@ -90,7 +98,7 @@ aside.online {
     }
 }
 
-.chatcontainer {
+.chat-container {
     margin-left: 205px;
     height: 480px;
 

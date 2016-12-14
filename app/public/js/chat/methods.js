@@ -96,6 +96,17 @@ CHAT.Labels = {
 CHAT.Methods = {
 
     /**
+     * Felhasználókhoz kapcsolt időmérők
+     * @type {Object}
+     * @description
+     * timers = {
+     *     `user-${userId}` : Timer,
+     *     ...
+     * }
+     */
+    timers : {},
+
+    /**
      * Felhasználói üzenet beszúrása
      * @param {HTMLElement} box
      * @param {Object} data
@@ -535,6 +546,7 @@ CHAT.Methods = {
         let n;
         const StatusElem = HD.DOM(elem).find(CHAT.DOM.status);
         const statuses = ['on', 'busy', 'inv', 'off'];
+        const prevStatus = CHAT.Methods.getStatus(elem);
 
         if (status === 'idle'){
             StatusElem.class('add', 'idle');
@@ -547,6 +559,7 @@ CHAT.Methods = {
             StatusElem.class('add', status);
         }
         StatusElem.find('use').elem().setAttribute('xlink:href', `#${status}`);
+        CHAT.Methods.setTimer(elem, prevStatus, status);
     },
 
     /**
@@ -557,12 +570,17 @@ CHAT.Methods = {
     getStatus : function(elem){
         let n, status;
         const statusElem = HD.DOM(elem).find(CHAT.DOM.status).elem();
-        const statuses = ['on', 'busy', 'idle', 'inv', 'off'];
+        const statuses = ['on', 'busy', 'inv', 'off'];
 
-        for (n = 0; n < statuses.length; n++){
-            if (statusElem.classList.contains(statuses[n])){
-                status = statuses[n];
-                break;
+        if (statusElem.classList.contains('idle')){
+            status = 'idle';
+        }
+        else {
+            for (n = 0; n < statuses.length; n++){
+                if (statusElem.classList.contains(statuses[n])){
+                    status = statuses[n];
+                    break;
+                }
             }
         }
         return status;
@@ -667,6 +685,46 @@ CHAT.Methods = {
             Box.find(CHAT.DOM.userThrow).dataBool('disabled', true);
             Box.find(CHAT.DOM.fileTrigger).dataBool('disabled', true);
             Box.dataBool('disabled', true);
+        }
+    },
+
+    /**
+     * Inaktivitás kezdete óta eltelt idő kijelzése
+     * @param {HTMLElement} elem
+     * @param {String} prevStatus - user előző státusza ('on'|'busy'|'idle'|'inv'|'off')
+     * @param {String} nextStatus - user új státusza ('on'|'busy'|'idle'|'inv'|'off')
+     */
+    setTimer : function(elem, prevStatus, nextStatus){
+        const transitions = [
+            ['on', 'idle'],
+            ['on', 'inv'],
+            ['on', 'off'],
+            ['busy', 'idle'],
+            ['busy', 'inv'],
+            ['busy', 'off']
+        ];
+        const userId = Number(HD.DOM(elem).data('id'));
+        const timerId = `user-${userId}`;
+        const display = HD.DOM(elem).find(CHAT.DOM.idleTimer).elem();
+
+        if (CHAT.Config.idle.timeCounter && display){
+            if (typeof CHAT.Methods.timers[timerId] === 'undefined'){
+                CHAT.Methods.timers[timerId] = new HD.DateTime.Timer(1);
+            }
+
+            if (transitions.find(tr => (tr[0] === prevStatus && tr[1] === nextStatus))){
+                // start
+                CHAT.Methods.timers[timerId]
+                    .stop()
+                    .start(function(){
+                        display.innerHTML = this.get('mm:ss');
+                    });
+            }
+            else if (transitions.find(tr => (tr[0] === nextStatus && tr[1] === prevStatus))){
+                // stop
+                CHAT.Methods.timers[timerId].stop();
+                display.innerHTML = '';
+            }
         }
     },
 

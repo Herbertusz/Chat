@@ -1,4 +1,4 @@
-<div style="margin: 20px 0;">
+<div class="chat-outer-container">
     <% if (login){ %>
         <aside class="online" data-connected-users="">
             <ul>
@@ -20,6 +20,7 @@
                                 <input class="user-select" type="checkbox" value="<%- user.id %>" />
                                 <svg class="status off"><use xlink:href="#off"></use></svg>
                                 <%= user.name %>
+                                <span class="idle-timer"></span>
                             </label>
                         </li>
                     <% } %>
@@ -27,7 +28,7 @@
             </ul>
             <button class="start">Chat</button>
         </aside>
-        <section class="chatcontainer">
+        <section class="chat-container">
             <div class="chat cloneable" data-room="">
                 <div class="drag"></div>
                 <div class="bar">

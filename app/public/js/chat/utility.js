@@ -36,8 +36,9 @@ CHAT.DOM = {
     statusChange : '.status-change',
     userSelect : '.user-select',
     selectedUsers : '.user-select:checked',
+    idleTimer : '.idle-timer',
     // chat-dobozok
-    container : '.chatcontainer',
+    container : '.chat-container',
     cloneBox : '.chat.cloneable',
     box : '.chat',
     userItems : '.user-item',
