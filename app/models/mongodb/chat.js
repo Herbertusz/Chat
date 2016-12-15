@@ -213,10 +213,6 @@ const Model = function(db){
          * @param {String} filePath
          * @param {Function} [callback]
          * @returns {Promise}
-         * @description
-         * data = {
-         *     // TODO
-         * }
          */
         deleteFile : function(filePath, callback){
             callback = HD.Function.param(callback, () => {});
@@ -256,10 +252,6 @@ const Model = function(db){
          * @param {String} roomName
          * @param {Function} [callback]
          * @returns {Promise}
-         * @description
-         * data = {
-         *     // TODO
-         * }
          */
         deleteRoomFiles : function(roomName, callback){
             callback = HD.Function.param(callback, () => {});
@@ -287,6 +279,40 @@ const Model = function(db){
                     });
                     callback(urls);
                     return urls;
+                })
+                .catch(function(error){
+                    log.error(error);
+                });
+        },
+
+        /**
+         * Felhasználó állapotváltozásának eltárolása (időméréshez)
+         * @param {Object} data
+         * @param {Function} [callback]
+         * @returns {Promise}
+         * @description
+         * data = {
+         *     userId : Number,
+         *     prevStatus : String,
+         *     nextStatus : String
+         * }
+         * TODO: korábbiak törlése
+         */
+        statusChange : function(data, callback){
+            callback = HD.Function.param(callback, () => {});
+            const insertData = {
+                userId : data.userId,
+                prevStatus : data.prevStatus,
+                nextStatus : data.nextStatus,
+                created : Date.now()
+            };
+
+            return db.collection('chat_statuses')
+                .insertOne(insertData)
+                .then(function(result){
+                    const messageId = result.insertedId;
+                    callback(messageId);
+                    return messageId;
                 })
                 .catch(function(error){
                     log.error(error);

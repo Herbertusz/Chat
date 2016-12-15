@@ -77,6 +77,24 @@ router.post('/getroommessages', function(req, res){
 
 });
 
+router.post('/statuschange', function(req, res){
+
+    ChatModel.statusChange({
+        userId : req.body.userId,
+        prevStatus : req.body.prevStatus,
+        nextStatus : req.body.nextStatus
+    })
+        .then(function(){
+            res.send({
+                success : true
+            });
+        })
+        .catch(function(error){
+            log.error(error);
+        });
+
+});
+
 router.get('/file/:roomName/:fileName', function(req, res, next){
 
     ChatModel

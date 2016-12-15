@@ -719,6 +719,12 @@ CHAT.Methods = {
                     .start(function(){
                         display.innerHTML = this.get('mm:ss');
                     });
+
+                const xhr = new XMLHttpRequest();
+                const postData = `userId=${userId}&prevStatus=${prevStatus}&nextStatus=${nextStatus}`;
+                xhr.open('POST', '/chat/statuschange');
+                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                xhr.send(postData);
             }
             else if (transitions.find(tr => (tr[0] === nextStatus && tr[1] === prevStatus))){
                 // stop
