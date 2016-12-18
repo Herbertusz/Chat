@@ -286,6 +286,61 @@ const Model = function(db){
         },
 
         /**
+         * Felhasználó állapotváltozásainak lekérdezése
+         * @param {Number} [userId=null]
+         * @param {Function} [callback]
+         */
+        getStatuses : function(userId, callback){
+            userId = HD.Function.param(userId, null);
+            callback = HD.Function.param(callback, () => {});
+            const cond = userId ? {'userId' : userId} : {};
+            return db.collection('chat_statuses')
+                .find(cond)
+                .sort({'created' : 1})
+                .toArray()
+                .then(function(statuses){
+                    callback(statuses);
+                    return statuses;
+                })
+                .catch(function(error){
+                    log.error(error);
+                });
+        },
+
+        /**
+         * Felhasználó utolsó állapotváltozásának lekérdezése
+         * @param {Number} userId
+         * @param {Function} [callback]
+         */
+        getLastStatus : function(userId, callback){
+            callback = HD.Function.param(callback, () => {});
+            return db.collection('chat_statuses')
+                .find({'userId' : userId})
+                .sort({'created' : -1})
+                .limit(1)
+                .toArray()
+                .then(function(statuses){
+                    let status;
+                    if (statuses.length === 0){
+                        status = {
+                            userId : userId,
+                            prevStatus : null,
+                            nextStatus : null,
+                            created : Date.now()
+                        };
+                    }
+                    else {
+                        status = statuses[0];
+                    }
+                    callback(status);
+                    return status;
+                })
+                .catch(function(error){
+                    log.error(error);
+                });
+        },
+
+        /**
          * Felhasználó állapotváltozásának eltárolása (időméréshez)
          * @param {Object} data
          * @param {Function} [callback]
@@ -298,7 +353,7 @@ const Model = function(db){
          * }
          * TODO: korábbiak törlése
          */
-        statusChange : function(data, callback){
+        setStatus : function(data, callback){
             callback = HD.Function.param(callback, () => {});
             const insertData = {
                 userId : data.userId,

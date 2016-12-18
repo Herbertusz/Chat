@@ -30,7 +30,7 @@ router.get('/', function(req, res){
 
     const db = req.app.get('db');
 
-    let users, messages;
+    let users, messages, statuses;
 
     UserModel.getUsers()
         .then(function(items){
@@ -41,6 +41,12 @@ router.get('/', function(req, res){
         })
         .then(function(items){
             messages = items;
+        })
+        .then(function(){
+            return ChatModel.getStatuses();
+        })
+        .then(function(items){
+            statuses = items;
         })
         .catch(function(error){
             log.error(error);
@@ -53,7 +59,8 @@ router.get('/', function(req, res){
                 userName : req.session.login ? req.session.login.userName : '',
                 loginMessage : message,
                 users : users,
-                messages : messages
+                messages : messages,
+                statuses : statuses
             });
         });
 

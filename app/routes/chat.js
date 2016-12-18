@@ -79,7 +79,7 @@ router.post('/getroommessages', function(req, res){
 
 router.post('/statuschange', function(req, res){
 
-    ChatModel.statusChange({
+    ChatModel.setStatus({
         userId : req.body.userId,
         prevStatus : req.body.prevStatus,
         nextStatus : req.body.nextStatus
@@ -87,6 +87,20 @@ router.post('/statuschange', function(req, res){
         .then(function(){
             res.send({
                 success : true
+            });
+        })
+        .catch(function(error){
+            log.error(error);
+        });
+
+});
+
+router.post('/getstatus', function(req, res){
+
+    ChatModel.getLastStatus(req.body.userId)
+        .then(function(status){
+            res.send({
+                status : status
             });
         })
         .catch(function(error){

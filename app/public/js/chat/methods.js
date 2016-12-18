@@ -80,6 +80,10 @@ CHAT.Labels = {
         'forceLeaveOther' : (fromUserName, toUserName) =>
             `${fromUserName} kidobta ${toUserName} felhasználót`
     },
+    // Idő kijelzése
+    'time' : {
+        'idleTimer' : ['nap', 'óra', 'perc', 'másodperc']
+    },
     // Hibaüzenetek
     'error' : {
         'fileSize' : (size, maxSize) =>
@@ -664,6 +668,7 @@ CHAT.Methods = {
             }
         }
         HD.DOM(CHAT.DOM.online).dataObj('connected-users', connectedUsers);
+        CHAT.Methods.updateStatuses(connectedUsers);
         return connectedUsers;
     },
 
@@ -695,6 +700,8 @@ CHAT.Methods = {
      * @param {String} nextStatus - user új státusza ('on'|'busy'|'idle'|'inv'|'off')
      */
     setTimer : function(elem, prevStatus, nextStatus){
+        let time = 0;
+        let update = true;
         const transitions = [
             ['on', 'idle'],
             ['on', 'inv'],
@@ -703,35 +710,85 @@ CHAT.Methods = {
             ['busy', 'inv'],
             ['busy', 'off']
         ];
+        const inactiveStatuses = Array.from(new Set(HD.Array.rotate(transitions)[1]));
         const userId = Number(HD.DOM(elem).data('id'));
         const timerId = `user-${userId}`;
         const display = HD.DOM(elem).find(CHAT.DOM.idleTimer).elem();
 
         if (CHAT.Config.idle.timeCounter && display){
-            if (typeof CHAT.Methods.timers[timerId] === 'undefined'){
-                CHAT.Methods.timers[timerId] = new HD.DateTime.Timer(1);
-            }
+            HD.DOM.ajax({
+                method : 'POST',
+                url : '/chat/getstatus',
+                data : `userId=${userId}`
+            }).then(function(resp){
+                const lastChange = JSON.parse(resp).status;
 
-            if (transitions.find(tr => (tr[0] === prevStatus && tr[1] === nextStatus))){
-                // start
-                CHAT.Methods.timers[timerId]
-                    .stop()
-                    .start(function(){
-                        display.innerHTML = this.get('mm:ss');
-                    });
+                if (
+                    lastChange.prevStatus !== null &&
+                    inactiveStatuses.indexOf(prevStatus) > -1 &&
+                    inactiveStatuses.indexOf(nextStatus) > -1 &&
+                    (
+                        typeof CHAT.Methods.timers[timerId] === 'undefined' ||
+                        !CHAT.Methods.timers[timerId].running()
+                    )
+                ){
+                    prevStatus = lastChange.prevStatus;
+                    nextStatus = lastChange.nextStatus;
+                    time = Date.now() - lastChange.created;
+                    update = false;
+                }
 
-                const xhr = new XMLHttpRequest();
-                const postData = `userId=${userId}&prevStatus=${prevStatus}&nextStatus=${nextStatus}`;
-                xhr.open('POST', '/chat/statuschange');
-                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-                xhr.send(postData);
-            }
-            else if (transitions.find(tr => (tr[0] === nextStatus && tr[1] === prevStatus))){
-                // stop
-                CHAT.Methods.timers[timerId].stop();
-                display.innerHTML = '';
+                if (typeof CHAT.Methods.timers[timerId] === 'undefined'){
+                    CHAT.Methods.timers[timerId] = new HD.DateTime.Timer(1);
+                }
+
+                if (transitions.find(tr => (tr[0] === prevStatus && tr[1] === nextStatus))){
+                    // start
+                    if (nextStatus === 'idle'){
+                        time += CHAT.Config.idle.time;
+                    }
+                    CHAT.Methods.timers[timerId]
+                        .stop()
+                        .set(Math.round(time / 1000))
+                        .start(function(){
+                            display.innerHTML = CHAT.Methods.timerDisplay(this.get('D:h:m:s'));
+                            // display.innerHTML = this.get('D nap, hh:mm:ss');
+                        });
+
+                    if (update){
+                        HD.DOM.ajax({
+                            method : 'POST',
+                            url : '/chat/statuschange',
+                            data : `userId=${userId}&prevStatus=${prevStatus}&nextStatus=${nextStatus}`
+                        });
+                    }
+                }
+                else if (transitions.find(tr => (tr[0] === nextStatus && tr[1] === prevStatus))){
+                    // stop
+                    CHAT.Methods.timers[timerId].stop();
+                    display.innerHTML = '';
+                }
+            });
+        }
+    },
+
+    /**
+     * Eltelt idő kijelzése a legnagyobb nem nulla egység szerint
+     * @param {String} segmentString
+     * @param {Number} [min=3] Minimális kijelzendő időegység beállítása (1 perc)
+     * @returns {String}
+     */
+    timerDisplay : function(segmentString, min){
+        min = HD.Function.param(min, 3);
+        let format = '';
+        const segments = segmentString.split(':');
+        for (let i = 0; i < segments.length && i < min; i++){
+            if (segments[i] !== '0'){
+                format = `${segments[i]} ${CHAT.Labels.time.idleTimer[i]}`;
+                break;
             }
         }
+        return format;
     },
 
     /**

@@ -8,6 +8,13 @@
             <% } %>
             <hr />
         <% }); %>
+        <h3>Státuszváltozások:</h3>
+        <% statuses.forEach(function(element){ %>
+            <% for (let i in element){ %>
+                <%- i %>: <%- element[i] %><br />
+            <% } %>
+            <hr />
+        <% }); %>
         <h3>Üzenetek:</h3>
         <% messages.forEach(function(element){ %>
             <% for (let i in element){ %>

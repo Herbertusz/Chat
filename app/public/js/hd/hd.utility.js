@@ -494,6 +494,25 @@ HD.Array = {
             arr.slice(index, 1);
         }
         return arr;
+    },
+
+    /**
+     * 2D-s tömb "elforgatása"
+     * @param {Array} arr - tömb
+     * @returns {Array}
+     * @example
+     * [[1,2],[3,4],[5,6]] -> [[1,3,5],[2,4,6]]
+     */
+    rotate : function(arr){
+        let i, j;
+        const rotated = [];
+        for (i = 0; i < arr[0].length; i++){
+            rotated[i] = [];
+            for (j = 0; j < arr.length; j++){
+                rotated[i][j] = arr[j][i];
+            }
+        }
+        return rotated;
     }
 
 };

@@ -99,30 +99,31 @@ HD.DateTime.Timer = function(add, stepInterval){
     /**
      * Idő kiírása olvasható formában
      * @param {Number} num - időegység értéke
-     * @param {String} format - formátum (makrók: h, m, s, H, M, S, hh, mm, ss)
+     * @param {String} format - formátum (makrók: h, m, s, D, H, M, S, hh, mm, ss)
      * @returns {String} kiírható string
      */
     const print = function(num, format){
         const timeObj = new Date(num * 1000);
-        let h = timeObj.getHours() - 1;
-        let m = timeObj.getMinutes();
-        let s = timeObj.getSeconds();
-        const H = h;
-        const M = h * 60 + m;
-        const S = h * 60 * 60 + m * 60 + s;
+        const h = timeObj.getUTCHours();
+        const m = timeObj.getMinutes();
+        const s = timeObj.getSeconds();
+        const D = Math.floor(num / 60 / 60 / 24);
+        const H = Math.floor(num / 60 / 60);
+        const M = Math.floor(num / 60);
+        const S = num;
         const hh = (h < 10) ? `0${h}` : `${h}`;
         const mm = (m < 10) ? `0${m}` : `${m}`;
         const ss = (s < 10) ? `0${s}` : `${s}`;
-        h = h.toString(); m = m.toString(); s = s.toString();
-        format = format.replace('hh', hh);
-        format = format.replace('mm', mm);
-        format = format.replace('ss', ss);
-        format = format.replace('h', `${h}`);
-        format = format.replace('m', `${m}`);
-        format = format.replace('s', `${s}`);
-        format = format.replace('H', `${H}`);
-        format = format.replace('M', `${M}`);
-        format = format.replace('S', `${S}`);
+        format = format.replace(/hh/g, hh);
+        format = format.replace(/mm/g, mm);
+        format = format.replace(/ss/g, ss);
+        format = format.replace(/h/g, `${h}`);
+        format = format.replace(/m/g, `${m}`);
+        format = format.replace(/s/g, `${s}`);
+        format = format.replace(/D/g, `${D}`);
+        format = format.replace(/H/g, `${H}`);
+        format = format.replace(/M/g, `${M}`);
+        format = format.replace(/S/g, `${S}`);
         return format;
     };
 
@@ -145,7 +146,7 @@ HD.DateTime.Timer = function(add, stepInterval){
 
         /**
          * Aktuális idő
-         * @param {String} [format] - fomrátum
+         * @param {String} [format] - formátum
          * @returns {Number|String} aktuális idő
          */
         get : function(format){
@@ -215,6 +216,14 @@ HD.DateTime.Timer = function(add, stepInterval){
                 context : this
             });
             return this;
+        },
+
+        /**
+         * Időmérő fut vagy meg van állítva
+         * @returns {Boolean} true: fut
+         */
+        running : function(){
+            return run;
         }
 
     };

@@ -17,7 +17,6 @@ CHAT.Controller = {
         // Státusz megváltoztatása
         HD.DOM(CHAT.DOM.online).find(CHAT.DOM.statusChange).event('change', function(){
             const connectedUsers = CHAT.Methods.changeUserStatus(this.value);
-            CHAT.Methods.updateStatuses(connectedUsers);
             CHAT.socket.emit('statusChanged', connectedUsers);
         });
 
@@ -26,12 +25,10 @@ CHAT.Controller = {
             $(CHAT.DOM.idleCheck).idleTimer(CHAT.timer.idle);
             $(CHAT.DOM.idleCheck).on('idle.idleTimer', function(){
                 const connectedUsers = CHAT.Methods.changeUserStatus('idle');
-                CHAT.Methods.updateStatuses(connectedUsers);
                 CHAT.socket.emit('statusChanged', connectedUsers);
             });
             $(CHAT.DOM.idleCheck).on('active.idleTimer', function(){
                 const connectedUsers = CHAT.Methods.changeUserStatus('notidle');
-                CHAT.Methods.updateStatuses(connectedUsers);
                 CHAT.socket.emit('statusChanged', connectedUsers);
             });
         }

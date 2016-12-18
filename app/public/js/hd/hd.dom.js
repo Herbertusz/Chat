@@ -611,6 +611,46 @@ HD.DOM.eventListeners = [];
 HD.DOM.dataObjects = [];
 
 /**
+ * Ajax kérés futtatása
+ * @param {Object} options
+ * @returns {Promise|null}
+ * @description
+ * options = {
+ *     method : String ('GET'|'POST'|'PUT'|'DELETE'|...)
+ *     url : String
+ *     data : String
+ *     callback : Function
+ * }
+ */
+HD.DOM.ajax = function(options){
+    let promise = null;
+    const xhr = new XMLHttpRequest();
+    const data = options.data || '';
+    xhr.open(options.method, options.url);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    if (typeof options.callback === 'function'){
+        xhr.onload = function(){
+            options.callback(xhr.responseText);
+        };
+    }
+    else {
+        promise = new Promise(function(resolve, reject){
+            xhr.onload = function(){
+                resolve(xhr.responseText);
+            };
+            xhr.onerror = function(){
+                reject({
+                    name : 'XHR error',
+                    message : `Url: ${options.url}; Data: ${options.data}`
+                });
+            };
+        });
+    }
+    xhr.send(options.data);
+    return promise;
+};
+
+/**
  * Egér pozíciója egy elemhez képest
  * @param {Event} event - egérhez kapcsolódó esemény
  * @param {HTMLElement} [elem=document.body] - egy DOM elem

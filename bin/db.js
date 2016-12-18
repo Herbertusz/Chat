@@ -96,6 +96,13 @@ const createMongoDB = function(){
             .catch(function(error){
                 console.log(error);
             });
+
+        db.createCollection('chat_statuses');
+        db.collection('chat_statuses')
+            .deleteMany({})
+            .catch(function(error){
+                console.log(error);
+            });
     };
 
     MongoClient.connect(url, function(error, db){
