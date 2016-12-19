@@ -768,6 +768,8 @@ CHAT.Methods = {
                     CHAT.Methods.timers[timerId].stop();
                     display.innerHTML = '';
                 }
+            }).catch(function(error){
+                HD.Log.error(error);
             });
         }
     },
