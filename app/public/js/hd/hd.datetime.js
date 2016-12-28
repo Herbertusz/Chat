@@ -45,11 +45,10 @@ HD.DateTime = {
     /**
      * yyyy-mm-dd forma előállítása
      * @param {Date} date - JS dátum objektum
-     * @param {String} separator - elválasztó
+     * @param {String} [separator='-'] - elválasztó
      * @returns {String}
      */
-    progFormat : function(date, separator){
-        if (typeof separator === 'undefined') separator = '-';
+    progFormat : function(date, separator = '-'){
         const y = date.getFullYear();
         const m = this.monthSigns[date.getMonth()];
         const d = HD.Number.fillZero(date.getDate(), 2);
@@ -97,9 +96,7 @@ HD.DateTime = {
      * @param {Number} [week]
      * @returns {Object}
      */
-    getDaysOfYearWeek : function(year, week){
-        if (typeof year === 'undefined') year = (new Date()).getFullYear();
-        if (typeof week === 'undefined') year = this.getCurrentWeekOfYear();
+    getDaysOfYearWeek : function(year = (new Date()).getFullYear(), week = this.getCurrentWeekOfYear()){
         const dayMS = 86400000;
         const d = new Date(`Jan 01, ${year} 01:00:00`);
         const corr = (d.getDay() || 7) - 1;
@@ -123,9 +120,7 @@ HD.DateTime = {
      * @param {String} [to='s'] - visszatérési mértékegység megadása ('ms'|'s'|'m'|'h')
      * @returns {Number} milliszekundumok/másodpercek/percek/órák száma
      */
-    parseTime : function(str, from, to){
-        if (typeof from === 'undefined') from = 's';
-        if (typeof to === 'undefined') to = 's';
+    parseTime : function(str, from = 's', to = 's'){
         let h = '00';
         let m = '00';
         let s = '00';
@@ -176,7 +171,7 @@ HD.DateTime = {
      * Idő kiírása olvasható formában
      * @param {Number} num - időegység értéke
      * @param {String} from - bemenet mértékegysége ('s'|'m'|'h')
-     * @param {String} format - formátum (makrók: h, m, s, H, M, S, hh, mm, ss)
+     * @param {String} format - formátum (makrók: h, m, s, D, H, M, S, hh, mm, ss)
      * @returns {String} kiírható string
      */
     printTime : function(num, from, format){
@@ -184,13 +179,13 @@ HD.DateTime = {
         if (from === 's') timeObj = new Date(num * 1000);
         if (from === 'm') timeObj = new Date(num * 1000 * 60);
         if (from === 'h') timeObj = new Date(num * 1000 * 60 * 60);
-        const h = timeObj.getUTCHours();
-        const m = timeObj.getMinutes();
-        const s = timeObj.getSeconds();
-        const D = Math.floor(num / 60 / 60 / 24);
-        const H = Math.floor(num / 60 / 60);
-        const M = Math.floor(num / 60);
-        const S = num;
+        const h = timeObj.getUTCHours().toString();
+        const m = timeObj.getMinutes().toString();
+        const s = timeObj.getSeconds().toString();
+        const D = Math.floor(num / 60 / 60 / 24).toString();
+        const H = Math.floor(num / 60 / 60).toString();
+        const M = Math.floor(num / 60).toString();
+        const S = num.toString();
         const hh = (h < 10) ? `0${h}` : `${h}`;
         const mm = (m < 10) ? `0${m}` : `${m}`;
         const ss = (s < 10) ? `0${s}` : `${s}`;

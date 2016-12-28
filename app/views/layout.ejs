@@ -1,4 +1,4 @@
-<% /* global CHAT layout */ %>
+<% /* global HD CHAT layout */ %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -31,21 +31,26 @@
             <script src="/socket.io/socket.io.js"></script>
             <script src="/js/compress/lz-string.min.js"></script>
             <script src="/js/chat/utility.js"></script>
+            <script src="/js/chat/labels.js"></script>
             <script src="/js/chat/filetransfer.js"></script>
-            <script src="/js/chat/methods.js"></script>
+            <script src="/js/chat/components.timer.js"></script>
+            <script src="/js/chat/components.transfer.js"></script>
+            <script src="/js/chat/components.user.js"></script>
+            <script src="/js/chat/components.box.js"></script>
+            <script src="/js/chat/components.notification.js"></script>
             <script src="/js/chat/events.client.js"></script>
             <script src="/js/chat/events.server.js"></script>
             <script src="/js/chat/controller.js"></script>
             <title><%- CHAT.Config.defaultTitle %></title>
-        <% }else if (page === 'videochat'){ %>
+        <% } else if (page === 'videochat'){ %>
             <link rel="stylesheet" href="/css/videochat.css" />
-            <!-- <script src="/js/compress/lz-string.min.js"></script> -->
+            <script src="/js/compress/lz-string.min.js"></script>
             <script src="/socket.io/socket.io.js"></script>
-            <script src="/js/libs/rmc3.js"></script>
-            <!-- <script src="/js/videochat/webcam.js"></script> -->
-            <script src="/js/videochat/webrtc.js"></script>
+            <script src="/js/videochat/webcam.js"></script>
+            <!-- <script src="/js/libs/rmc3.js"></script> -->
+            <!-- <script src="/js/videochat/webrtc.js"></script> -->
             <title>Videochat</title>
-        <% }else{ %>
+        <% } else { %>
             <title>CHAT app</title>
         <% } %>
     </head>
@@ -67,7 +72,7 @@
 
             <h1 class="game">Chat</h1>
 
-            <% if (typeof(login) === 'undefined' || !login){ %>
+            <% if (!HD.Misc.defined(login) || !login){ %>
                 <div class="login">
                     <form method="post" action="/login">
                         <% if (loginMessage){ %>
@@ -85,7 +90,7 @@
                     </form>
                     <div class="clear"></div>
                 </div>
-            <% }else{ %>
+            <% } else { %>
                 <div class="login">
                     Üdvözöljük, <strong><%- userName %></strong>
                     <a href="/logout">Kijelentkezés</a>

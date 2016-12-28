@@ -465,8 +465,7 @@ HD.DOM = function(identifier){
          * @param {Boolean} [withEvents=false]
          * @returns {Object}
          */
-        clone : function(withEvents){
-            withEvents = HD.Function.param(withEvents, false);
+        clone : function(withEvents = false){
             const elementClone = this.elem().cloneNode(true);
 
             if (withEvents){
@@ -661,10 +660,9 @@ HD.DOM.ajax = function(options){
  *     y : Number
  * }
  */
-HD.DOM.getMousePosition = function(event, elem){
+HD.DOM.getMousePosition = function(event, elem = document.body){
     const offset = {x : 0, y : 0};
 
-    if (typeof elem === 'undefined') elem = document.body;
     do {
         if (!isNaN(elem.offsetLeft)){
             offset.x += elem.offsetLeft;

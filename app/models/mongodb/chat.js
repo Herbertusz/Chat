@@ -18,11 +18,10 @@ const Model = function(db){
         /**
          * Összes átvitel lekérdezése
          * @param {Array} type
-         * @param {Function} callback
+         * @param {Function} [callback]
          * @returns {Promise}
          */
-        getMessages : function(type, callback){
-            callback = HD.Function.param(callback, () => {});
+        getMessages : function(type, callback = () => {}){
             const conds = [];
             const types = ['message', 'file', 'event'];
             types.forEach(function(item){
@@ -50,8 +49,7 @@ const Model = function(db){
          * @param {Function} [callback]
          * @returns {Promise}
          */
-        getRoomMessages : function(roomName, callback){
-            callback = HD.Function.param(callback, () => {});
+        getRoomMessages : function(roomName, callback = () => {}){
             return db.collection('chat_messages')
                 .find({'room' : roomName})
                 .sort({'created' : 1})
@@ -88,10 +86,8 @@ const Model = function(db){
          * @param {String} roomName
          * @param {String} fileName
          * @param {Function} [callback]
-         * TODO: find ellenőrzése
          */
-        getFile : function(roomName, fileName, callback){
-            callback = HD.Function.param(callback, () => {});
+        getFile : function(roomName, fileName, callback = () => {}){
             return db.collection('chat_messages')
                 .find({
                     'room' : roomName,
@@ -120,8 +116,7 @@ const Model = function(db){
          *     // TODO
          * }
          */
-        setEvent : function(eventName, roomName, data, callback){
-            callback = HD.Function.param(callback, () => {});
+        setEvent : function(eventName, roomName, data, callback = () => {}){
             const insertData = {
                 'event' : eventName,
                 'room' : roomName,
@@ -151,8 +146,7 @@ const Model = function(db){
          *     // TODO
          * }
          */
-        setMessage : function(data, callback){
-            callback = HD.Function.param(callback, () => {});
+        setMessage : function(data, callback = () => {}){
             let insertData;
 
             if (data.message){
@@ -188,8 +182,7 @@ const Model = function(db){
          *     // TODO
          * }
          */
-        setFile : function(data, callback){
-            callback = HD.Function.param(callback, () => {});
+        setFile : function(data, callback = () => {}){
             return this.setMessage({
                 'userId' : data.userId,
                 'room' : data.room,
@@ -214,8 +207,7 @@ const Model = function(db){
          * @param {Function} [callback]
          * @returns {Promise}
          */
-        deleteFile : function(filePath, callback){
-            callback = HD.Function.param(callback, () => {});
+        deleteFile : function(filePath, callback = () => {}){
             return db.collection('chat_messages')
                 .find({'$and' : [
                     {'data' : filePath},
@@ -253,8 +245,7 @@ const Model = function(db){
          * @param {Function} [callback]
          * @returns {Promise}
          */
-        deleteRoomFiles : function(roomName, callback){
-            callback = HD.Function.param(callback, () => {});
+        deleteRoomFiles : function(roomName, callback = () => {}){
             return db.collection('chat_messages')
                 .find({'$and' : [
                     {'room' : roomName},
@@ -286,34 +277,11 @@ const Model = function(db){
         },
 
         /**
-         * Felhasználó állapotváltozásainak lekérdezése
-         * @param {Number} [userId=null]
-         * @param {Function} [callback]
-         */
-        getStatuses : function(userId, callback){
-            userId = HD.Function.param(userId, null);
-            callback = HD.Function.param(callback, () => {});
-            const cond = userId ? {'userId' : userId} : {};
-            return db.collection('chat_statuses')
-                .find(cond)
-                .sort({'created' : 1})
-                .toArray()
-                .then(function(statuses){
-                    callback(statuses);
-                    return statuses;
-                })
-                .catch(function(error){
-                    log.error(error);
-                });
-        },
-
-        /**
          * Felhasználó utolsó állapotváltozásának lekérdezése
          * @param {Number} userId
          * @param {Function} [callback]
          */
-        getLastStatus : function(userId, callback){
-            callback = HD.Function.param(callback, () => {});
+        getLastStatus : function(userId, callback = () => {}){
             return db.collection('chat_statuses')
                 .find({'userId' : userId})
                 .sort({'created' : -1})
@@ -351,10 +319,8 @@ const Model = function(db){
          *     prevStatus : String,
          *     nextStatus : String
          * }
-         * TODO: korábbiak törlése
          */
-        setStatus : function(data, callback){
-            callback = HD.Function.param(callback, () => {});
+        setStatus : function(data, callback = () => {}){
             const insertData = {
                 userId : data.userId,
                 prevStatus : data.prevStatus,
@@ -363,7 +329,11 @@ const Model = function(db){
             };
 
             return db.collection('chat_statuses')
-                .insertOne(insertData)
+                .deleteMany({'userId' : data.userId})
+                .then(function(result){
+                    return db.collection('chat_statuses')
+                        .insertOne(insertData);
+                })
                 .then(function(result){
                     const messageId = result.insertedId;
                     callback(messageId);

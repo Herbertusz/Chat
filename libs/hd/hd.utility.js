@@ -52,15 +52,18 @@ HD.Misc = {
      *      'D' : 'turnRight'
      *  }, null);
      */
-    switching : function(variable, relations, defaultValue){
+    switching : function(variable, relations, defaultValue = null){
         let index;
-        if (typeof defaultValue === 'undefined') defaultValue = null;
         for (index in relations){
             if (variable === index){
                 return relations[index];
             }
         }
         return defaultValue;
+    },
+
+    defined : function(param){
+        return typeof param !== 'undefined';
     }
 
 };
@@ -102,12 +105,10 @@ HD.Number = {
      * @param {Number} [prefixLimit=0.5] - ha ennél kisebb, az alacsonyabb prefixum használata
      * @returns {String} olvasható érték
      */
-    displaySize : function(size, precision, prefixLimit){
+    displaySize : function(size, precision = 2, prefixLimit = 0.5){
         let n = 1.0;
         let k, i;
         const pref = ['', '', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
-        if (typeof precision === 'undefined') precision = 2;
-        if (typeof prefixLimit === 'undefined') prefixLimit = 0.5;
         for (k = 0; k < precision; k++){
             n *= 10.0;
         }
@@ -277,10 +278,10 @@ HD.String = {
      * @param {String} [replace='_'] - karakterlánc, amire az írásjelek cserélődnek
      * @param {Object} [options] - egyéb beállítások
      * @returns {String} átalakított karakterlánc
+     * TODO: tesztelés
      */
-    strtocanonic : function(str, replace, options){
-        if (typeof replace === 'undefined') replace = '_';
-        if (typeof options === 'undefined'){
+    strtocanonic : function(str, replace = '_', options = null){
+        if (!options){
             options = {
                 exceptions : '',
                 tolower : false,
@@ -306,13 +307,13 @@ HD.String = {
     },
 
     /**
-     * len hosszúságú karakterlánc generálása (pl jelszóhoz)
+     * Megadott hosszúságú karakterlánc generálása (pl jelszóhoz)
      * @param {Number} len - hossz
-     * @param {String} type - írásjelek használhatóak
+     * @param {String} [type=1aA] - használható karaktertípusok
      * @returns {String} generált karakterlánc
+     * TODO: tesztelés
      */
-    generatepwd : function(len, type){
-        if (typeof type === 'undefined') type = '1aA';
+    generatepwd : function(len, type = '1aA'){
         let n;
         let chars = '';
         let ret = '';
@@ -377,10 +378,10 @@ HD.Function = {
 
     /**
      * Alapértelmezett paraméterérték megadása függvényben
-     * @example par = param(par, 0);
      * @param {*} param - paraméter
      * @param {*} value - alapértelmezett érték
      * @returns {*} ezt kell értékül adni a paraméternek
+     * @example par = param(par, 0);
      */
     param : function(param, value){
         if (typeof param === 'undefined'){
@@ -395,7 +396,7 @@ HD.Function = {
      * Alapértelmezett paraméterértékek megadása függvényben
      * @param {Object} params - argumentumok adatai
      * @returns {Array} paraméterek értékei
-     * @description
+     * @example
      * HD.Misc.funcMultiParam({
      *     sql      : [sql, 'string'],
      *     binds    : [binds, 'object', {}],
@@ -492,6 +493,25 @@ HD.Array = {
             arr.slice(index, 1);
         }
         return arr;
+    },
+
+    /**
+     * 2D-s tömb "elforgatása"
+     * @param {Array} arr - tömb
+     * @returns {Array}
+     * @example
+     * [[1,2],[3,4],[5,6]] -> [[1,3,5],[2,4,6]]
+     */
+    rotate : function(arr){
+        let i, j;
+        const rotated = [];
+        for (i = 0; i < arr[0].length; i++){
+            rotated[i] = [];
+            for (j = 0; j < arr.length; j++){
+                rotated[i][j] = arr[j][i];
+            }
+        }
+        return rotated;
     }
 
 };

@@ -41,7 +41,7 @@ CHAT.Events.Server = {
         HD.DOM(CHAT.DOM.box).filter(':not(.cloneable)').elements.forEach(function(box){
             const Box = HD.DOM(box);
             if (Box.find(CHAT.DOM.userItems).filter(`[data-id="${data.id}"]`).elements.length > 0){
-                CHAT.Methods.appendSystemMessage(box, 'leave', data.id);
+                CHAT.Components.Transfer.appendSystemMessage(box, 'leave', data.id);
                 Box.find(`[data-id="${data.id}"]`).remove();
             }
         });
@@ -63,7 +63,7 @@ CHAT.Events.Server = {
      */
     statusChanged : function(connectedUsers){
         HD.DOM(CHAT.DOM.online).dataObj('connected-users', connectedUsers);
-        CHAT.Methods.updateStatuses(connectedUsers);
+        CHAT.Components.User.updateStatuses(connectedUsers);
     },
 
     /**
@@ -81,14 +81,14 @@ CHAT.Events.Server = {
 
         if (roomData.userIds.indexOf(CHAT.userId) > -1){
             Box = HD.DOM(
-                CHAT.Util.cloneElement(HD.DOM(CHAT.DOM.cloneBox).elem(), HD.DOM(CHAT.DOM.container).elem())
+                CHAT.DOM.cloneElement(HD.DOM(CHAT.DOM.cloneBox).elem(), HD.DOM(CHAT.DOM.container).elem())
             );
             Userlist = Box.find(CHAT.DOM.users);
             Box.data('room', roomData.name);
-            CHAT.Methods.generateUserList(Userlist.elem(), roomData.userIds);
-            CHAT.Methods.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj('connected-users'));
+            CHAT.Components.User.generateList(Userlist.elem(), roomData.userIds);
+            CHAT.Components.User.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj('connected-users'));
             CHAT.socket.emit('roomJoin', {roomName : roomData.name});
-            CHAT.Methods.notification(Box.elem(), {
+            CHAT.Components.Notification.trigger(Box.elem(), {
                 type : 'create',
                 fromId : roomData.starter,
                 local : false
@@ -111,13 +111,13 @@ CHAT.Events.Server = {
         if (roomData.joinedUserId === CHAT.userId){
             // Létre kell hozni a dobozt a csatornához
             Box = HD.DOM(
-                CHAT.Util.cloneElement(HD.DOM(CHAT.DOM.cloneBox).elem(), HD.DOM(CHAT.DOM.container).elem())
+                CHAT.DOM.cloneElement(HD.DOM(CHAT.DOM.cloneBox).elem(), HD.DOM(CHAT.DOM.container).elem())
             );
             Userlist = Box.find(CHAT.DOM.users);
             Box.data('room', roomData.name);
-            CHAT.Methods.generateUserList(Userlist.elem(), roomData.userIds);
-            CHAT.Methods.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj('connected-users'));
-            CHAT.Methods.fillBox(Box.elem(), roomData.name);
+            CHAT.Components.User.generateList(Userlist.elem(), roomData.userIds);
+            CHAT.Components.User.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj('connected-users'));
+            CHAT.Components.Box.fill(Box.elem(), roomData.name);
         }
         else {
             // Csatlakozott a csatornához
@@ -125,9 +125,9 @@ CHAT.Events.Server = {
             box = Box.elem();
             if (box){
                 Userlist = Box.find(CHAT.DOM.users);
-                CHAT.Methods.appendSystemMessage(box, 'join', roomData.joinedUserId);
-                CHAT.Methods.generateUserList(Userlist.elem(), roomData.userIds, true);
-                CHAT.Methods.notification(box, {
+                CHAT.Components.Transfer.appendSystemMessage(box, 'join', roomData.joinedUserId);
+                CHAT.Components.User.generateList(Userlist.elem(), roomData.userIds, true);
+                CHAT.Components.Notification.trigger(box, {
                     type : 'join',
                     fromId : roomData.joinedUserId,
                     local : true
@@ -152,8 +152,8 @@ CHAT.Events.Server = {
             Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
             box = Box.elem();
             if (box){
-                CHAT.Methods.appendSystemMessage(box, 'leave', extData.userId);
-                CHAT.Methods.notification(box, {
+                CHAT.Components.Transfer.appendSystemMessage(box, 'leave', extData.userId);
+                CHAT.Components.Notification.trigger(box, {
                     type : 'leave',
                     fromId : extData.userId,
                     local : true
@@ -184,28 +184,28 @@ CHAT.Events.Server = {
             if (box){
                 // Van a csatornához tartozó doboz (korábban ki lett dobva)
                 Userlist = Box.find(CHAT.DOM.users);
-                CHAT.Methods.changeBoxStatus(box, 'enabled');
-                CHAT.Methods.generateUserList(Userlist.elem(), extData.roomData.userIds, true);
-                CHAT.Methods.appendSystemMessage(box, 'forceJoinYou', extData.triggerId);
+                CHAT.Components.Box.changeStatus(box, 'enabled');
+                CHAT.Components.User.generateList(Userlist.elem(), extData.roomData.userIds, true);
+                CHAT.Components.Transfer.appendSystemMessage(box, 'forceJoinYou', extData.triggerId);
             }
             else {
                 // Létre kell hozni a dobozt a csatornához
                 Box = HD.DOM(
-                    CHAT.Util.cloneElement(HD.DOM(CHAT.DOM.cloneBox).elem(), HD.DOM(CHAT.DOM.container).elem())
+                    CHAT.DOM.cloneElement(HD.DOM(CHAT.DOM.cloneBox).elem(), HD.DOM(CHAT.DOM.container).elem())
                 );
                 box = Box.elem();
                 Userlist = Box.find(CHAT.DOM.users);
                 Box.data('room', extData.roomData.name);
-                CHAT.Methods.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj('connected-users'));
-                CHAT.Methods.fillBox(box, extData.roomData.name);
-                CHAT.Methods.generateUserList(Userlist.elem(), extData.roomData.userIds);
-                CHAT.Methods.appendSystemMessage(box, 'forceJoinYou', extData.triggerId);
+                CHAT.Components.User.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj('connected-users'));
+                CHAT.Components.Box.fill(box, extData.roomData.name);
+                CHAT.Components.User.generateList(Userlist.elem(), extData.roomData.userIds);
+                CHAT.Components.Transfer.appendSystemMessage(box, 'forceJoinYou', extData.triggerId);
             }
             CHAT.socket.emit('roomJoin', {
                 userId : CHAT.userId,
                 roomName : extData.roomData.name
             });
-            CHAT.Methods.notification(box, {
+            CHAT.Components.Notification.trigger(box, {
                 type : 'forceJoinYou',
                 fromId : extData.triggerId,
                 local : false
@@ -214,9 +214,9 @@ CHAT.Events.Server = {
         else if (box){
             // Új user csatlakozott a csatornához
             Userlist = Box.find(CHAT.DOM.users);
-            CHAT.Methods.generateUserList(Userlist.elem(), extData.roomData.userIds, true);
-            CHAT.Methods.appendSystemMessage(box, 'forceJoinOther', extData.triggerId, extData.userId);
-            CHAT.Methods.notification(box, {
+            CHAT.Components.User.generateList(Userlist.elem(), extData.roomData.userIds, true);
+            CHAT.Components.Transfer.appendSystemMessage(box, 'forceJoinOther', extData.triggerId, extData.userId);
+            CHAT.Components.Notification.trigger(box, {
                 type : 'forceJoinOther',
                 fromId : extData.triggerId,
                 toId : extData.userId,
@@ -241,22 +241,22 @@ CHAT.Events.Server = {
 
         if (box){
             if (extData.userId === CHAT.userId){
-                CHAT.Methods.appendSystemMessage(box, 'forceLeaveYou', extData.triggerId);
+                CHAT.Components.Transfer.appendSystemMessage(box, 'forceLeaveYou', extData.triggerId);
                 CHAT.socket.emit('roomLeave', {
                     silent : true,
                     userId : CHAT.userId,
                     roomName : extData.roomData.name
                 });
-                CHAT.Methods.changeBoxStatus(box, 'disabled');
-                CHAT.Methods.notification(box, {
+                CHAT.Components.Box.changeStatus(box, 'disabled');
+                CHAT.Components.Notification.trigger(box, {
                     type : 'forceLeaveYou',
                     fromId : extData.triggerId,
                     local : true
                 });
             }
             else {
-                CHAT.Methods.appendSystemMessage(box, 'forceLeaveOther', extData.triggerId, extData.userId);
-                CHAT.Methods.notification(box, {
+                CHAT.Components.Transfer.appendSystemMessage(box, 'forceLeaveOther', extData.triggerId, extData.userId);
+                CHAT.Components.Notification.trigger(box, {
                     type : 'forceLeaveOther',
                     fromId : extData.triggerId,
                     toId : extData.userId,
@@ -282,9 +282,9 @@ CHAT.Events.Server = {
         const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`).elem();
 
         if (box){
-            CHAT.Methods.appendUserMessage(box, data);
-            CHAT.Methods.stopWrite(box, data.userId, '');
-            CHAT.Methods.notification(box, {
+            CHAT.Components.Transfer.appendUserMessage(box, data);
+            CHAT.Components.Notification.stopWrite(box, data.userId, '');
+            CHAT.Components.Notification.trigger(box, {
                 type : 'message',
                 fromId : data.userId,
                 local : true
@@ -309,12 +309,12 @@ CHAT.Events.Server = {
 
         if (CHAT.userId !== data.userId && box){
             if (data.firstSend){
-                CHAT.Events.Server.barId = CHAT.Methods.progressbar(
+                CHAT.Events.Server.barId = CHAT.Components.Transfer.progressbar(
                     box, 'get', data.uploadedSize / data.fileSize, null, false
                 );
             }
             else {
-                CHAT.Methods.progressbar(
+                CHAT.Components.Transfer.progressbar(
                     box, 'get', data.uploadedSize / data.fileSize, CHAT.Events.Server.barId, false
                 );
             }
@@ -345,13 +345,13 @@ CHAT.Events.Server = {
 
         if (box){
             CHAT.FileTransfer.action('serverSend', [box, data, function(){
-                CHAT.Methods.notification(box, {
+                CHAT.Components.Notification.trigger(box, {
                     type : 'file',
                     fromId : data.userId,
                     local : true
                 });
             }]);
-            CHAT.Methods.stopWrite(box, data.userId, '');
+            CHAT.Components.Notification.stopWrite(box, data.userId, '');
         }
     },
 
@@ -378,7 +378,7 @@ CHAT.Events.Server = {
         const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`).elem();
 
         if (box){
-            CHAT.Methods.progressbar(box, 'abort', null, CHAT.Events.Server.barId, false);
+            CHAT.Components.Transfer.progressbar(box, 'abort', null, CHAT.Events.Server.barId, false);
         }
     },
 
@@ -395,16 +395,16 @@ CHAT.Events.Server = {
      */
     typeMessage : function(data){
         const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`).elem();
-        const writing = CHAT.timer.writing;
+        const writing = CHAT.Components.Timer.writing;
 
         if (box){
             writing.event = true;
             writing.message = data.message;
             if (!writing.timerID){
-                CHAT.Methods.stillWrite(box, data.userId);
+                CHAT.Components.Notification.stillWrite(box, data.userId);
                 writing.timerID = window.setInterval(function(){
                     if (!writing.event){
-                        CHAT.Methods.stopWrite(box, data.userId, writing.message);
+                        CHAT.Components.Notification.stopWrite(box, data.userId, writing.message);
                     }
                     writing.event = false;
                 }, writing.interval);

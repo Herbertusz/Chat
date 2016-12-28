@@ -20,15 +20,15 @@ HD.Log = {
      * @param {Error} data
      */
     error : function(data){
-        const xhr = new XMLHttpRequest();
         const errorName = encodeURIComponent(data.name);
         const errorMessage = encodeURIComponent(data.message);
         const errorStack = encodeURIComponent(data.stack);
-        const postData = `name=${errorName}&message=${errorMessage}&stack=${errorStack}`;
 
-        xhr.open('POST', '/chat/clientlog');
-        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        xhr.send(postData);
+        HD.DOM.ajax({
+            method : 'POST',
+            url : '/chat/clientlog',
+            data : `name=${errorName}&message=${errorMessage}&stack=${errorStack}`
+        });
     }
 
 };

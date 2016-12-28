@@ -32,9 +32,9 @@ HD.Math = {
      * @param {Number} [exp=0] - exponens (...|-2|-1|0|1|2|...) (a kerekítési alap 10-es alapú logaritmusa)
      * @returns {Number} kerekített érték
      */
-    _decimalAdjust : function(type, value, exp){
+    _decimalAdjust : function(type, value, exp = 0){
         // If the exp is undefined or zero...
-        if (typeof exp === 'undefined' || +exp === 0){
+        if (+exp === 0){
             return Math[type](value);
         }
         value = +value;
@@ -181,11 +181,9 @@ HD.Math = {
          * @param {Number} [yOffset=0] - abszolút függőleges eltolás
          * @returns {Array} abszolút koordináták [{x : Number, y : Number}, ...]
          */
-        getAbsoluteCoords : function(positions, w, h, xOffset, yOffset){
+        getAbsoluteCoords : function(positions, w, h, xOffset = 0, yOffset = 0){
             let x, y;
             const coords = [];
-            if (typeof xOffset === 'undefined') xOffset = 0;
-            if (typeof yOffset === 'undefined') yOffset = 0;
             positions.forEach(function(elem, index){
                 x = elem[0] / 100;
                 y = elem[1] / 100;
@@ -217,13 +215,12 @@ HD.Math = {
      * @param {Number} delay - animáció hossza (ms)
      * @param {Number} [range=1] - maximális animációs érték
      * @param {String} [easing='swing'] - animációs függvény
+     * TODO: tesztelés
      */
-    animate : function(func, callback, delay, range, easing){
+    animate : function(func, callback, delay, range = 1, easing = 'swing'){
         let i, len;
         let value = 0;
         const steps = delay / 20;
-        if (typeof range === 'undefined') range = 1;
-        if (typeof easing === 'undefined') easing = 'swing';
 
         const Easings = {
             /**

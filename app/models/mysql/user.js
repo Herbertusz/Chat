@@ -14,8 +14,7 @@ const Model = function(db){
          * @param {Function} [callback]
          * @returns {Promise}
          */
-        getUsers : function(callback){
-            callback = HD.Function.param(callback, () => {});
+        getUsers : function(callback = () => {}){
             return db.getRows(`
                     SELECT
                         *
@@ -46,8 +45,7 @@ const Model = function(db){
          *     password : String
          * }
          */
-        getUser : function(data, callback){
-            callback = HD.Function.param(callback, () => {});
+        getUser : function(data, callback = () => {}){
             return db.getRows(`
                     SELECT
                         *

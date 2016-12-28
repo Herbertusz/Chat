@@ -31,12 +31,11 @@ HD.Game.Canvas2D = function(selector, gameStartFunc){
  * Canvas 3D alapú játék
  * @param {String} selector - a canvas elem szelektora
  * @param {Function} gameStartFunc - játék indítása
- * @param {Function} [gameFallbackFunc=function(){}] fallback
+ * @param {Function} [gameFallbackFunc] fallback
  */
-HD.Game.Canvas3D = function(selector, gameStartFunc, gameFallbackFunc){
+HD.Game.Canvas3D = function(selector, gameStartFunc, gameFallbackFunc = () => {}){
 
     const Game = HD.Game;
-    if (typeof gameFallbackFunc === 'undefined') gameFallbackFunc = function(){};
 
     Game.canvas = document.querySelector(selector);
     Game.originalWidth = Game.canvas.width;

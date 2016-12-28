@@ -167,8 +167,7 @@ const DB = {
      * @param {Number} [rownum=0] - sor sorszáma
      * @returns {Promise}
      */
-    getRow : function(sql, binds, rownum){
-        if (typeof rownum === 'undefined') rownum = 0;
+    getRow : function(sql, binds, rownum = 0){
         return this.query(sql, binds)
             .then(function(rows){
                 return rows[rownum];
@@ -250,9 +249,7 @@ const DB = {
      * @param {Function} [callback=function(){}] - lefutás után meghívandó függvény
      * @returns {Promise}
      */
-    insert : function(table, data, callback){
-        callback = (typeof callback !== 'undefined') ? callback : () => {};
-
+    insert : function(table, data, callback = () => {}){
         const sql = `
             INSERT INTO
                 \`${table}\`

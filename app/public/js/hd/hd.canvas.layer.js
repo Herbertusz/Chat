@@ -71,8 +71,7 @@ HD.Canvas.Layerset = function(canvas, ...layers){
          * @param {Number|String} [zOverwrite='remain'] - az új réteg helye (Number|'remain'|'top'|'bg')
          * @returns {Layerset}
          */
-        pushLayer : function(currentLayer, zOverwrite){
-            if (typeof zOverwrite === 'undefined') zOverwrite = 'remain';
+        pushLayer : function(currentLayer, zOverwrite = 'remain'){
             if (zOverwrite === 'top'){
                 // legfelső réteg
                 layers.push(currentLayer);
@@ -115,8 +114,7 @@ HD.Canvas.Layerset = function(canvas, ...layers){
          * @param {Number} [num=1] - down és up esetében a lépések száma
          * @returns {Layerset}
          */
-        moveLayer : function(currentLayer, location, num){
-            if (typeof num === 'undefined') num = 1;
+        moveLayer : function(currentLayer, location, num = 1){
             let temp, i;
             const max = layers.length - 1;
             let n = getLayerIndex(currentLayer);
@@ -159,8 +157,7 @@ HD.Canvas.Layerset = function(canvas, ...layers){
          * @param {Array.<Layer>} [except=[]] - ezeket a rétegeket nem rajzolja újra
          * @returns {Layerset}
          */
-        reDraw : function(except){
-            if (typeof except === 'undefined') except = [];
+        reDraw : function(except = []){
             let n;
             resetZAxis();
             for (n = 0; n < layers.length; n++){

@@ -17,11 +17,11 @@ HD.DOM(document).event('DOMContentLoaded', function(){
         const videoWidth = videoElement.clientWidth;
         const videoHeight = videoElement.clientHeight;
         const ratio = videoWidth / videoHeight;
-        if (typeof maxWidth !== 'undefined'){
+        if (HD.Misc.defined(maxWidth)){
             width = (videoWidth <= maxWidth) ? videoWidth : maxWidth;
             height = width / ratio;
         }
-        if (typeof maxHeight !== 'undefined' && height > maxHeight){
+        if (HD.Misc.defined(maxHeight) && height > maxHeight){
             height = maxHeight;
             width = height * ratio;
         }
@@ -40,18 +40,18 @@ HD.DOM(document).event('DOMContentLoaded', function(){
             const base64 = getPicture(video, 200, 150);
             document.body.innerHTML += `<img src="${base64}" />`;
 
-            console.log(base64.length);
-            const compressed = LZString.compress(base64);
-            console.log(compressed.length);
-            const t1 = Date.now();
-            const base64_2 = LZString.decompress(compressed);
-            console.log(Date.now() - t1);
+            // console.log(base64.length);
+            // const compressed = LZString.compress(base64);
+            // console.log(compressed.length);
+            // const t1 = Date.now();
+            // const base64_2 = LZString.decompress(compressed);
+            // console.log(Date.now() - t1);
             // console.log(base64_2.length);
         }, 3000);
     };
 
     const errorCallback = function(error){
-        console.log('navigator.getUserMedia error: ', error);
+        HD.Log.error(error);
     };
 
     if (navigator.mediaDevices.getUserMedia){

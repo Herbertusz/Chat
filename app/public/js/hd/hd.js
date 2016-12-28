@@ -33,26 +33,6 @@ var namespace = function(namespaceString){
     return parent;
 };
 
-// /**
-//  * jQuery data attribútum szelektor :data(név,érték)
-//  * @param {HTMLElement} obj - aktuális DOM elem
-//  * @param {Number} index
-//  * @param {Array} meta - szelektor adatai
-//  * @returns {Boolean} true, ha a szelektorra illeszkedik az aktuális DOM elem
-//  */
-// $.expr[':'].data = function(obj, index, meta){
-//     const args = meta[3].split(',');
-//     if (args.length === 1){
-//         return (typeof $(obj).data($.trim(args[0])) !== 'undefined');
-//     }
-//     else if (args.length === 2){
-//         return ($(obj).data($.trim(args[0])) == $.trim(args[1]));
-//     }
-//     else {
-//         return false;
-//     }
-// };
-
 /**
  * Webalkalmazás funkcióinak vezérlése (Module minta)
  * @returns {Object} webalkalmazás-vezérlő felület

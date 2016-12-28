@@ -26,9 +26,7 @@ HD.DateTime = namespace('HD.DateTime');
  * @param {Number} [stepInterval=1000] - lépések között eltelt idő (ms)
  * @returns {Object} timer felület
  */
-HD.DateTime.Timer = function(add, stepInterval){
-
-    if (typeof stepInterval === 'undefined') stepInterval = 1000;
+HD.DateTime.Timer = function(add, stepInterval = 1000){
 
     /**
      * Eltelt időegység (másodpercben)
@@ -103,28 +101,7 @@ HD.DateTime.Timer = function(add, stepInterval){
      * @returns {String} kiírható string
      */
     const print = function(num, format){
-        const timeObj = new Date(num * 1000);
-        const h = timeObj.getUTCHours();
-        const m = timeObj.getMinutes();
-        const s = timeObj.getSeconds();
-        const D = Math.floor(num / 60 / 60 / 24);
-        const H = Math.floor(num / 60 / 60);
-        const M = Math.floor(num / 60);
-        const S = num;
-        const hh = (h < 10) ? `0${h}` : `${h}`;
-        const mm = (m < 10) ? `0${m}` : `${m}`;
-        const ss = (s < 10) ? `0${s}` : `${s}`;
-        format = format.replace(/hh/g, hh);
-        format = format.replace(/mm/g, mm);
-        format = format.replace(/ss/g, ss);
-        format = format.replace(/h/g, `${h}`);
-        format = format.replace(/m/g, `${m}`);
-        format = format.replace(/s/g, `${s}`);
-        format = format.replace(/D/g, `${D}`);
-        format = format.replace(/H/g, `${H}`);
-        format = format.replace(/M/g, `${M}`);
-        format = format.replace(/S/g, `${S}`);
-        return format;
+        return HD.DateTime.printTime(num, 's', format);
     };
 
     const Interface = {

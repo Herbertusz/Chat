@@ -4,14 +4,10 @@
 
 let ChatModel;
 const ENV = require.main.require('../app/env.js');
-const promisify = require('es6-promisify');
-const fs = require('fs');
+const fs = require('mz/fs');
 const ioExpressSession = require('socket.io-express-session');
 const log = require.main.require(`../libs/log.js`);
 const HD = require.main.require('../libs/hd/hd.math.js');
-
-const fsAccess = promisify(fs.access);
-const fsUnlink = promisify(fs.unlink);
 
 /**
  * Websocket vezérlés
@@ -85,9 +81,9 @@ module.exports = function(server, ioSession, app){
                     .then(function(urls){
                         for (let i = 0; i < urls.length; i++){
                             const path = `${app.get('public path')}/${urls[i]}`;
-                            fsAccess(path, fs.W_OK)
+                            fs.access(path, fs.W_OK)
                                 .then(function(){
-                                    fsUnlink(path);
+                                    return fs.unlink(path);
                                 })
                                 .catch(function(error){
                                     log.error(error);
@@ -281,10 +277,10 @@ module.exports = function(server, ioSession, app){
             ChatModel.setEvent('abortFile', data.roomName, data);
             ChatModel.deleteFile(filePath)
                 .then(function(){
-                    fsAccess(filePath, fs.W_OK);
+                    return fs.access(filePath, fs.W_OK);
                 })
                 .then(function(){
-                    fsUnlink(filePath);
+                    return fs.unlink(filePath);
                 })
                 .catch(function(error){
                     log.error(error);

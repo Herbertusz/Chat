@@ -16,11 +16,7 @@ var HD = namespace('HD');
  * @param {Number} [indent] - belső használatú argumentum
  * @returns {String} formázott alak
  */
-HD.var_dump = function(variable, withType, maxDeep, maxNum, indent){
-    if (typeof withType === 'undefined') withType = true;
-    if (typeof maxDeep === 'undefined') maxDeep = 5;
-    if (typeof maxNum === 'undefined') maxNum = 30;
-    if (typeof indent === 'undefined') indent = 0;
+HD.var_dump = function(variable, withType = true, maxDeep = 5, maxNum = 30, indent = 0){
     let i;
     let type = typeof variable;
     let dump;

@@ -21,7 +21,7 @@ CHAT.Events.Client = {
             starter : CHAT.userId
         };
         const Box = HD.DOM(
-            CHAT.Util.cloneElement(HD.DOM(CHAT.DOM.cloneBox).elem(), HD.DOM(CHAT.DOM.container).elem())
+            CHAT.DOM.cloneElement(HD.DOM(CHAT.DOM.cloneBox).elem(), HD.DOM(CHAT.DOM.container).elem())
         );
         const Userlist = Box.find(CHAT.DOM.users);
 
@@ -29,7 +29,7 @@ CHAT.Events.Client = {
             const userId = Number(selectedUser.value);
             roomData.userIds.push(userId);
         });
-        CHAT.Methods.generateUserList(Userlist.elem(), roomData.userIds);
+        CHAT.Components.User.generateList(Userlist.elem(), roomData.userIds);
         roomData.name = `room-${roomData.starter}-${Date.now()}`;
         Box.data('room', roomData.name);
         CHAT.socket.emit('roomCreated', roomData);
@@ -65,7 +65,7 @@ CHAT.Events.Client = {
             currentUserIds.push(HD.DOM(user).dataNum('id'));
         });
         if (currentUserIds.indexOf(userId) === -1){
-            CHAT.Methods.generateUserList(Userlist.elem(), [userId]);
+            CHAT.Components.User.generateList(Userlist.elem(), [userId]);
             CHAT.socket.emit('roomForceJoin', {
                 triggerId : CHAT.userId,
                 userId : userId,
@@ -120,8 +120,8 @@ CHAT.Events.Client = {
 
         if (data.message.trim().length > 0){
             CHAT.socket.emit('sendMessage', data);
-            CHAT.Methods.appendUserMessage(box, data, true);
-            CHAT.Util.scrollToBottom(box);
+            CHAT.Components.Transfer.appendUserMessage(box, data, true);
+            CHAT.Components.Box.scrollToBottom(box);
             Box.find(CHAT.DOM.textarea).elem().value = '';
         }
     },
@@ -190,13 +190,13 @@ CHAT.Events.Client = {
             if (errors.length === 0){
                 const reader = new FileReader();
                 (new Promise(function(resolve){
-                    CHAT.Methods.progress(box, 'show');
+                    CHAT.Components.Transfer.progress(box, 'show');
                     reader.onload = resolve;
                 })).then(function(){
-                    CHAT.Methods.progress(box, 'hide');
-                    CHAT.Util.scrollToBottom(box);
+                    CHAT.Components.Transfer.progress(box, 'hide');
+                    CHAT.Components.Box.scrollToBottom(box);
                     return CHAT.FileTransfer.action('clientSend', [box, fileData, reader, rawFile, function(){
-                        CHAT.Util.scrollToBottom(box);
+                        CHAT.Components.Box.scrollToBottom(box);
                     }]);
                 }).catch(function(error){
                     HD.Log.error(error);
@@ -204,7 +204,7 @@ CHAT.Events.Client = {
                 reader.readAsDataURL(rawFile);
             }
             else {
-                CHAT.Methods.showError(box, errors);
+                CHAT.Components.Notification.error(box, errors);
             }
         };
 
@@ -220,7 +220,7 @@ CHAT.Events.Client = {
     abortFile : function(progressbar){
         const barId = HD.DOM(progressbar).dataNum('id');
 
-        if (typeof CHAT.FileTransfer.XHR[barId] !== 'undefined'){
+        if (HD.Misc.defined(CHAT.FileTransfer.XHR[barId])){
             CHAT.FileTransfer.XHR[barId].abort();
         }
     },

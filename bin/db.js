@@ -7,7 +7,7 @@ const createMongoDB = function(){
     const url = require.main.require('../app/models/mongodb/dbconnect.js');
 
     const createDB = function(db, callback){
-        const collectionNum = 2;
+        const collectionNum = 3;
         let completed = 0;
 
         db.createCollection('chat_users');
@@ -100,6 +100,13 @@ const createMongoDB = function(){
         db.createCollection('chat_statuses');
         db.collection('chat_statuses')
             .deleteMany({})
+            .then(function(result){
+                completed++;
+                console.log(`chat_statuses deleted: ${result.deletedCount}`);
+                if (completed === collectionNum){
+                    callback();
+                }
+            })
             .catch(function(error){
                 console.log(error);
             });
