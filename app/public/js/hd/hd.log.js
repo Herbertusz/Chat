@@ -1,13 +1,13 @@
-/*!
- * HD-keret Log v1.0.0
- * 2016.07.21.
+/**
+ * HD-keret Log
+ *
+ * @description Kliens-oldalról érkező hibák logolása
+ * @requires HD.DOM
  */
-
-/* global HD namespace */
 
 'use strict';
 
-var HD = namespace('HD');
+var HD = (typeof global !== 'undefined' ? global.HD : window.HD) || {};
 
 /**
  * Kliens oldali logolás
@@ -32,3 +32,7 @@ HD.Log = {
     }
 
 };
+
+if (typeof exports !== 'undefined'){
+    exports.Log = HD.Log;
+}

@@ -1,13 +1,13 @@
-/*!
- * HD-keret DateTime v1.1.0
- * 2015.12.16.
+/**
+ * HD-keret DateTime
+ *
+ * @description Segédfüggvények dátum és idő kezeléséhez
+ * @requires -
  */
-
-/* global HD namespace */
 
 'use strict';
 
-var HD = namespace('HD');
+var HD = (typeof global !== 'undefined' ? global.HD : window.HD) || {};
 
 /**
  * Dátum műveletek (Date objektum kiegészítései)
@@ -43,16 +43,25 @@ HD.DateTime = {
     shortDays : ['V', 'H', 'K', 'Sze', 'Cs', 'P', 'Szo'],
 
     /**
-     * yyyy-mm-dd forma előállítása
+     * yyyy-mm-dd hh:ii:ss forma előállítása
      * @param {Date} date - JS dátum objektum
-     * @param {String} [separator='-'] - elválasztó
+     * @param {String} [separatorDate='-'] - dátumközi elválasztó
+     * @param {String} [separatorTime=':'] - időközi elválasztó
+     * @param {String} [separatorMain=' '] - dátum-idő elválasztó
      * @returns {String}
      */
-    progFormat : function(date, separator = '-'){
-        const y = date.getFullYear();
+    progFormat : function(date, separatorDate = '-', separatorTime = ':', separatorMain = ' '){
+        const y = date.getFullYear().toString();
         const m = this.monthSigns[date.getMonth()];
-        const d = HD.Number.fillZero(date.getDate(), 2);
-        return y + separator + m + separator + d;
+        let d = date.getDate().toString();
+        d = d.length === 1 ? `0${d}` : d;
+        let h = date.getHours().toString();
+        h = h.length === 1 ? `0${h}` : h;
+        let i = date.getMinutes().toString();
+        i = i.length === 1 ? `0${i}` : i;
+        let s = date.getSeconds().toString();
+        s = s.length === 1 ? `0${s}` : s;
+        return y + separatorDate + m + separatorDate + d + separatorMain + h + separatorTime + i + separatorTime + s;
     },
 
     /**
@@ -114,13 +123,14 @@ HD.DateTime = {
 
     /**
      * Idő beolvasása
-     * @param {String} str - időt leíró string (formátum: 'hh:mm:ss'|'mm:ss'|'ss')
-     * @param {String} [from='s'] - bemenet utolsó szegmensének mértékegysége ('s'|'m'|'h')
-     *                 1 szegmens: 's'|'m'|'h', 2 szegmens: 's'|'m', 3 szegmens: 's'
-     * @param {String} [to='s'] - visszatérési mértékegység megadása ('ms'|'s'|'m'|'h')
+     * @param {String} str - időt leíró string (formátum: 'D:hh:mm:ss'|'hh:mm:ss'|'mm:ss'|'ss')
+     * @param {String} [from='s'] - bemenet utolsó szegmensének mértékegysége ('D'|'s'|'m'|'h')
+     *                 1 szegmens: 's'|'m'|'h'|'D', 2 szegmens: 's'|'m'|'h', 3 szegmens: 's'|'m' 4 szegmens: 's'
+     * @param {String} [to='s'] - visszatérési mértékegység megadása ('ms'|'s'|'m'|'h'|'D')
      * @returns {Number} milliszekundumok/másodpercek/percek/órák száma
      */
     parseTime : function(str, from = 's', to = 's'){
+        let D = '0';
         let h = '00';
         let m = '00';
         let s = '00';
@@ -133,8 +143,11 @@ HD.DateTime = {
             else if (from === 'm'){
                 m = segments[0];
             }
-            else {
+            else if (from === 'h'){
                 h = segments[0];
+            }
+            else {
+                D = segments[0];
             }
         }
         else if (segments.length === 2){
@@ -146,39 +159,66 @@ HD.DateTime = {
                 h = segments[0];
                 m = segments[1];
             }
+            else if (from === 'h'){
+                D = segments[0];
+                h = segments[1];
+            }
             else {
                 return null;
             }
         }
-        else if (from === 's'){
-            h = segments[0];
-            m = segments[1];
-            s = segments[2];
+        else if (segments.length === 3){
+            if (from === 's'){
+                h = segments[0];
+                m = segments[1];
+                s = segments[2];
+            }
+            else if (from === 'm'){
+                D = segments[0];
+                h = segments[1];
+                m = segments[2];
+            }
+            else {
+                return null;
+            }
+        }
+        else if (segments.length === 4){
+            if (from === 's'){
+                D = segments[0];
+                h = segments[1];
+                m = segments[2];
+                s = segments[3];
+            }
+            else {
+                return null;
+            }
         }
         else {
             return null;
         }
-        const ms = Date.parse(`1 Jan 1970 ${h}:${m}:${s} GMT`);
+        const ms = Date.parse(`1 Jan 1970 ${h}:${m}:${s} GMT`) + D * 86400000;
         ret = null;
         if (to === 'ms') ret = ms;
         if (to === 's') ret = Math.round(ms / 1000);
         if (to === 'm') ret = Math.round(ms / 60000);
         if (to === 'h') ret = Math.round(ms / 3600000);
+        if (to === 'D') ret = Math.round(ms / 86400000);
         return ret;
     },
 
     /**
      * Idő kiírása olvasható formában
      * @param {Number} num - időegység értéke
-     * @param {String} from - bemenet mértékegysége ('s'|'m'|'h')
+     * @param {String} from - bemenet mértékegysége ('ms'|'s'|'m'|'h')
      * @param {String} format - formátum (makrók: h, m, s, D, H, M, S, hh, mm, ss)
      * @returns {String} kiírható string
      */
     printTime : function(num, from, format){
         let timeObj;
-        if (from === 's') timeObj = new Date(num * 1000);
-        if (from === 'm') timeObj = new Date(num * 1000 * 60);
-        if (from === 'h') timeObj = new Date(num * 1000 * 60 * 60);
+        if (from === 'ms') timeObj = new Date(num);
+        if (from === 's')  timeObj = new Date(num * 1000);
+        if (from === 'm')  timeObj = new Date(num * 1000 * 60);
+        if (from === 'h')  timeObj = new Date(num * 1000 * 60 * 60);
         const h = timeObj.getUTCHours().toString();
         const m = timeObj.getMinutes().toString();
         const s = timeObj.getSeconds().toString();
@@ -214,7 +254,7 @@ HD.DateTime = {
 
     /**
      * A PHP date() függvényének implementációja
-     * @copyright http://phpjs.org/functions/date
+     * @copyright http://phpjs.org/functions/date (módosított)
      * @param {String} format
      * @param {Number} timestamp
      * @returns {String}
@@ -295,6 +335,9 @@ HD.DateTime = {
             },
 
             // Month
+            /**
+             * @returns {String}
+             */
             F : function(){
                 // Full month name; January...December
                 return txt_words[6 + f.n()];
@@ -303,6 +346,9 @@ HD.DateTime = {
                 // Month w/leading 0; 01...12
                 return _pad(f.n(), 2);
             },
+            /**
+             * @returns {String}
+             */
             M : function(){
                 // Shorthand month name; Jan...Dec
                 return f.F()
@@ -319,21 +365,37 @@ HD.DateTime = {
             },
 
             // Year
+            /**
+             * @returns {Number}
+             */
             L : function(){
                 // Is leap year?; 0 or 1
                 const j = f.Y();
-                return j % 4 === 0 & j % 100 !== 0 | j % 400 === 0;
+                return (j % 4 === 0 && j % 100 !== 0 || j % 400 === 0) ? 1 : 0;
             },
             o : function(){
                 // ISO-8601 year
                 const n = f.n();
                 const W = f.W();
                 const Y = f.Y();
-                return Y + (n === 12 && W < 9 ? 1 : n === 1 && W > 9 ? -1 : 0);
+                let y;
+                if (n === 12 && W < 9){
+                    y = 1;
+                }
+                else if (n === 1 && W > 9){
+                    y = -1;
+                }
+                else {
+                    y = 0;
+                }
+                return String(Y + y);
             },
+            /**
+             * @returns {String}
+             */
             Y : function(){
                 // Full year; e.g. 1980...2010
-                return jsdate.getFullYear();
+                return String(jsdate.getFullYear());
             },
             y : function(){
                 // Last two digits of year; 00...99
@@ -347,6 +409,9 @@ HD.DateTime = {
                 // am or pm
                 return jsdate.getHours() > 11 ? 'pm' : 'am';
             },
+            /**
+             * @returns {String}
+             */
             A : function(){
                 // AM or PM
                 return f.a().toUpperCase();
@@ -365,9 +430,12 @@ HD.DateTime = {
                 // 12-Hours; 1..12
                 return f.G() % 12 || 12;
             },
+            /**
+             * @returns {String}
+             */
             G : function(){
                 // 24-Hours; 0..23
-                return jsdate.getHours();
+                return String(jsdate.getHours());
             },
             h : function(){
                 // 12-Hours w/leading 0; 01..12
@@ -399,6 +467,9 @@ HD.DateTime = {
                  */
                 throw new Error('Not supported (see source code of date() for timezone on how to add support)');
             },
+            /**
+             * @returns {String}
+             */
             I : function(){
                 // DST observed?; 0 or 1
                 // Compares Jan 1 minus Jan 1 UTC to Jul 1 minus Jul 1 UTC.
@@ -411,19 +482,28 @@ HD.DateTime = {
                 // Jul 1
                 // Jul 1 UTC
                 const d = Date.UTC(f.Y(), 6);
-                return ((a - c) !== (b - d)) ? 1 : 0;
+                return String(((a - c) !== (b - d)) ? 1 : 0);
             },
+            /**
+             * @returns {String}
+             */
             O : function(){
                 // Difference to GMT in hour format; e.g. +0200
                 const tzo = jsdate.getTimezoneOffset();
                 const a = Math.abs(tzo);
                 return (tzo > 0 ? '-' : '+') + _pad(Math.floor(a / 60) * 100 + a % 60, 4);
             },
+            /**
+             * @returns {String}
+             */
             P : function(){
                 // Difference to GMT w/colon; e.g. +02:00
                 const O = f.O();
-                return (O.substr(0, 3) + ':' + O.substr(3, 2));
+                return (`${O.substr(0, 3)}:${O.substr(3, 2)}`);
             },
+            /**
+             * @returns {String}
+             */
             T : function(){
                 // Timezone abbreviation; e.g. EST, MDT, ...
                 // The following works, but requires inclusion of the very
@@ -453,9 +533,12 @@ HD.DateTime = {
                  */
                 return 'UTC';
             },
+            /**
+             * @returns {String}
+             */
             Z : function(){
                 // Timezone offset in seconds (-43200...50400)
-                return -jsdate.getTimezoneOffset() * 60;
+                return String(-jsdate.getTimezoneOffset() * 60);
             },
 
             // Full Date/Time
@@ -467,9 +550,12 @@ HD.DateTime = {
                 // RFC 2822
                 return 'D, d M Y H:i:s O'.replace(formatChr, formatChrCb);
             },
+            /**
+             * @returns {String}
+             */
             U : function(){
                 // Seconds since UNIX epoch
-                return jsdate / 1000 | 0;
+                return String(jsdate / 1000);
             }
         };
         this.date = function(form, stamp){
@@ -489,3 +575,7 @@ HD.DateTime = {
     }
 
 };
+
+if (typeof exports !== 'undefined'){
+    exports.DateTime = HD.DateTime;
+}

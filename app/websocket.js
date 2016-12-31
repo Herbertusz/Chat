@@ -1,4 +1,6 @@
-/* global appRoot */
+/**
+ *
+ */
 
 'use strict';
 
@@ -7,7 +9,7 @@ const ENV = require.main.require('../app/env.js');
 const fs = require('mz/fs');
 const ioExpressSession = require('socket.io-express-session');
 const log = require.main.require(`../libs/log.js`);
-const HD = require.main.require('../libs/hd/hd.math.js');
+const HD = require.main.require('../app/public/js/hd/hd.js')(['math']);
 
 /**
  * Websocket vezérlés

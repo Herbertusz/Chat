@@ -1,9 +1,10 @@
 /*!
  * Chat v1.0.0 alpha
- * Copyright (c) 2016.11.18.
+ * Copyright (c) 2016.12.31.
  */
-
-/* global */
+/**
+ *
+ */
 
 'use strict';
 

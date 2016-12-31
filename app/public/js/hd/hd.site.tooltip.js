@@ -1,9 +1,8 @@
-/*!
- * HD-keret Tooltip v1.0.0
- * 2015.02.21.
+/**
+ * HD-keret Tooltip
  *
  * @description Tooltip-kezelő
- * @requires jQuery UI position
+ * @requires jQuery, jQuery UI position
  * @example
  *  const tooltip = new HD.Site.Tooltip({
  *      position : {
@@ -16,11 +15,10 @@
  *  tooltip.init();
  */
 
-/* global HD namespace */
-
 'use strict';
 
-HD.Site = namespace('HD.Site');
+var HD = window.HD || {};
+HD.Site = HD.Site || {};
 
 /**
  * Tooltip objektum (Module minta)

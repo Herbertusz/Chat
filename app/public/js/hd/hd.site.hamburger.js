@@ -1,8 +1,8 @@
-/*!
- * HD-keret Összenyomható menü v1.0.0
- * 2015.03.13.
+/**
+ * HD-keret Összenyomható menü
  *
  * @description Összenyomható menü
+ * @requires jQuery
  * @example
  *  HTML-CSS: public/sandbox/hamb.html
  *  const menucompress = new HD.Site.Hamburger({
@@ -19,11 +19,10 @@
  *  menucompress.init();
  */
 
-/* global HD namespace */
-
 'use strict';
 
-HD.Site = namespace('HD.Site');
+var HD = window.HD || {};
+HD.Site = HD.Site || {};
 
 /**
  * Tab objektum (Module minta)

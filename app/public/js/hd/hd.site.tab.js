@@ -1,8 +1,8 @@
-/*!
- * HD-keret Tab v1.0.0
- * 2015.02.21.
+/**
+ * HD-keret Tab
  *
  * @description Tab-kezelő
+ * @requires jQuery
  * @example
  *  HTML-CSS: http://blog.webprog.biz/jquery-tabok
  *  const tab = new HD.Site.Tab({
@@ -12,11 +12,10 @@
  *  tab.init();
  */
 
-/* global HD namespace */
-
 'use strict';
 
-HD.Site = namespace('HD.Site');
+var HD = window.HD || {};
+HD.Site = HD.Site || {};
 
 /**
  * Tab objektum (Module minta)

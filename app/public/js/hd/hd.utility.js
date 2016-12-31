@@ -1,13 +1,13 @@
-/*!
- * HD-keret Utility v1.0.0
- * 2015.02.21.
+/**
+ * HD-keret Utility
+ *
+ * @description Alapvető segédfüggvények
+ * @requires -
  */
-
-/* global HD namespace */
 
 'use strict';
 
-var HD = namespace('HD');
+var HD = (typeof global !== 'undefined' ? global.HD : window.HD) || {};
 
 /**
  * Általános műveletek és adatok
@@ -62,6 +62,11 @@ HD.Misc = {
         return defaultValue;
     },
 
+    /**
+     * Változó deklaráltságának ellenőrzése
+     * @param {*} param - változó
+     * @returns {boolean} true ha deklarált
+     */
     defined : function(param){
         return typeof param !== 'undefined';
     }
@@ -381,7 +386,7 @@ HD.Function = {
      * @param {*} param - paraméter
      * @param {*} value - alapértelmezett érték
      * @returns {*} ezt kell értékül adni a paraméternek
-     * @example par = param(par, 0);
+     * @example par = HD.Function.param(par, 0);
      */
     param : function(param, value){
         if (typeof param === 'undefined'){
@@ -397,7 +402,7 @@ HD.Function = {
      * @param {Object} params - argumentumok adatai
      * @returns {Array} paraméterek értékei
      * @example
-     * HD.Misc.funcMultiParam({
+     * HD.Function.multiParam({
      *     sql      : [sql, 'string'],
      *     binds    : [binds, 'object', {}],
      *     run      : [run, 'boolean', true],
@@ -540,3 +545,12 @@ HD.Object = {
     }
 
 };
+
+if (typeof exports !== 'undefined'){
+    exports.Misc = HD.Misc;
+    exports.Number = HD.Number;
+    exports.String = HD.String;
+    exports.Function = HD.Function;
+    exports.Array = HD.Array;
+    exports.Object = HD.Object;
+}

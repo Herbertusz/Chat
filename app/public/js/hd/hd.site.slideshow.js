@@ -1,8 +1,8 @@
-/*!
- * HD-keret Slideshow v1.1.0
- * 2015.06.13.
+/**
+ * HD-keret Slideshow
  *
  * @description Slideshow-kezelő
+ * @requires jQuery
  * @example
  *  // Beállítások
  *  const carousel = new HD.Site.Slideshow({
@@ -41,11 +41,10 @@
  *  carousel.init();
  */
 
-/* global HD namespace */
-
 'use strict';
 
-HD.Site = namespace('HD.Site');
+var HD = window.HD || {};
+HD.Site = HD.Site || {};
 
 /**
  * Slideshow objektum (Module minta)

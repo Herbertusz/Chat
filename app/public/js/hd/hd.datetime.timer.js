@@ -1,24 +1,53 @@
-/*!
- * HD-keret Timer v1.0.2
- * 2015.08.15.
+/**
+ * HD-keret Timer
  *
- * @description időmérő
+ * @description Idő alapú számláló
+ * @requires HD.DateTime
  * @example
- *  const timer = new HD.DateTime.Timer(-1);
- *  timer.set('00:10');
- *  timer.start(function(){
- *      element.innerHTML = this.get('mm:ss');
- *  }).reach(0, function(){
- *      this.stop();
- *  });
+ *  Visszaszámláló:
+ *   const countDown = new HD.DateTime.Timer(-1);
+ *   countDown.set('35:20:00:00'); // Fixen 35 nap 20 óra; az alábbi egy életszerűbb példa:
+ *   // countDown.set(Math.round((Date.parse('1 Jan 2018 00:00:00 GMT') - Date.now()) / 1000));
+ *   countDown
+ *       .start(function(){
+ *           elementDisplay.innerHTML = this.get('D nap, hh:mm:ss');
+ *       })
+ *       .reach(0, function(){
+ *           this.stop();
+ *       });
+ *  // ----------------------------------------------------------------
+ *  Óra:
+ *   const clock = new HD.DateTime.Timer(1);
+ *   clock
+ *       .set(Math.round(Date.now() / 1000))
+ *       .start(function(){
+ *           elementDisplay.innerHTML = this.get('hh:mm:ss');
+ *       });
+ *  // ----------------------------------------------------------------
+ *  Stopper (tizedmásodperc pontosságú):
+ *   // Biztosítani kell, hogy a belső számláló másodpercenként lépjen,
+ *   // különben a get() metódus makróinak jelentése változik
+ *   const stopWatch = new HD.DateTime.Timer(0.1, 100);
+ *   elementStart.addEventListener('click', function(){
+ *       stopWatch.start(function(){
+ *           elementDisplay.innerHTML = this.get('mm:ss.') + Math.round(this.get() * 10) % 10;
+ *       });
+ *   });
+ *   elementPause.addEventListener('click', function(){
+ *       stopWatch.pause();
+ *   });
+ *   elementStop.addEventListener('click', function(){
+ *       stopWatch.stop();
+ *       elementDisplay.innerHTML = '00:00.0';
+ *   });
  */
-
-/* global HD namespace */
 
 'use strict';
 
-var HD = namespace('HD');
-HD.DateTime = namespace('HD.DateTime');
+var HD = (typeof global !== 'undefined' ? global.HD : window.HD) || {};
+if (typeof global !== 'undefined'){
+    HD = require('./hd.js')(['datetime']);
+}
 
 /**
  * Időmérő objektum (Module minta)
@@ -79,19 +108,11 @@ HD.DateTime.Timer = function(add, stepInterval = 1000){
 
     /**
      * Bevitt idő beolvasása
-     * @param {String} str - időt leíró string (formátum: 'hh:mm:ss'|'mm:ss'|'ss')
+     * @param {String} str - időt leíró string (formátum: 'D:hh:mm:ss'|'hh:mm:ss'|'mm:ss'|'ss')
      * @returns {Number} időegység értéke
      */
     const parse = function(str){
-        const segments = str.split(':');
-        if (segments.length === 1){
-            str = `00:00:${str}`;
-        }
-        else if (segments.length === 2){
-            str = `00:${str}`;
-        }
-        const ms = Date.parse(`1 Jan 1970 ${str} GMT`);
-        return Math.round(ms / 1000);
+        return HD.DateTime.parseTime(str, 's', 's');
     };
 
     /**
@@ -143,7 +164,7 @@ HD.DateTime.Timer = function(add, stepInterval = 1000){
         start : function(callback){
             if (!run){
                 callback.call(this);
-                timerID = window.setInterval(function(){
+                timerID = setInterval(function(){
                     step();
                     callback.call(this);
                 }.bind(this), stepInterval);
@@ -158,7 +179,7 @@ HD.DateTime.Timer = function(add, stepInterval = 1000){
          */
         pause : function(){
             if (run){
-                window.clearInterval(timerID);
+                clearInterval(timerID);
                 run = false;
             }
             return this;
@@ -170,7 +191,7 @@ HD.DateTime.Timer = function(add, stepInterval = 1000){
          */
         stop : function(){
             if (run){
-                window.clearInterval(timerID);
+                clearInterval(timerID);
                 run = false;
             }
             T = 0;
@@ -208,3 +229,7 @@ HD.DateTime.Timer = function(add, stepInterval = 1000){
     return Interface;
 
 };
+
+if (typeof exports !== 'undefined'){
+    exports.DateTime = HD.DateTime;
+}

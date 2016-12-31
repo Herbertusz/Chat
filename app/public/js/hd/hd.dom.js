@@ -1,19 +1,20 @@
-/*!
- * HD-keret DOM v1.0.0
- * 2016.06.27.
+/**
+ * HD-keret DOM
  *
  * @description DOM-kezelő
+ * @requires HD.Misc.switching
  * @example
  *  HD.DOM('.class').event('click', function(){...});
  *  HD.DOM('.class').find('button').data('clickable', 'true').trigger('click');
  *  const cloneElement = HD.DOM('.class').filter('[data-disabled]').clone(true).elem();
  */
 
-/* global HD namespace */
-
 'use strict';
 
-var HD = namespace('HD');
+var HD = (typeof global !== 'undefined' ? global.HD : window.HD) || {};
+if (typeof global !== 'undefined'){
+    HD = require('./hd.js')(['utility']);
+}
 
 /**
  * DOM elemek kezelését segítő objektum (Module minta)
@@ -736,3 +737,7 @@ HD.DOM.grabCursor = function(elem, openhand, closehand){
         });
     });
 };
+
+if (typeof exports !== 'undefined'){
+    exports.DOM = HD.DOM;
+}

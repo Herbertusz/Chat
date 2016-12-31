@@ -3,7 +3,6 @@
 'use strict';
 
 var CHAT = window.CHAT || {};
-
 CHAT.Components = CHAT.Components || {};
 
 /**
@@ -261,7 +260,7 @@ CHAT.Components.User = {
     /**
      * Eltelt idő kijelzése a legnagyobb nem nulla egység szerint
      * @param {String} segmentString
-     * @param {Number} [min=3] Minimális kijelzendő időegység beállítása (1 perc)
+     * @param {Number} [min=3] - Minimális kijelzendő időegység beállítása (1 perc)
      * @returns {String}
      */
     timerDisplay : function(segmentString, min = 3){

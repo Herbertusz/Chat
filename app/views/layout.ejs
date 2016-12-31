@@ -1,4 +1,4 @@
-<% /* global HD CHAT layout */ %>
+<% /* global CHAT layout */ %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -72,7 +72,7 @@
 
             <h1 class="game">Chat</h1>
 
-            <% if (!HD.Misc.defined(login) || !login){ %>
+            <% if (typeof(login) === 'undefined' || !login){ %>
                 <div class="login">
                     <form method="post" action="/login">
                         <% if (loginMessage){ %>

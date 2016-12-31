@@ -1,4 +1,6 @@
-/* global */
+/**
+ *
+ */
 
 'use strict';
 
@@ -8,8 +10,8 @@ const express = require('express');
 const router = express.Router();
 // const session = require('express-session');
 const fs = require('fs');
-const HD = require.main.require('../libs/hd/hd.datetime.js');
 const log = require.main.require('../libs/log.js');
+const HD = require.main.require('../app/public/js/hd/hd.js')(['datetime']);
 
 router.use(function(req, res, next){
     UserModel = require.main.require(`../app/models/${ENV.DBDRIVER}/user.js`)(req.app.get('db'));

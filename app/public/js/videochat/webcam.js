@@ -1,3 +1,7 @@
+/**
+ *
+ */
+
 /* global HD LZString */
 
 'use strict';

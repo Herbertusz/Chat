@@ -1,8 +1,12 @@
-/* global HD namespace */
+/**
+ * Változó kiíratás
+ *
+ * @requires -
+ */
 
 'use strict';
 
-var HD = namespace('HD');
+var HD = (typeof global !== 'undefined' ? global.HD : window.HD) || {};
 
 /**
  * Változó dump-olása
@@ -137,3 +141,8 @@ HD.win_dump = function(dump){
         `<html><head></head><body><pre>${HD.var_dump(dump, true, 5, 100)}</pre></body></html>`
     );
 };
+
+if (typeof exports !== 'undefined'){
+    exports.var_dump = HD.var_dump;
+    exports.win_dump = HD.win_dump;
+}

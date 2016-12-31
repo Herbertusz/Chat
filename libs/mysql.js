@@ -1,10 +1,11 @@
-/*!
+/**
  * MySQL adatbázis-kezelő modul
- * Függőségek:
+ *
+ * @requires
  *  mysql (https://github.com/felixge/node-mysql)
  *  log (../libs/log.js)
  *
- * Használat:
+ * @example
  *  Kapcsolat:
  *   DB.connect('host', 'user', 'pass', 'dbname');
  *   DB.close();
@@ -270,7 +271,7 @@ const DB = {
      * @param {Object|Function} [args]
      * @description args:
      *  {Object} [binds={}]
-     *  {Function} [callback=function(){}] lefutás után meghívandó függvény
+     *  {Function} [callback=function(){}] - lefutás után meghívandó függvény
      * @returns {Promise}
      */
     update : function(table, data, where, ...args){
@@ -299,7 +300,7 @@ const DB = {
      * @param {Object|Function} [args]
      * @description args:
      *  {Object} [binds={}]
-     *  {Function} [callback=function(){}] lefutás után meghívandó függvény
+     *  {Function} [callback=function(){}] - lefutás után meghívandó függvény
      * @returns {Promise}
      */
     delete : function(table, where, ...args){

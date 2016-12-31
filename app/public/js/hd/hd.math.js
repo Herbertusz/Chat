@@ -1,13 +1,13 @@
-/*!
- * HD-keret Math v1.0.0
- * 2015.02.21.
+/**
+ * HD-keret Math
+ *
+ * @description Matematikai segédfüggvények
+ * @requires -
  */
-
-/* global HD namespace */
 
 'use strict';
 
-var HD = namespace('HD');
+var HD = (typeof global !== 'undefined' ? global.HD : window.HD) || {};
 
 /**
  * Matematikai műveletek (Math objektum kiegészítései)
@@ -255,3 +255,7 @@ HD.Math = {
     }
 
 };
+
+if (typeof exports !== 'undefined'){
+    exports.Math = HD.Math;
+}

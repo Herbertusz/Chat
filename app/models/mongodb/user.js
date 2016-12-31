@@ -1,10 +1,10 @@
-/* global */
+/**
+ *
+ */
 
 'use strict';
 
 const log = require.main.require('../libs/log.js');
-const HD = require.main.require('../libs/hd/hd.utility.js');
-const HDdt = require.main.require('../libs/hd/hd.datetime.js');
 
 const Model = function(db){
 
