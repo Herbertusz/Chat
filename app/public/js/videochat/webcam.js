@@ -40,7 +40,7 @@ HD.DOM(document).event('DOMContentLoaded', function(){
     const successCallback = function(stream){
         console.log(stream.getVideoTracks());
         video.src = window.URL ? window.URL.createObjectURL(stream) : stream;
-        window.setTimeout(function(){
+        setTimeout(function(){
             const base64 = getPicture(video, 200, 150);
             document.body.innerHTML += `<img src="${base64}" />`;
 

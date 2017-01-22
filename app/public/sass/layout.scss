@@ -33,6 +33,12 @@ header {
             margin: 0 10px;
 
             a {
+                border-bottom: {
+                    width: 8px;
+                    style: solid;
+                    color: rgba(0, 0, 0, 0);
+                }
+
                 &.active {}
             }
         }

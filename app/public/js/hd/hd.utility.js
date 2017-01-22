@@ -262,7 +262,7 @@ HD.String = {
      * @returns {Boolean} true, ha jó a formátum
      */
     validateEmail : function(email){
-        return !!/^[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]+$/.test(email);
+        return /^[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]+$/.test(email);
     },
 
     /**
@@ -285,15 +285,14 @@ HD.String = {
      * @returns {String} átalakított karakterlánc
      * TODO: tesztelés
      */
-    strtocanonic : function(str, replace = '_', options = null){
-        if (!options){
-            options = {
-                exceptions : '',
-                tolower : false,
-                trim : true,
-                chars : 'a-zA-Z0-9'
-            };
-        }
+    canonic : function(str, replace = '_', options = {}){
+        options = Object.assign({
+            exceptions : '',
+            tolower : false,
+            trim : true,
+            chars : 'a-zA-Z0-9'
+        }, options);
+
         let n;
         let canonic = '';
         let second;
@@ -318,7 +317,7 @@ HD.String = {
      * @returns {String} generált karakterlánc
      * TODO: tesztelés
      */
-    generatepwd : function(len, type = '1aA'){
+    generate : function(len, type = '1aA'){
         let n;
         let chars = '';
         let ret = '';
@@ -352,7 +351,7 @@ HD.String = {
     //  * @param {String} [salt] - só
     //  * @returns {String} kódolt jelszó
     //  */
-    // pwdcode : function(pwd, salt){
+    // hash : function(pwd, salt){
     //     var sha1 = (s) => s;
     //     var PROJECT_NAME = '';
     //

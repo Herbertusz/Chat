@@ -31,7 +31,7 @@ CHAT.Components.Notification = {
         });
         Box.find(CHAT.DOM.errorList).elem().innerHTML = errorMessages.join('<br />');
         Box.find(CHAT.DOM.error).class('remove', 'hidden');
-        window.setTimeout(function(){
+        setTimeout(function(){
             Box.find(CHAT.DOM.error).class('add', 'hidden');
             Box.find(CHAT.DOM.errorList).elem().innerHTML = '';
         }, CHAT.Config.error.messageWait);

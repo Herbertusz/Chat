@@ -25,6 +25,35 @@
         <script src="/js/hd/hd.datetime.js"></script>
         <script src="/js/hd/hd.datetime.timer.js"></script>
         <script src="/js/hd/hd.log.js"></script>
+
+        <script>
+            HD.DOM(document).event('DOMContentLoaded', function(){
+
+                HD.DOM('.menupoint').event('mouseover', function(){
+                    const elem = this;
+                    HD.Math.Animation.run('menuover', {
+                        action : function(value){
+                            HD.DOM(elem).css({
+                                borderBottomColor : `rgba(0, 0, 0, ${value})`
+                            });
+                        },
+                        callback : function(){
+                            HD.DOM(elem).css({
+                                borderBottomColor : `rgba(0, 0, 0, 1)`
+                            });
+                        },
+                        delay : 5000,
+                        range : [0, 1],
+                        easing : 'linear'
+                    });
+                });
+                HD.DOM('.menupoint').event('mouseout', function(){
+                    const original = HD.Math.Animation.stop('menuover');
+                });
+
+            });
+        </script>
+
         <% if (page === 'chat'){ %>
             <link rel="stylesheet" href="/css/chat.css" />
             <script src="/js/libs/jquery.idle-timer.js"></script>
@@ -63,7 +92,7 @@
                 <nav>
                     <ul>
                         <% layout.menu.forEach(function(menupoint){ %>
-                            <li><a href="<%- menupoint.url %>"><%- menupoint.text %></a></li>
+                            <li><a class="menupoint" href="<%- menupoint.url %>"><%- menupoint.text %></a></li>
                         <% }); %>
                     </ul>
                 </nav>

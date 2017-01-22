@@ -209,49 +209,102 @@ HD.Math = {
     },
 
     /**
-     * Általános animáció futtató
-     * @param {Function} func - minden lépésnél meghívott függvény (megkapja az animáció értékét)
-     * @param {Function} callback - az animáció végén meghívott függvény
-     * @param {Number} delay - animáció hossza (ms)
-     * @param {Number} [range=1] - maximális animációs érték
-     * @param {String} [easing='swing'] - animációs függvény
-     * TODO: tesztelés
+     * Animációk kezelése
+     * @type {Object}
      */
-    animate : function(func, callback, delay, range = 1, easing = 'swing'){
-        let i, len;
-        let value = 0;
-        const steps = delay / 20;
+    Animation : {
 
-        const Easings = {
-            /**
-             * Easing függvény (továbbiak: https://github.com/danro/jquery-easing/blob/master/jquery.easing.js)
-             * @param {Number} t - független változó (idő)
-             * @param {Number} b - kezdeti érték y(t0)
-             * @param {Number} c - érték változása y(t1) - y(t0)
-             * @param {Number} d - időtartam (t1 - t0)
-             * @returns {Number} függvény értéke y(t)
-             */
-            linear : function(t, b, c, d){
-                return c * t / d + b;
-            },
-            swing : function(t, b, c, d){
-                return ((-Math.cos(t * Math.PI / d) / 2) + 0.5) * c + b;
-            }
-        };
+        /**
+         * Timeout ID-k
+         * @type {Object}
+         * @desc timers = {
+         *     <ID> : Number
+         * }
+         */
+        timers : {},
 
-        const makeStep = function(val, currentStep){
-            window.setTimeout(function(){
-                func.call(this, val);
-                if (currentStep === len && typeof callback === 'function'){
-                    callback.call(this);
+        /**
+         * Aktulási animációs értékek
+         * @type {Object}
+         * @desc values = {
+         *     <ID> : Number
+         * }
+         */
+        values : {},
+
+        /**
+         * Animáció futtatása
+         * @param {String} ID - animáció azonosítója
+         * @param {Object} options - beállítások
+         * @desc options = {
+         *     action : Function    // minden lépésnél meghívott függvény (megkapja az animáció értékét): (Number) => {}
+         *     callback : Function  // az animáció végén meghívott függvény: () => {}
+         *     delay : Number       // animáció hossza (ms): 1000
+         *     range : Array        // animációs érték tartománya: [0, 1]
+         *     easing : String      // animációs függvény: 'swing'
+         * }
+         */
+        run : function(ID, options){
+            options = Object.assign({
+                action : () => {},
+                callback : () => {},
+                delay : 1000,
+                range : [0, 1],
+                easing : 'swing'
+            }, options);
+
+            let i, len;
+            let value = 0;
+            const steps = options.delay / 20;
+
+            const Easings = {
+                /**
+                 * Easing függvény (továbbiak: https://github.com/danro/jquery-easing/blob/master/jquery.easing.js)
+                 * @param {Number} t - független változó (idő)
+                 * @param {Number} b - kezdeti érték y(t0)
+                 * @param {Number} c - érték változása y(t1) - y(t0)
+                 * @param {Number} d - időtartam (t1 - t0)
+                 * @returns {Number} függvény értéke y(t)
+                 */
+                linear : function(t, b, c, d){
+                    return c * t / d + b;
+                },
+                swing : function(t, b, c, d){
+                    return ((-Math.cos(t * Math.PI / d) / 2) + 0.5) * c + b;
                 }
-            }.bind(this), delay / steps * i);
-        };
+            };
 
-        for (i = 0, len = Math.floor(steps); i <= len; i++){
-            value = Easings[easing](i, 0, range, steps);
-            makeStep(value, i);
+            const makeStep = function(val, currentStep){
+                const timerID = setTimeout(function(){
+                    HD.Math.Animation.values[ID] = val;
+                    options.action.call(this, val);
+                    if (currentStep === len && typeof callback === 'function'){
+                        options.callback.call(this);
+                        delete HD.Math.Animation.timers[ID];
+                    }
+                }.bind(this), options.delay / steps * i);
+                HD.Math.Animation.timers[ID].push(timerID);
+            };
+
+            HD.Math.Animation.timers[ID] = [];
+            for (i = 0, len = Math.floor(steps); i <= len; i++){
+                value = Easings[options.easing](i, options.range[0], options.range[1], steps);
+                makeStep(value, i);
+            }
+        },
+
+        /**
+         * Animáció megállítása
+         * @param {Number} ID - timeout ID
+         * @returns {Number} animáció utolsó értéke
+         */
+        stop : function(ID){
+            HD.Math.Animation.timers[ID].forEach(function(id){
+                clearTimeout(id);
+            });
+            return HD.Math.Animation.values[ID];
         }
+
     }
 
 };

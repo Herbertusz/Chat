@@ -402,7 +402,7 @@ CHAT.Events.Server = {
             writing.message = data.message;
             if (!writing.timerID){
                 CHAT.Components.Notification.stillWrite(box, data.userId);
-                writing.timerID = window.setInterval(function(){
+                writing.timerID = setInterval(function(){
                     if (!writing.event){
                         CHAT.Components.Notification.stopWrite(box, data.userId, writing.message);
                     }

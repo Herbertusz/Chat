@@ -134,7 +134,7 @@ HD.Site.Slideshow = function(options){
     const timerRestart = function(){
         window.clearTimeout(timer);
         if (!options.timeout) return;
-        timer = window.setTimeout(function(){
+        timer = setTimeout(function(){
             options.default();
         }, options.timeout);
     };
