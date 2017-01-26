@@ -160,8 +160,9 @@ const Model = function(db){
                     });
                 })
                 .then(function(result){
-                    callback(result.insertId);
-                    return result.insertId;
+                    const messageId = result.insertId;
+                    callback(messageId);
+                    return messageId;
                 })
                 .catch(function(error){
                     log.error(error);
@@ -215,8 +216,9 @@ const Model = function(db){
                     });
                 })
                 .then(function(result){
-                    callback(result.insertId);
-                    return result.insertId;
+                    const messageId = result.insertId;
+                    callback(messageId);
+                    return messageId;
                 })
                 .catch(function(error){
                     log.error(error);
@@ -287,8 +289,9 @@ const Model = function(db){
                     });
                 })
                 .then(function(result){
-                    callback(result.insertId);
-                    return result.insertId;
+                    const messageId = result.insertId;
+                    callback(messageId);
+                    return messageId;
                 })
                 .catch(function(error){
                     log.error(error);
@@ -389,23 +392,28 @@ const Model = function(db){
          * @param {Function} [callback]
          */
         getLastStatus : function(userId, callback = () => {}){
-            return db.collection('chat_statuses')
-                .find({'userId' : userId})
-                .sort({'created' : -1})
-                .limit(1)
-                .toArray()
-                .then(function(statuses){
-                    let status;
-                    if (statuses.length === 0){
+            return db.getRow(`
+                    SELECT
+                        *
+                    FROM
+                        chat_statuses
+                    WHERE
+                        userId = :userId
+                    ORDER BY
+                        created DESC
+                    LIMIT
+                        1
+                `, {
+                    'userId' : userId
+                })
+                .then(function(status){
+                    if (!status){
                         status = {
                             userId : userId,
                             prevStatus : null,
                             nextStatus : null,
                             created : Date.now()
                         };
-                    }
-                    else {
-                        status = statuses[0];
                     }
                     callback(status);
                     return status;
@@ -435,16 +443,35 @@ const Model = function(db){
                 created : Date.now()
             };
 
-            return db.collection('chat_statuses')
-                .deleteMany({'userId' : data.userId})
-                .then(function(result){
-                    return db.collection('chat_statuses')
-                        .insertOne(insertData);
+            return db.query(`
+                    DELETE FROM
+                        chat_statuses
+                    WHERE
+                        userId = :userId
+                `, {
+                    'userId' : data.userId
+                })
+                .then(function(){
+                    return db.query(`
+                            INSERT INTO
+                                chat_statuses
+                            (
+                                userId,
+                                prevStatus,
+                                nextStatus,
+                                created
+                            ) VALUES (
+                                :userId,
+                                :prevStatus,
+                                :nextStatus,
+                                :created
+                            )
+                        `, insertData);
                 })
                 .then(function(result){
-                    const messageId = result.insertedId;
-                    callback(messageId);
-                    return messageId;
+                    const statusId = result.insertId;
+                    callback(statusId);
+                    return statusId;
                 })
                 .catch(function(error){
                     log.error(error);

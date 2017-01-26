@@ -4,7 +4,7 @@
  * @description DOM-kezelő
  * @requires HD.Misc.switching
  * @example
- *  HD.DOM('.class').event('click', function(){...});
+ *  HD.DOM('.class').event('click', function(target){...});
  *  HD.DOM('.class').find('button').data('clickable', 'true').trigger('click');
  *  const cloneElement = HD.DOM('.class').filter('[data-disabled]').clone(true).elem();
  */
@@ -510,7 +510,9 @@ HD.DOM = function(identifier){
         event : function(eventNames, handler){
             this.elements.forEach(function(target){
                 eventNames.split(' ').forEach(function(eventName){
-                    target.addEventListener(eventName, handler.bind(target), false);
+                    target.addEventListener(eventName, function(event){
+                        handler.call(target, event);
+                    }, false);
                     HD.DOM.eventListeners.push({
                         target : target,
                         eventName : eventName,

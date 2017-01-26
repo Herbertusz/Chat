@@ -128,9 +128,9 @@ const Model = function(db){
             return db.collection('chat_messages')
                 .insertOne(insertData)
                 .then(function(result){
-                    const docId = result.insertedId;
-                    callback(docId);
-                    return docId;
+                    const eventId = result.insertedId;
+                    callback(eventId);
+                    return eventId;
                 })
                 .catch(function(error){
                     log.error(error);
@@ -336,9 +336,9 @@ const Model = function(db){
                         .insertOne(insertData);
                 })
                 .then(function(result){
-                    const messageId = result.insertedId;
-                    callback(messageId);
-                    return messageId;
+                    const statusId = result.insertedId;
+                    callback(statusId);
+                    return statusId;
                 })
                 .catch(function(error){
                     log.error(error);

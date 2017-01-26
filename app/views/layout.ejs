@@ -29,8 +29,8 @@
         <script>
             HD.DOM(document).event('DOMContentLoaded', function(){
 
-                HD.DOM('.menupoint').event('mouseover', function(){
-                    const elem = this;
+                HD.DOM('.menupoint').event('mouseover', function(event){
+                    const elem = event.currentTarget;
                     HD.Math.Animation.run('menuover', {
                         action : function(value){
                             HD.DOM(elem).css({
@@ -47,8 +47,24 @@
                         easing : 'linear'
                     });
                 });
-                HD.DOM('.menupoint').event('mouseout', function(){
+                HD.DOM('.menupoint').event('mouseout', function(event){
+                    const elem = event.currentTarget;
                     const original = HD.Math.Animation.stop('menuover');
+                    HD.Math.Animation.run('menuout', {
+                        action : function(value){
+                            HD.DOM(elem).css({
+                                borderBottomColor : `rgba(0, 0, 0, ${value})`
+                            });
+                        },
+                        callback : function(){
+                            HD.DOM(elem).css({
+                                borderBottomColor : `rgba(0, 0, 0, 0)`
+                            });
+                        },
+                        delay : 5000 * original,
+                        range : [original, 0],
+                        easing : 'linear'
+                    });
                 });
 
             });

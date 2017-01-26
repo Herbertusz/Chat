@@ -218,7 +218,8 @@ HD.Math = {
          * Timeout ID-k
          * @type {Object}
          * @desc timers = {
-         *     <ID> : Number
+         *     <ID> : Number,
+         *     ...
          * }
          */
         timers : {},
@@ -227,10 +228,36 @@ HD.Math = {
          * Aktulási animációs értékek
          * @type {Object}
          * @desc values = {
-         *     <ID> : Number
+         *     <ID> : Number,
+         *     ...
          * }
          */
         values : {},
+
+        /**
+         * Animáció lefutási görbéjét meghatározó függvények
+         * @type {Object}
+         * @desc easings = {
+         *     <name> : Function,
+         *     ...
+         * }
+         */
+        easings : {
+            /**
+             * Easing függvény (továbbiak: https://github.com/danro/jquery-easing/blob/master/jquery.easing.js)
+             * @param {Number} t - független változó (idő)
+             * @param {Number} b - kezdeti érték y(t0)
+             * @param {Number} c - érték változása y(t1) - y(t0)
+             * @param {Number} d - időtartam (t1 - t0)
+             * @returns {Number} függvény értéke y(t)
+             */
+            linear : function(t, b, c, d){
+                return c * t / d + b;
+            },
+            swing : function(t, b, c, d){
+                return ((-Math.cos(t * Math.PI / d) / 2) + 0.5) * c + b;
+            }
+        },
 
         /**
          * Animáció futtatása
@@ -257,23 +284,6 @@ HD.Math = {
             let value = 0;
             const steps = options.delay / 20;
 
-            const Easings = {
-                /**
-                 * Easing függvény (továbbiak: https://github.com/danro/jquery-easing/blob/master/jquery.easing.js)
-                 * @param {Number} t - független változó (idő)
-                 * @param {Number} b - kezdeti érték y(t0)
-                 * @param {Number} c - érték változása y(t1) - y(t0)
-                 * @param {Number} d - időtartam (t1 - t0)
-                 * @returns {Number} függvény értéke y(t)
-                 */
-                linear : function(t, b, c, d){
-                    return c * t / d + b;
-                },
-                swing : function(t, b, c, d){
-                    return ((-Math.cos(t * Math.PI / d) / 2) + 0.5) * c + b;
-                }
-            };
-
             const makeStep = function(val, currentStep){
                 const timerID = setTimeout(function(){
                     HD.Math.Animation.values[ID] = val;
@@ -288,7 +298,9 @@ HD.Math = {
 
             HD.Math.Animation.timers[ID] = [];
             for (i = 0, len = Math.floor(steps); i <= len; i++){
-                value = Easings[options.easing](i, options.range[0], options.range[1], steps);
+                value = HD.Math.Animation.easings[options.easing](
+                    i, options.range[0], options.range[1] - options.range[0], steps
+                );
                 makeStep(value, i);
             }
         },
