@@ -43,13 +43,7 @@ router.get('/', function(req, res){
             messages = items;
         })
         .then(function(){
-            const db = req.app.get('db');
-            return db.collection('chat_statuses')
-                .find()
-                .toArray()
-                .then(function(st){
-                    return st;
-                });
+            return ChatModel.getStatuses();
         })
         .then(function(items){
             statuses = items;

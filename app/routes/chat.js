@@ -79,23 +79,23 @@ router.post('/getroommessages', function(req, res){
 
 });
 
-router.post('/statuschange', function(req, res){
-
-    ChatModel.setStatus({
-        userId : req.body.userId,
-        prevStatus : req.body.prevStatus,
-        nextStatus : req.body.nextStatus
-    })
-        .then(function(){
-            res.send({
-                success : true
-            });
-        })
-        .catch(function(error){
-            log.error(error);
-        });
-
-});
+// router.post('/statuschange', function(req, res){
+//
+//     ChatModel.setStatus({
+//         userId : req.body.userId,
+//         prevStatus : req.body.prevStatus,
+//         nextStatus : req.body.nextStatus
+//     })
+//         .then(function(){
+//             res.send({
+//                 success : true
+//             });
+//         })
+//         .catch(function(error){
+//             log.error(error);
+//         });
+//
+// });
 
 router.post('/getstatus', function(req, res){
 

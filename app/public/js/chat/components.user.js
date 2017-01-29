@@ -193,7 +193,7 @@ CHAT.Components.User = {
             ['busy', 'inv'],
             ['busy', 'off']
         ];
-        const inactiveStatuses = Array.from(new Set(HD.Array.rotate(transitions)[1]));
+        const inactiveStatuses = Array.from(new Set(HD.Array.rotate(transitions)[1]));  // 2. oszlop uniója
         const userId = Number(HD.DOM(elem).data('id'));
         const timerId = `user-${userId}`;
         const display = HD.DOM(elem).find(CHAT.DOM.idleTimer).elem();
@@ -234,8 +234,8 @@ CHAT.Components.User = {
                         .stop()
                         .set(Math.round(time / 1000))
                         .start(function(){
-                            display.innerHTML = CHAT.Components.User.timerDisplay(this.get('D:h:m:s'));
-                            // display.innerHTML = this.get('D nap, hh:mm:ss'); // debug mód
+                            // display.innerHTML = CHAT.Components.User.timerDisplay(this.get('D:h:m:s'));
+                            display.innerHTML = this.get('D nap, hh:mm:ss'); // debug mód
                         });
 
                     if (update){

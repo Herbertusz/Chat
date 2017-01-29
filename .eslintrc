@@ -679,11 +679,11 @@
     // disallow unnecessary constructors
     "no-useless-constructor": "off",
     // require let or const instead of var
-    "no-var": "off",
+    "no-var": "warn",
     // require or disallow method and property shorthand syntax for object literals
     "object-shorthand": [
       "warn",
-      "never"
+      "consistent"
     ],
     // require arrow functions as callbacks
     "prefer-arrow-callback": "off",

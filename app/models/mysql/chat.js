@@ -180,6 +180,7 @@ const Model = function(db){
          * }
          */
         setMessage : function(data, callback = () => {}){
+            console.log(data);
             return db.query(`
                     INSERT INTO
                         chat_messages_texts
@@ -216,6 +217,7 @@ const Model = function(db){
                     });
                 })
                 .then(function(result){
+                    console.log(result);
                     const messageId = result.insertId;
                     callback(messageId);
                     return messageId;
@@ -387,6 +389,26 @@ const Model = function(db){
         },
 
         /**
+         * Állapotváltozások lekérdezése
+         * @param {Function} [callback]
+         */
+        getStatuses : function(callback = () => {}){
+            return db.getRows(`
+                    SELECT
+                        *
+                    FROM
+                        chat_statuses
+                `)
+                .then(function(statuses){
+                    callback(statuses);
+                    return statuses;
+                })
+                .catch(function(error){
+                    log.error(error);
+                });
+        },
+
+        /**
          * Felhasználó utolsó állapotváltozásának lekérdezése
          * @param {Number} userId
          * @param {Function} [callback]
@@ -410,6 +432,7 @@ const Model = function(db){
                     if (!status){
                         status = {
                             userId : userId,
+                            type : 0,
                             prevStatus : null,
                             nextStatus : null,
                             created : Date.now()
@@ -438,6 +461,7 @@ const Model = function(db){
         setStatus : function(data, callback = () => {}){
             const insertData = {
                 userId : data.userId,
+                type : data.type,
                 prevStatus : data.prevStatus,
                 nextStatus : data.nextStatus,
                 created : Date.now()
@@ -457,11 +481,13 @@ const Model = function(db){
                                 chat_statuses
                             (
                                 userId,
+                                type,
                                 prevStatus,
                                 nextStatus,
                                 created
                             ) VALUES (
                                 :userId,
+                                :type,
                                 :prevStatus,
                                 :nextStatus,
                                 :created
