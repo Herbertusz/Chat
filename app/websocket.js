@@ -148,6 +148,23 @@ module.exports = function(server, ioSession, app){
      * }
      */
     const statusLog = function(prevUserData, nextUserData){
+        if (!prevUserData){
+            prevUserData = {
+                id : nextUserData.id,
+                name : nextUserData.name,
+                status : 'off',
+                isIdle : false
+            };
+        }
+        if (!nextUserData){
+            nextUserData = {
+                id : prevUserData.id,
+                name : prevUserData.name,
+                status : 'off',
+                isIdle : false
+            };
+        }
+
         const userId = prevUserData.id;
         const prevStatus = prevUserData.isIdle ? 'idle' : prevUserData.status;
         const nextStatus = nextUserData.isIdle ? 'idle' : nextUserData.status;

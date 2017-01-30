@@ -432,7 +432,7 @@ const Model = function(db){
                     if (!status){
                         status = {
                             userId : userId,
-                            type : 0,
+                            type : null,
                             prevStatus : null,
                             nextStatus : null,
                             created : Date.now()
