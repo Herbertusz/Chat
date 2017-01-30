@@ -143,7 +143,7 @@ CHAT.Components.User = {
      *     <socket.id> : {
      *         id : Number,      // user azonosító
      *         name : String,    // user login név
-     *         status : String,  // user státusz ('on'|'busy'|'off')
+     *         status : String,  // user státusz ('on'|'busy'|'inv'|'off')
      *         isIdle : Boolean  // user státusz: 'idle'
      *     },
      *     ...
@@ -176,6 +176,37 @@ CHAT.Components.User = {
         return connectedUsers;
     },
 
+//    /**
+//     * Inaktivitás kezdete óta eltelt idő kijelzése
+//     * @param {HTMLElement} elem
+//     * @param {String} prevStatus - user előző státusza ('on'|'busy'|'idle'|'inv'|'off')
+//     * @param {String} nextStatus - user új státusza ('on'|'busy'|'idle'|'inv'|'off')
+//     */
+//    setTimer : function(elem, prevStatus, nextStatus){
+//        const activeStatuses = ['on', 'busy'];
+//        const inactiveStatuses = ['idle', 'inv', 'off'];
+//
+//
+//        const userId = Number(HD.DOM(elem).data('id'));
+//        const timerId = `user-${userId}`;
+//        const display = HD.DOM(elem).find(CHAT.DOM.idleTimer).elem();
+//
+//        if (userId === 2) console.log(prevStatus, nextStatus);
+//        if (CHAT.Config.idle.timeCounter && display){
+//            HD.DOM.ajax({
+//                method : 'POST',
+//                url : '/chat/getstatus',
+//                data : `userId=${userId}`
+//            }).then(function(resp){
+//                const lastChange = JSON.parse(resp).status;
+//
+//                ;
+//            }).catch(function(error){
+//                HD.Log.error(error);
+//            });
+//        }
+//    },
+
     /**
      * Inaktivitás kezdete óta eltelt idő kijelzése
      * @param {HTMLElement} elem
@@ -184,7 +215,6 @@ CHAT.Components.User = {
      */
     setTimer : function(elem, prevStatus, nextStatus){
         let time = 0;
-        let update = true;
         const transitions = [
             ['on', 'idle'],
             ['on', 'inv'],
@@ -193,11 +223,15 @@ CHAT.Components.User = {
             ['busy', 'inv'],
             ['busy', 'off']
         ];
-        const inactiveStatuses = Array.from(new Set(HD.Array.rotate(transitions)[1]));  // 2. oszlop uniója
+        const statuses = {
+            active : ['on', 'busy'],
+            inactive : ['idle', 'inv', 'off']
+        };
         const userId = Number(HD.DOM(elem).data('id'));
         const timerId = `user-${userId}`;
         const display = HD.DOM(elem).find(CHAT.DOM.idleTimer).elem();
 
+        if (userId === 2) console.log(prevStatus, nextStatus);
         if (CHAT.Config.idle.timeCounter && display){
             HD.DOM.ajax({
                 method : 'POST',
@@ -208,8 +242,8 @@ CHAT.Components.User = {
 
                 if (
                     lastChange.prevStatus !== null &&
-                    inactiveStatuses.indexOf(prevStatus) > -1 &&
-                    inactiveStatuses.indexOf(nextStatus) > -1 &&
+                    statuses.inactive.indexOf(prevStatus) > -1 &&
+                    statuses.inactive.indexOf(nextStatus) > -1 &&
                     (
                         !HD.Misc.defined(CHAT.Components.Timer.counters[timerId]) ||
                         !CHAT.Components.Timer.counters[timerId].running()
@@ -218,14 +252,16 @@ CHAT.Components.User = {
                     prevStatus = lastChange.prevStatus;
                     nextStatus = lastChange.nextStatus;
                     time = Date.now() - lastChange.created;
-                    update = false;
                 }
+                if (userId === 2) console.log(prevStatus, nextStatus);
 
                 if (!HD.Misc.defined(CHAT.Components.Timer.counters[timerId])){
                     CHAT.Components.Timer.counters[timerId] = new HD.DateTime.Timer(1);
                 }
 
+                // fixme: ezt a 2 feltételt bővíteni kell!
                 if (transitions.find(tr => (tr[0] === prevStatus && tr[1] === nextStatus))){
+                    if (userId === 2) console.log('A');
                     // start
                     if (nextStatus === 'idle'){
                         time += CHAT.Config.idle.time;
@@ -237,16 +273,9 @@ CHAT.Components.User = {
                             // display.innerHTML = CHAT.Components.User.timerDisplay(this.get('D:h:m:s'));
                             display.innerHTML = this.get('D nap, hh:mm:ss'); // debug mód
                         });
-
-                    if (update){
-                        HD.DOM.ajax({
-                            method : 'POST',
-                            url : '/chat/statuschange',
-                            data : `userId=${userId}&prevStatus=${prevStatus}&nextStatus=${nextStatus}`
-                        });
-                    }
                 }
                 else if (transitions.find(tr => (tr[0] === nextStatus && tr[1] === prevStatus))){
+                    if (userId === 2) console.log('B');
                     // stop
                     CHAT.Components.Timer.counters[timerId].stop();
                     display.innerHTML = '';

@@ -9,7 +9,7 @@ const ENV = require.main.require('../app/env.js');
 const fs = require('mz/fs');
 const ioExpressSession = require('socket.io-express-session');
 const log = require.main.require('../libs/log.js');
-const HD = require.main.require('../app/public/js/hd/hd.js')(['math']);
+const HD = require.main.require('../app/public/js/hd/hd.js')(['utility', 'math']);
 const CHAT = require.main.require('../app/config.js');
 
 /**
@@ -148,6 +148,9 @@ module.exports = function(server, ioSession, app){
      * }
      */
     const statusLog = function(prevUserData, nextUserData){
+        if (!HD.Misc.defined(prevUserData) || !HD.Misc.defined(nextUserData)){
+            return;
+        }
         if (!prevUserData){
             prevUserData = {
                 id : nextUserData.id,
@@ -185,7 +188,7 @@ module.exports = function(server, ioSession, app){
             else if (transitions.find(tr => (tr[0] === nextStatus && tr[1] === prevStatus))){
                 type = 1;  // aktiválás
             }
-            if (type){
+            if (type !== null){
                 ChatModel.setStatus({type, userId, prevStatus, nextStatus})
                     .catch(function(error){
                         log.error(error);
@@ -251,8 +254,8 @@ module.exports = function(server, ioSession, app){
 
         // User állapotváltozása
         socket.on('statusChanged', function(updatedConnectedUsers, triggerUserId){
-            const prevUserData = connectedUsers.filter(user => user.id === triggerUserId);
-            const nextUserData = updatedConnectedUsers.filter(user => user.id === triggerUserId);
+            const prevUserData = HD.Object.search(connectedUsers, user => user.id === triggerUserId);
+            const nextUserData = HD.Object.search(updatedConnectedUsers, user => user.id === triggerUserId);
             statusLog(prevUserData, nextUserData);
             connectedUsers = updatedConnectedUsers;
             socket.broadcast.emit('statusChanged', updatedConnectedUsers);

@@ -527,12 +527,30 @@ HD.Array = {
 HD.Object = {
 
     /**
+     * Egyszintű keresés objektumban callback függvény alapján
+     * @param {Object} obj - haystack
+     * @param {Function} callback - keresendő elemre truthy értéket kell adnia
+     * @returns {*} keresett elem
+     * @desc callback argumentumai:
+     *   param {*} - objektum egy eleme
+     *   param {String} - objektum elemének kulcsa
+     *   param {Object} - az objektum
+     */
+    search : function(obj, callback){
+        for (const prop in obj){
+            if (callback(obj[prop], prop, obj)){
+                return obj[prop];
+            }
+        }
+    },
+
+    /**
      * Objektumok közti részleges egyezés vizsgálata
      * @param {Object} partialObject - keresendő rész
      * @param {Object} fullObject - keresett objektum
      * @returns {Boolean} a keresett objektum tartalmazza a keresendő részt
      */
-    objectPartialMatch : function(partialObject, fullObject){
+    partialMatch : function(partialObject, fullObject){
         const properties = Object.keys(fullObject);
         for (let n = 0; n < properties.length; n++){
             if (typeof partialObject[properties[n]] !== 'undefined' &&
