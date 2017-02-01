@@ -148,6 +148,11 @@ module.exports = function(server, ioSession, app){
      * }
      */
     const statusLog = function(prevUserData, nextUserData){
+        const statuses = {
+            active : ['on', 'busy'],
+            inactive : ['idle', 'inv', 'off']
+        };
+
         if (!HD.Misc.defined(prevUserData) || !HD.Misc.defined(nextUserData)){
             return;
         }
@@ -171,21 +176,13 @@ module.exports = function(server, ioSession, app){
         const userId = prevUserData.id;
         const prevStatus = prevUserData.isIdle ? 'idle' : prevUserData.status;
         const nextStatus = nextUserData.isIdle ? 'idle' : nextUserData.status;
-        const transitions = [
-            ['on', 'idle'],
-            ['on', 'inv'],
-            ['on', 'off'],
-            ['busy', 'idle'],
-            ['busy', 'inv'],
-            ['busy', 'off']
-        ];
 
         if (CHAT.Config.idle.timeCounter){
             let type = null;
-            if (transitions.find(tr => (tr[0] === prevStatus && tr[1] === nextStatus))){
+            if (statuses.active.indexOf(prevStatus) > -1 && statuses.inactive.indexOf(nextStatus) > -1){
                 type = 0;  // inaktiválás
             }
-            else if (transitions.find(tr => (tr[0] === nextStatus && tr[1] === prevStatus))){
+            else if (statuses.inactive.indexOf(prevStatus) > -1 && statuses.active.indexOf(nextStatus) > -1){
                 type = 1;  // aktiválás
             }
             if (type !== null){

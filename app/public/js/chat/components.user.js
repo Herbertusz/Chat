@@ -209,20 +209,13 @@ CHAT.Components.User = {
 
     /**
      * Inaktivitás kezdete óta eltelt idő kijelzése
+     * A CHAT.Components.Timer.counters objektumban tárolja az egyes felhasználókhoz kötött időket
      * @param {HTMLElement} elem
      * @param {String} prevStatus - user előző státusza ('on'|'busy'|'idle'|'inv'|'off')
      * @param {String} nextStatus - user új státusza ('on'|'busy'|'idle'|'inv'|'off')
      */
     setTimer : function(elem, prevStatus, nextStatus){
         let time = 0;
-        const transitions = [
-            ['on', 'idle'],
-            ['on', 'inv'],
-            ['on', 'off'],
-            ['busy', 'idle'],
-            ['busy', 'inv'],
-            ['busy', 'off']
-        ];
         const statuses = {
             active : ['on', 'busy'],
             inactive : ['idle', 'inv', 'off']
@@ -231,8 +224,8 @@ CHAT.Components.User = {
         const timerId = `user-${userId}`;
         const display = HD.DOM(elem).find(CHAT.DOM.idleTimer).elem();
 
-        if (userId === 2) console.log(prevStatus, nextStatus);
         if (CHAT.Config.idle.timeCounter && display){
+            // A db-ben tárolt utolsó átmenet lekérdezése
             HD.DOM.ajax({
                 method : 'POST',
                 url : '/chat/getstatus',
@@ -240,9 +233,14 @@ CHAT.Components.User = {
             }).then(function(resp){
                 const lastChange = JSON.parse(resp).status;
 
+                // A user offline, és még sose lépett be
+                if (lastChange.prevStatus === null && lastChange.nextStatus === null && nextStatus === 'off'){
+                    return;
+                }
+
+                // Ha nem fut időmérő, és * -> inaktív az átmenet, akkor a db-ben tárolt átmenetet vesszük alapul
                 if (
                     lastChange.prevStatus !== null &&
-                    statuses.inactive.indexOf(prevStatus) > -1 &&
                     statuses.inactive.indexOf(nextStatus) > -1 &&
                     (
                         !HD.Misc.defined(CHAT.Components.Timer.counters[timerId]) ||
@@ -253,32 +251,32 @@ CHAT.Components.User = {
                     nextStatus = lastChange.nextStatus;
                     time = Date.now() - lastChange.created;
                 }
-                if (userId === 2) console.log(prevStatus, nextStatus);
 
+                // Időmérő létrehozása a user-hez
                 if (!HD.Misc.defined(CHAT.Components.Timer.counters[timerId])){
                     CHAT.Components.Timer.counters[timerId] = new HD.DateTime.Timer(1);
                 }
 
-                // fixme: ezt a 2 feltételt bővíteni kell!
-                if (transitions.find(tr => (tr[0] === prevStatus && tr[1] === nextStatus))){
-                    if (userId === 2) console.log('A');
-                    // start
-                    if (nextStatus === 'idle'){
-                        time += CHAT.Config.idle.time;
+                // Változott a státusz
+                if (prevStatus !== nextStatus){
+                    if (statuses.active.indexOf(prevStatus) > -1 && statuses.inactive.indexOf(nextStatus) > -1){
+                        // Aktív -> inaktív átmenet => időmérő indítása
+                        if (nextStatus === 'idle'){
+                            time += CHAT.Config.idle.time;
+                        }
+                        CHAT.Components.Timer.counters[timerId]
+                            .stop()
+                            .set(Math.round(time / 1000))
+                            .start(function(){
+                                display.innerHTML = CHAT.Components.User.timerDisplay(this.get('D:h:m:s'));
+                                // display.innerHTML = this.get('D nap, hh:mm:ss'); // debug mód
+                            });
                     }
-                    CHAT.Components.Timer.counters[timerId]
-                        .stop()
-                        .set(Math.round(time / 1000))
-                        .start(function(){
-                            // display.innerHTML = CHAT.Components.User.timerDisplay(this.get('D:h:m:s'));
-                            display.innerHTML = this.get('D nap, hh:mm:ss'); // debug mód
-                        });
-                }
-                else if (transitions.find(tr => (tr[0] === nextStatus && tr[1] === prevStatus))){
-                    if (userId === 2) console.log('B');
-                    // stop
-                    CHAT.Components.Timer.counters[timerId].stop();
-                    display.innerHTML = '';
+                    else if (statuses.inactive.indexOf(prevStatus) > -1 && statuses.active.indexOf(nextStatus) > -1){
+                        // Inaktív -> aktív átmenet => időmérő leállítása
+                        CHAT.Components.Timer.counters[timerId].stop();
+                        display.innerHTML = '';
+                    }
                 }
             }).catch(function(error){
                 HD.Log.error(error);

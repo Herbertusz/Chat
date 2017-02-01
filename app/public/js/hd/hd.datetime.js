@@ -69,7 +69,7 @@ HD.DateTime = {
      * @returns {Number}
      */
     getCurrentYear : function(){
-        return parseInt((new Date()).getFullYear());
+        return Number.parseInt((new Date()).getFullYear());
     },
 
     /**
@@ -91,9 +91,9 @@ HD.DateTime = {
      * @returns {Number}
      */
     getWeekOfYear : function(year, month, day){
-        year = parseInt(year);
-        month = parseInt(month);
-        day = parseInt(day);
+        year = Number.parseInt(year);
+        month = Number.parseInt(month);
+        day = Number.parseInt(day);
         const d = new Date(year, month, day, 0, 0, 0);
         d.setDate(day + 7 - (d.getDay() || 7));
         return Math.ceil((((d - new Date(year, 0, 1)) / 86400000) + 1) / 7);
@@ -310,7 +310,7 @@ HD.DateTime = {
                 // Ordinal suffix for day of month; st, nd, rd, th
                 const j = f.j();
                 let i = j % 10;
-                if (i <= 3 && parseInt((j % 100) / 10, 10) === 1){
+                if (i <= 3 && Number.parseInt((j % 100) / 10, 10) === 1){
                     i = 0;
                 }
                 return ['st', 'nd', 'rd'][i - 1] || 'th';

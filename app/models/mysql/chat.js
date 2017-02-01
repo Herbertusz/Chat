@@ -180,7 +180,6 @@ const Model = function(db){
          * }
          */
         setMessage : function(data, callback = () => {}){
-            console.log(data);
             return db.query(`
                     INSERT INTO
                         chat_messages_texts
@@ -217,7 +216,6 @@ const Model = function(db){
                     });
                 })
                 .then(function(result){
-                    console.log(result);
                     const messageId = result.insertId;
                     callback(messageId);
                     return messageId;

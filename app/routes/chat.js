@@ -99,7 +99,7 @@ router.post('/getroommessages', function(req, res){
 
 router.post('/getstatus', function(req, res){
 
-    ChatModel.getLastStatus(req.body.userId)
+    ChatModel.getLastStatus(Number(req.body.userId))
         .then(function(status){
             res.send({
                 status : status
@@ -130,9 +130,9 @@ router.post('/uploadfile', function(req, res){
         let uploadedSize = 0;
         const io = req.app.get('io');
         const data = JSON.parse(decodeURIComponent(req.header('X-File-Data')));
-        const userId = Number.parseInt(data.userId);
+        const userId = Number(data.userId);
         const fileStream = fs.createWriteStream(`${req.app.get('public path')}/upload/${data.fileName}`);
-        const fileSize = Number.parseInt(data.fileData.size);
+        const fileSize = Number(data.fileData.size);
 
         req.on('data', function(file){
             // Fájlátvitel folyamatban
@@ -175,12 +175,12 @@ router.post('/clientlog', function(req, res){
     const message = decodeURIComponent(req.body.message);
     const stack = decodeURIComponent(req.body.stack);
     const logMessage = `
-        ${HD.DateTime.formatMS('Y-m-d H:i:s', Date.now())}
-        name: ${name}
-        message: ${message}
-        stack:
+        ${HD.DateTime.formatMS('Y-m-d H:i:s', Date.now())}\n
+        name: ${name}\n
+        message: ${message}\n
+        stack:\n
         ${stack}
-        -----
+        \n-----\n
     `.replace(/^\s+/gm, '');
 
     fs.appendFile(`${__dirname}/../../logs/client.log`, logMessage, function(error){
