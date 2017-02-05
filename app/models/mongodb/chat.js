@@ -348,14 +348,12 @@ const Model = function(db){
                 created : Date.now()
             };
 
-            //return db.collection('chat_statuses')
-            //    .deleteMany({'userId' : data.userId})
-            //    .then(function(result){
-            //        return db.collection('chat_statuses')
-            //            .insertOne(insertData);
-            //    })
             return db.collection('chat_statuses')
-                .insertOne(insertData)
+                .deleteMany({'userId' : data.userId})
+                .then(function(result){
+                    return db.collection('chat_statuses')
+                        .insertOne(insertData);
+                })
                 .then(function(result){
                     const statusId = result.insertedId;
                     callback(statusId);

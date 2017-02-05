@@ -235,6 +235,7 @@ CHAT.Components.User = {
 
                 // A user offline, és még sose lépett be
                 if (lastChange.prevStatus === null && lastChange.nextStatus === null && nextStatus === 'off'){
+                    display.innerHTML = CHAT.Labels.time.notYetOnline;
                     return;
                 }
 
@@ -268,7 +269,12 @@ CHAT.Components.User = {
                             .stop()
                             .set(Math.round(time / 1000))
                             .start(function(){
-                                display.innerHTML = CHAT.Components.User.timerDisplay(this.get('D:h:m:s'));
+                                if (this.get() < 60){
+                                    display.innerHTML = CHAT.Labels.time.lessThanMin;
+                                }
+                                else {
+                                    display.innerHTML = CHAT.Components.User.timerDisplay(this.get('D:h:m:s'));
+                                }
                                 // display.innerHTML = this.get('D nap, hh:mm:ss'); // debug mód
                             });
                     }

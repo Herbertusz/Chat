@@ -1,0 +1,97 @@
+<div class="chat-outer-container">
+    <% if (login){ %>
+        <aside class="online" data-connected-users="">
+            <ul>
+                <li data-id="<%- userId %>" data-name="<%= userName %>" class="self">
+                    <label>
+                        <svg class="status on"><use xlink:href="#on"></use></svg>
+                        <%= userName %>
+                        <select class="status-change">
+                            <option value="on" selected>Elérhető</option>
+                            <option value="busy">Elfoglalt</option>
+                            <option value="inv">Lopakodó</option>
+                        </select>
+                    </label>
+                </li>
+                <% users.forEach(function(user){ %>
+                    <% if (userId !== user.id){ %>
+                        <li data-id="<%- user.id %>" data-name="<%= user.name %>" class="<% if (userId === user.id){ %>hidden<% } %>">
+                            <label>
+                                <input class="user-select" type="checkbox" value="<%- user.id %>" />
+                                <svg class="status off"><use xlink:href="#off"></use></svg>
+                                <%= user.name %>
+                                <span class="idle-timer"></span>
+                            </label>
+                        </li>
+                    <% } %>
+                <% }); %>
+            </ul>
+            <button class="start">Chat</button>
+        </aside>
+        <section class="chat-container">
+            <div class="chat cloneable" data-room="">
+                <div class="drag"></div>
+                <div class="bar">
+                    <span class="users">
+                        <span class="user-item cloneable" data-id="">
+                            <svg class="status"><use xlink:href="#off"></use></svg>
+                            <span class="name"></span>
+                            <span title="Kidobás">
+                                <svg class="throw"><use xlink:href="#cross"></use></svg>
+                            </span>
+                        </span>
+                    </span>
+                    <span title="Kilépés">
+                        <svg class="close"><use xlink:href="#cross"></use></svg>
+                    </span>
+                    <button class="add-user hidden">Hozzáadás</button>
+                </div>
+                <div class="system-message">
+                    <div class="error hidden">
+                        <div class="error-list"></div>
+                        <svg class="error-close"><use xlink:href="#cross"></use></svg>
+                    </div>
+                    <div class="progress hidden">
+                        <svg class="icon"><use xlink:href="#load"></use></svg>
+                        <span class="text"></span>
+                    </div>
+                    <div class="local-notification hidden">
+                        <svg class="arrow arrow-left"><use xlink:href="#arrow-down"></use></svg>
+                        <span class="text"></span>
+                        <svg class="arrow arrow-right"><use xlink:href="#arrow-down"></use></svg>
+                    </div>
+                </div>
+                <div class="<% if (CHAT.Config.fileTransfer.dragndrop.allowed){ %>drop-file<% } %>">
+                    <div class="drop-sign"><%= CHAT.Config.fileTransfer.dragndrop.html %></div>
+                    <ul class="list"></ul>
+                </div>
+                <div class="form">
+                    <div class="indicator"></div>
+                    <textarea class="textarea" placeholder="Üzenet"></textarea>
+                    <% if (CHAT.Config.fileTransfer.allowed){ %>
+                        <div class="fileuploader" title="Fájlküldés">
+                            <input type="file" class="file" <% if (CHAT.Config.fileTransfer.multiple){ %>multiple<% } %> />
+                            <svg class="trigger"><use xlink:href="#picture"></use></svg>
+                        </div>
+                    <% } %>
+                    <% if (CHAT.Config.messageSend.sendMode.allowed){ %>
+                        <div class="submitmode">
+                            <label>
+                                <input class="send-switch" type="checkbox" value="1"
+                                    <% if (CHAT.Config.messageSend.sendMode.default === 'enter'){ %>checked<% } %>
+                                />
+                                Küldés enter megnyomására
+                            </label>
+                            <button class="send <% if (CHAT.Config.messageSend.sendMode.default === 'enter'){ %>hidden<% } %>">
+                                Küldés
+                            </button>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </section>
+        <div class="clearfix"></div>
+    <% } else { %>
+        Jelentkezz be!
+    <% } %>
+</div>

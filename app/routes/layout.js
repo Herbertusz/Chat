@@ -24,12 +24,16 @@ module.exports = function(app){
                 url : '/chat'
             },
             {
-                text : 'Iframe-1',
+                text : 'Iframe-Hörb',
                 url : '/iframe/1'
             },
             {
-                text : 'Iframe-2',
+                text : 'Iframe-Dan',
                 url : '/iframe/2'
+            },
+            {
+                text : 'Iframe-Pistike',
+                url : '/iframe/3'
             },
             {
                 text : 'Videochat',

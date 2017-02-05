@@ -51,7 +51,7 @@ const connectPromise = DB
             saveUninitialized : false,
             reapInterval : -1,
             store : new FileStore({
-                path : '../tmp',
+                path : `${__dirname}/../tmp`,
                 ttl : 86400,  // 1 nap
                 logFn : function(message){
                     log.error(message);
@@ -88,8 +88,8 @@ const connectPromise = DB
             log.error(err);
             err.status = 404;
             res.status = 404;
-            res.render('layout', {
-                page : 'error',
+            res.render('layouts/general', {
+                page : '../pages/error',
                 login : req.session.login ? req.session.login.loginned : false,
                 userId : req.session.login ? req.session.login.userId : null,
                 userName : req.session.login ? req.session.login.userName : '',

@@ -82,7 +82,9 @@ CHAT.Labels = {
     },
     // Idő kijelzése
     'time' : {
-        'idleTimer' : ['nap', 'óra', 'perc', 'másodperc']
+        'idleTimer' : ['nap', 'óra', 'perc', 'másodperc'],
+        'notYetOnline' : '-',
+        'lessThanMin' : 'most'
     },
     // Hibaüzenetek
     'error' : {

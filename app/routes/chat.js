@@ -24,8 +24,8 @@ router.get('/', function(req, res){
     UserModel
         .getUsers()
         .then(function(users){
-            res.render('layout', {
-                page : 'chat',
+            res.render('layouts/general', {
+                page : '../pages/chat',
                 users : users,
                 login : req.session.login ? req.session.login.loginned : false,
                 userId : req.session.login ? req.session.login.userId : null,
@@ -48,14 +48,12 @@ router.get('/remote/:userId', function(req, res){
     UserModel
         .getUsers()
         .then(function(users){
-            res.render('layout_iframe', {
-                page : 'chat',
+            res.render('layouts/iframe', {
+                page : '../pages/chat',
                 users : users,
                 login : true,
                 userId : userId,
-                userName : users.find(function(user){
-                    return user.id === userId;
-                }).name,
+                userName : users.find(user => user.id === userId).name,
                 loginMessage : null
             });
         })
@@ -78,24 +76,6 @@ router.post('/getroommessages', function(req, res){
         });
 
 });
-
-// router.post('/statuschange', function(req, res){
-//
-//     ChatModel.setStatus({
-//         userId : req.body.userId,
-//         prevStatus : req.body.prevStatus,
-//         nextStatus : req.body.nextStatus
-//     })
-//         .then(function(){
-//             res.send({
-//                 success : true
-//             });
-//         })
-//         .catch(function(error){
-//             log.error(error);
-//         });
-//
-// });
 
 router.post('/getstatus', function(req, res){
 

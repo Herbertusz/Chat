@@ -52,8 +52,8 @@ router.get('/', function(req, res){
             log.error(error);
         })
         .then(function(){
-            res.render('layout', {
-                page : 'index',
+            res.render('layouts/general', {
+                page : '../pages/index',
                 login : req.session.login ? req.session.login.loginned : false,
                 userId : req.session.login ? req.session.login.userId : null,
                 userName : req.session.login ? req.session.login.userName : '',
