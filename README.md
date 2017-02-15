@@ -1,4 +1,4 @@
-# Chat
+# HD-chat
 Chat alkalmazás (Node.js, Socket.io)
 
     CHAT.Components = {

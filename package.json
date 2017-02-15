@@ -1,5 +1,5 @@
 {
-  "name": "Chat",
+  "name": "HD-chat",
   "version": "1.0.0-alpha",
   "private": true,
   "scripts": {
@@ -30,7 +30,7 @@
   "devDependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Herbertusz/Gomoku.git"
+    "url": "git+https://github.com/Herbertusz/HD-chat.git"
   },
   "keywords": [
     "nodejs"
@@ -38,7 +38,7 @@
   "author": "Horváth Norbert",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Herbertusz/Gomoku/issues"
+    "url": "https://github.com/Herbertusz/HD-chat/issues"
   },
-  "homepage": "https://github.com/Herbertusz/Gomoku#readme"
+  "homepage": "https://github.com/Herbertusz/HD-chat#readme"
 }

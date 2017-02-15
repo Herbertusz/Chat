@@ -12,6 +12,86 @@ CHAT.Components = CHAT.Components || {};
 CHAT.Components.Transfer = {
 
     /**
+     * Üzenetküldés eseménykezelése
+     */
+    initMessage : function(){
+        // Üzenet gépelése
+        CHAT.DOM.inBox(CHAT.DOM.textarea).event('keyup', function(event){
+            const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
+
+            if (event.which !== HD.Misc.keys.ENTER){
+                CHAT.Events.Client.typeMessage(Box.elem());
+            }
+        });
+
+        // Üzenetküldés indítása ENTER leütésére
+        CHAT.DOM.inBox(CHAT.DOM.textarea).event('keydown', function(event){
+            const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
+
+            if (event.which === HD.Misc.keys.ENTER){
+                if (!event.shiftKey && Box.find(CHAT.DOM.sendSwitch).prop('checked')){
+                    CHAT.Events.Client.sendMessage(Box.elem());
+                    event.preventDefault();
+                }
+            }
+        });
+
+        // Üzenetküldés indítása gombnyomásra
+        CHAT.DOM.inBox(CHAT.DOM.sendButton).event('click', function(){
+            const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
+            CHAT.Events.Client.sendMessage(Box.elem());
+        });
+
+        // Üzenetküldés módja
+        CHAT.DOM.inBox(CHAT.DOM.sendSwitch).event('change', function(){
+            CHAT.Events.Client.sendMethod(this);
+        });
+    },
+
+    /**
+     * Fájlátvitel eseménykezelése
+     */
+    initFile : function(){
+        // Fájlküldés (hagyományos)
+        CHAT.DOM.inBox(CHAT.DOM.fileTrigger).event('click', function(){
+            const Trigger = HD.DOM(this);
+
+            if (!Trigger.dataBool('disabled')){
+                Trigger.ancestor(CHAT.DOM.box).find(CHAT.DOM.file).trigger('click');
+            }
+        });
+        CHAT.DOM.inBox(CHAT.DOM.file).event('change', function(){
+            const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
+            const files = Box.find(CHAT.DOM.file).elem().files;
+
+            if (files.length > 0){
+                CHAT.Events.Client.sendFile(Box.elem(), files);
+            }
+        });
+
+        // Fájlküldés (drag-n-drop)
+        CHAT.DOM.inBox(CHAT.DOM.dropFile)
+            .event(
+                'drag dragstart dragend dragover dragenter dragleave drop',
+                function(event){
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            )
+            .event('dragover dragenter', function(){
+                HD.DOM(this).class('add', 'drop-active');
+            })
+            .event('dragleave dragend drop', function(){
+                HD.DOM(this).class('remove', 'drop-active');
+            })
+            .event('drop', function(event){
+                const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
+                const files = event.dataTransfer.files;
+                CHAT.Events.Client.sendFile(Box.elem(), files);
+            });
+    },
+
+    /**
      * HTML entitások cseréje
      * @param {String} string
      * @returns {String}

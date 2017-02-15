@@ -18,6 +18,32 @@ CHAT.Components.Notification = {
     status : false,
 
     /**
+     * Értesítések eseménykezelése
+     */
+    init : function(){
+        // Értesítések állapotának beállítása
+        HD.DOM('body')
+            .event('mouseenter', function(){
+                CHAT.Components.Notification.status = false;
+                CHAT.Components.Notification.trigger();
+            })
+            .event('mouseleave', function(){
+                CHAT.Components.Notification.status = true;
+            });
+
+        // Helyi értesítés eltüntetése
+        CHAT.DOM.inBox(CHAT.DOM.list).event('scroll', function(){
+            if (this.scrollHeight - this.offsetHeight - this.scrollTop < CHAT.Config.notification.local.scroll){
+                HD.DOM(this).ancestor(CHAT.DOM.box).find(CHAT.DOM.localNotification).class('add', 'hidden');
+            }
+        });
+        // Hibaüzenet eltüntetése
+        CHAT.DOM.inBox(CHAT.DOM.errorClose).event('click', function(){
+            HD.DOM(this).ancestor(CHAT.DOM.box).find(CHAT.DOM.error).class('add', 'hidden');
+        });
+    },
+
+    /**
      * Hibaüzenetek jelzése
      * @param {HTMLElement} box
      * @param {Array} errors

@@ -23,6 +23,39 @@ CHAT.Components.User = {
     },
 
     /**
+     * User-sáv görgetése
+     */
+    dragList : function(){
+        const userDrag = {
+            active : false,
+            moving : false,
+            x : 0
+        };
+
+        CHAT.DOM.inBox(CHAT.DOM.users).event('mousedown', function(event){
+            event.preventDefault();
+            userDrag.active = true;
+            userDrag.x = event.pageX;
+        });
+        CHAT.DOM.inBox(CHAT.DOM.users).event('mouseup mouseleave', function(event){
+            event.preventDefault();
+            userDrag.active = false;
+            userDrag.moving = false;
+        });
+        CHAT.DOM.inBox(CHAT.DOM.users).event('mousemove', function(event){
+            if (userDrag.active){
+                if (userDrag.moving){
+                    this.scrollLeft = userDrag.x - event.pageX;
+                }
+                else {
+                    userDrag.moving = true;
+                    userDrag.x = this.scrollLeft + event.pageX;
+                }
+            }
+        });
+    },
+
+    /**
      * Doboz tetején lévő felhasználólista létrehozása
      * @param {HTMLElement} to
      * @param {Array} userIds
@@ -176,36 +209,29 @@ CHAT.Components.User = {
         return connectedUsers;
     },
 
-//    /**
-//     * Inaktivitás kezdete óta eltelt idő kijelzése
-//     * @param {HTMLElement} elem
-//     * @param {String} prevStatus - user előző státusza ('on'|'busy'|'idle'|'inv'|'off')
-//     * @param {String} nextStatus - user új státusza ('on'|'busy'|'idle'|'inv'|'off')
-//     */
-//    setTimer : function(elem, prevStatus, nextStatus){
-//        const activeStatuses = ['on', 'busy'];
-//        const inactiveStatuses = ['idle', 'inv', 'off'];
-//
-//
-//        const userId = Number(HD.DOM(elem).data('id'));
-//        const timerId = `user-${userId}`;
-//        const display = HD.DOM(elem).find(CHAT.DOM.idleTimer).elem();
-//
-//        if (userId === 2) console.log(prevStatus, nextStatus);
-//        if (CHAT.Config.idle.timeCounter && display){
-//            HD.DOM.ajax({
-//                method : 'POST',
-//                url : '/chat/getstatus',
-//                data : `userId=${userId}`
-//            }).then(function(resp){
-//                const lastChange = JSON.parse(resp).status;
-//
-//                ;
-//            }).catch(function(error){
-//                HD.Log.error(error);
-//            });
-//        }
-//    },
+    /**
+     * Felhasználói státuszok eseménykezelése
+     */
+    statusEvents : function(){
+        // Státusz megváltoztatása
+        HD.DOM(CHAT.DOM.online).find(CHAT.DOM.statusChange).event('change', function(){
+            const connectedUsers = CHAT.Components.User.changeStatus(this.value);
+            CHAT.socket.emit('statusChanged', connectedUsers, CHAT.userId);
+        });
+
+        // Tétlen állapot TODO: saját kód
+        if (CHAT.Config.idle.allowed){
+            $(CHAT.DOM.idleCheck).idleTimer(CHAT.Components.Timer.idle);
+            $(CHAT.DOM.idleCheck).on('idle.idleTimer', function(){
+                const connectedUsers = CHAT.Components.User.changeStatus('idle');
+                CHAT.socket.emit('statusChanged', connectedUsers, CHAT.userId);
+            });
+            $(CHAT.DOM.idleCheck).on('active.idleTimer', function(){
+                const connectedUsers = CHAT.Components.User.changeStatus('notidle');
+                CHAT.socket.emit('statusChanged', connectedUsers, CHAT.userId);
+            });
+        }
+    },
 
     /**
      * Inaktivitás kezdete óta eltelt idő kijelzése

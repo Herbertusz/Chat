@@ -30,6 +30,42 @@ CHAT.Components.Box = {
     },
 
     /**
+     * Doboz áthelyezése (drag-n-drop módon)
+     */
+    dragBox : function(){
+        const drag = {
+            active : false,
+            moving : false,
+            x : 0
+        };
+
+        CHAT.DOM.inBox(CHAT.DOM.dragMove).event('mousedown', function(event){
+            event.preventDefault();
+            drag.active = true;
+            drag.x = event.pageX;
+            drag.y = event.pageY;
+        });
+        CHAT.DOM.inBox(CHAT.DOM.dragMove).event('mouseup', function(event){
+            event.preventDefault();
+            drag.active = false;
+            drag.moving = false;
+        });
+        CHAT.DOM.inBox(CHAT.DOM.dragMove).event('mousemove', function(event){
+            if (drag.active){
+                if (drag.moving){
+                    this.style.left = drag.x - event.pageX;
+                    this.style.top = drag.y - event.pageY;
+                }
+                else {
+                    drag.moving = true;
+                    drag.x = this.style.left + event.pageX;
+                    drag.y = this.style.top + event.pageY;
+                }
+            }
+        });
+    },
+
+    /**
      * Doboz aktiválása/inaktiválása
      * @param {HTMLElement} box
      * @param {String} newStatus - 'enabled'|'disabled'
@@ -48,6 +84,51 @@ CHAT.Components.Box = {
             Box.find(CHAT.DOM.fileTrigger).dataBool('disabled', true);
             Box.dataBool('disabled', true);
         }
+    },
+
+    /**
+     * Csatornák eseménykezelése
+     */
+    roomEvents : function(){
+        // Csatorna létrehozása
+        HD.DOM(CHAT.DOM.start).event('click', function(){
+            CHAT.Events.Client.createRoom();
+            HD.DOM(CHAT.DOM.userSelect).prop('checked', false).trigger('change');
+        });
+
+        // Kilépés csatornából
+        CHAT.DOM.inBox(CHAT.DOM.close).event('click', function(){
+            CHAT.Events.Client.leaveRoom(HD.DOM(this).ancestor(CHAT.DOM.box).elem());
+        });
+
+        // User hozzáadása csatornához
+        HD.DOM(CHAT.DOM.userSelect).event('change', function(){
+            if (HD.DOM(CHAT.DOM.selectedUsers).elements.length > 0){
+                HD.DOM(CHAT.DOM.box).filter(':not([data-disabled])').find(CHAT.DOM.addUser).class('remove', 'hidden');
+            }
+            else {
+                CHAT.DOM.inBox(CHAT.DOM.addUser).class('add', 'hidden');
+            }
+        });
+        CHAT.DOM.inBox(CHAT.DOM.addUser).event('click', function(){
+            const Add = HD.DOM(this);
+
+            if (!Add.dataBool('disabled')){
+                HD.DOM(CHAT.DOM.selectedUsers).elements.forEach(function(selectedUser){
+                    CHAT.Events.Client.forceJoinRoom(Add.elem(), Number(selectedUser.value));
+                });
+                HD.DOM(CHAT.DOM.userSelect).prop('checked', false).trigger('change');
+            }
+        });
+
+        // User kidobása csatornából
+        CHAT.DOM.inBox(CHAT.DOM.userThrow).event('click', function(){
+            const Remove = HD.DOM(this);
+
+            if (!Remove.dataBool('disabled')){
+                CHAT.Events.Client.forceLeaveRoom(Remove.elem());
+            }
+        });
     },
 
     /**
