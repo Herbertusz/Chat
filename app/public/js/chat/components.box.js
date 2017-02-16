@@ -34,33 +34,36 @@ CHAT.Components.Box = {
      */
     dragBox : function(){
         const drag = {
+            element : null,
             active : false,
-            moving : false,
-            x : 0
+            box : {x : 0, y : 0},
+            mouse : {x : 0, y : 0}
         };
 
         CHAT.DOM.inBox(CHAT.DOM.dragMove).event('mousedown', function(event){
+            const element = HD.DOM(this).ancestor(CHAT.DOM.box).elem();
             event.preventDefault();
+            drag.element = element;
             drag.active = true;
-            drag.x = event.pageX;
-            drag.y = event.pageY;
+            drag.box.x = element.offsetLeft;
+            drag.box.y = element.offsetTop;
+            drag.mouse.x = event.pageX;
+            drag.mouse.y = event.pageY;
+            HD.DOM(CHAT.DOM.box).css({zIndex : 0});
+            HD.DOM(drag.element).css({zIndex : 1000});
         });
-        CHAT.DOM.inBox(CHAT.DOM.dragMove).event('mouseup', function(event){
-            event.preventDefault();
-            drag.active = false;
-            drag.moving = false;
-        });
-        CHAT.DOM.inBox(CHAT.DOM.dragMove).event('mousemove', function(event){
+        HD.DOM(CHAT.DOM.container).event('mouseup', function(event){
             if (drag.active){
-                if (drag.moving){
-                    this.style.left = drag.x - event.pageX;
-                    this.style.top = drag.y - event.pageY;
-                }
-                else {
-                    drag.moving = true;
-                    drag.x = this.style.left + event.pageX;
-                    drag.y = this.style.top + event.pageY;
-                }
+                event.preventDefault();
+                drag.element = null;
+                drag.active = false;
+            }
+        });
+        HD.DOM(CHAT.DOM.container).event('mousemove', function(event){
+            if (drag.active){
+                const element = drag.element;
+                element.style.left = `${drag.box.x + event.pageX - drag.mouse.x}px`;
+                element.style.top = `${drag.box.y + event.pageY - drag.mouse.y}px`;
             }
         });
     },
