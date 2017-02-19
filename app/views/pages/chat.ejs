@@ -50,22 +50,22 @@
                     </span>
                     <button class="add-user hidden">Hozzáadás</button>
                 </div>
-                <div class="system-message">
-                    <div class="error hidden">
-                        <div class="error-list"></div>
-                        <svg class="error-close"><use xlink:href="#cross"></use></svg>
-                    </div>
-                    <div class="progress hidden">
-                        <svg class="icon"><use xlink:href="#load"></use></svg>
-                        <span class="text"></span>
-                    </div>
-                    <div class="local-notification hidden">
-                        <svg class="arrow arrow-left"><use xlink:href="#arrow-down"></use></svg>
-                        <span class="text"></span>
-                        <svg class="arrow arrow-right"><use xlink:href="#arrow-down"></use></svg>
-                    </div>
-                </div>
                 <div class="<% if (CHAT.Config.fileTransfer.dragndrop.allowed){ %>drop-file<% } %>">
+                    <div class="system-message">
+                        <div class="error hidden">
+                            <div class="error-list"></div>
+                            <svg class="error-close"><use xlink:href="#cross"></use></svg>
+                        </div>
+                        <div class="progress hidden">
+                            <svg class="icon"><use xlink:href="#load"></use></svg>
+                            <span class="text"></span>
+                        </div>
+                        <div class="local-notification hidden">
+                            <svg class="arrow arrow-left"><use xlink:href="#arrow-down"></use></svg>
+                            <span class="text"></span>
+                            <svg class="arrow arrow-right"><use xlink:href="#arrow-down"></use></svg>
+                        </div>
+                    </div>
                     <div class="drop-sign"><%= CHAT.Config.fileTransfer.dragndrop.html %></div>
                     <ul class="list"></ul>
                 </div>

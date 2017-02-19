@@ -33,6 +33,8 @@ CHAT.Components.Box = {
      * Doboz áthelyezése (drag-n-drop módon)
      */
     dragBox : function(){
+        const Container = HD.DOM(CHAT.DOM.container);
+        const Mover = CHAT.DOM.inBox(CHAT.DOM.dragMove);
         const drag = {
             element : null,
             active : false,
@@ -40,7 +42,7 @@ CHAT.Components.Box = {
             mouse : {x : 0, y : 0}
         };
 
-        CHAT.DOM.inBox(CHAT.DOM.dragMove).event('mousedown', function(event){
+        Mover.event('mousedown', function(event){
             const element = HD.DOM(this).ancestor(CHAT.DOM.box).elem();
             event.preventDefault();
             drag.element = element;
@@ -52,14 +54,56 @@ CHAT.Components.Box = {
             HD.DOM(CHAT.DOM.box).css({zIndex : 0});
             HD.DOM(drag.element).css({zIndex : 1000});
         });
-        HD.DOM(CHAT.DOM.container).event('mouseup', function(event){
+        Container.event('mouseup', function(event){
             if (drag.active){
                 event.preventDefault();
                 drag.element = null;
                 drag.active = false;
             }
         });
-        HD.DOM(CHAT.DOM.container).event('mousemove', function(event){
+        Container.event('mousemove', function(event){
+            if (drag.active){
+                const element = drag.element;
+                element.style.left = `${drag.box.x + event.pageX - drag.mouse.x}px`;
+                element.style.top = `${drag.box.y + event.pageY - drag.mouse.y}px`;
+            }
+        });
+    },
+
+    /**
+     * Doboz átméretezése (drag-n-drop módon)
+     */
+    resizeBox : function(){
+        const Container = HD.DOM(CHAT.DOM.container);
+        const Resizer = CHAT.DOM.inBox(CHAT.DOM.dragResize);
+        const drag = {
+            element : null,
+            active : false,
+            box : {w : 0, h : 0},
+            mouse : {x : 0, y : 0}
+        };
+
+        Resizer.event('mousedown', function(event){
+            const element = HD.DOM(this).ancestor(CHAT.DOM.box).elem();
+            const size = element.getBoundingClientRect();
+            event.preventDefault();
+            drag.element = element;
+            drag.active = true;
+            drag.box.w = size.width;
+            drag.box.h = size.height;
+            drag.mouse.x = event.pageX;
+            drag.mouse.y = event.pageY;
+            HD.DOM(CHAT.DOM.box).css({zIndex : 0});
+            HD.DOM(drag.element).css({zIndex : 1000});
+        });
+        Container.event('mouseup', function(event){
+            if (drag.active){
+                event.preventDefault();
+                drag.element = null;
+                drag.active = false;
+            }
+        });
+        Container.event('mousemove', function(event){
             if (drag.active){
                 const element = drag.element;
                 element.style.left = `${drag.box.x + event.pageX - drag.mouse.x}px`;
