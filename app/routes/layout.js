@@ -5,7 +5,9 @@
 'use strict';
 
 const ENV = require.main.require('../app/env.js');
-const CHAT = require.main.require('../app/config.js');
+const Config = require.main.require('../app/config/config.js');
+const Labels = require.main.require('../app/public/js/chat/labels.js');
+const CHAT = Object.assign({}, Config, Labels);
 
 module.exports = function(app){
 

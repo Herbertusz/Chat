@@ -15,9 +15,11 @@
                 wsport : '<%- layout.WSPORT %>',
                 userId : Number('<%- userId ? userId : 0 %>')
             };
-            var CHAT = (function(){
-                return <%- JSON.stringify(CHAT) %>;
-            })();
+            var CHAT = {
+                Config: (function(){
+                    return <%- JSON.stringify(CHAT.Config) %>;
+                })()
+            };
         </script>
         <script src="/js/libs/jquery.min.js"></script>
         <script src="/js/hd/hd.js"></script>

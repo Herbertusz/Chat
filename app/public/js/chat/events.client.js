@@ -21,7 +21,7 @@ CHAT.Events.Client = {
             starter : CHAT.userId
         };
         const Box = HD.DOM(
-            CHAT.DOM.cloneElement(HD.DOM(CHAT.DOM.cloneBox).elem(), HD.DOM(CHAT.DOM.container).elem())
+            HD.DOM(CHAT.DOM.cloneBox).copyPaste(HD.DOM(CHAT.DOM.container).elem())
         );
         const Userlist = Box.find(CHAT.DOM.users);
 

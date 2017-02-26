@@ -70,6 +70,7 @@ CHAT.Components.Transfer = {
         });
 
         // Fájlküldés (drag-n-drop)
+        let active = false;
         CHAT.DOM.inBox(CHAT.DOM.dropFile)
             .event(
                 'drag dragstart dragend dragover dragenter dragleave drop',
@@ -78,16 +79,36 @@ CHAT.Components.Transfer = {
                     event.stopPropagation();
                 }
             )
-            .event('dragover dragenter', function(){
-                HD.DOM(this).class('add', 'drop-active');
+            .event('dragenter', function(){
+                console.log('box enter');
+                active = true;
+                HD.DOM(this).class('add', 'drop-active', 'drop-highlight');
             })
-            .event('dragleave dragend drop', function(){
-                HD.DOM(this).class('remove', 'drop-active');
+            .event('dragleave', function(){
+                console.log('box leave');
+                HD.DOM(this).class('remove', 'drop-highlight');
+            })
+            .event('dragend drop', function(){
+                console.log('box end');
+                active = false;
+                CHAT.DOM.inBox(CHAT.DOM.dropFile).class('remove', 'drop-active', 'drop-highlight');
             })
             .event('drop', function(event){
+                console.log('box drop');
                 const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
                 const files = event.dataTransfer.files;
                 CHAT.Events.Client.sendFile(Box.elem(), files);
+            });
+        HD.DOM(window)
+            .event('dragenter', function(){
+                console.log('window enter');
+                CHAT.DOM.inBox(CHAT.DOM.dropFile).class('add', 'drop-active');
+            })
+            .event('dragleave dragend drop', function(){
+                console.log('window leave');
+                if (!active){
+                    CHAT.DOM.inBox(CHAT.DOM.dropFile).class('remove', 'drop-active', 'drop-highlight');
+                }
             });
     },
 
@@ -285,9 +306,9 @@ CHAT.Components.Transfer = {
         const tpl = `
             <li>
                 <div class="progressbar" data-id="{BARID}">
-                    <span class="label">${CHAT.Labels.file[direction]()}</span>
-                    <span class="cancel" title="${CHAT.Labels.file.cancel()}"></span>
-                    <span title="${CHAT.Labels.file.cancel()}">
+                    <span class="label">${CHAT.Labels.file[direction]}</span>
+                    <span class="cancel" title="${CHAT.Labels.file.cancel}"></span>
+                    <span title="${CHAT.Labels.file.cancel}">
                         <svg class="cancel"><use xlink:href="#cross"></use></svg>
                     </span>
                     <span class="linecontainer">
@@ -317,12 +338,12 @@ CHAT.Components.Transfer = {
         else {
             const Progressbar = List.find('.progressbar').filter(`[data-id="${barId}"]`);
             if (direction === 'abort'){
-                Progressbar.find('.label').elem().innerHTML = CHAT.Labels.file[direction]();
+                Progressbar.find('.label').elem().innerHTML = CHAT.Labels.file[direction];
                 Progressbar.find('.line').class('add', 'aborted');
             }
             else {
                 if (percent === 100){
-                    Progressbar.find('.label').elem().innerHTML = CHAT.Labels.file[`${direction}End`]();
+                    Progressbar.find('.label').elem().innerHTML = CHAT.Labels.file[`${direction}End`];
                     Progressbar.find('.line').class('add', 'finished');
                     Progressbar.find('.cancel').class('add', 'hidden');
                 }
@@ -341,7 +362,7 @@ CHAT.Components.Transfer = {
     progress : function(box, operation){
         const Progress = HD.DOM(box).find(CHAT.DOM.progress);
         const tpl = `
-            ${CHAT.Labels.file.read()}
+            ${CHAT.Labels.file.read}
         `;
 
         if (operation === 'show'){

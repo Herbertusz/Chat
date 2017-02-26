@@ -428,12 +428,12 @@ HD.DOM = function(identifier){
         /**
          * Osztálylista módosítása
          * @param {String} operation - 'add'|'remove'|'toggle'
-         * @param {String} className
+         * @param {String} classNames
          * @returns {HD.DOM}
          */
-        class : function(operation, className){
+        class : function(operation, ...classNames){
             this.elements.forEach(function(elem){
-                elem.classList[operation](className);
+                elem.classList[operation](...classNames);
             });
             return this;
         },
@@ -463,7 +463,7 @@ HD.DOM = function(identifier){
 
         /**
          * Elem klónozása
-         * @param {Boolean} [withEvents=false]
+         * @param {Boolean} [withEvents=false] - eseménykezelők másolása
          * @returns {Object}
          */
         clone : function(withEvents = false){
@@ -488,6 +488,25 @@ HD.DOM = function(identifier){
                 }
             }
             return HD.DOM(elementClone);
+        },
+
+        /**
+         * Elem rekurzív másolása eseménykezelőkkel együtt és beszúrása egy másik elembe
+         * @param {HTMLElement} insert - beszúrás helye
+         * @param {Boolean} [prepend=false] - ha true, beszúrás az elejére
+         * @returns {HTMLElement} az elem másolata
+         */
+        copyPaste : function(insert, prepend = false){
+            const Clone = this.clone(true);
+
+            if (prepend){
+                insert.insertBefore(Clone.elem(), insert.firstChild);
+            }
+            else {
+                insert.appendChild(Clone.elem());
+            }
+            Clone.class('remove', 'cloneable');
+            return Clone.elem();
         },
 
         /**

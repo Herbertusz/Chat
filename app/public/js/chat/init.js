@@ -65,25 +65,6 @@ CHAT.DOM = {
      */
     inBox : function(selector){
         return HD.DOM(CHAT.DOM.box).find(selector);
-    },
-
-    /**
-     * Elem rekurzív másolása eseménykezelőkkel együtt és beszúrása egy másik elembe
-     * @param {HTMLElement} element - másolandó elem
-     * @param {HTMLElement} insert - beszúrás helye
-     * @param {Boolean} [prepend=false] - ha true, beszúrás az elejére
-     * @returns {HTMLElement} az elem másolata
-     */
-    cloneElement : function(element, insert, prepend = false){
-        const Clone = HD.DOM(element).clone(true);
-
-        if (prepend){
-            insert.insertBefore(Clone.elem(), insert.firstChild);
-        }
-        else {
-            insert.appendChild(Clone.elem());
-        }
-        Clone.class('remove', 'cloneable');
-        return Clone.elem();
     }
+
 };

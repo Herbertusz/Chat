@@ -69,7 +69,7 @@ CHAT.Components.User = {
             let user;
             const currentUserId = HD.DOM(onlineListItem).dataNum('id');
             if (userIds.indexOf(currentUserId) > -1){
-                user = CHAT.DOM.cloneElement(HD.DOM(to).find('.cloneable').elem(), to, currentUserId === CHAT.userId);
+                user = HD.DOM(to).find('.cloneable').copyPaste(to, currentUserId === CHAT.userId);
                 const User = HD.DOM(user);
                 User.dataNum('id', currentUserId);
                 User.find(CHAT.DOM.status).class('add', 'run');

@@ -30,7 +30,7 @@ app.set('view engine', 'ejs');
 app.set('public path', `${__dirname}/public`);
 app.set('upload', `${__dirname}/../storage/upload`);
 
-app.use(favicon(`${__dirname}/public/favicon.png`));
+app.use(favicon(`${app.get('public path')}/favicon.png`));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : false}));
 app.use(cookieParser());

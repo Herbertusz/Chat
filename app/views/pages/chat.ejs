@@ -7,9 +7,9 @@
                         <svg class="status on"><use xlink:href="#on"></use></svg>
                         <%= userName %>
                         <select class="status-change">
-                            <option value="on" selected>Elérhető</option>
-                            <option value="busy">Elfoglalt</option>
-                            <option value="inv">Lopakodó</option>
+                            <option value="on" selected><%= CHAT.Labels.status.on %></option>
+                            <option value="busy"><%= CHAT.Labels.status.busy %></option>
+                            <option value="inv"><%= CHAT.Labels.status.inv %></option>
                         </select>
                     </label>
                 </li>
@@ -26,7 +26,7 @@
                     <% } %>
                 <% }); %>
             </ul>
-            <button class="start">Chat</button>
+            <button class="start"><%= CHAT.Labels.action.chatStart %></button>
         </aside>
         <section class="chat-container">
             <div class="chat cloneable" data-room="">
@@ -40,17 +40,17 @@
                         <span class="user-item cloneable" data-id="">
                             <svg class="status"><use xlink:href="#off"></use></svg>
                             <span class="name"></span>
-                            <span title="Kidobás">
+                            <span title="<%= CHAT.Labels.action.forceLeave %>">
                                 <svg class="throw"><use xlink:href="#cross"></use></svg>
                             </span>
                         </span>
                     </span>
-                    <span title="Kilépés">
+                    <span title="<%= CHAT.Labels.action.leave %>">
                         <svg class="close"><use xlink:href="#cross"></use></svg>
                     </span>
-                    <button class="add-user hidden">Hozzáadás</button>
+                    <button class="add-user hidden"><%= CHAT.Labels.action.forceJoin %></button>
                 </div>
-                <div class="<% if (CHAT.Config.fileTransfer.dragndrop.allowed){ %>drop-file<% } %>">
+                <div class="list-area">
                     <div class="system-message">
                         <div class="error hidden">
                             <div class="error-list"></div>
@@ -66,14 +66,16 @@
                             <svg class="arrow arrow-right"><use xlink:href="#arrow-down"></use></svg>
                         </div>
                     </div>
-                    <div class="drop-sign"><%= CHAT.Config.fileTransfer.dragndrop.html %></div>
+                    <% if (CHAT.Config.fileTransfer.dragndrop){ %>
+                        <div class="drop-file"><%= CHAT.Labels.legend.dropFile %></div>
+                    <% } %>
                     <ul class="list"></ul>
                 </div>
                 <div class="form">
                     <div class="indicator"></div>
-                    <textarea class="textarea" placeholder="Üzenet"></textarea>
+                    <textarea class="textarea" placeholder="<%= CHAT.Labels.legend.message %>"></textarea>
                     <% if (CHAT.Config.fileTransfer.allowed){ %>
-                        <div class="fileuploader" title="Fájlküldés">
+                        <div class="fileuploader" title="<%= CHAT.Labels.action.sendFile %>">
                             <input type="file" class="file" <% if (CHAT.Config.fileTransfer.multiple){ %>multiple<% } %> />
                             <svg class="trigger"><use xlink:href="#picture"></use></svg>
                         </div>
@@ -84,10 +86,10 @@
                                 <input class="send-switch" type="checkbox" value="1"
                                     <% if (CHAT.Config.messageSend.sendMode.default === 'enter'){ %>checked<% } %>
                                 />
-                                Küldés enter megnyomására
+                                <%= CHAT.Labels.legend.sendMode %>
                             </label>
                             <button class="send <% if (CHAT.Config.messageSend.sendMode.default === 'enter'){ %>hidden<% } %>">
-                                Küldés
+                                <%= CHAT.Labels.action.sendMessage %>
                             </button>
                         </div>
                     <% } %>
@@ -100,6 +102,6 @@
         </section>
         <div class="clearfix"></div>
     <% } else { %>
-        Jelentkezz be!
+        <%= CHAT.Labels.legend.haveToLogIn %>
     <% } %>
 </div>

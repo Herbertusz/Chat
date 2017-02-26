@@ -2,7 +2,7 @@
 
 'use strict';
 
-var CHAT = window.CHAT || {};
+var CHAT = (typeof global !== 'undefined' ? global.CHAT : window.CHAT) || {};
 
 /**
  * Rendszer által kiírt szövegek
@@ -24,15 +24,39 @@ CHAT.Labels = {
         'forceLeaveOther' : (fromUserName, toUserName) =>
             `${fromUserName} kidobta ${toUserName} felhasználót`
     },
+    // Tájékoztató feliratok
+    'legend' : {
+        'haveToLogIn' : 'A chat használatához be kell jelentkezned!',
+        'message' : 'Üzenet',
+        'sendMode' : 'Küldés enter megnyomására',
+        'dropFile' : 'Ide húzd a fájlokat amiket át akarsz küldeni!'
+    },
+    // Felhasználó által kiváltott műveletek
+    'action' : {
+        'chatStart' : 'Chat',
+        'sendMessage' : 'Küldés',
+        'sendFile' : 'Fájlküldés',
+        'leave' : 'Kilépés',
+        'forceJoin' : 'Hozzáadás',
+        'forceLeave' : 'Kidobás'
+    },
+    // Felhasználó státusza
+    'status' : {
+        'on' : 'Elérhető',
+        'busy' : 'Elfoglalt',
+        'idle' : 'Tétlen',
+        'inv' : 'Lopakodó',
+        'off' : 'Offline'
+    },
     // Fájlátvitel
     'file' : {
-        'read' : () => `Fájl beolvasása...`,
-        'send' : () => `Fájlküldés...`,
-        'get' : () => `Fájlfogadás...`,
-        'abort' : () => `Fájlátvitel megszakítva`,
-        'sendEnd' : () => `Fájlküldés befejeződött`,
-        'getEnd' : () => `Fájlfogadás befejeződött`,
-        'cancel' : () => `Megszakítás`,
+        'read' : 'Fájl beolvasása...',
+        'send' : 'Fájlküldés...',
+        'get' : 'Fájlfogadás...',
+        'abort' : 'Fájlátvitel megszakítva',
+        'sendEnd' : 'Fájlküldés befejeződött',
+        'getEnd' : 'Fájlfogadás befejeződött',
+        'cancel' : 'Megszakítás',
         'percent' : (percent) => `${percent}%`,
         'error' : `Hiba a fájl betöltése közben`,
         'deleted' : `A fájlküldés meg lett szakítva vagy a fájl törölve lett`
@@ -94,3 +118,7 @@ CHAT.Labels = {
             `Nem megfelelő a fájl típusa (${type}, megengedett typusok: ${allowedTypes.join(', ')})`
     }
 };
+
+if (typeof exports !== 'undefined'){
+    exports.Labels = CHAT.Labels;
+}

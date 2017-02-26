@@ -81,7 +81,7 @@ CHAT.Events.Server = {
 
         if (roomData.userIds.indexOf(CHAT.userId) > -1){
             Box = HD.DOM(
-                CHAT.DOM.cloneElement(HD.DOM(CHAT.DOM.cloneBox).elem(), HD.DOM(CHAT.DOM.container).elem())
+                HD.DOM(CHAT.DOM.cloneBox).copyPaste(HD.DOM(CHAT.DOM.container).elem())
             );
             Userlist = Box.find(CHAT.DOM.users);
             Box.data('room', roomData.name);
@@ -111,7 +111,7 @@ CHAT.Events.Server = {
         if (roomData.joinedUserId === CHAT.userId){
             // Létre kell hozni a dobozt a csatornához
             Box = HD.DOM(
-                CHAT.DOM.cloneElement(HD.DOM(CHAT.DOM.cloneBox).elem(), HD.DOM(CHAT.DOM.container).elem())
+                HD.DOM(CHAT.DOM.cloneBox).copyPaste(HD.DOM(CHAT.DOM.container).elem())
             );
             Userlist = Box.find(CHAT.DOM.users);
             Box.data('room', roomData.name);
@@ -191,7 +191,7 @@ CHAT.Events.Server = {
             else {
                 // Létre kell hozni a dobozt a csatornához
                 Box = HD.DOM(
-                    CHAT.DOM.cloneElement(HD.DOM(CHAT.DOM.cloneBox).elem(), HD.DOM(CHAT.DOM.container).elem())
+                    HD.DOM(CHAT.DOM.cloneBox).copyPaste(HD.DOM(CHAT.DOM.container).elem())
                 );
                 box = Box.elem();
                 Userlist = Box.find(CHAT.DOM.users);

@@ -10,7 +10,7 @@ const fs = require('mz/fs');
 const ioExpressSession = require('socket.io-express-session');
 const log = require.main.require('../libs/log.js');
 const HD = require.main.require('../app/public/js/hd/hd.js')(['utility', 'math']);
-const CHAT = require.main.require('../app/config.js');
+const CHAT = require.main.require('../app/config/config.js');
 
 /**
  * Websocket vezérlés
