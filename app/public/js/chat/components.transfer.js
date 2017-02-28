@@ -71,44 +71,44 @@ CHAT.Components.Transfer = {
 
         // Fájlküldés (drag-n-drop)
         let active = false;
+        let timeout;
+        HD.DOM(document)
+            .event('dragover', function(){
+                if (typeof timeout !== 'undefined'){
+                    clearTimeout(timeout);
+                    if (!active){
+                        active = true;
+                        CHAT.DOM.inBox(CHAT.DOM.dropFile).class('add', 'drop-active');
+                    }
+                }
+                timeout = setTimeout(function(){
+                    active = false;
+                    CHAT.DOM.inBox(CHAT.DOM.dropFile).class('remove', 'drop-active', 'drop-highlight');
+                }, 100);
+            });
         CHAT.DOM.inBox(CHAT.DOM.dropFile)
             .event(
                 'drag dragstart dragend dragover dragenter dragleave drop',
                 function(event){
                     event.preventDefault();
-                    event.stopPropagation();
+                    if (event.type !== 'dragover'){
+                        event.stopPropagation();
+                    }
                 }
             )
             .event('dragenter', function(){
-                console.log('box enter');
-                active = true;
                 HD.DOM(this).class('add', 'drop-active', 'drop-highlight');
             })
             .event('dragleave', function(){
-                console.log('box leave');
                 HD.DOM(this).class('remove', 'drop-highlight');
             })
             .event('dragend drop', function(){
-                console.log('box end');
-                active = false;
                 CHAT.DOM.inBox(CHAT.DOM.dropFile).class('remove', 'drop-active', 'drop-highlight');
             })
             .event('drop', function(event){
-                console.log('box drop');
                 const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
                 const files = event.dataTransfer.files;
                 CHAT.Events.Client.sendFile(Box.elem(), files);
-            });
-        HD.DOM(window)
-            .event('dragenter', function(){
-                console.log('window enter');
-                CHAT.DOM.inBox(CHAT.DOM.dropFile).class('add', 'drop-active');
-            })
-            .event('dragleave dragend drop', function(){
-                console.log('window leave');
-                if (!active){
-                    CHAT.DOM.inBox(CHAT.DOM.dropFile).class('remove', 'drop-active', 'drop-highlight');
-                }
             });
     },
 

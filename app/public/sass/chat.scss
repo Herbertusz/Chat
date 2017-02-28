@@ -417,14 +417,14 @@ aside.online {
                     size : 20px;
                     weight: bold;
                 }
-                pointer-events: none;
+                //pointer-events: none;
 
                 &.drop-active {
                     display: block;
                 }
 
                 &.drop-highlight {
-                    border-color: rgba(229, 173, 173, 1);
+                    border-color: rgba(255, 120, 120, 1);
                     background-color: rgba(229, 173, 173, 0.9);
                 }
             }
