@@ -6,6 +6,8 @@
 
 'use strict';
 
+const Log = console.log;
+
 HD.DOM(document).event('DOMContentLoaded', function(){
 
     const constraints = {
@@ -38,19 +40,19 @@ HD.DOM(document).event('DOMContentLoaded', function(){
     };
 
     const successCallback = function(stream){
-        console.log(stream.getVideoTracks());
+        Log(stream.getVideoTracks());
         video.src = window.URL ? window.URL.createObjectURL(stream) : stream;
         setTimeout(function(){
             const base64 = getPicture(video, 200, 150);
             document.body.innerHTML += `<img src="${base64}" />`;
 
-            // console.log(base64.length);
+            // Log(base64.length);
             // const compressed = LZString.compress(base64);
-            // console.log(compressed.length);
+            // Log(compressed.length);
             // const t1 = Date.now();
             // const base64_2 = LZString.decompress(compressed);
-            // console.log(Date.now() - t1);
-            // console.log(base64_2.length);
+            // Log(Date.now() - t1);
+            // Log(base64_2.length);
         }, 3000);
     };
 

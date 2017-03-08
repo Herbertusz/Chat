@@ -44,9 +44,10 @@ CHAT.Labels = {
     'status' : {
         'on' : 'Elérhető',
         'busy' : 'Elfoglalt',
-        'idle' : 'Tétlen',
+        'away' : 'Elment',
         'inv' : 'Lopakodó',
-        'off' : 'Offline'
+        'off' : 'Offline',
+        'idle' : 'Tétlen'
     },
     // Fájlátvitel
     'file' : {

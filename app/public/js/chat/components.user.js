@@ -66,41 +66,43 @@ CHAT.Components.User = {
             HD.DOM(to.children).filter(':not(.cloneable)').remove();
         }
         HD.DOM(CHAT.DOM.onlineListItems).elements.forEach(function(onlineListItem){
-            let user;
+            let userElem;
             const currentUserId = HD.DOM(onlineListItem).dataNum('id');
             if (userIds.indexOf(currentUserId) > -1){
-                user = HD.DOM(to).find('.cloneable').copyPaste(to, currentUserId === CHAT.userId);
-                const User = HD.DOM(user);
-                User.dataNum('id', currentUserId);
-                User.find(CHAT.DOM.status).class('add', 'run');
-                CHAT.Components.User.setStatus(user, CHAT.Components.User.getStatus(onlineListItem));
-                User.find('.name').elem().innerHTML = CHAT.Components.User.getName(currentUserId);
+                userElem = HD.DOM(to).find('.cloneable').copyPaste(to, currentUserId === CHAT.userId);
+                const UserElem = HD.DOM(userElem);
+                UserElem.dataNum('id', currentUserId);
+                UserElem.find(CHAT.DOM.status).class('add', 'run');
+                CHAT.Components.User.setStatus(userElem, CHAT.Components.User.getStatus(onlineListItem));
+                UserElem.find('.name').elem().innerHTML = CHAT.Components.User.getName(currentUserId);
             }
         });
     },
 
     /**
      * Státuszjelző DOM-elem módosítása
-     * @param {HTMLElement} elem
+     * @param {HTMLElement} elem - CHAT.DOM.onlineListItems elem
      * @param {String} status
      */
     setStatus : function(elem, status){
-        let n;
-        const StatusElem = HD.DOM(elem).find(CHAT.DOM.status);
-        const statuses = ['on', 'busy', 'inv', 'off'];
+        const UserElem = HD.DOM(elem);
+        const userId = UserElem.dataNum('id');
+        const StatusElem = UserElem.find(CHAT.DOM.status);
+        const statuses = new Set([...CHAT.Config.status.online, ...CHAT.Config.status.offline]);
         const prevStatus = CHAT.Components.User.getStatus(elem);
+        const statusIcon = CHAT.Components.User.getStatusIcon(CHAT.Components.User.getStatusDetails(userId));
 
         if (status === 'idle'){
             StatusElem.class('add', 'idle');
         }
         else {
             StatusElem.class('remove', 'idle');
-            for (n = 0; n < statuses.length; n++){
-                StatusElem.class('remove', statuses[n]);
+            for (const st of statuses){
+                StatusElem.class('remove', st);
             }
             StatusElem.class('add', status);
         }
-        StatusElem.find('use').elem().setAttribute('xlink:href', `#${status}`);
+        StatusElem.find('use').elem().setAttribute('xlink:href', `#${statusIcon}`);
         CHAT.Components.User.setTimer(elem, prevStatus, status);
     },
 
@@ -112,20 +114,71 @@ CHAT.Components.User = {
     getStatus : function(elem){
         let n, status;
         const statusElem = HD.DOM(elem).find(CHAT.DOM.status).elem();
-        const statuses = ['on', 'busy', 'inv', 'off'];
+        const statuses = new Set([...CHAT.Config.status.online, ...CHAT.Config.status.offline]);
 
         if (statusElem.classList.contains('idle')){
             status = 'idle';
         }
         else {
-            for (n = 0; n < statuses.length; n++){
-                if (statusElem.classList.contains(statuses[n])){
-                    status = statuses[n];
+            for (const st of statuses){
+                if (statusElem.classList.contains(st)){
+                    status = st;
                     break;
                 }
             }
         }
         return status;
+    },
+
+    /**
+     *
+     * @param {Number} userId
+     * @returns {Object}
+     * @description
+     * returns = {
+     *     status : String   // user státusz (CHAT.Labels.status.online + offline)
+     *     isIdle : Boolean  // user tétlen státuszban van
+     * }
+     */
+    getStatusDetails : function(userId){
+        const statusObj = {
+            status : CHAT.Config.status.offline[0],
+            isIdle : false
+        };
+        const connectedUsers = HD.DOM(CHAT.DOM.online).dataObj('connected-users');
+
+        for (const socketId in connectedUsers){
+            if (connectedUsers[socketId].id === userId){
+                statusObj.status = connectedUsers[socketId].status;
+                statusObj.isIdle = connectedUsers[socketId].isIdle;
+                break;
+            }
+        }
+        return statusObj;
+    },
+
+    /**
+     *
+     * @param {Object} statusObj
+     * @returns {String}
+     * @description
+     * statusObj = {
+     *     status : String   // user státusz (CHAT.Labels.status.online + offline)
+     *     isIdle : Boolean  // user tétlen státuszban van
+     * }
+     */
+    getStatusIcon : function(statusObj){
+        let statusIcon;
+        if (statusObj.isIdle){
+            statusIcon = CHAT.Config.status.idle.except.find((st) => st === statusObj.status);
+            if (!statusIcon){
+                statusIcon = 'idle';
+            }
+        }
+        else {
+            statusIcon = statusObj.status;
+        }
+        return statusIcon;
     },
 
     /**
@@ -136,8 +189,8 @@ CHAT.Components.User = {
      *     <socket.id> : {
      *         id : Number,      // user azonosító
      *         name : String,    // user login név
-     *         status : String,  // user státusz ('on'|'busy'|'off')
-     *         isIdle : Boolean  // user státusz: 'idle'
+     *         status : String,  // user státusz (CHAT.Labels.status.online + offline)
+     *         isIdle : Boolean  // user tétlen státuszban van
      *     },
      *     ...
      * }
@@ -156,13 +209,13 @@ CHAT.Components.User = {
                 CHAT.Components.User.setStatus(onlineListItem, onlineUserStatuses[currentId]);
             }
             else {
-                CHAT.Components.User.setStatus(onlineListItem, 'off');
+                CHAT.Components.User.setStatus(onlineListItem, CHAT.Config.status.offline[0]);
             }
         });
         HD.DOM(CHAT.DOM.box).elements.forEach(function(box){
             HD.DOM(box).find(CHAT.DOM.userItems).elements.forEach(function(userItem){
                 const onlineStatus = onlineUserStatuses[HD.DOM(userItem).dataNum('id')];
-                CHAT.Components.User.setStatus(userItem, onlineStatus || 'off');
+                CHAT.Components.User.setStatus(userItem, onlineStatus || CHAT.Config.status.offline[0]);
             });
         });
     },
@@ -176,8 +229,8 @@ CHAT.Components.User = {
      *     <socket.id> : {
      *         id : Number,      // user azonosító
      *         name : String,    // user login név
-     *         status : String,  // user státusz ('on'|'busy'|'inv'|'off')
-     *         isIdle : Boolean  // user státusz: 'idle'
+     *         status : String,  // user státusz (CHAT.Labels.status.online + offline)
+     *         isIdle : Boolean  // user tétlen státuszban van
      *     },
      *     ...
      * }
@@ -220,7 +273,7 @@ CHAT.Components.User = {
         });
 
         // Tétlen állapot TODO: saját kód
-        if (CHAT.Config.idle.allowed){
+        if (CHAT.Config.status.idle.allowed){
             $(CHAT.DOM.idleCheck).idleTimer(CHAT.Components.Timer.idle);
             $(CHAT.DOM.idleCheck).on('idle.idleTimer', function(){
                 const connectedUsers = CHAT.Components.User.changeStatus('idle');
@@ -237,20 +290,20 @@ CHAT.Components.User = {
      * Inaktivitás kezdete óta eltelt idő kijelzése
      * A CHAT.Components.Timer.counters objektumban tárolja az egyes felhasználókhoz kötött időket
      * @param {HTMLElement} elem
-     * @param {String} prevStatus - user előző státusza ('on'|'busy'|'idle'|'inv'|'off')
-     * @param {String} nextStatus - user új státusza ('on'|'busy'|'idle'|'inv'|'off')
+     * @param {String} prevStatus - user előző státusza (CHAT.Labels.status.active + inactive)
+     * @param {String} nextStatus - user új státusza (CHAT.Labels.status.active + inactive)
      */
     setTimer : function(elem, prevStatus, nextStatus){
         let time = 0;
         const statuses = {
-            active : ['on', 'busy'],
-            inactive : ['idle', 'inv', 'off']
+            active : CHAT.Config.status.active,
+            inactive : CHAT.Config.status.inactive
         };
         const userId = Number(HD.DOM(elem).data('id'));
         const timerId = `user-${userId}`;
         const display = HD.DOM(elem).find(CHAT.DOM.idleTimer).elem();
 
-        if (CHAT.Config.idle.timeCounter && display){
+        if (CHAT.Config.status.idle.timeCounter && display){
             // A db-ben tárolt utolsó átmenet lekérdezése
             HD.DOM.ajax({
                 method : 'POST',
@@ -260,7 +313,11 @@ CHAT.Components.User = {
                 const lastChange = JSON.parse(resp).status;
 
                 // A user offline, és még sose lépett be
-                if (lastChange.prevStatus === null && lastChange.nextStatus === null && nextStatus === 'off'){
+                if (
+                    lastChange.prevStatus === null &&
+                    lastChange.nextStatus === null &&
+                    nextStatus === CHAT.Config.status.offline[0]
+                ){
                     display.innerHTML = CHAT.Labels.time.notYetOnline;
                     return;
                 }
@@ -289,7 +346,7 @@ CHAT.Components.User = {
                     if (statuses.active.indexOf(prevStatus) > -1 && statuses.inactive.indexOf(nextStatus) > -1){
                         // Aktív -> inaktív átmenet => időmérő indítása
                         if (nextStatus === 'idle'){
-                            time += CHAT.Config.idle.time;
+                            time += CHAT.Config.status.idle.time;
                         }
                         CHAT.Components.Timer.counters[timerId]
                             .stop()

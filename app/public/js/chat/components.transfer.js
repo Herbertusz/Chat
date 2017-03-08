@@ -70,46 +70,48 @@ CHAT.Components.Transfer = {
         });
 
         // Fájlküldés (drag-n-drop)
-        let active = false;
-        let timeout;
-        HD.DOM(document)
-            .event('dragover', function(){
-                if (typeof timeout !== 'undefined'){
-                    clearTimeout(timeout);
-                    if (!active){
-                        active = true;
-                        CHAT.DOM.inBox(CHAT.DOM.dropFile).class('add', 'drop-active');
+        if (CHAT.Config.fileTransfer.dragndrop){
+            let active = false;
+            let timeout;
+            HD.DOM(document)
+                .event('dragover', function(){
+                    if (typeof timeout !== 'undefined'){
+                        clearTimeout(timeout);
+                        if (!active){
+                            active = true;
+                            CHAT.DOM.inBox(CHAT.DOM.dropFile).class('add', 'drop-active');
+                        }
                     }
-                }
-                timeout = setTimeout(function(){
-                    active = false;
+                    timeout = setTimeout(function(){
+                        active = false;
+                        CHAT.DOM.inBox(CHAT.DOM.dropFile).class('remove', 'drop-active', 'drop-highlight');
+                    }, 100);
+                });
+            CHAT.DOM.inBox(CHAT.DOM.dropFile)
+                .event(
+                    'drag dragstart dragend dragover dragenter dragleave drop',
+                    function(event){
+                        event.preventDefault();
+                        if (event.type !== 'dragover'){
+                            event.stopPropagation();
+                        }
+                    }
+                )
+                .event('dragenter', function(){
+                    HD.DOM(this).class('add', 'drop-active', 'drop-highlight');
+                })
+                .event('dragleave', function(){
+                    HD.DOM(this).class('remove', 'drop-highlight');
+                })
+                .event('dragend drop', function(){
                     CHAT.DOM.inBox(CHAT.DOM.dropFile).class('remove', 'drop-active', 'drop-highlight');
-                }, 100);
-            });
-        CHAT.DOM.inBox(CHAT.DOM.dropFile)
-            .event(
-                'drag dragstart dragend dragover dragenter dragleave drop',
-                function(event){
-                    event.preventDefault();
-                    if (event.type !== 'dragover'){
-                        event.stopPropagation();
-                    }
-                }
-            )
-            .event('dragenter', function(){
-                HD.DOM(this).class('add', 'drop-active', 'drop-highlight');
-            })
-            .event('dragleave', function(){
-                HD.DOM(this).class('remove', 'drop-highlight');
-            })
-            .event('dragend drop', function(){
-                CHAT.DOM.inBox(CHAT.DOM.dropFile).class('remove', 'drop-active', 'drop-highlight');
-            })
-            .event('drop', function(event){
-                const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
-                const files = event.dataTransfer.files;
-                CHAT.Events.Client.sendFile(Box.elem(), files);
-            });
+                })
+                .event('drop', function(event){
+                    const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
+                    const files = event.dataTransfer.files;
+                    CHAT.Events.Client.sendFile(Box.elem(), files);
+                });
+        }
     },
 
     /**
@@ -138,14 +140,14 @@ CHAT.Components.Transfer = {
      * @returns {String}
      */
     replaceMessage : function(message){
-        const disablePattern = CHAT.Config.messageSend.replaceDisable;
-        if (CHAT.Config.messageSend.escapeHTML){
+        const disablePattern = CHAT.Config.textTransfer.replaceDisable;
+        if (CHAT.Config.textTransfer.escapeHTML){
             message = CHAT.Components.Transfer.escapeHtml(message);
         }
         const messageArray = message.split(HD.String.createRegExp(disablePattern));
-        if (CHAT.Config.messageSend.imageReplacement.allowed){
+        if (CHAT.Config.textTransfer.imageReplacement.allowed){
             let image;
-            const images = CHAT.Config.messageSend.imageReplacement.images;
+            const images = CHAT.Config.textTransfer.imageReplacement.images;
             for (image in images){
                 const escapedIcon = image.replace(/([.*+?^=!:${}()|[\]/\\])/g, '\\$1');
                 messageArray[0] = messageArray[0].replace(
@@ -160,8 +162,8 @@ CHAT.Components.Transfer = {
                 }
             }
         }
-        if (CHAT.Config.messageSend.stringReplacement.allowed){
-            const strings = CHAT.Config.messageSend.stringReplacement.strings;
+        if (CHAT.Config.textTransfer.stringReplacement.allowed){
+            const strings = CHAT.Config.textTransfer.stringReplacement.strings;
             strings.forEach(function(str){
                 messageArray[0] = messageArray[0].replace(HD.String.createRegExp(str[0]), str[1]);
                 if (messageArray.length > 1){

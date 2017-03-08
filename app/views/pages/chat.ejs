@@ -4,12 +4,12 @@
             <ul>
                 <li data-id="<%- userId %>" data-name="<%= userName %>" class="self">
                     <label>
-                        <svg class="status on"><use xlink:href="#on"></use></svg>
+                        <svg class="status <%= CHAT.Config.status.online[0] %>"><use xlink:href="#<%= CHAT.Config.status.online[0] %>"></use></svg>
                         <%= userName %>
                         <select class="status-change">
-                            <option value="on" selected><%= CHAT.Labels.status.on %></option>
-                            <option value="busy"><%= CHAT.Labels.status.busy %></option>
-                            <option value="inv"><%= CHAT.Labels.status.inv %></option>
+                            <% CHAT.Config.status.online.forEach(function(st, i){ %>
+                                <option value="<%= st %>" <%= i === 0 ? 'selected' : '' %>><%= CHAT.Labels.status[st] %></option>
+                            <% }); %>
                         </select>
                     </label>
                 </li>
@@ -18,7 +18,7 @@
                         <li data-id="<%- user.id %>" data-name="<%= user.name %>" class="<% if (userId === user.id){ %>hidden<% } %>">
                             <label>
                                 <input class="user-select" type="checkbox" value="<%- user.id %>" />
-                                <svg class="status off"><use xlink:href="#off"></use></svg>
+                                <svg class="status <%= CHAT.Config.status.offline[0] %>"><use xlink:href="#<%= CHAT.Config.status.offline[0] %>"></use></svg>
                                 <%= user.name %>
                                 <span class="idle-timer"></span>
                             </label>
@@ -38,7 +38,7 @@
                 <div class="bar">
                     <span class="users">
                         <span class="user-item cloneable" data-id="">
-                            <svg class="status"><use xlink:href="#off"></use></svg>
+                            <svg class="status"><use xlink:href="#<%= CHAT.Config.status.offline[0] %>"></use></svg>
                             <span class="name"></span>
                             <span title="<%= CHAT.Labels.action.forceLeave %>">
                                 <svg class="throw"><use xlink:href="#cross"></use></svg>
@@ -80,15 +80,15 @@
                             <svg class="trigger"><use xlink:href="#picture"></use></svg>
                         </div>
                     <% } %>
-                    <% if (CHAT.Config.messageSend.sendMode.allowed){ %>
+                    <% if (CHAT.Config.textTransfer.sendMode.allowed){ %>
                         <div class="submitmode">
                             <label>
                                 <input class="send-switch" type="checkbox" value="1"
-                                    <% if (CHAT.Config.messageSend.sendMode.default === 'enter'){ %>checked<% } %>
+                                    <% if (CHAT.Config.textTransfer.sendMode.default === 'enter'){ %>checked<% } %>
                                 />
                                 <%= CHAT.Labels.legend.sendMode %>
                             </label>
-                            <button class="send <% if (CHAT.Config.messageSend.sendMode.default === 'enter'){ %>hidden<% } %>">
+                            <button class="send <% if (CHAT.Config.textTransfer.sendMode.default === 'enter'){ %>hidden<% } %>">
                                 <%= CHAT.Labels.action.sendMessage %>
                             </button>
                         </div>

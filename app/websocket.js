@@ -31,8 +31,8 @@ module.exports = function(server, ioSession, app){
      *     <socket.id> : {
      *         id : Number,      // user azonosító
      *         name : String,    // user login név
-     *         status : String,  // user státusz ('on'|'busy'|'off')
-     *         isIdle : Boolean  // user státusz: 'idle'
+     *         status : String,  // user státusz (CHAT.Labels.status.online + offline)
+     *         isIdle : Boolean  // user tétlen státuszban van
      *     },
      *     ...
      * }
@@ -143,14 +143,14 @@ module.exports = function(server, ioSession, app){
      * @desc *UserData = {
      *     id : Number,      // user azonosító
      *     name : String,    // user login név
-     *     status : String,  // user státusz ('on'|'busy'|'off')
-     *     isIdle : Boolean  // user státusz: 'idle'
+     *     status : String,  // user státusz (CHAT.Labels.status.online + offline)
+     *     isIdle : Boolean  // user tétlen státuszban van
      * }
      */
     const statusLog = function(prevUserData, nextUserData){
         const statuses = {
-            active : ['on', 'busy'],
-            inactive : ['idle', 'inv', 'off']
+            active : CHAT.Config.status.active,
+            inactive : CHAT.Config.status.inactive
         };
 
         if (!HD.Misc.defined(prevUserData) || !HD.Misc.defined(nextUserData)){
@@ -160,7 +160,7 @@ module.exports = function(server, ioSession, app){
             prevUserData = {
                 id : nextUserData.id,
                 name : nextUserData.name,
-                status : 'off',
+                status : CHAT.Config.status.offline[0],
                 isIdle : false
             };
         }
@@ -168,7 +168,7 @@ module.exports = function(server, ioSession, app){
             nextUserData = {
                 id : prevUserData.id,
                 name : prevUserData.name,
-                status : 'off',
+                status : CHAT.Config.status.offline[0],
                 isIdle : false
             };
         }
@@ -177,7 +177,7 @@ module.exports = function(server, ioSession, app){
         const prevStatus = prevUserData.isIdle ? 'idle' : prevUserData.status;
         const nextStatus = nextUserData.isIdle ? 'idle' : nextUserData.status;
 
-        if (CHAT.Config.idle.timeCounter){
+        if (CHAT.Config.status.idle.timeCounter){
             let type = null;
             if (statuses.active.indexOf(prevStatus) > -1 && statuses.inactive.indexOf(nextStatus) > -1){
                 type = 0;  // inaktiválás
@@ -208,14 +208,14 @@ module.exports = function(server, ioSession, app){
             // belépett user
             userData = {
                 id : session.login.userId,
-                status : 'on',
+                status : CHAT.Config.status.online[0],
                 isIdle : false
             };
         }
         else if (app.get('userId')){
             userData = {
                 id : app.get('userId'),
-                status : 'on',
+                status : CHAT.Config.status.online[0],
                 isIdle : false
             };
         }

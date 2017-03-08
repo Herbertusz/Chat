@@ -11,14 +11,27 @@ CHAT.Config = {
     // Alapértelmezett szöveg a title tegben
     defaultTitle : 'Chat',
 
-    // Tétlen állapot érzékelése
-    idle : {
-        // Tételen állapot érzékelésének engedélyezése
-        allowed : true,
-        // Várakozás tétlen állpotba állítás előtt ms-ban (5 perc)
-        time : 300000,
-        // Tétlen vagy offline állapotba lépés óta eltelt idő mérése
-        timeCounter : true
+    // Felhasználó állapotai
+    status : {
+        // Online állapotok (felhasználó által beállíthatóak, az első az alapértelmezett)
+        online : ['on', 'busy', 'away', 'inv'],
+        // Offline állapotok (az első az alapértelmezett)
+        offline : ['off'],
+        // Aktívnak tekintett állapotok
+        active : ['on', 'busy'],
+        // Inaktívnak tekintett állapotok
+        inactive : ['idle', 'inv', 'off', 'away'],
+        // Tétlen állapot érzékelése
+        idle : {
+            // Tételen állapot érzékelésének engedélyezése
+            allowed : true,
+            // Idle állapot figyelmen kívül hagyása ezeknél az állapotoknál (megjelenítéshez)
+            except : ['inv', 'away'],
+            // Várakozás tétlen állpotba állítás előtt ms-ban (5 perc)
+            time : 300000,
+            // Tétlen vagy offline állapotba lépés óta eltelt idő mérése
+            timeCounter : true
+        }
     },
 
     // Hibaüzenetek
@@ -68,7 +81,7 @@ CHAT.Config = {
     },
 
     // Üzenetküldés
-    messageSend : {
+    textTransfer : {
 
         // HTML escape-elés a küldött üzenetben
         escapeHTML : true,

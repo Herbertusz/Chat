@@ -35,7 +35,9 @@
 
                 HD.DOM('.menupoint').event('mouseover', function(event){
                     const elem = event.currentTarget;
-                    HD.Math.Animation.run('menuover', {
+                    const id = HD.DOM('.menupoint').elements.findIndex(elem => this === elem);
+                    const original = HD.Math.Animation.stop(`menuout-${id}`) || 0;
+                    HD.Math.Animation.run(`menuover-${id}`, {
                         action : function(value){
                             HD.DOM(elem).css({
                                 borderBottomColor : `rgba(0, 0, 0, ${value})`
@@ -47,14 +49,15 @@
                             });
                         },
                         delay : 5000,
-                        range : [0, 1],
+                        range : [original, 1],
                         easing : 'linear'
                     });
                 });
                 HD.DOM('.menupoint').event('mouseout', function(event){
                     const elem = event.currentTarget;
-                    const original = HD.Math.Animation.stop('menuover');
-                    HD.Math.Animation.run('menuout', {
+                    const id = HD.DOM('.menupoint').elements.findIndex(elem => this === elem);
+                    const original = HD.Math.Animation.stop(`menuover-${id}`);
+                    HD.Math.Animation.run(`menuout-${id}`, {
                         action : function(value){
                             HD.DOM(elem).css({
                                 borderBottomColor : `rgba(0, 0, 0, ${value})`

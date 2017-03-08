@@ -261,7 +261,7 @@ HD.Math = {
 
         /**
          * Animáció futtatása
-         * @param {String} ID - animáció azonosítója
+         * @param {String} ID - animáció azonosítója (ajánlott minden elemre egyedi ID)
          * @param {Object} options - beállítások
          * @desc options = {
          *     action : Function    // minden lépésnél meghívott függvény (megkapja az animáció értékét): (Number) => {}
@@ -311,10 +311,15 @@ HD.Math = {
          * @returns {Number} animáció utolsó értéke
          */
         stop : function(ID){
-            HD.Math.Animation.timers[ID].forEach(function(id){
-                clearTimeout(id);
-            });
-            return HD.Math.Animation.values[ID];
+            if (HD.Math.Animation.timers.hasOwnProperty(ID)){
+                HD.Math.Animation.timers[ID].forEach(function(id){
+                    clearTimeout(id);
+                });
+                return HD.Math.Animation.values[ID];
+            }
+            else {
+                return null;
+            }
         }
 
     }

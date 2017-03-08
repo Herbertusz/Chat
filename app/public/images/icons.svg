@@ -13,26 +13,31 @@
     </symbol>
 
     <symbol id="on" viewBox="0 0 100 100">
-        <path d="M 50 1 A 49 49 0 1 0 50.1 1 Z" />
+        <path fill="#33b40f" d="M 50 1 A 49 49 0 1 0 50.1 1 Z" />
     </symbol>
 
     <symbol id="busy" viewBox="0 0 100 100">
-        <path d="M 50 1 A 49 49 0 1 0 50.1 1 Z" />
+        <path fill="#d42f1f" d="M 50 1 A 49 49 0 1 0 50.1 1 Z" />
         <path fill="white" d="M 20 40 H 80 V 60 H 20 Z" />
     </symbol>
 
-    <symbol id="idle" viewBox="0 0 100 100">
-        <path d="M 50 1 A 49 49 0 1 0 50.1 1 Z" />
+    <symbol id="away" viewBox="0 0 100 100">
+        <path fill="#bab700" d="M 50 1 A 49 49 0 1 0 50.1 1 Z" />
         <path fill="white" d="M 45 15 H 55 V 55 H 45 Z M 55 45 H 80 V 55 H 55 Z" />
     </symbol>
 
-    <symbol id="off" viewBox="0 0 100 100">
-        <path d="M 50 1 A 49 49 0 1 0 50.1 1 Z" />
-        <path fill="white" d="M 20 30 L 30 20 L 50 40 L 70 20 L 80 30 L 60 50 L 80 70 L 70 80 L 50 60 L 30 80 L 20 70 L 40 50 Z" />
+    <symbol id="idle" viewBox="0 0 100 100">
+        <path fill="#ff8600" d="M 50 1 A 49 49 0 1 0 50.1 1 Z" />
+        <path fill="white" d="M 45 15 H 55 V 55 H 45 Z M 55 45 H 80 V 55 H 55 Z" />
     </symbol>
 
     <symbol id="inv" viewBox="0 0 100 100">
-        <path d="M 50 1 A 49 49 0 1 0 50.1 1 Z" />
+        <path fill="#9d9d9d" d="M 50 1 A 49 49 0 1 0 50.1 1 Z" />
+        <path fill="white" d="M 20 30 L 30 20 L 50 40 L 70 20 L 80 30 L 60 50 L 80 70 L 70 80 L 50 60 L 30 80 L 20 70 L 40 50 Z" />
+    </symbol>
+
+    <symbol id="off" viewBox="0 0 100 100">
+        <path fill="#9d9d9d" d="M 50 1 A 49 49 0 1 0 50.1 1 Z" />
         <path fill="white" d="M 20 30 L 30 20 L 50 40 L 70 20 L 80 30 L 60 50 L 80 70 L 70 80 L 50 60 L 30 80 L 20 70 L 40 50 Z" />
     </symbol>
 
