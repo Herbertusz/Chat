@@ -20,7 +20,7 @@ CHAT.Config = {
         // Aktívnak tekintett állapotok
         active : ['on', 'busy'],
         // Inaktívnak tekintett állapotok
-        inactive : ['idle', 'inv', 'off', 'away'],
+        inactive : ['idle', 'away', 'inv', 'off'],
         // Tétlen állapot érzékelése
         idle : {
             // Tételen állapot érzékelésének engedélyezése
@@ -34,10 +34,20 @@ CHAT.Config = {
         }
     },
 
-    // Hibaüzenetek
-    error : {
-        // Hibaüzenet eltüntetése előtt eltelt idő
-        messageWait : 6000
+    // Chat-doboz beállítások
+    box : {
+        // Méretkorlátozás (falsy érték esetén nincs korlát)
+        sizeRestriction : {
+            minWidth : 220,
+            minHeight : 300,
+            maxWidth : 650,
+            maxHeight : 500
+        },
+        // Hibaüzenetek
+        error : {
+            // Hibaüzenet eltüntetése előtt eltelt idő
+            messageWait : 6000
+        }
     },
 
     // Értesítések

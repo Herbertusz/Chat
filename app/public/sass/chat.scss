@@ -8,7 +8,7 @@
 @import "_utility.scss";
 
 .chat-outer-container {
-    margin: 10px;
+    padding: 10px;
 }
 
 .status {
@@ -16,18 +16,6 @@
     position: relative;
     width: 14px;
     height: 14px;
-
-    //&.off      { fill: #9d9d9d; }
-    //&.on       { fill: #33b40f; }
-    //&.busy     { fill: #d42f1f; }
-    //&.idle     { fill: #ff8600; }
-    //&.off.run  { fill: #9d9d9d; }
-    //&.on.run   { fill: #33b40f; }
-    //&.busy.run { fill: #d42f1f; }
-    //&.idle.run { fill: #ff8600; }
-
-    //&.inv      { fill: #9d9d9d !important; }
-    //&.inv.run  { fill: #9d9d9d !important; }
 }
 
 aside.online {
@@ -101,13 +89,12 @@ aside.online {
 .chat-container {
     position: relative;
     margin-left: 205px;
-    height: 480px;
+    height: 500px;
 
     .chat {
         display: flex;
         flex-direction: column;
         position: absolute;
-        margin-left: 10px;
         padding: 0;
         width: 300px;
         height: 500px;
@@ -249,25 +236,25 @@ aside.online {
                     repeat: no-repeat;
                 }
 
-                &.resize-nw {
+                &.resize-lt {
                     float: left;
                     transform: rotate(0deg);
                     cursor: nw-resize;
                 }
 
-                &.resize-ne {
+                &.resize-rt {
                     float: right;
                     transform: rotate(90deg);
                     cursor: ne-resize;
                 }
 
-                &.resize-sw {
+                &.resize-lb {
                     float: left;
                     transform: rotate(-90deg);
                     cursor: sw-resize;
                 }
 
-                &.resize-se {
+                &.resize-rb {
                     float: right;
                     transform: rotate(180deg);
                     cursor: se-resize;

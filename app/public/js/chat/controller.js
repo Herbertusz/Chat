@@ -9,7 +9,7 @@ HD.DOM(document).event('DOMContentLoaded', function(){
 
     CHAT.Components.Box.roomEvents();
     CHAT.Components.Box.dragBox();
-    //CHAT.Components.Box.resizeBox();
+    CHAT.Components.Box.resizeBox();
     CHAT.Components.User.statusEvents();
     CHAT.Components.User.dragList();
     CHAT.Components.Transfer.initMessage();

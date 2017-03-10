@@ -33,8 +33,8 @@ CHAT.Components.Box = {
      * Doboz áthelyezése (drag-n-drop módon)
      */
     dragBox : function(){
-        const Container = HD.DOM(CHAT.DOM.container);
         const Mover = CHAT.DOM.inBox(CHAT.DOM.dragMove);
+        const Container = Mover.ancestor('body');
         const drag = {
             element : null,
             active : false,
@@ -74,21 +74,33 @@ CHAT.Components.Box = {
      * Doboz átméretezése (drag-n-drop módon)
      */
     resizeBox : function(){
-        const Container = HD.DOM(CHAT.DOM.container);
-        const Resizer = CHAT.DOM.inBox(CHAT.DOM.dragResize);
+        const Resizer = {
+            all : CHAT.DOM.inBox(CHAT.DOM.dragResize.all),
+            lt  : CHAT.DOM.inBox(CHAT.DOM.dragResize.lt).data('direction', 'lt'),
+            rt  : CHAT.DOM.inBox(CHAT.DOM.dragResize.rt).data('direction', 'rt'),
+            lb  : CHAT.DOM.inBox(CHAT.DOM.dragResize.lb).data('direction', 'lb'),
+            rb  : CHAT.DOM.inBox(CHAT.DOM.dragResize.rb).data('direction', 'rb')
+        };
+        const Container = Resizer.all.ancestor('body');
         const drag = {
             element : null,
+            trigger : null,
             active : false,
-            box : {w : 0, h : 0},
+            box : {x : 0, y : 0, w : 0, h : 0},
             mouse : {x : 0, y : 0}
         };
+        const rest = CHAT.Config.box.sizeRestriction;
+        //if (!rest.minWidth) rest.minWidth = 0;
 
-        Resizer.event('mousedown', function(event){
+        Resizer.all.event('mousedown', function(event){
             const element = HD.DOM(this).ancestor(CHAT.DOM.box).elem();
             const size = element.getBoundingClientRect();
             event.preventDefault();
             drag.element = element;
+            drag.trigger = HD.DOM(this).data('direction');
             drag.active = true;
+            drag.box.x = element.offsetLeft;
+            drag.box.y = element.offsetTop;
             drag.box.w = size.width;
             drag.box.h = size.height;
             drag.mouse.x = event.pageX;
@@ -106,8 +118,39 @@ CHAT.Components.Box = {
         Container.event('mousemove', function(event){
             if (drag.active){
                 const element = drag.element;
-                element.style.left = `${drag.box.x + event.pageX - drag.mouse.x}px`;
-                element.style.top = `${drag.box.y + event.pageY - drag.mouse.y}px`;
+                let l, t, w, h;
+                if (drag.trigger === 'lt'){
+                    l = drag.box.x + event.pageX - drag.mouse.x;
+                    t = drag.box.y + event.pageY - drag.mouse.y;
+                    w = drag.box.w - event.pageX + drag.mouse.x;
+                    h = drag.box.h - event.pageY + drag.mouse.y;
+                }
+                if (drag.trigger === 'rt'){
+                    l = drag.box.x;
+                    t = drag.box.y + event.pageY - drag.mouse.y;
+                    w = drag.box.w + event.pageX - drag.mouse.x;
+                    h = drag.box.h - event.pageY + drag.mouse.y;
+                }
+                if (drag.trigger === 'lb'){
+                    l = drag.box.x + event.pageX - drag.mouse.x;
+                    t = drag.box.y;
+                    w = drag.box.w - event.pageX + drag.mouse.x;
+                    h = drag.box.h + event.pageY - drag.mouse.y;
+                }
+                if (drag.trigger === 'rb'){
+                    l = drag.box.x;
+                    t = drag.box.y;
+                    w = drag.box.w + event.pageX - drag.mouse.x;
+                    h = drag.box.h + event.pageY - drag.mouse.y;
+                }
+                if (w > rest.minWidth && w < rest.maxWidth){
+                    element.style.left = `${l}px`;
+                    element.style.width = `${w}px`;
+                }
+                if (h > rest.minHeight && h < rest.maxHeight){
+                    element.style.top = `${t}px`;
+                    element.style.height = `${h}px`;
+                }
             }
         });
     },

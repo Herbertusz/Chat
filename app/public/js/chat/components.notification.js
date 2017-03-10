@@ -60,7 +60,7 @@ CHAT.Components.Notification = {
         setTimeout(function(){
             Box.find(CHAT.DOM.error).class('add', 'hidden');
             Box.find(CHAT.DOM.errorList).elem().innerHTML = '';
-        }, CHAT.Config.error.messageWait);
+        }, CHAT.Config.box.error.messageWait);
     },
 
     /**

@@ -36,7 +36,13 @@ CHAT.DOM = {
     cloneBox : '.chat.cloneable',
     box : '.chat',
     dragMove : '.move',
-    dragResize : '.resize',
+    dragResize : {
+        all : '.resize',
+        lt  : '.resize.resize-lt',
+        rt  : '.resize.resize-rt',
+        lb  : '.resize.resize-lb',
+        rb  : '.resize.resize-rb'
+    },
     userItems : '.user-item',
     userThrow : '.throw',
     users : '.users',
