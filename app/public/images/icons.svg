@@ -45,14 +45,64 @@
         <path d="M 10 20 L 20 10 L 50 40 L 80 10 L 90 20 L 60 50 L 90 80 L 80 90 L 50 60 L 20 90 L 10 80 L 40 50 Z" />
     </symbol>
 
+    <symbol id="square" viewBox="0 0 100 100">
+        <path d="M 16 16 H 84 V 84 H 16 V 16 Z" fill="transparent" stroke-width="14" shape-rendering="crispEdges" />
+    </symbol>
+
+    <symbol id="line" viewBox="0 0 100 100">
+        <path d="M 10 42 H 90 V 58 H 10 Z" />
+    </symbol>
+
     <symbol id="arrow-down" viewBox="0 0 100 100">
         <path d="M 10 60 L 20 50 L 43 75 V 0 H 57 V 75 L 80 50 L 90 60 L 50 100 Z" />
+    </symbol>
+
+    <symbol id="triangle" viewBox="0 0 100 100">
+        <path d="M 10 10 H 90 L 50 90 Z" />
     </symbol>
 
     <symbol id="picture" viewBox="0 0 100 100">
         <path d="M 0 0 H 100 V 100 H 0 Z" />
         <path fill="white" d="M 10 10 H 90 V 50 L 70 35 L 50 55 L 65 67 L 62 68 L 40 50 L 10 80 Z "/>
         <path d="M 30 20 A 12 12 0 1 0 30.1 20" />
+    </symbol>
+
+    <symbol id="cog" viewBox="0 0 1000 1000">
+        <path d="M227.3,79.7l142.8-63.6l45.6,102.3c49.7-11,100.1-12,148.6-3.9L604.4,10l145.9,56l-40.1,104.6c41.5,26.4,78.3,60.8,107.8,102.3l102.3-45.6l63.6,142.8l-102.3,45.6c11,49.7,12,100.1,3.9,148.6L990,604.4l-56,145.9l-104.6-40.1C803,751.6,768.6,788.5,727.1,818l45.6,102.3l-142.8,63.6l-45.6-102.3c-49.7,11-100.1,12-148.6,3.9L395.6,990l-145.9-56l40.2-104.6C248.4,803,211.5,768.6,182,727.1L79.7,772.7L16.1,629.9l102.3-45.6c-11-49.7-12-100.1-3.9-148.6L10,395.6l56-145.9l104.6,40.1c26.4-41.5,60.8-78.3,102.3-107.8L227.3,79.7z M404.7,285.9c-118.3,52.7-171.5,191.2-118.8,309.5c52.7,118.3,191.2,171.5,309.5,118.8c118.3-52.7,171.5-191.2,118.8-309.5C661.5,286.4,522.9,233.2,404.7,285.9z"/>
+    </symbol>
+
+    <symbol id="speaker" viewBox="0 0 75 75">
+        <polygon
+            points="39.389,13.769 22.235,28.606 6,28.606 6,47.699 21.989,47.699 39.389,62.75 39.389,13.769"
+            style="stroke:#111111;stroke-width:5;stroke-linejoin:round;fill:#111111;"
+        />
+        <path
+            d="M 48.128,49.03 C 50.057,45.934 51.19,42.291 51.19,38.377 C 51.19,34.399 50.026,30.703 48.043,27.577"
+            style="fill:none;stroke:#111111;stroke-width:5;stroke-linecap:round"
+        />
+        <path
+            d="M 55.082,20.537 C 58.777,25.523 60.966,31.694 60.966,38.377 C 60.966,44.998 58.815,51.115 55.178,56.076"
+            style="fill:none;stroke:#111111;stroke-width:5;stroke-linecap:round"
+        />
+        <path
+            d="M 61.71,62.611 C 66.977,55.945 70.128,47.531 70.128,38.378 C 70.128,29.161 66.936,20.696 61.609,14.01"
+            style="fill:none;stroke:#111111;stroke-width:5;stroke-linecap:round"
+        />
+    </symbol>
+
+    <symbol id="speaker-mute" viewBox="0 0 75 75">
+        <polygon
+            points="39.389,13.769 22.235,28.606 6,28.606 6,47.699 21.989,47.699 39.389,62.75 39.389,13.769"
+            style="stroke:#111111;stroke-width:5;stroke-linejoin:round;fill:#111111;"
+        />
+        <path
+            d="M 48.651772,50.269646 69.395223,25.971024"
+            style="fill:none;stroke:#111111;stroke-width:5;stroke-linecap:round"
+        />
+        <path
+            d="M 69.395223,50.269646 48.651772,25.971024"
+            style="fill:none;stroke:#111111;stroke-width:5;stroke-linecap:round"
+        />
     </symbol>
 
 </svg>

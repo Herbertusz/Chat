@@ -43,9 +43,11 @@ CHAT.DOM = {
         lb  : '.resize.resize-lb',
         rb  : '.resize.resize-rb'
     },
+    users : '.users',
     userItems : '.user-item',
     userThrow : '.throw',
-    users : '.users',
+    userDropdown : '.dropdown',
+    settings : '.settings',
     close : '.close',
     addUser : '.add-user',
     list : '.list',

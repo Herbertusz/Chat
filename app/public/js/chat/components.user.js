@@ -24,6 +24,7 @@ CHAT.Components.User = {
 
     /**
      * User-sáv görgetése
+     * @deprecated nincs használva, helyette a CHAT.Components.User.openList használandó
      */
     dragList : function(){
         const userDrag = {
@@ -56,6 +57,26 @@ CHAT.Components.User = {
     },
 
     /**
+     * User-sáv lenyíló lista
+     */
+    openList : function(){
+        CHAT.DOM.inBox(CHAT.DOM.userItems).event('click', function(){
+            const Trigger = HD.DOM(this);
+            if (this.classList.contains('current')){
+                const List = Trigger.ancestor(CHAT.DOM.users);
+                List.dataBool('active', !List.dataBool('active'));
+                Trigger.find(CHAT.DOM.userDropdown).class('toggle', 'active');
+                List.find(CHAT.DOM.userItems).elements.forEach(function(elem, i){
+                    const Elem = HD.DOM(elem);
+                    if (Elem.dataNum('id') !== CHAT.userId && !Elem.filter('.cloneable').elem()){
+                        Elem.class('toggle', 'hidden');
+                    }
+                });
+            }
+        });
+    },
+
+    /**
      * Doboz tetején lévő felhasználólista létrehozása
      * @param {HTMLElement} to
      * @param {Array} userIds
@@ -74,6 +95,19 @@ CHAT.Components.User = {
                 UserElem.dataNum('id', currentUserId);
                 UserElem.find(CHAT.DOM.status).class('add', 'run');
                 CHAT.Components.User.setStatus(userElem, CHAT.Components.User.getStatus(onlineListItem));
+                if (currentUserId === CHAT.userId){
+                    // Belépett user
+                    UserElem.class('add', 'current').find(CHAT.DOM.userThrow).class('add', 'hidden');
+                }
+                else if (!HD.DOM(to).dataBool('active')){
+                    // Nincs lenyitva a lista
+                    UserElem.class('add', 'hidden').find(CHAT.DOM.userDropdown).class('add', 'hidden');
+                }
+                else {
+                    // Le van nyitva a lista
+                    console.log(3);
+                    UserElem.find(CHAT.DOM.userDropdown).class('add', 'hidden');
+                }
                 UserElem.find('.name').elem().innerHTML = CHAT.Components.User.getName(currentUserId);
             }
         });

@@ -19,7 +19,7 @@
                             <label>
                                 <input class="user-select" type="checkbox" value="<%- user.id %>" />
                                 <svg class="status <%= CHAT.Config.status.offline[0] %>"><use xlink:href="#<%= CHAT.Config.status.offline[0] %>"></use></svg>
-                                <%= user.name %>
+                                <span class="name"><%= user.name %></span>
                                 <span class="idle-timer"></span>
                             </label>
                         </li>
@@ -36,17 +36,42 @@
                     <span class="resize resize-rt"></span>
                 </div>
                 <div class="bar">
-                    <span class="users">
+                    <span class="users" data-active="false">
                         <span class="user-item cloneable" data-id="">
                             <svg class="status"><use xlink:href="#<%= CHAT.Config.status.offline[0] %>"></use></svg>
                             <span class="name"></span>
                             <span title="<%= CHAT.Labels.action.forceLeave %>">
                                 <svg class="throw"><use xlink:href="#cross"></use></svg>
                             </span>
+                            <span>
+                                <svg class="dropdown"><use xlink:href="#triangle"></use></svg>
+                            </span>
                         </span>
                     </span>
+                    <!--
+                    <span title="<%= CHAT.Labels.action.resize %>">
+                        <svg class="window-icon resize"><use xlink:href="#square"></use></svg>
+                    </span>
+                    <span title="<%= CHAT.Labels.action.minimize %>">
+                        <svg class="window-icon minimize"><use xlink:href="#line"></use></svg>
+                    </span>
+                    <span title="<%= CHAT.Labels.action.sound %>">
+                        <svg class="window-icon minimize"><use xlink:href="#speaker"></use></svg>
+                    </span>
+                    -->
                     <span title="<%= CHAT.Labels.action.leave %>">
-                        <svg class="close"><use xlink:href="#cross"></use></svg>
+                        <svg class="window-icon close"><use xlink:href="#cross"></use></svg>
+                    </span>
+                    <span class="settings">
+                        <span title="<%= CHAT.Labels.action.settings %>">
+                            <svg class="window-icon"><use xlink:href="#cog"></use></svg>
+                        </span>
+                        <ul class="actions">
+                            <li>Összecsukás</li>
+                            <li>Action 1</li>
+                            <li>Action 2</li>
+                            <li>Action 3</li>
+                        </ul>
                     </span>
                     <button class="add-user hidden"><%= CHAT.Labels.action.forceJoin %></button>
                 </div>

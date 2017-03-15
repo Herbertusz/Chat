@@ -39,7 +39,7 @@ HD.Misc = {
     },
 
     /**
-     * Switch szerkezetet helyettesítő függvény
+     * Értékadásra használt switch szerkezetet helyettesítő függvény
      * @param {*} variable - változó
      * @param {Object} relations - változó különböző értékeihez rendelt visszatérési értékek
      * @param {*} [defaultValue=null] - alapértelmezett érték (default)

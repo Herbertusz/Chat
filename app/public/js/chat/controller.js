@@ -11,7 +11,7 @@ HD.DOM(document).event('DOMContentLoaded', function(){
     CHAT.Components.Box.dragBox();
     CHAT.Components.Box.resizeBox();
     CHAT.Components.User.statusEvents();
-    CHAT.Components.User.dragList();
+    CHAT.Components.User.openList();
     CHAT.Components.Transfer.initMessage();
 
     if (CHAT.Config.fileTransfer.allowed){

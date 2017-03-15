@@ -37,6 +37,10 @@ CHAT.Labels = {
         'sendMessage' : 'Küldés',
         'sendFile' : 'Fájlküldés',
         'leave' : 'Kilépés',
+        // 'resize' : 'Átméretezés',
+        // 'minimize' : 'Összecsukás',
+        // 'sound' : 'Hangos értesítések',
+        'settings' : 'Beállítások',
         'forceJoin' : 'Hozzáadás',
         'forceLeave' : 'Kidobás'
     },

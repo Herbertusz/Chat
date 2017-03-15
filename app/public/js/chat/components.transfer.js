@@ -309,14 +309,15 @@ CHAT.Components.Transfer = {
             <li>
                 <div class="progressbar" data-id="{BARID}">
                     <span class="label">${CHAT.Labels.file[direction]}</span>
-                    <span class="cancel" title="${CHAT.Labels.file.cancel}"></span>
                     <span title="${CHAT.Labels.file.cancel}">
                         <svg class="cancel"><use xlink:href="#cross"></use></svg>
                     </span>
-                    <span class="linecontainer">
-                        <span class="line" style="width: ${percent}%"></span>
+                    <span class="current-value">
+                        <span class="linecontainer">
+                            <span class="line" style="width: ${percent}%"></span>
+                        </span>
+                        <span class="numeric">${CHAT.Labels.file.percent(percent)}</span>
                     </span>
-                    <span class="numeric">${CHAT.Labels.file.percent(percent)}</span>
                 </div>
             </li>
         `;

@@ -90,7 +90,10 @@ CHAT.Components.Box = {
             mouse : {x : 0, y : 0}
         };
         const rest = CHAT.Config.box.sizeRestriction;
-        //if (!rest.minWidth) rest.minWidth = 0;
+        if (!rest.minWidth) rest.minWidth = 0;
+        if (!rest.minHeight) rest.minHeight = 0;
+        if (!rest.maxWidth) rest.maxWidth = Infinity;
+        if (!rest.maxHeight) rest.maxHeight = Infinity;
 
         Resizer.all.event('mousedown', function(event){
             const element = HD.DOM(this).ancestor(CHAT.DOM.box).elem();
@@ -125,19 +128,19 @@ CHAT.Components.Box = {
                     w = drag.box.w - event.pageX + drag.mouse.x;
                     h = drag.box.h - event.pageY + drag.mouse.y;
                 }
-                if (drag.trigger === 'rt'){
+                else if (drag.trigger === 'rt'){
                     l = drag.box.x;
                     t = drag.box.y + event.pageY - drag.mouse.y;
                     w = drag.box.w + event.pageX - drag.mouse.x;
                     h = drag.box.h - event.pageY + drag.mouse.y;
                 }
-                if (drag.trigger === 'lb'){
+                else if (drag.trigger === 'lb'){
                     l = drag.box.x + event.pageX - drag.mouse.x;
                     t = drag.box.y;
                     w = drag.box.w - event.pageX + drag.mouse.x;
                     h = drag.box.h + event.pageY - drag.mouse.y;
                 }
-                if (drag.trigger === 'rb'){
+                else if (drag.trigger === 'rb'){
                     l = drag.box.x;
                     t = drag.box.y;
                     w = drag.box.w + event.pageX - drag.mouse.x;
