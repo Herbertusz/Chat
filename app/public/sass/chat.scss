@@ -241,7 +241,8 @@ aside.online {
                 }
             }
 
-            .resize {
+            .drag-resize {
+                display: inline-block;
                 width: 12px;
                 height: 100%;
                 background: {
@@ -374,10 +375,10 @@ aside.online {
                 }
             }
 
-            .settings {
+            .click-resize {
 
                 ul.actions {
-                    display: block;
+                    display: none;
                     position: absolute;
                     right: 30px;
                     top: 30px;
@@ -385,8 +386,12 @@ aside.online {
                     list-style-type: none;
                     margin: 0;
                     padding: 5px 0;
-                    width: 100px;
+                    width: 150px;
                     background-color: #dedede;
+
+                    &.active {
+                        display: block;
+                    }
 
                     li {
                         padding: 5px;

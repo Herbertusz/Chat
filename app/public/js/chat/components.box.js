@@ -32,7 +32,7 @@ CHAT.Components.Box = {
     /**
      * Doboz áthelyezése (drag-n-drop módon)
      */
-    dragBox : function(){
+    dragPosition : function(){
         const Mover = CHAT.DOM.inBox(CHAT.DOM.dragMove);
         const Container = Mover.ancestor('body');
         const drag = {
@@ -73,7 +73,7 @@ CHAT.Components.Box = {
     /**
      * Doboz átméretezése (drag-n-drop módon)
      */
-    resizeBox : function(){
+    dragResize : function(){
         const Resizer = {
             all : CHAT.DOM.inBox(CHAT.DOM.dragResize.all),
             lt  : CHAT.DOM.inBox(CHAT.DOM.dragResize.lt).data('direction', 'lt'),
@@ -108,8 +108,13 @@ CHAT.Components.Box = {
             drag.box.h = size.height;
             drag.mouse.x = event.pageX;
             drag.mouse.y = event.pageY;
-            HD.DOM(CHAT.DOM.box).css({zIndex : 0});
-            HD.DOM(drag.element).css({zIndex : 1000});
+            HD.DOM(CHAT.DOM.box).css({
+                zIndex : 0
+            });
+            HD.DOM(drag.element).css({
+                position : 'absolute',
+                zIndex : 1000
+            });
         });
         Container.event('mouseup', function(event){
             if (drag.active){
@@ -153,6 +158,85 @@ CHAT.Components.Box = {
                 if (h > rest.minHeight && h < rest.maxHeight){
                     element.style.top = `${t}px`;
                     element.style.height = `${h}px`;
+                }
+            }
+        });
+    },
+
+    /**
+     * Doboz átméretezése (előredefiniált méretekre)
+     */
+    clickResize : function(){
+        const ResizerContainer = HD.DOM(CHAT.DOM.clickResize);
+        const Resizers = ResizerContainer.find('*').getByData('resize');
+        const containerSize = HD.DOM(CHAT.DOM.container).elem().getBoundingClientRect();
+        const definedSizes = {
+            box : {
+                position : 'absolute',
+                left : 0,
+                top : 0,
+                width : `${CHAT.Config.box.defaultSize.width}px`,
+                height : `${CHAT.Config.box.defaultSize.height}px`
+            },
+            container : {
+                position : 'absolute',
+                left : 0,
+                top : 0,
+                width : `${containerSize.width}px`,
+                height : `${containerSize.height}px`
+            },
+            window : {
+                position : 'fixed',
+                left : 0,
+                top : 0,
+                width : '100%',
+                height : '100%'
+            },
+            screen : {
+                width : '100%',
+                height : '100%'
+            }
+        };
+
+        CHAT.DOM.inBox(`${CHAT.DOM.clickResize} .toggle`).event('click', function(){
+            HD.DOM(this).ancestor(CHAT.DOM.clickResize).find('.actions').class('toggle', 'active');
+        });
+
+        Resizers.event('click', function(){
+            const Trigger = HD.DOM(this);
+            const Box = Trigger.ancestor(CHAT.DOM.box);
+            const size = Trigger.data('resize');
+            if (size === 'box'){
+                CHAT.DOM.inVisibleBox(CHAT.DOM.dragResize.all).css({
+                    display : 'inline-block'
+                });
+            }
+            else {
+                CHAT.DOM.inVisibleBox(CHAT.DOM.dragResize.all).css({
+                    display : 'none'
+                });
+            }
+            if (size !== 'screen' && definedSizes[size]){
+                const exitFullscreen =
+                    document.exitFullscreen ||
+                    document.webkitExitFullscreen ||
+                    document.mozExitFullscreen ||
+                    document.msExitFullscreen;
+                if (exitFullscreen){
+                    exitFullscreen.call(document);
+                }
+                Box.css(definedSizes[size]);
+            }
+            else if (size === 'screen'){
+                const box = Box.elem();
+                const requestFullscreen =
+                    box.requestFullscreen ||
+                    box.webkitRequestFullscreen ||
+                    box.mozRequestFullscreen ||
+                    box.msRequestFullscreen;
+                if (requestFullscreen){
+                    Box.css(definedSizes[size]);
+                    requestFullscreen.call(box);
                 }
             }
         });

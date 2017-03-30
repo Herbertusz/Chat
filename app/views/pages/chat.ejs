@@ -31,9 +31,9 @@
         <section class="chat-container">
             <div class="chat cloneable" data-room="">
                 <div class="border-top">
-                    <span class="resize resize-lt"></span>
+                    <span class="drag-resize resize-lt"></span>
                     <span class="move"></span>
-                    <span class="resize resize-rt"></span>
+                    <span class="drag-resize resize-rt"></span>
                 </div>
                 <div class="bar">
                     <span class="users" data-active="false">
@@ -48,31 +48,41 @@
                             </span>
                         </span>
                     </span>
-                    <!--
-                    <span title="<%= CHAT.Labels.action.resize %>">
-                        <svg class="window-icon resize"><use xlink:href="#square"></use></svg>
+                    <span title="<%= CHAT.Labels.action.leave %>">
+                        <svg class="window-icon close"><use xlink:href="#cross"></use></svg>
+                    </span>
+                    <span class="click-resize">
+                        <span class="toggle" title="<%= CHAT.Labels.action.resize.toggle %>">
+                            <svg class="window-icon"><use xlink:href="#square"></use></svg>
+                        </span>
+                        <ul class="actions">
+                            <li data-resize="box"><%= CHAT.Labels.action.resize.box %></li>
+                            <li data-resize="container"><%= CHAT.Labels.action.resize.container %></li>
+                            <li data-resize="window"><%= CHAT.Labels.action.resize.window %></li>
+                            <li data-resize="screen"><%= CHAT.Labels.action.resize.screen %></li>
+                        </ul>
                     </span>
                     <span title="<%= CHAT.Labels.action.minimize %>">
                         <svg class="window-icon minimize"><use xlink:href="#line"></use></svg>
                     </span>
+                    <!--
                     <span title="<%= CHAT.Labels.action.sound %>">
                         <svg class="window-icon minimize"><use xlink:href="#speaker"></use></svg>
-                    </span>
-                    -->
-                    <span title="<%= CHAT.Labels.action.leave %>">
-                        <svg class="window-icon close"><use xlink:href="#cross"></use></svg>
                     </span>
                     <span class="settings">
                         <span title="<%= CHAT.Labels.action.settings %>">
                             <svg class="window-icon"><use xlink:href="#cog"></use></svg>
                         </span>
                         <ul class="actions">
-                            <li>Összecsukás</li>
-                            <li>Action 1</li>
-                            <li>Action 2</li>
-                            <li>Action 3</li>
+                            <li><%= CHAT.Labels.action.minimize %></li>
+                            <li><%= CHAT.Labels.action.resize.box %></li>
+                            <li><%= CHAT.Labels.action.resize.container %></li>
+                            <li><%= CHAT.Labels.action.resize.window %></li>
+                            <li><%= CHAT.Labels.action.resize.screen %></li>
+                            <li><%= CHAT.Labels.action.sound %></li>
                         </ul>
                     </span>
+                    -->
                     <button class="add-user hidden"><%= CHAT.Labels.action.forceJoin %></button>
                 </div>
                 <div class="list-area">
@@ -120,8 +130,8 @@
                     <% } %>
                 </div>
                 <div class="border-bottom">
-                    <span class="resize resize-lb"></span>
-                    <span class="resize resize-rb"></span>
+                    <span class="drag-resize resize-lb"></span>
+                    <span class="drag-resize resize-rb"></span>
                 </div>
             </div>
         </section>

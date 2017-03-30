@@ -8,8 +8,9 @@ var CHAT = window.CHAT || {};
 HD.DOM(document).event('DOMContentLoaded', function(){
 
     CHAT.Components.Box.roomEvents();
-    CHAT.Components.Box.dragBox();
-    CHAT.Components.Box.resizeBox();
+    CHAT.Components.Box.dragPosition();
+    CHAT.Components.Box.dragResize();
+    CHAT.Components.Box.clickResize();
     CHAT.Components.User.statusEvents();
     CHAT.Components.User.openList();
     CHAT.Components.Transfer.initMessage();

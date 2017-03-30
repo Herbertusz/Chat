@@ -37,12 +37,13 @@ CHAT.DOM = {
     box : '.chat',
     dragMove : '.move',
     dragResize : {
-        all : '.resize',
-        lt  : '.resize.resize-lt',
-        rt  : '.resize.resize-rt',
-        lb  : '.resize.resize-lb',
-        rb  : '.resize.resize-rb'
+        all : '.drag-resize',
+        lt  : '.drag-resize.resize-lt',
+        rt  : '.drag-resize.resize-rt',
+        lb  : '.drag-resize.resize-lb',
+        rb  : '.drag-resize.resize-rb'
     },
+    clickResize : '.click-resize',
     users : '.users',
     userItems : '.user-item',
     userThrow : '.throw',
@@ -73,6 +74,15 @@ CHAT.DOM = {
      */
     inBox : function(selector){
         return HD.DOM(CHAT.DOM.box).find(selector);
+    },
+
+    /**
+     * Látható chat-dobozon belüli elemek
+     * @param {String} selector - dobozon belüli szelektor
+     * @returns {HD.DOM}
+     */
+    inVisibleBox : function(selector){
+        return HD.DOM(CHAT.DOM.box).filter(':not(.cloneable)').find(selector);
     }
 
 };

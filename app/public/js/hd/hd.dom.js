@@ -222,7 +222,7 @@ HD.DOM = function(identifier){
             else {
                 elements = this.filter(`[data-${name}="${value}"]`);
             }
-            return HD.DOM(elements);
+            return elements;
         },
 
         /**
