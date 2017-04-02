@@ -13,7 +13,7 @@ CHAT.Components.Notification = {
 
     /**
      * Értesítés (inaktív ablak)
-     * @type {Object}
+     * @type {Boolean}
      */
     status : false,
 
@@ -69,8 +69,10 @@ CHAT.Components.Notification = {
      * @param {Number} userId
      */
     stillWrite : function(box, userId){
-        const userName = CHAT.Components.User.getName(userId);
-        HD.DOM(box).find(CHAT.DOM.indicator).elem().innerHTML = CHAT.Labels.message.stillWrite(userName);
+        if (CHAT.Config.notification.allowed && CHAT.Config.notification.writing.allowed){
+            const userName = CHAT.Components.User.getName(userId);
+            HD.DOM(box).find(CHAT.DOM.indicator).elem().innerHTML = CHAT.Labels.message.stillWrite(userName);
+        }
     },
 
     /**
@@ -80,16 +82,18 @@ CHAT.Components.Notification = {
      * @param {String} message
      */
     stopWrite : function(box, userId, message){
-        const userName = CHAT.Components.User.getName(userId);
+        if (CHAT.Config.notification.allowed && CHAT.Config.notification.writing.allowed){
+            const userName = CHAT.Components.User.getName(userId);
 
-        if (message.trim().length > 0){
-            HD.DOM(box).find(CHAT.DOM.indicator).elem().innerHTML = CHAT.Labels.message.stopWrite(userName);
+            if (message.trim().length > 0){
+                HD.DOM(box).find(CHAT.DOM.indicator).elem().innerHTML = CHAT.Labels.message.stopWrite(userName);
+            }
+            else {
+                HD.DOM(box).find(CHAT.DOM.indicator).elem().innerHTML = '';
+            }
+            clearInterval(CHAT.Components.Timer.writing.timerID);
+            CHAT.Components.Timer.writing.timerID = null;
         }
-        else {
-            HD.DOM(box).find(CHAT.DOM.indicator).elem().innerHTML = '';
-        }
-        window.clearInterval(CHAT.Components.Timer.writing.timerID);
-        CHAT.Components.Timer.writing.timerID = null;
     },
 
     /**
@@ -106,14 +110,14 @@ CHAT.Components.Notification = {
      * }
      */
     trigger : function(box, data = {}){
-        const notif = CHAT.Config.notification;
+        const conf = CHAT.Config.notification;
         const fromUserName = CHAT.Components.User.getName(data.fromId);
         const toUserName = CHAT.Components.User.getName(data.toId);
         const visualEffects = {
             title : function(activate){
                 let newTitle;
                 if (activate){
-                    newTitle = CHAT.Labels.notification[data.type](fromUserName, toUserName);
+                    newTitle = CHAT.Labels.notification.general[data.type](fromUserName, toUserName);
                 }
                 else {
                     newTitle = CHAT.Config.defaultTitle;
@@ -123,21 +127,23 @@ CHAT.Components.Notification = {
             },
             box : function(activate){
                 if (activate){
-                    HD.DOM(box).class('add', 'notification'); // css({'outline' : '2px dashed red'});
+                    HD.DOM(box).class('add', 'notification');
                 }
                 else {
-                    HD.DOM(CHAT.DOM.box).class('remove', 'notification'); // css({'outline' : '0px solid transparent'});
+                    HD.DOM(CHAT.DOM.box).class('remove', 'notification');
                 }
             }
         };
 
-        if (notif.allowed && CHAT.Components.Notification.status){
-            if (notif.visual.allowed){
-                notif.visual.types.forEach(function(type){
+        if (conf.allowed && CHAT.Components.Notification.status){
+            if (conf.visual.allowed){
+                // vizuális értesítés
+                conf.visual.types.forEach(function(type){
                     visualEffects[type](true);
                 });
             }
-            if (notif.sound.allowed){
+            if (conf.sound.allowed){
+                // hangos értesítés
                 let audio = HD.DOM('#notification-audio').elem();
                 if (!audio){
                     audio = document.createElement('audio');
@@ -147,35 +153,59 @@ CHAT.Components.Notification = {
                     audio.volume = 0.5;
                     audio.preload = 'auto';
                     audio.style.display = 'none';
-                    audio.src = notif.sound.audio[data.type];
+                    audio.src = conf.sound.audio[data.type];
                     document.body.appendChild(audio);
                 }
                 else {
                     audio.play();
                 }
             }
+            if (conf.desktop.allowed && 'Notification' in window){
+                // asztali értesítés
+                const desktopOptions = Object.assign(conf.desktop.options, CHAT.Labels.notification.desktop.options);
+                let desktopNotif;
+                if (Notification.permission === 'granted'){
+                    desktopNotif = new Notification(
+                        CHAT.Labels.notification.desktop[data.type](fromUserName, toUserName),
+                        desktopOptions
+                    );
+                }
+                else if (Notification.permission !== 'denied'){
+                    Notification.requestPermission(function(permission){
+                        if (permission === 'granted'){
+                            desktopNotif = new Notification(
+                                CHAT.Labels.notification.desktop[data.type](fromUserName, toUserName),
+                                desktopOptions
+                            );
+                        }
+                    });
+                }
+                if (desktopNotif && conf.desktop.closeTime){
+                    setTimeout(desktopNotif.close.bind(desktopNotif), conf.desktop.closeTime);
+                }
+            }
         }
-        else if (notif.allowed){
+        else if (conf.allowed){
             // vizuális effektek megszüntetése
-            if (notif.visual.allowed){
-                notif.visual.types.forEach(function(type){
+            if (conf.visual.allowed){
+                conf.visual.types.forEach(function(type){
                     visualEffects[type](false);
                 });
             }
         }
 
-        if (data.local && notif.local.allowed){
+        if (data.local && conf.local.allowed){
             // helyi értesítés
             const Box = HD.DOM(box);
             const list = Box.find(CHAT.DOM.list).elem();
 
-            if (list.scrollHeight - list.offsetHeight - list.scrollTop < notif.local.scroll){
+            if (list.scrollHeight - list.offsetHeight - list.scrollTop < conf.local.scroll){
                 list.scrollTop = list.scrollHeight;
             }
             else {
                 const LocalNotification = Box.find(CHAT.DOM.localNotification);
                 const tpl = `
-                    ${CHAT.Labels.localNotification[data.type](fromUserName, toUserName)}
+                    ${CHAT.Labels.notification.local[data.type](fromUserName, toUserName)}
                 `;
 
                 LocalNotification.find(CHAT.DOM.text).elem().innerHTML = tpl;

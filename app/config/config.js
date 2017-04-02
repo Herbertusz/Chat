@@ -56,8 +56,13 @@ CHAT.Config = {
 
     // Értesítések
     notification : {
-        // Értesítések engedélyezése
+        // Értesítések engedélyezése (hibaüzenetekre nem vonatkozik)
         allowed : true,
+        // Üzenetírás értesítések
+        writing : {
+            // Üzenetírás értesítések engedélyezése
+            allowed : true
+        },
         // Helyi értesítések
         local : {
             // Helyi értesítések engedélyezése
@@ -90,6 +95,22 @@ CHAT.Config = {
                 'forceJoinOther'  : '/audio/join.mp3',
                 'forceLeaveYou'   : '/audio/leave.mp3',
                 'forceLeaveOther' : '/audio/leave.mp3'
+            }
+        },
+        // Asztali értesítés
+        desktop : {
+            // Asztali értesítés engedélyezése
+            allowed : true,
+            // Értesítés eltüntetése előtt eltelt idő (ms) (falsy érték: a program nem tünteti el)
+            closeTime : 10000,
+            // Asztali értesítés beállításai (a Notification() konstruktor második argumentuma)
+            options : {
+                // Ha megadjuk, az alkalmazástól származó értesítések össze lesznek vonva
+                tag : 'hd-chat',
+                // Vibrációs minta (ha van rezgést biztosító hardver)
+                vibrate : [100],
+                // Automatikus eltüntetés letiltása
+                requireInteraction : true
             }
         }
     },
