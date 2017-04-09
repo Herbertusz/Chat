@@ -13,6 +13,7 @@ CHAT.Events.Client = {
 
     /**
      * Csatorna létrehozása
+     * @returns {String} csatona azonosítója
      */
     createRoom : function(){
         const roomData = {
@@ -23,8 +24,12 @@ CHAT.Events.Client = {
         const Box = HD.DOM(
             HD.DOM(CHAT.DOM.cloneBox).copyPaste(HD.DOM(CHAT.DOM.container).elem())
         );
-        const Userlist = Box.find(CHAT.DOM.users);
+        const Userlist = Box.descendants(CHAT.DOM.users);
 
+        Box.css({
+            width : `${CHAT.Config.box.defaultSize.width}px`,
+            height : `${CHAT.Config.box.defaultSize.height}px`
+        });
         HD.DOM(CHAT.DOM.selectedUsers).elements.forEach(function(selectedUser){
             const userId = Number(selectedUser.value);
             roomData.userIds.push(userId);
@@ -33,6 +38,7 @@ CHAT.Events.Client = {
         roomData.name = `room-${roomData.starter}-${Date.now()}`;
         Box.data('room', roomData.name);
         CHAT.socket.emit('roomCreated', roomData);
+        return roomData.name;
     },
 
     /**
@@ -56,12 +62,12 @@ CHAT.Events.Client = {
      * @param {Number} userId
      */
     forceJoinRoom : function(add, userId){
-        const Box = HD.DOM(add).ancestor(CHAT.DOM.box);
-        const Userlist = Box.find(CHAT.DOM.users);
+        const Box = HD.DOM(add).ancestors(CHAT.DOM.box);
+        const Userlist = Box.descendants(CHAT.DOM.users);
         const currentUserIds = [];
         const roomName = Box.data('room');
 
-        Userlist.find(CHAT.DOM.userItems).filter(':not(.cloneable)').elements.forEach(function(user){
+        Userlist.descendants(CHAT.DOM.userItems).filter(':not(.cloneable)').elements.forEach(function(user){
             currentUserIds.push(HD.DOM(user).dataNum('id'));
         });
         if (currentUserIds.indexOf(userId) === -1){
@@ -80,8 +86,8 @@ CHAT.Events.Client = {
      */
     forceLeaveRoom : function(close){
         const Close = HD.DOM(close);
-        const Box = Close.ancestor(CHAT.DOM.box);
-        const User = Close.ancestor(CHAT.DOM.userItems);
+        const Box = Close.ancestors(CHAT.DOM.box);
+        const User = Close.ancestors(CHAT.DOM.userItems);
         const roomName = Box.data('room');
         const userId = User.dataNum('id');
 
@@ -110,7 +116,7 @@ CHAT.Events.Client = {
      */
     sendMessage : function(box){
         const Box = HD.DOM(box);
-        const Message = Box.find(CHAT.DOM.textarea);
+        const Message = Box.descendants(CHAT.DOM.textarea);
         const data = {
             userId : CHAT.userId,
             message : Message.elem().value,
@@ -122,7 +128,7 @@ CHAT.Events.Client = {
             CHAT.socket.emit('sendMessage', data);
             CHAT.Components.Transfer.appendUserMessage(box, data, true);
             CHAT.Components.Box.scrollToBottom(box);
-            Box.find(CHAT.DOM.textarea).elem().value = '';
+            Box.descendants(CHAT.DOM.textarea).elem().value = '';
         }
     },
 
@@ -231,7 +237,7 @@ CHAT.Events.Client = {
      */
     typeMessage : function(box){
         const Box = HD.DOM(box);
-        const Message = Box.find(CHAT.DOM.textarea);
+        const Message = Box.descendants(CHAT.DOM.textarea);
         const data = {
             userId : CHAT.userId,
             message : Message.elem().value,
@@ -248,13 +254,13 @@ CHAT.Events.Client = {
      */
     sendMethod : function(change){
         const Change = HD.DOM(change);
-        const Box = Change.ancestor(CHAT.DOM.box);
+        const Box = Change.ancestors(CHAT.DOM.box);
 
         if (Change.prop('checked')){
-            Box.find(CHAT.DOM.sendButton).class('add', 'hidden');
+            Box.descendants(CHAT.DOM.sendButton).class('add', 'hidden');
         }
         else {
-            Box.find(CHAT.DOM.sendButton).class('remove', 'hidden');
+            Box.descendants(CHAT.DOM.sendButton).class('remove', 'hidden');
         }
     }
 

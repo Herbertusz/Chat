@@ -36,13 +36,14 @@ CHAT.Config = {
 
     // Chat-doboz beállítások
     box : {
+        // Alapértelmezett doboz méret
         defaultSize : {
             width : 300,
             height : 500
         },
         // Méretkorlátozás (falsy érték esetén nincs korlát)
         sizeRestriction : {
-            minWidth : 220,
+            minWidth : 240,
             minHeight : 300,
             maxWidth : 650,
             maxHeight : 500

@@ -17,7 +17,7 @@ CHAT.Components.Transfer = {
     initMessage : function(){
         // Üzenet gépelése
         CHAT.DOM.inBox(CHAT.DOM.textarea).event('keyup', function(event){
-            const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
+            const Box = HD.DOM(this).ancestors(CHAT.DOM.box);
 
             if (event.which !== HD.Misc.keys.ENTER){
                 CHAT.Events.Client.typeMessage(Box.elem());
@@ -26,10 +26,10 @@ CHAT.Components.Transfer = {
 
         // Üzenetküldés indítása ENTER leütésére
         CHAT.DOM.inBox(CHAT.DOM.textarea).event('keydown', function(event){
-            const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
+            const Box = HD.DOM(this).ancestors(CHAT.DOM.box);
 
             if (event.which === HD.Misc.keys.ENTER){
-                if (!event.shiftKey && Box.find(CHAT.DOM.sendSwitch).prop('checked')){
+                if (!event.shiftKey && Box.descendants(CHAT.DOM.sendSwitch).prop('checked')){
                     CHAT.Events.Client.sendMessage(Box.elem());
                     event.preventDefault();
                 }
@@ -38,7 +38,7 @@ CHAT.Components.Transfer = {
 
         // Üzenetküldés indítása gombnyomásra
         CHAT.DOM.inBox(CHAT.DOM.sendButton).event('click', function(){
-            const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
+            const Box = HD.DOM(this).ancestors(CHAT.DOM.box);
             CHAT.Events.Client.sendMessage(Box.elem());
         });
 
@@ -57,12 +57,12 @@ CHAT.Components.Transfer = {
             const Trigger = HD.DOM(this);
 
             if (!Trigger.dataBool('disabled')){
-                Trigger.ancestor(CHAT.DOM.box).find(CHAT.DOM.file).trigger('click');
+                Trigger.ancestors(CHAT.DOM.box).descendants(CHAT.DOM.file).trigger('click');
             }
         });
         CHAT.DOM.inBox(CHAT.DOM.file).event('change', function(){
-            const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
-            const files = Box.find(CHAT.DOM.file).elem().files;
+            const Box = HD.DOM(this).ancestors(CHAT.DOM.box);
+            const files = Box.descendants(CHAT.DOM.file).elem().files;
 
             if (files.length > 0){
                 CHAT.Events.Client.sendFile(Box.elem(), files);
@@ -107,7 +107,7 @@ CHAT.Components.Transfer = {
                     CHAT.DOM.inBox(CHAT.DOM.dropFile).class('remove', 'drop-active', 'drop-highlight');
                 })
                 .event('drop', function(event){
-                    const Box = HD.DOM(this).ancestor(CHAT.DOM.box);
+                    const Box = HD.DOM(this).ancestors(CHAT.DOM.box);
                     const files = event.dataTransfer.files;
                     CHAT.Events.Client.sendFile(Box.elem(), files);
                 });
@@ -190,7 +190,7 @@ CHAT.Components.Transfer = {
      */
     appendUserMessage : function(box, data, highlighted = false){
         const time = HD.DateTime.formatMS('Y-m-d H:i:s', data.time);
-        const List = HD.DOM(box).find(CHAT.DOM.list);
+        const List = HD.DOM(box).descendants(CHAT.DOM.list);
         const userName = CHAT.Components.User.getName(data.userId);
 
         List.elem().innerHTML += `
@@ -210,7 +210,7 @@ CHAT.Components.Transfer = {
      * @param {Number} [toId=null]
      */
     appendSystemMessage : function(box, type, fromId, toId = null){
-        const List = HD.DOM(box).find(CHAT.DOM.list);
+        const List = HD.DOM(box).descendants(CHAT.DOM.list);
         const fromUserName = CHAT.Components.User.getName(fromId);
         const toUserName = CHAT.Components.User.getName(toId);
 
@@ -243,7 +243,7 @@ CHAT.Components.Transfer = {
      */
     appendFile : function(box, data, highlighted = false){
         let tpl, imgSrc;
-        const List = HD.DOM(box).find(CHAT.DOM.list);
+        const List = HD.DOM(box).descendants(CHAT.DOM.list);
         const time = HD.DateTime.formatMS('Y-m-d H:i:s', data.time);
         const userName = CHAT.Components.User.getName(data.userId);
 
@@ -281,11 +281,11 @@ CHAT.Components.Transfer = {
             img.onload = resolve;
             img.onerror = reject;
         })).then(function(){
-            ListItem.find('.filedisplay').elem().innerHTML = tpl;
+            ListItem.descendants('.filedisplay').elem().innerHTML = tpl;
             List.elem().appendChild(ListItem.elem());
         }).catch(function(error){
             HD.Log.error(error);
-            ListItem.find('.filedisplay').elem().innerHTML = tplError;
+            ListItem.descendants('.filedisplay').elem().innerHTML = tplError;
             List.elem().appendChild(ListItem.elem());
         });
         img.src = imgSrc;
@@ -304,7 +304,7 @@ CHAT.Components.Transfer = {
      */
     progressbar : function(box, direction, percent, barId, cancelable = true){
         percent = Math.round(percent * 100);
-        const List = HD.DOM(box).find(CHAT.DOM.list);
+        const List = HD.DOM(box).descendants(CHAT.DOM.list);
         const tpl = `
             <li>
                 <div class="progressbar" data-id="{BARID}">
@@ -327,31 +327,31 @@ CHAT.Components.Transfer = {
             List.elem().innerHTML += tpl.replace('{BARID}', barId.toString());
             CHAT.Components.Box.scrollToBottom(box, true);
             if (cancelable){
-                List.find('.cancel').event('click', function(){
-                    const Progressbar = HD.DOM(this).ancestor('.progressbar');
+                List.descendants('.cancel').event('click', function(){
+                    const Progressbar = HD.DOM(this).ancestors('.progressbar');
                     CHAT.Events.Client.abortFile(Progressbar.elem());
                     HD.DOM(this).class('add', 'hidden');
                 });
             }
             else {
-                List.find('.cancel').class('add', 'hidden');
+                List.descendants('.cancel').class('add', 'hidden');
             }
             return barId;
         }
         else {
-            const Progressbar = List.find('.progressbar').filter(`[data-id="${barId}"]`);
+            const Progressbar = List.descendants('.progressbar').filter(`[data-id="${barId}"]`);
             if (direction === 'abort'){
-                Progressbar.find('.label').elem().innerHTML = CHAT.Labels.file[direction];
-                Progressbar.find('.line').class('add', 'aborted');
+                Progressbar.descendants('.label').elem().innerHTML = CHAT.Labels.file[direction];
+                Progressbar.descendants('.line').class('add', 'aborted');
             }
             else {
                 if (percent === 100){
-                    Progressbar.find('.label').elem().innerHTML = CHAT.Labels.file[`${direction}End`];
-                    Progressbar.find('.line').class('add', 'finished');
-                    Progressbar.find('.cancel').class('add', 'hidden');
+                    Progressbar.descendants('.label').elem().innerHTML = CHAT.Labels.file[`${direction}End`];
+                    Progressbar.descendants('.line').class('add', 'finished');
+                    Progressbar.descendants('.cancel').class('add', 'hidden');
                 }
-                Progressbar.find('.line').css({'width' : `${percent}%`});
-                Progressbar.find('.numeric').elem().innerHTML = CHAT.Labels.file.percent(percent);
+                Progressbar.descendants('.line').css({'width' : `${percent}%`});
+                Progressbar.descendants('.numeric').elem().innerHTML = CHAT.Labels.file.percent(percent);
             }
             return null;
         }
@@ -363,18 +363,18 @@ CHAT.Components.Transfer = {
      * @param {String} operation
      */
     progress : function(box, operation){
-        const Progress = HD.DOM(box).find(CHAT.DOM.progress);
+        const Progress = HD.DOM(box).descendants(CHAT.DOM.progress);
         const tpl = `
             ${CHAT.Labels.file.read}
         `;
 
         if (operation === 'show'){
-            Progress.find(CHAT.DOM.progressText).elem().innerHTML = tpl;
+            Progress.descendants(CHAT.DOM.progressText).elem().innerHTML = tpl;
             Progress.class('remove', 'hidden');
         }
         else {
             Progress.class('add', 'hidden');
-            Progress.find(CHAT.DOM.progressText).elem().innerHTML = '';
+            Progress.descendants(CHAT.DOM.progressText).elem().innerHTML = '';
         }
     }
 

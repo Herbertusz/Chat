@@ -17,7 +17,7 @@ CHAT.Components.Box = {
      * @param {Boolean} [conditional=false]
      */
     scrollToBottom : function(box, conditional = false){
-        const list = HD.DOM(box).find(CHAT.DOM.list).elem();
+        const list = HD.DOM(box).descendants(CHAT.DOM.list).elem();
 
         if (conditional){
             if (list.scrollHeight - list.offsetHeight - list.scrollTop < CHAT.Config.notification.local.scroll){
@@ -34,7 +34,7 @@ CHAT.Components.Box = {
      */
     dragPosition : function(){
         const Mover = CHAT.DOM.inBox(CHAT.DOM.dragMove);
-        const Container = Mover.ancestor('body');
+        const Container = Mover.ancestors('body');
         const drag = {
             element : null,
             active : false,
@@ -43,7 +43,7 @@ CHAT.Components.Box = {
         };
 
         Mover.event('mousedown', function(event){
-            const element = HD.DOM(this).ancestor(CHAT.DOM.box).elem();
+            const element = HD.DOM(this).ancestors(CHAT.DOM.box).elem();
             event.preventDefault();
             drag.element = element;
             drag.active = true;
@@ -81,7 +81,7 @@ CHAT.Components.Box = {
             lb  : CHAT.DOM.inBox(CHAT.DOM.dragResize.lb).data('direction', 'lb'),
             rb  : CHAT.DOM.inBox(CHAT.DOM.dragResize.rb).data('direction', 'rb')
         };
-        const Container = Resizer.all.ancestor('body');
+        const Container = Resizer.all.ancestors('body');
         const drag = {
             element : null,
             trigger : null,
@@ -96,7 +96,7 @@ CHAT.Components.Box = {
         if (!rest.maxHeight) rest.maxHeight = Infinity;
 
         Resizer.all.event('mousedown', function(event){
-            const element = HD.DOM(this).ancestor(CHAT.DOM.box).elem();
+            const element = HD.DOM(this).ancestors(CHAT.DOM.box).elem();
             const size = element.getBoundingClientRect();
             event.preventDefault();
             drag.element = element;
@@ -168,7 +168,7 @@ CHAT.Components.Box = {
      */
     clickResize : function(){
         const ResizerContainer = HD.DOM(CHAT.DOM.clickResize);
-        const Resizers = ResizerContainer.find('*').getByData('resize');
+        const Resizers = ResizerContainer.descendants('*').getByData('resize');
         const containerSize = HD.DOM(CHAT.DOM.container).elem().getBoundingClientRect();
         const definedSizes = {
             box : {
@@ -199,12 +199,12 @@ CHAT.Components.Box = {
         };
 
         CHAT.DOM.inBox(`${CHAT.DOM.clickResize} .toggle`).event('click', function(){
-            HD.DOM(this).ancestor(CHAT.DOM.clickResize).find('.actions').class('toggle', 'active');
+            HD.DOM(this).ancestors(CHAT.DOM.clickResize).descendants('.actions').class('toggle', 'active');
         });
 
         Resizers.event('click', function(){
             const Trigger = HD.DOM(this);
-            const Box = Trigger.ancestor(CHAT.DOM.box);
+            const Box = Trigger.ancestors(CHAT.DOM.box);
             const size = Trigger.data('resize');
             if (size === 'box'){
                 CHAT.DOM.inVisibleBox(CHAT.DOM.dragResize.all).css({
@@ -250,15 +250,15 @@ CHAT.Components.Box = {
     changeStatus : function(box, newStatus){
         const Box = HD.DOM(box);
         if (newStatus === 'enabled'){
-            Box.find(CHAT.DOM.textarea).prop('disabled', false);
-            Box.find(CHAT.DOM.userThrow).dataBool('disabled', false);
-            Box.find(CHAT.DOM.fileTrigger).dataBool('disabled', false);
+            Box.descendants(CHAT.DOM.textarea).prop('disabled', false);
+            Box.descendants(CHAT.DOM.userThrow).dataBool('disabled', false);
+            Box.descendants(CHAT.DOM.fileTrigger).dataBool('disabled', false);
             Box.dataBool('disabled', false);
         }
         else if (newStatus === 'disabled'){
-            Box.find(CHAT.DOM.textarea).prop('disabled', true);
-            Box.find(CHAT.DOM.userThrow).dataBool('disabled', true);
-            Box.find(CHAT.DOM.fileTrigger).dataBool('disabled', true);
+            Box.descendants(CHAT.DOM.textarea).prop('disabled', true);
+            Box.descendants(CHAT.DOM.userThrow).dataBool('disabled', true);
+            Box.descendants(CHAT.DOM.fileTrigger).dataBool('disabled', true);
             Box.dataBool('disabled', true);
         }
     },
@@ -269,19 +269,23 @@ CHAT.Components.Box = {
     roomEvents : function(){
         // Csatorna létrehozása
         HD.DOM(CHAT.DOM.start).event('click', function(){
-            CHAT.Events.Client.createRoom();
+            const room = CHAT.Events.Client.createRoom();
             HD.DOM(CHAT.DOM.userSelect).prop('checked', false).trigger('change');
+            CHAT.DOM.setTitle(`[data-room="${room}"]`);
         });
 
         // Kilépés csatornából
         CHAT.DOM.inBox(CHAT.DOM.close).event('click', function(){
-            CHAT.Events.Client.leaveRoom(HD.DOM(this).ancestor(CHAT.DOM.box).elem());
+            CHAT.Events.Client.leaveRoom(HD.DOM(this).ancestors(CHAT.DOM.box).elem());
         });
 
         // User hozzáadása csatornához
         HD.DOM(CHAT.DOM.userSelect).event('change', function(){
             if (HD.DOM(CHAT.DOM.selectedUsers).elements.length > 0){
-                HD.DOM(CHAT.DOM.box).filter(':not([data-disabled])').find(CHAT.DOM.addUser).class('remove', 'hidden');
+                HD.DOM(CHAT.DOM.box)
+                    .filter(':not([data-disabled])')
+                    .descendants(CHAT.DOM.addUser)
+                    .class('remove', 'hidden');
             }
             else {
                 CHAT.DOM.inBox(CHAT.DOM.addUser).class('add', 'hidden');
@@ -295,6 +299,7 @@ CHAT.Components.Box = {
                     CHAT.Events.Client.forceJoinRoom(Add.elem(), Number(selectedUser.value));
                 });
                 HD.DOM(CHAT.DOM.userSelect).prop('checked', false).trigger('change');
+                CHAT.DOM.setTitle(CHAT.DOM.box);
             }
         });
 

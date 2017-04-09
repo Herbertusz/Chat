@@ -5,7 +5,7 @@
  * @requires HD.Misc.switching
  * @example
  *  HD.DOM('.class').event('click', function(target){...});
- *  HD.DOM('.class').find('button').data('clickable', 'true').trigger('click');
+ *  HD.DOM('.class').descendants('button').data('clickable', 'true').trigger('click');
  *  const cloneElement = HD.DOM('.class').filter('[data-disabled]').clone(true).elem();
  */
 
@@ -168,13 +168,13 @@ HD.DOM = function(identifier){
          * @param {String} selector
          * @returns {Object}
          */
-        find : function(selector){
-            let find = [];
+        descendants : function(selector){
+            let elements = [];
 
             this.elements.forEach(function(elem){
-                find = find.concat(Array.from(elem.querySelectorAll(selector)));
+                elements = elements.concat(Array.from(elem.querySelectorAll(selector)));
             });
-            return HD.DOM(find);
+            return HD.DOM(elements);
         },
 
         /**
@@ -182,7 +182,7 @@ HD.DOM = function(identifier){
          * @param {String} selector
          * @returns {Object}
          */
-        ancestor : function(selector){
+        ancestors : function(selector){
             const elements = [];
             let parent = this.elem().parentNode;
 
@@ -697,66 +697,6 @@ HD.DOM.getMousePosition = function(event, elem = document.body){
         x : event.pageX - offset.x,
         y : event.pageY - offset.y
     };
-};
-
-/**
- * Szövegkijelölés és képletöltés tiltása
- */
-HD.DOM.protection = function(){
-    HD.DOM('p').event('mousedown', function(event){
-        event.preventDefault();
-    });
-    document.onselectstart = function(){ return false; };
-    document.unselectable = 'on';
-    HD.DOM('body').css({
-        'user-select' : 'none',
-        '-o-user-select' : 'none',
-        '-moz-user-select' : 'none',
-        '-khtml-user-select' : 'none',
-        '-webkit-user-select' : 'none'
-    });
-    HD.DOM('img')
-        .event('mouseup', function(event){
-            if (event.which === 3){
-                event.preventDefault();
-                event.stopPropagation();
-            }
-        })
-        .event('contextmenu', function(event){
-            event.preventDefault();
-            event.stopPropagation();
-        });
-};
-
-/**
- * Drag-n-drop kurzor létrehozása egy elemen
- * @param {HTMLElement} elem - húzható elem
- * @param {String} openhand - hover kurzor teljes elérési útja
- * @param {String} closehand - drag kurzor teljes elérési útja
- */
-HD.DOM.grabCursor = function(elem, openhand, closehand){
-    const cssValueOpen = `url(${openhand}), move`;
-    const cssValueClose = `url(${closehand}), move`;
-    const Elem = HD.DOM(elem);
-
-    Elem.css({
-        'cursor' : cssValueOpen
-    });
-    Elem.event('mouseover', function(){
-        Elem.css({
-            'cursor' : cssValueOpen
-        });
-    });
-    Elem.event('mousedown', function(){
-        Elem.css({
-            'cursor' : cssValueClose
-        });
-    });
-    Elem.event('mouseup', function(){
-        Elem.css({
-            'cursor' : cssValueOpen
-        });
-    });
 };
 
 if (typeof exports !== 'undefined'){

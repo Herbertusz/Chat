@@ -40,9 +40,9 @@ CHAT.Events.Server = {
     disconnect : function(data){
         HD.DOM(CHAT.DOM.box).filter(':not(.cloneable)').elements.forEach(function(box){
             const Box = HD.DOM(box);
-            if (Box.find(CHAT.DOM.userItems).filter(`[data-id="${data.id}"]`).elements.length > 0){
+            if (Box.descendants(CHAT.DOM.userItems).filter(`[data-id="${data.id}"]`).elements.length > 0){
                 CHAT.Components.Transfer.appendSystemMessage(box, 'leave', data.id);
-                Box.find(`[data-id="${data.id}"]`).remove();
+                Box.descendants(`[data-id="${data.id}"]`).remove();
             }
         });
     },
@@ -83,7 +83,7 @@ CHAT.Events.Server = {
             Box = HD.DOM(
                 HD.DOM(CHAT.DOM.cloneBox).copyPaste(HD.DOM(CHAT.DOM.container).elem())
             );
-            Userlist = Box.find(CHAT.DOM.users);
+            Userlist = Box.descendants(CHAT.DOM.users);
             Box.data('room', roomData.name);
             CHAT.Components.User.generateList(Userlist.elem(), roomData.userIds);
             CHAT.Components.User.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj('connected-users'));
@@ -113,7 +113,7 @@ CHAT.Events.Server = {
             Box = HD.DOM(
                 HD.DOM(CHAT.DOM.cloneBox).copyPaste(HD.DOM(CHAT.DOM.container).elem())
             );
-            Userlist = Box.find(CHAT.DOM.users);
+            Userlist = Box.descendants(CHAT.DOM.users);
             Box.data('room', roomData.name);
             CHAT.Components.User.generateList(Userlist.elem(), roomData.userIds);
             CHAT.Components.User.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj('connected-users'));
@@ -124,7 +124,7 @@ CHAT.Events.Server = {
             Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${roomData.name}"]`);
             box = Box.elem();
             if (box){
-                Userlist = Box.find(CHAT.DOM.users);
+                Userlist = Box.descendants(CHAT.DOM.users);
                 CHAT.Components.Transfer.appendSystemMessage(box, 'join', roomData.joinedUserId);
                 CHAT.Components.User.generateList(Userlist.elem(), roomData.userIds, true);
                 CHAT.Components.Notification.trigger(box, {
@@ -159,7 +159,7 @@ CHAT.Events.Server = {
                     local : true
                 });
             }
-            Box.find(`[data-id="${extData.userId}"]`).remove();
+            Box.descendants(`[data-id="${extData.userId}"]`).remove();
         }
     },
 
@@ -183,7 +183,7 @@ CHAT.Events.Server = {
             // Csatlakoztattak a csatornához
             if (box){
                 // Van a csatornához tartozó doboz (korábban ki lett dobva)
-                Userlist = Box.find(CHAT.DOM.users);
+                Userlist = Box.descendants(CHAT.DOM.users);
                 CHAT.Components.Box.changeStatus(box, 'enabled');
                 CHAT.Components.User.generateList(Userlist.elem(), extData.roomData.userIds, true);
                 CHAT.Components.Transfer.appendSystemMessage(box, 'forceJoinYou', extData.triggerId);
@@ -194,7 +194,7 @@ CHAT.Events.Server = {
                     HD.DOM(CHAT.DOM.cloneBox).copyPaste(HD.DOM(CHAT.DOM.container).elem())
                 );
                 box = Box.elem();
-                Userlist = Box.find(CHAT.DOM.users);
+                Userlist = Box.descendants(CHAT.DOM.users);
                 Box.data('room', extData.roomData.name);
                 CHAT.Components.User.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj('connected-users'));
                 CHAT.Components.Box.fill(box, extData.roomData.name);
@@ -213,7 +213,7 @@ CHAT.Events.Server = {
         }
         else if (box){
             // Új user csatlakozott a csatornához
-            Userlist = Box.find(CHAT.DOM.users);
+            Userlist = Box.descendants(CHAT.DOM.users);
             CHAT.Components.User.generateList(Userlist.elem(), extData.roomData.userIds, true);
             CHAT.Components.Transfer.appendSystemMessage(box, 'forceJoinOther', extData.triggerId, extData.userId);
             CHAT.Components.Notification.trigger(box, {
@@ -263,7 +263,7 @@ CHAT.Events.Server = {
                     local : true
                 });
             }
-            Box.find(`[data-id="${extData.userId}"]`).remove();
+            Box.descendants(`[data-id="${extData.userId}"]`).remove();
         }
     },
 

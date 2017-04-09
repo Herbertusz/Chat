@@ -34,12 +34,12 @@ CHAT.Components.Notification = {
         // Helyi értesítés eltüntetése
         CHAT.DOM.inBox(CHAT.DOM.list).event('scroll', function(){
             if (this.scrollHeight - this.offsetHeight - this.scrollTop < CHAT.Config.notification.local.scroll){
-                HD.DOM(this).ancestor(CHAT.DOM.box).find(CHAT.DOM.localNotification).class('add', 'hidden');
+                HD.DOM(this).ancestors(CHAT.DOM.box).descendants(CHAT.DOM.localNotification).class('add', 'hidden');
             }
         });
         // Hibaüzenet eltüntetése
         CHAT.DOM.inBox(CHAT.DOM.errorClose).event('click', function(){
-            HD.DOM(this).ancestor(CHAT.DOM.box).find(CHAT.DOM.error).class('add', 'hidden');
+            HD.DOM(this).ancestors(CHAT.DOM.box).descendants(CHAT.DOM.error).class('add', 'hidden');
         });
     },
 
@@ -55,11 +55,11 @@ CHAT.Components.Notification = {
         errors.forEach(function(error){
             errorMessages.push(CHAT.Labels.error[error.type](error.value, error.restrict));
         });
-        Box.find(CHAT.DOM.errorList).elem().innerHTML = errorMessages.join('<br />');
-        Box.find(CHAT.DOM.error).class('remove', 'hidden');
+        Box.descendants(CHAT.DOM.errorList).elem().innerHTML = errorMessages.join('<br />');
+        Box.descendants(CHAT.DOM.error).class('remove', 'hidden');
         setTimeout(function(){
-            Box.find(CHAT.DOM.error).class('add', 'hidden');
-            Box.find(CHAT.DOM.errorList).elem().innerHTML = '';
+            Box.descendants(CHAT.DOM.error).class('add', 'hidden');
+            Box.descendants(CHAT.DOM.errorList).elem().innerHTML = '';
         }, CHAT.Config.box.error.messageWait);
     },
 
@@ -71,7 +71,7 @@ CHAT.Components.Notification = {
     stillWrite : function(box, userId){
         if (CHAT.Config.notification.allowed && CHAT.Config.notification.writing.allowed){
             const userName = CHAT.Components.User.getName(userId);
-            HD.DOM(box).find(CHAT.DOM.indicator).elem().innerHTML = CHAT.Labels.message.stillWrite(userName);
+            HD.DOM(box).descendants(CHAT.DOM.indicator).elem().innerHTML = CHAT.Labels.message.stillWrite(userName);
         }
     },
 
@@ -86,10 +86,10 @@ CHAT.Components.Notification = {
             const userName = CHAT.Components.User.getName(userId);
 
             if (message.trim().length > 0){
-                HD.DOM(box).find(CHAT.DOM.indicator).elem().innerHTML = CHAT.Labels.message.stopWrite(userName);
+                HD.DOM(box).descendants(CHAT.DOM.indicator).elem().innerHTML = CHAT.Labels.message.stopWrite(userName);
             }
             else {
-                HD.DOM(box).find(CHAT.DOM.indicator).elem().innerHTML = '';
+                HD.DOM(box).descendants(CHAT.DOM.indicator).elem().innerHTML = '';
             }
             clearInterval(CHAT.Components.Timer.writing.timerID);
             CHAT.Components.Timer.writing.timerID = null;
@@ -197,24 +197,24 @@ CHAT.Components.Notification = {
         if (data.local && conf.local.allowed){
             // helyi értesítés
             const Box = HD.DOM(box);
-            const list = Box.find(CHAT.DOM.list).elem();
+            const list = Box.descendants(CHAT.DOM.list).elem();
 
             if (list.scrollHeight - list.offsetHeight - list.scrollTop < conf.local.scroll){
                 list.scrollTop = list.scrollHeight;
             }
             else {
-                const LocalNotification = Box.find(CHAT.DOM.localNotification);
+                const LocalNotification = Box.descendants(CHAT.DOM.localNotification);
                 const tpl = `
                     ${CHAT.Labels.notification.local[data.type](fromUserName, toUserName)}
                 `;
 
-                LocalNotification.find(CHAT.DOM.text).elem().innerHTML = tpl;
+                LocalNotification.descendants(CHAT.DOM.text).elem().innerHTML = tpl;
                 LocalNotification.class('remove', 'hidden');
 
                 LocalNotification.event('click', function(){
                     list.scrollTop = list.scrollHeight;
                     HD.DOM(this).class('add', 'hidden');
-                    HD.DOM(this).find(CHAT.DOM.text).elem().innerHTML = '';
+                    HD.DOM(this).descendants(CHAT.DOM.text).elem().innerHTML = '';
                 });
             }
         }

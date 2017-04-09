@@ -63,10 +63,10 @@ CHAT.Components.User = {
         CHAT.DOM.inBox(CHAT.DOM.userItems).event('click', function(){
             const Trigger = HD.DOM(this);
             if (this.classList.contains('current')){
-                const List = Trigger.ancestor(CHAT.DOM.users);
+                const List = Trigger.ancestors(CHAT.DOM.users);
                 List.dataBool('active', !List.dataBool('active'));
-                Trigger.find(CHAT.DOM.userDropdown).class('toggle', 'active');
-                List.find(CHAT.DOM.userItems).elements.forEach(function(elem, i){
+                Trigger.descendants(CHAT.DOM.userDropdown).class('toggle', 'active');
+                List.descendants(CHAT.DOM.userItems).elements.forEach(function(elem, i){
                     const Elem = HD.DOM(elem);
                     if (Elem.dataNum('id') !== CHAT.userId && !Elem.filter('.cloneable').elem()){
                         Elem.class('toggle', 'hidden');
@@ -90,25 +90,24 @@ CHAT.Components.User = {
             let userElem;
             const currentUserId = HD.DOM(onlineListItem).dataNum('id');
             if (userIds.indexOf(currentUserId) > -1){
-                userElem = HD.DOM(to).find('.cloneable').copyPaste(to, currentUserId === CHAT.userId);
+                userElem = HD.DOM(to).descendants('.cloneable').copyPaste(to, currentUserId === CHAT.userId);
                 const UserElem = HD.DOM(userElem);
                 UserElem.dataNum('id', currentUserId);
-                UserElem.find(CHAT.DOM.status).class('add', 'run');
+                UserElem.descendants(CHAT.DOM.status).class('add', 'run');
                 CHAT.Components.User.setStatus(userElem, CHAT.Components.User.getStatus(onlineListItem));
                 if (currentUserId === CHAT.userId){
                     // Belépett user
-                    UserElem.class('add', 'current').find(CHAT.DOM.userThrow).class('add', 'hidden');
+                    UserElem.class('add', 'current').descendants(CHAT.DOM.userThrow).class('add', 'hidden');
                 }
                 else if (!HD.DOM(to).dataBool('active')){
                     // Nincs lenyitva a lista
-                    UserElem.class('add', 'hidden').find(CHAT.DOM.userDropdown).class('add', 'hidden');
+                    UserElem.class('add', 'hidden').descendants(CHAT.DOM.userDropdown).class('add', 'hidden');
                 }
                 else {
                     // Le van nyitva a lista
-                    console.log(3);
-                    UserElem.find(CHAT.DOM.userDropdown).class('add', 'hidden');
+                    UserElem.descendants(CHAT.DOM.userDropdown).class('add', 'hidden');
                 }
-                UserElem.find('.name').elem().innerHTML = CHAT.Components.User.getName(currentUserId);
+                UserElem.descendants('.name').elem().innerHTML = CHAT.Components.User.getName(currentUserId);
             }
         });
     },
@@ -121,7 +120,7 @@ CHAT.Components.User = {
     setStatus : function(elem, status){
         const UserElem = HD.DOM(elem);
         const userId = UserElem.dataNum('id');
-        const StatusElem = UserElem.find(CHAT.DOM.status);
+        const StatusElem = UserElem.descendants(CHAT.DOM.status);
         const statuses = new Set([...CHAT.Config.status.online, ...CHAT.Config.status.offline]);
         const prevStatus = CHAT.Components.User.getStatus(elem);
         const statusIcon = CHAT.Components.User.getStatusIcon(CHAT.Components.User.getStatusDetails(userId));
@@ -136,7 +135,7 @@ CHAT.Components.User = {
             }
             StatusElem.class('add', status);
         }
-        StatusElem.find('use').elem().setAttribute('xlink:href', `#${statusIcon}`);
+        StatusElem.descendants('use').elem().setAttribute('xlink:href', `#${statusIcon}`);
         CHAT.Components.User.setTimer(elem, prevStatus, status);
     },
 
@@ -147,7 +146,7 @@ CHAT.Components.User = {
      */
     getStatus : function(elem){
         let n, status;
-        const statusElem = HD.DOM(elem).find(CHAT.DOM.status).elem();
+        const statusElem = HD.DOM(elem).descendants(CHAT.DOM.status).elem();
         const statuses = new Set([...CHAT.Config.status.online, ...CHAT.Config.status.offline]);
 
         if (statusElem.classList.contains('idle')){
@@ -247,7 +246,7 @@ CHAT.Components.User = {
             }
         });
         HD.DOM(CHAT.DOM.box).elements.forEach(function(box){
-            HD.DOM(box).find(CHAT.DOM.userItems).elements.forEach(function(userItem){
+            HD.DOM(box).descendants(CHAT.DOM.userItems).elements.forEach(function(userItem){
                 const onlineStatus = onlineUserStatuses[HD.DOM(userItem).dataNum('id')];
                 CHAT.Components.User.setStatus(userItem, onlineStatus || CHAT.Config.status.offline[0]);
             });
@@ -301,7 +300,7 @@ CHAT.Components.User = {
      */
     statusEvents : function(){
         // Státusz megváltoztatása
-        HD.DOM(CHAT.DOM.online).find(CHAT.DOM.statusChange).event('change', function(){
+        HD.DOM(CHAT.DOM.online).descendants(CHAT.DOM.statusChange).event('change', function(){
             const connectedUsers = CHAT.Components.User.changeStatus(this.value);
             CHAT.socket.emit('statusChanged', connectedUsers, CHAT.userId);
         });
@@ -335,7 +334,7 @@ CHAT.Components.User = {
         };
         const userId = Number(HD.DOM(elem).data('id'));
         const timerId = `user-${userId}`;
-        const display = HD.DOM(elem).find(CHAT.DOM.idleTimer).elem();
+        const display = HD.DOM(elem).descendants(CHAT.DOM.idleTimer).elem();
 
         if (CHAT.Config.status.idle.timeCounter && display){
             // A db-ben tárolt utolsó átmenet lekérdezése

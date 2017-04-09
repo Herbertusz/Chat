@@ -73,7 +73,7 @@ CHAT.DOM = {
      * @returns {HD.DOM}
      */
     inBox : function(selector){
-        return HD.DOM(CHAT.DOM.box).find(selector);
+        return HD.DOM(CHAT.DOM.box).descendants(selector);
     },
 
     /**
@@ -82,7 +82,26 @@ CHAT.DOM = {
      * @returns {HD.DOM}
      */
     inVisibleBox : function(selector){
-        return HD.DOM(CHAT.DOM.box).filter(':not(.cloneable)').find(selector);
+        return HD.DOM(CHAT.DOM.box).filter(':not(.cloneable)').descendants(selector);
+    },
+
+    /**
+     * Tooltip biztosítása a text-overflow miatt nem teljesen látható elemekre
+     */
+    setTitle : function(context = null){
+        let elements = HD.DOM('*').elements;
+        if (context){
+            elements = HD.DOM(context).descendants('*').elements;
+        }
+        elements.filter(function(elem){
+            return window.getComputedStyle(elem).textOverflow === 'ellipsis';
+        }).forEach(function(elem){
+            HD.DOM(elem).event('mouseenter', function(){
+                if (elem.offsetWidth < elem.scrollWidth && !elem.getAttribute('title')){
+                    elem.setAttribute('title', elem.innerText);
+                }
+            });
+        });
     }
 
 };

@@ -7,6 +7,7 @@ var CHAT = window.CHAT || {};
 // Rendszer vezérlése
 HD.DOM(document).event('DOMContentLoaded', function(){
 
+    CHAT.DOM.setTitle();
     CHAT.Components.Box.roomEvents();
     CHAT.Components.Box.dragPosition();
     CHAT.Components.Box.dragResize();
