@@ -1,26 +1,27 @@
-/* global appRoot */
+/**
+ *
+ */
 
 'use strict';
 
-var promisify = require('es6-promisify');
-var fs = require('fs');
-var ioExpressSession = require('socket.io-express-session');
-var HD = require(`${appRoot}/libs/hd/hd.math.js`);
-var Model;
-
-const fsAccess = promisify(fs.access);
-const fsUnlink = promisify(fs.unlink);
+let ChatModel;
+const ENV = require.main.require('../app/env.js');
+const fs = require('mz/fs');
+const ioExpressSession = require('socket.io-express-session');
+const log = require.main.require('../libs/log.js');
+const HD = require.main.require('../app/public/js/hd/hd.js')(['utility', 'math']);
+const CHAT = require.main.require('../app/config/config.js');
 
 /**
  * Websocket vezérlés
  * @param {Object} server - http szerver
  * @param {Object} ioSession - express-session
  * @param {Object} app - express
- * @returns {*}
+ * @returns {Object}
  */
 module.exports = function(server, ioSession, app){
 
-    Model = require(`${appRoot}/app/models/chat.js`)(app.get('db'));
+    ChatModel = require.main.require(`../app/models/${ENV.DBDRIVER}/chat.js`)(app.get('db'));
 
     /**
      * Chat-be belépett userek
@@ -30,8 +31,8 @@ module.exports = function(server, ioSession, app){
      *     <socket.id> : {
      *         id : Number,      // user azonosító
      *         name : String,    // user login név
-     *         status : String,  // user státusz ("on"|"busy"|"off")
-     *         isIdle : Boolean  // user státusz: "idle"
+     *         status : String,  // user státusz (CHAT.Labels.status.online + offline)
+     *         isIdle : Boolean  // user tétlen státuszban van
      *     },
      *     ...
      * }
@@ -44,7 +45,7 @@ module.exports = function(server, ioSession, app){
      * @description
      * rooms = [
      *     {
-     *         name : String,    // "room-x-y"; x: létrehozó userId, y: létrehozás timestamp
+     *         name : String,    // 'room-x-y'; x: létrehozó userId, y: létrehozás timestamp
      *         userIds : Array,  // csatornába rakott userId-k
      *         starter : Number  // csatorna létrehozó userId
      *     },
@@ -79,18 +80,19 @@ module.exports = function(server, ioSession, app){
         rooms.forEach(function(room, index){
             if (room.userIds.length === 0 || HD.Math.Set.intersection(room.userIds, onlineUserIds).length === 0){
                 // fájlok törlése
-                Model.deleteRoomFiles(room.name, function(urls){
-                    for (let i = 0; i < urls.length; i++){
-                        const path = `${app.get('public path')}/${urls[i]}`;
-                        fsAccess(path, fs.W_OK)
-                            .then(function(){
-                                fsUnlink(path);
-                            })
-                            .catch(function(error){
-                                console.log(error);
-                            });
-                    }
-                });
+                ChatModel.deleteRoomFiles(room.name)
+                    .then(function(urls){
+                        for (let i = 0; i < urls.length; i++){
+                            const path = `${app.get('public path')}/${urls[i]}`;
+                            fs.access(path, fs.W_OK)
+                                .then(function(){
+                                    return fs.unlink(path);
+                                })
+                                .catch(function(error){
+                                    log.error(error);
+                                });
+                        }
+                    });
 
                 deleted.push(room.name);
                 rooms.splice(index, 1);
@@ -100,7 +102,7 @@ module.exports = function(server, ioSession, app){
 
     /**
      * Csatorna módosítása
-     * @param {String} operation - művelet ("add"|"remove")
+     * @param {String} operation - művelet ('add'|'remove')
      * @param {String} roomName - csatorna azonosító
      * @param {Number} userId - user azonosító
      */
@@ -134,28 +136,96 @@ module.exports = function(server, ioSession, app){
         }
     };
 
+    /**
+     *
+     * @param {Object} prevUserData
+     * @param {Object} nextUserData
+     * @desc *UserData = {
+     *     id : Number,      // user azonosító
+     *     name : String,    // user login név
+     *     status : String,  // user státusz (CHAT.Labels.status.online + offline)
+     *     isIdle : Boolean  // user tétlen státuszban van
+     * }
+     */
+    const statusLog = function(prevUserData, nextUserData){
+        const statuses = {
+            active : CHAT.Config.status.active,
+            inactive : CHAT.Config.status.inactive
+        };
+
+        if (!HD.Misc.defined(prevUserData) || !HD.Misc.defined(nextUserData)){
+            return;
+        }
+        if (!prevUserData){
+            prevUserData = {
+                id : nextUserData.id,
+                name : nextUserData.name,
+                status : CHAT.Config.status.offline[0],
+                isIdle : false
+            };
+        }
+        if (!nextUserData){
+            nextUserData = {
+                id : prevUserData.id,
+                name : prevUserData.name,
+                status : CHAT.Config.status.offline[0],
+                isIdle : false
+            };
+        }
+
+        const userId = prevUserData.id;
+        const prevStatus = prevUserData.isIdle ? 'idle' : prevUserData.status;
+        const nextStatus = nextUserData.isIdle ? 'idle' : nextUserData.status;
+
+        if (CHAT.Config.status.idle.timeCounter){
+            let type = null;
+            if (statuses.active.indexOf(prevStatus) > -1 && statuses.inactive.indexOf(nextStatus) > -1){
+                type = 0;  // inaktiválás
+            }
+            else if (statuses.inactive.indexOf(prevStatus) > -1 && statuses.active.indexOf(nextStatus) > -1){
+                type = 1;  // aktiválás
+            }
+            if (type !== null){
+                ChatModel.setStatus({type, userId, prevStatus, nextStatus})
+                    .catch(function(error){
+                        log.error(error);
+                    });
+            }
+        }
+    };
+
     const io = require('socket.io')(server);
     io.of('/chat').use(ioExpressSession(ioSession));
 
     // Belépés a chat-be
     io.of('/chat').on('connection', function(socket){
+
         let userData = null;
         const session = socket.handshake.session;
 
+        // user azonosítása
         if (session.login && session.login.loginned){
             // belépett user
             userData = {
                 id : session.login.userId,
-                name : session.login.userName,
-                status : "on",
+                status : CHAT.Config.status.online[0],
                 isIdle : false
             };
         }
+        else if (app.get('userId')){
+            userData = {
+                id : app.get('userId'),
+                status : CHAT.Config.status.online[0],
+                isIdle : false
+            };
+        }
+
         if (userData){
             // csatlakozás emitter
             connectedUsers[socket.id] = userData;
             socket.broadcast.emit('userConnected', userData);
             io.of('/chat').emit('statusChanged', connectedUsers);
+            statusLog(null, userData);
             rooms.forEach(function(roomData){
                 if (roomData.userIds.indexOf(userData.id) > -1){
                     socket.join(roomData.name);
@@ -173,13 +243,17 @@ module.exports = function(server, ioSession, app){
             if (discUserData){
                 Reflect.deleteProperty(connectedUsers, socket.id);
                 roomUpdate('remove', null, discUserData.id);
+                statusLog(discUserData, null);
                 io.of('/chat').emit('statusChanged', connectedUsers);
                 io.of('/chat').emit('disconnect', discUserData);
             }
         });
 
         // User állapotváltozása
-        socket.on('statusChanged', function(updatedConnectedUsers){
+        socket.on('statusChanged', function(updatedConnectedUsers, triggerUserId){
+            const prevUserData = HD.Object.search(connectedUsers, user => user.id === triggerUserId);
+            const nextUserData = HD.Object.search(updatedConnectedUsers, user => user.id === triggerUserId);
+            statusLog(prevUserData, nextUserData);
             connectedUsers = updatedConnectedUsers;
             socket.broadcast.emit('statusChanged', updatedConnectedUsers);
         });
@@ -189,61 +263,69 @@ module.exports = function(server, ioSession, app){
             rooms.push(roomData);
             socket.join(roomData.name);
             socket.broadcast.emit('roomCreated', roomData);
+            ChatModel.setEvent('roomCreated', roomData.name, roomData);
         });
 
         // Belépés csatornába
         socket.on('roomJoin', function(data){
             socket.join(data.roomName);
+            ChatModel.setEvent('roomJoin', data.roomName, data);
         });
 
         // Kilépés csatornából
         socket.on('roomLeave', function(data){
+            const roomData = getRoom(data.roomName);
+            const emitData = {
+                userId : data.userId,
+                roomData : roomData
+            };
             if (!data.silent){
-                const roomData = getRoom(data.roomName);
-                socket.broadcast.emit('roomLeaved', {
-                    userId : data.userId,
-                    roomData : roomData
-                });
+                socket.broadcast.emit('roomLeaved', emitData);
             }
             roomUpdate('remove', data.roomName, data.userId);
             socket.leave(data.roomName, () => {});
+            ChatModel.setEvent('roomLeave', data.roomName, emitData);
         });
 
         // Hozzáadás csatornához emitter
         socket.on('roomForceJoin', function(data){
-            roomUpdate('add', data.roomName, data.userId);
-            socket.broadcast.emit('roomForceJoined', {
+            const emitData = {
                 triggerId : data.triggerId,
                 userId : data.userId,
                 roomData : getRoom(data.roomName)
-            });
+            };
+            roomUpdate('add', data.roomName, data.userId);
+            socket.broadcast.emit('roomForceJoined', emitData);
+            ChatModel.setEvent('roomForceJoin', data.roomName, emitData);
         });
 
         // Kidobás csatornából emitter
         socket.on('roomForceLeave', function(data){
-            roomUpdate('remove', data.roomName, data.userId);
-            socket.broadcast.emit('roomForceLeaved', {
+            const emitData = {
                 triggerId : data.triggerId,
                 userId : data.userId,
                 roomData : getRoom(data.roomName)
-            });
+            };
+            roomUpdate('remove', data.roomName, data.userId);
+            socket.broadcast.emit('roomForceLeaved', emitData);
+            ChatModel.setEvent('roomForceLeave', data.roomName, emitData);
         });
 
         // Üzenetküldés emitter
         socket.on('sendMessage', function(data){
             socket.broadcast.to(data.roomName).emit('sendMessage', data);
-            Model.setMessage({
+            ChatModel.setMessage({
                 userId : userData.id,
                 room : data.roomName,
                 message : data.message,
                 time : data.time
-            }, () => {});
+            });
         });
 
         // Fájlküldés emitter
         socket.on('sendFile', function(data){
             socket.broadcast.to(data.roomName).emit('sendFile', data);
-            Model.setFile({
+            ChatModel.setFile({
                 userId : userData.id,
                 room : data.roomName,
                 store : data.store,
@@ -251,19 +333,68 @@ module.exports = function(server, ioSession, app){
                 mainType : data.type,
                 file : data.file,
                 time : data.time
-            }, () => {});
+            });
         });
 
         // Fájlátvitel megszakítás emitter
         socket.on('abortFile', function(data){
+            const filePath = `${app.get('public path')}/upload/${data.fileName}`;
             socket.broadcast.to(data.roomName).emit('abortFile', data);
-            // TODO: Model.deleteFile(data.time, () => {}); (nincs azonosító!)
+            ChatModel.setEvent('abortFile', data.roomName, data);
+            ChatModel.deleteFile(filePath)
+                .then(function(){
+                    return fs.access(filePath, fs.W_OK);
+                })
+                .then(function(){
+                    return fs.unlink(filePath);
+                })
+                .catch(function(error){
+                    log.error(error);
+                });
         });
 
         // Üzenetírás emitter
         socket.on('typeMessage', function(data){
             socket.broadcast.to(data.roomName).emit('typeMessage', data);
         });
+
+    });
+
+    io.of('/videochat').on('connection', function(socket){
+
+        // convenience function to log server messages on the client
+        const clientLog = function(...args){
+            const array = ['Message from server:'];
+            array.push(...args);
+            socket.emit('log', array);
+        };
+
+        socket.on('message', function(message){
+            clientLog('Client said: ', message);
+            socket.broadcast.emit('message', message);
+        });
+
+        socket.on('create or join', function(room){
+            clientLog(`Received request to create or join room ${room}`);
+
+            const numClients = Object.keys(io.sockets.sockets).length;
+            clientLog(`Room ${room} now has ${numClients} client(s)`);
+
+            if (numClients === 1){
+                socket.join(room);
+                clientLog(`Client ID ${socket.id} created room ${room}`);
+                socket.emit('created', room, socket.id);
+            }
+            else {
+                clientLog(`Client ID ${socket.id} joined room ${room}`);
+                socket.broadcast.to(room).emit('join', room);
+                socket.join(room);
+                socket.broadcast.to(room).emit('joined', room, socket.id);
+                socket.broadcast.to(room).emit('ready');
+            }
+
+        });
+
     });
 
     return io;

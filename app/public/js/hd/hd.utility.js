@@ -1,13 +1,13 @@
-/*!
- * HD-keret Utility v1.0.0
- * 2015.02.21.
+/**
+ * HD-keret Utility
+ *
+ * @description Alapvető segédfüggvények
+ * @requires -
  */
 
-/* global HD namespace */
+'use strict';
 
-"use strict";
-
-var HD = namespace("HD");
+var HD = (typeof global !== 'undefined' ? global.HD : window.HD) || {};
 
 /**
  * Általános műveletek és adatok
@@ -32,28 +32,43 @@ HD.Misc = {
      * @type {Object}
      */
     letters : {
-        "a" : 65, "b" : 66, "c" : 67, "d" : 68, "e" : 69, "f" : 70, "g" : 71, "h" : 72, "i" : 73,
-        "j" : 74, "k" : 75, "l" : 76, "m" : 77, "n" : 78, "o" : 79, "p" : 80, "q" : 81, "r" : 82,
-        "s" : 83, "t" : 84, "u" : 85, "v" : 86, "w" : 87, "x" : 88, "y" : 89, "z" : 90,
-        "0" : 48, "1" : 49, "2" : 50, "3" : 51, "4" : 52, "5" : 53, "6" : 54, "7" : 55, "8" : 56, "9" : 57
+        'a' : 65, 'b' : 66, 'c' : 67, 'd' : 68, 'e' : 69, 'f' : 70, 'g' : 71, 'h' : 72, 'i' : 73,
+        'j' : 74, 'k' : 75, 'l' : 76, 'm' : 77, 'n' : 78, 'o' : 79, 'p' : 80, 'q' : 81, 'r' : 82,
+        's' : 83, 't' : 84, 'u' : 85, 'v' : 86, 'w' : 87, 'x' : 88, 'y' : 89, 'z' : 90,
+        '0' : 48, '1' : 49, '2' : 50, '3' : 51, '4' : 52, '5' : 53, '6' : 54, '7' : 55, '8' : 56, '9' : 57
     },
 
     /**
-     * Switch szerkezetet helyettesítő függvény
-     * @param {*} variable változó
-     * @param {Object} relations változó különböző értékeihez rendelt visszatérési értékek
-     * @param {*} [defaultValue=null] alapértelmezett érték (default)
+     * Értékadásra használt switch szerkezetet helyettesítő függvény
+     * @param {*} variable - változó
+     * @param {Object} relations - változó különböző értékeihez rendelt visszatérési értékek
+     * @param {*} [defaultValue=null] - alapértelmezett érték (default)
      * @returns {*}
+     * @example
+     *  control = HD.Misc.switching(key, {
+     *      'W' : 'accelerate',
+     *      'A' : 'turnLeft',
+     *      'S' : 'brake',
+     *      'D' : 'turnRight'
+     *  }, null);
      */
-    switching : function(variable, relations, defaultValue){
-        var index;
-        if (typeof defaultValue === "undefined") defaultValue = null;
+    switching : function(variable, relations, defaultValue = null){
+        let index;
         for (index in relations){
             if (variable === index){
                 return relations[index];
             }
         }
         return defaultValue;
+    },
+
+    /**
+     * Változó deklaráltságának ellenőrzése
+     * @param {*} param - változó
+     * @returns {boolean} true ha deklarált
+     */
+    defined : function(param){
+        return typeof param !== 'undefined';
     }
 
 };
@@ -74,33 +89,31 @@ HD.Number = {
 
     /**
      * Szám elejének feltöltése nullákkal
-     * @param {Number} num szám
-     * @param {Number} len kívánt hossz
+     * @param {Number} num - szám
+     * @param {Number} len - kívánt hossz
      * @returns {String} nullákkal feltöltött szám
      */
     fillZero : function(num, len){
-        var numStr = "";
-        var originalNumStr = num.toString();
-        var originalLen = originalNumStr.length;
+        let numStr = '';
+        const originalNumStr = num.toString();
+        const originalLen = originalNumStr.length;
         for (let n = originalLen; n < len; n++){
-            numStr += "0";
+            numStr += '0';
         }
         return numStr + originalNumStr;
     },
 
     /**
      * Fájlméret kiírása
-     * @param {Number} size méret bájtokban
-     * @param {Number} [precision=2] pontosság (tizedesjegyek száma)
-     * @param {Number} [prefixLimit=0.5] ha ennél kisebb, az alacsonyabb prefixum használata
+     * @param {Number} size - méret bájtokban
+     * @param {Number} [precision=2] - pontosság (tizedesjegyek száma)
+     * @param {Number} [prefixLimit=0.5] - ha ennél kisebb, az alacsonyabb prefixum használata
      * @returns {String} olvasható érték
      */
-    displaySize : function(size, precision, prefixLimit){
-        var n = 1.0;
-        var pref = ["", "", "k", "M", "G", "T", "P", "E", "Z", "Y"];
-        var k, i;
-        if (typeof precision === "undefined") precision = 2;
-        if (typeof prefixLimit === "undefined") prefixLimit = 0.5;
+    displaySize : function(size, precision = 2, prefixLimit = 0.5){
+        let n = 1.0;
+        let k, i;
+        const pref = ['', '', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
         for (k = 0; k < precision; k++){
             n *= 10.0;
         }
@@ -114,14 +127,14 @@ HD.Number = {
 
     /**
      * Fájlméret visszafejtése (a displaysize inverze)
-     * Pl.: "10.5 MB", "1000kB", "3 400 000 B", "2,7 GB"
-     * @param {String} size méret olvasható formában
+     * Pl.: '10.5 MB', '1000kB', '3 400 000 B', '2,7 GB'
+     * @param {String} size - méret olvasható formában
      * @returns {Number} értéke bájtban
      */
     recoverSize : function(size){
-        var numberpart, multiply, offset, prefixum, index, n;
-        var q = "";
-        var pref = {
+        let numberpart, multiply, offset, prefixum, index, n;
+        let q = '';
+        const pref = {
             none : 1,
             k : 1024,
             M : 1048576,
@@ -147,12 +160,12 @@ HD.Number = {
                 offset = size.length - q.length;
             }
             numberpart = size.substr(0, offset);
-            if (size.indexOf(".") === -1 && size.indexOf(",") > -1){
-                numberpart = numberpart.replace(",", ".");
+            if (size.indexOf('.') === -1 && size.indexOf(',') > -1){
+                numberpart = numberpart.replace(',', '.');
             }
-            numberpart = numberpart.replace(" ", "");
+            numberpart = numberpart.replace(' ', '');
         }
-        q = $.trim(this.reverse(q).toLowerCase());
+        q = this.reverse(q).toLowerCase().trim();
         if (q.length === 2){
             prefixum = q[0];
             if (pref.hasOwnProperty(prefixum)){
@@ -196,18 +209,6 @@ HD.Number = {
 HD.String = {
 
     /**
-     * Egyedi (pszeudo) GUID generálása
-     * @returns {String}
-     */
-    getGuid : function(){
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){
-            const r = Math.floor(Math.random() * 16);
-            const v = (c === 'x') ? r : (r & 0x3 | 0x8);
-            return v.toString(16);
-        });
-    },
-
-    /**
      * Első karakter nagybetűssé alakítása
      * @param {String} str
      * @returns {String}
@@ -234,19 +235,19 @@ HD.String = {
 
     /**
      * Karakterlánc megfordítása
-     * @param {String} str karakterlánc
+     * @param {String} str - karakterlánc
      * @returns {String} karakterlánc visszafelé
      */
     reverse : function(str){
-        const splitext = str.split("");
+        const splitext = str.split('');
         const revertext = splitext.reverse();
-        return revertext.join("");
+        return revertext.join('');
     },
 
     /**
      * Előtag eltávolítása a karakterláncról
-     * @param {String} str karakterlánc
-     * @param {String} separator előtag kapcsoló karakter
+     * @param {String} str - karakterlánc
+     * @param {String} separator - előtag kapcsoló karakter
      * @returns {String} maradék karakterlánc
      */
     removePrefix : function(str, separator){
@@ -257,23 +258,119 @@ HD.String = {
 
     /**
      * E-mail cím ellenőrzés
-     * @param {String} email e-mail cím
+     * @param {String} email - e-mail cím
      * @returns {Boolean} true, ha jó a formátum
      */
     validateEmail : function(email){
-        return !!/^[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]+$/.test(email);
+        return /^[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]+$/.test(email);
     },
 
     /**
      * Karakterlánc átalakítása RegExp objektummá
-     * @param {String} str pl.: "/x/gi"
+     * @param {String} str - pl.: '/x/gi'
      * @returns {RegExp}
      */
     createRegExp : function(str){
-        const pattern = str.replace(/^\/(.*)\/[gimuy]*$/, "$1");
-        const flags = str.replace(/^\/.*\/([gimuy]*)$/, "$1");
+        const pattern = str.replace(/^\/(.*)\/[gimuy]*$/, '$1');
+        const flags = str.replace(/^\/.*\/([gimuy]*)$/, '$1');
         return new RegExp(pattern, flags);
+    },
+
+    /**
+     * Ékezetes betűk (magyar) és írásjelek kiszedése (pl. "Űkuöí Owá-43" -> "Ukuoi_Owa_43")
+     * az írásjeleket az exceptions-ben lévő karakterek kivételével a replace-re cseréli
+     * @param {String} str - átalakítandó karakterlánc
+     * @param {String} [replace='_'] - karakterlánc, amire az írásjelek cserélődnek
+     * @param {Object} [options] - egyéb beállítások
+     * @returns {String} átalakított karakterlánc
+     * TODO: tesztelés
+     */
+    canonic : function(str, replace = '_', options = {}){
+        options = Object.assign({
+            exceptions : '',
+            tolower : false,
+            trim : true,
+            chars : 'a-zA-Z0-9'
+        }, options);
+
+        let n;
+        let canonic = '';
+        let second;
+
+        [...str].forEach(function(c){
+            canonic += HD.Misc.switching(c, {
+                'á' : 'a', 'é' : 'e', 'í' : 'i', 'ó' : 'o', 'ö' : 'o', 'ő' : 'o', 'ú' : 'u', 'ü' : 'u', 'ű' : 'u',
+                'Á' : 'A', 'É' : 'E', 'Í' : 'I', 'Ó' : 'O', 'Ö' : 'O', 'Ő' : 'O', 'Ú' : 'U', 'Ü' : 'U', 'Ű' : 'U'
+            }, c);
+        });
+
+        if (options.trim) canonic = canonic.trim();
+        canonic = canonic.replace(new RegExp(`/[^${options.chars}${options.exceptions}]+/`), replace);
+        if (options.tolower) canonic = canonic.toLowerCase();
+        return canonic;
+    },
+
+    /**
+     * Megadott hosszúságú karakterlánc generálása (pl jelszóhoz)
+     * @param {Number} len - hossz
+     * @param {String} [type=1aA] - használható karaktertípusok
+     * @returns {String} generált karakterlánc
+     * TODO: tesztelés
+     */
+    generate : function(len, type = '1aA'){
+        let n;
+        let chars = '';
+        let ret = '';
+        const nums = '0123456789';
+        const lowchars = 'abcdefghijklmnopqrstuvwxyz';
+        const upchars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const signs = '\'"+!%/=()~^`$<>#&@{}[]\\|,.-?:_;*';
+
+        if (type.indexOf('1') > -1){
+            chars += nums;
+        }
+        if (type.indexOf('a') > -1){
+            chars += lowchars;
+        }
+        if (type.indexOf('A') > -1){
+            chars += upchars;
+        }
+        if (type.indexOf('s') > -1){
+            chars += signs;
+        }
+
+        for (n = 0; n < len; n++){
+            ret += chars[Math.floor(Math.random() * chars.length)];
+        }
+        return ret;
     }
+
+    // /**
+    //  * Jelszó kódolása
+    //  * @param {String} pwd - kódolandó jelszó
+    //  * @param {String} [salt] - só
+    //  * @returns {String} kódolt jelszó
+    //  */
+    // hash : function(pwd, salt){
+    //     var sha1 = (s) => s;
+    //     var PROJECT_NAME = '';
+    //
+    //     if (typeof salt === 'undefined'){
+    //         pwd = sha1(pwd);
+    //     }
+    //     else {
+    //         let i;
+    //         let salt2 = '';
+    //         const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    //         const salt1 = salt;
+    //         const salt2_original = PROJECT_NAME;
+    //         for (i = 0; i < salt2_original.length; i++){
+    //             salt2 += chars[chars.indexOf(salt2_original[i]) + 1 % chars.length];
+    //         }
+    //         pwd = sha1(salt1 + pwd + salt2);
+    //     }
+    //     return pwd;
+    // }
 
 };
 
@@ -285,13 +382,13 @@ HD.Function = {
 
     /**
      * Alapértelmezett paraméterérték megadása függvényben
-     * @example par = param(par, 0);
-     * @param {mixed} param paraméter
-     * @param {mixed} value alapértelmezett érték
-     * @returns {mixed} ezt kell értékül adni a paraméternek
+     * @param {*} param - paraméter
+     * @param {*} value - alapértelmezett érték
+     * @returns {*} ezt kell értékül adni a paraméternek
+     * @example par = HD.Function.param(par, 0);
      */
     param : function(param, value){
-        if (typeof param === "undefined"){
+        if (typeof param === 'undefined'){
             return value;
         }
         else {
@@ -301,15 +398,15 @@ HD.Function = {
 
     /**
      * Alapértelmezett paraméterértékek megadása függvényben
-     * @param {Object} params argumentumok adatai
+     * @param {Object} params - argumentumok adatai
      * @returns {Array} paraméterek értékei
-     * @description
-     * HD.Misc.funcMultiParam({
-     *     sql      : [sql, "string"],
-     *     binds    : [binds, "object", {}],
-     *     run      : [run, "boolean", true],
-     *     preserve : [preserve, "boolean", false],
-     *     callback : [callback, "function"]
+     * @example
+     * HD.Function.multiParam({
+     *     sql      : [sql, 'string'],
+     *     binds    : [binds, 'object', {}],
+     *     run      : [run, 'boolean', true],
+     *     preserve : [preserve, 'boolean', false],
+     *     callback : [callback, 'function']
      * });
      * név : [érték, typus, alapértelmezett érték]
      */
@@ -318,7 +415,7 @@ HD.Function = {
         let n;
         let currentParamNum = 0;
         for (n in params){
-            if (typeof params[n][0] !== params[n][1] && typeof params[n][2] !== "undefined"){
+            if (typeof params[n][0] !== params[n][1] && typeof params[n][2] !== 'undefined'){
                 newParams[n] = params[2];
             }
             else {
@@ -338,12 +435,12 @@ HD.Array = {
 
     /**
      * A PHP in_array() függvénye (indexOf boolean változata)
-     * @param {*} needle keresendő elem
-     * @param {Array} haystack tömb
+     * @param {*} needle - keresendő elem
+     * @param {Array} haystack - tömb
      * @returns {Boolean}
      */
     inArray : function(needle, haystack){
-        var len, i;
+        let len, i;
         if (haystack){
             if (Array.prototype.indexOf){
                 return (Array.prototype.indexOf.call(haystack, needle) > -1);
@@ -360,13 +457,13 @@ HD.Array = {
 
     /**
      * Általános indexOf
-     * @param {Object} val keresendő elem
-     * @param {Array} arr tömb
-     * @param {Function} comparer összehasonlító függvény
+     * @param {Object} val - keresendő elem
+     * @param {Array} arr - tömb
+     * @param {Function} comparer - összehasonlító függvény
      * @returns {Number}
      */
     indexOf : function(val, arr, comparer){
-        var i, len;
+        let len, i;
         for (i = 0, len = arr.length; i < len; ++i){
             if (i in arr && comparer(arr[i], val)){
                 return i;
@@ -377,8 +474,8 @@ HD.Array = {
 
     /**
      * Hozzáadás tömbhöz, ha még nem tartalmazza az adott értéket
-     * @param {Array} arr tömb
-     * @param {*} val érték
+     * @param {Array} arr - tömb
+     * @param {*} val - érték
      * @returns {Array} módosított tömb
      */
     addByVal : function(arr, val){
@@ -390,16 +487,35 @@ HD.Array = {
 
     /**
      * Érték eltávolítása a tömbből
-     * @param {Array} arr tömb
-     * @param {*} val érték
+     * @param {Array} arr - tömb
+     * @param {*} val - érték
      * @returns {Array} módosított tömb
      */
     removeByVal : function(arr, val){
-        var index = arr.indexOf(val);
+        const index = arr.indexOf(val);
         if (index > -1){
             arr.slice(index, 1);
         }
         return arr;
+    },
+
+    /**
+     * 2D-s tömb "elforgatása"
+     * @param {Array} arr - tömb
+     * @returns {Array}
+     * @example
+     * [[1,2],[3,4],[5,6]] -> [[1,3,5],[2,4,6]]
+     */
+    rotate : function(arr){
+        let i, j;
+        const rotated = [];
+        for (i = 0; i < arr[0].length; i++){
+            rotated[i] = [];
+            for (j = 0; j < arr.length; j++){
+                rotated[i][j] = arr[j][i];
+            }
+        }
+        return rotated;
     }
 
 };
@@ -411,15 +527,33 @@ HD.Array = {
 HD.Object = {
 
     /**
+     * Egyszintű keresés objektumban callback függvény alapján
+     * @param {Object} obj - haystack
+     * @param {Function} callback - keresendő elemre truthy értéket kell adnia
+     * @returns {*} keresett elem
+     * @desc callback argumentumai:
+     *   param {*} - objektum egy eleme
+     *   param {String} - objektum elemének kulcsa
+     *   param {Object} - az objektum
+     */
+    search : function(obj, callback){
+        for (const prop in obj){
+            if (callback(obj[prop], prop, obj)){
+                return obj[prop];
+            }
+        }
+    },
+
+    /**
      * Objektumok közti részleges egyezés vizsgálata
-     * @param {Object} partialObject keresendő rész
-     * @param {Object} fullObject keresett objektum
+     * @param {Object} partialObject - keresendő rész
+     * @param {Object} fullObject - keresett objektum
      * @returns {Boolean} a keresett objektum tartalmazza a keresendő részt
      */
-    objectPartialMatch : function(partialObject, fullObject){
-        var properties = Object.keys(fullObject);
+    partialMatch : function(partialObject, fullObject){
+        const properties = Object.keys(fullObject);
         for (let n = 0; n < properties.length; n++){
-            if (typeof partialObject[properties[n]] !== "undefined" &&
+            if (typeof partialObject[properties[n]] !== 'undefined' &&
                 partialObject[properties[n]] !== fullObject[properties[n]]){
                 return false;
             }
@@ -428,3 +562,12 @@ HD.Object = {
     }
 
 };
+
+if (typeof exports !== 'undefined'){
+    exports.Misc = HD.Misc;
+    exports.Number = HD.Number;
+    exports.String = HD.String;
+    exports.Function = HD.Function;
+    exports.Array = HD.Array;
+    exports.Object = HD.Object;
+}

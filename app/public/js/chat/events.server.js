@@ -1,6 +1,6 @@
 /* global HD */
 
-"use strict";
+'use strict';
 
 var CHAT = window.CHAT || {};
 CHAT.Events = CHAT.Events || {};
@@ -18,12 +18,12 @@ CHAT.Events.Server = {
      * data = {
      *     id : Number,      // user azonosító
      *     name : String,    // user login név
-     *     status : String,  // user státusz ("on"|"busy"|"off")
-     *     isIdle : Boolean  // user státusz: "idle"
+     *     status : String,  // user státusz ('on'|'busy'|'off')
+     *     isIdle : Boolean  // user státusz: 'idle'
      * }
      */
     userConnected : function(data){
-        // CHAT.Method.appendSystemMessage(box, 'connect', data.id);
+        // CHAT.Methods.appendSystemMessage(box, 'connect', data.id);
     },
 
     /**
@@ -33,16 +33,16 @@ CHAT.Events.Server = {
      * data = {
      *     id : Number,      // user azonosító
      *     name : String,    // user login név
-     *     status : String,  // user státusz ("on"|"busy"|"off")
-     *     isIdle : Boolean  // user státusz: "idle"
+     *     status : String,  // user státusz ('on'|'busy'|'off')
+     *     isIdle : Boolean  // user státusz: 'idle'
      * }
      */
     disconnect : function(data){
         HD.DOM(CHAT.DOM.box).filter(':not(.cloneable)').elements.forEach(function(box){
             const Box = HD.DOM(box);
-            if (Box.find(CHAT.DOM.userItems).filter(`[data-id="${data.id}"]`).elements.length > 0){
-                CHAT.Method.appendSystemMessage(box, 'leave', data.id);
-                Box.find(`[data-id="${data.id}"]`).remove();
+            if (Box.descendants(CHAT.DOM.userItems).filter(`[data-id="${data.id}"]`).elements.length > 0){
+                CHAT.Components.Transfer.appendSystemMessage(box, 'leave', data.id);
+                Box.descendants(`[data-id="${data.id}"]`).remove();
             }
         });
     },
@@ -55,15 +55,15 @@ CHAT.Events.Server = {
      *     <socket.id> : {
      *         id : Number,      // user azonosító
      *         name : String,    // user login név
-     *         status : String,  // user státusz ("on"|"busy"|"off")
-     *         isIdle : Boolean  // user státusz: "idle"
+     *         status : String,  // user státusz ('on'|'busy'|'off')
+     *         isIdle : Boolean  // user státusz: 'idle'
      *     },
      *     ...
      * }
      */
     statusChanged : function(connectedUsers){
-        HD.DOM(CHAT.DOM.online).dataObj("connected-users", connectedUsers);
-        CHAT.Method.updateStatuses(connectedUsers);
+        HD.DOM(CHAT.DOM.online).dataObj('connected-users', connectedUsers);
+        CHAT.Components.User.updateStatuses(connectedUsers);
     },
 
     /**
@@ -71,7 +71,7 @@ CHAT.Events.Server = {
      * @param {Object} roomData
      * @description
      * roomData = {
-     *     name : String,    // "room-x-y"; x: létrehozó userId, y: létrehozás timestamp
+     *     name : String,    // 'room-x-y'; x: létrehozó userId, y: létrehozás timestamp
      *     userIds : Array,  // csatornába rakott userId-k
      *     starter : Number  // csatorna létrehozó userId
      * }
@@ -79,16 +79,20 @@ CHAT.Events.Server = {
     roomCreated : function(roomData){
         let Box, Userlist;
 
-        if (roomData.userIds.indexOf(CHAT.USER.id) > -1){
+        if (roomData.userIds.indexOf(CHAT.userId) > -1){
             Box = HD.DOM(
-                CHAT.Util.cloneElement(HD.DOM(CHAT.DOM.cloneBox).elem(), HD.DOM(CHAT.DOM.container).elem())
+                HD.DOM(CHAT.DOM.cloneBox).copyPaste(HD.DOM(CHAT.DOM.container).elem())
             );
-            Userlist = Box.find(CHAT.DOM.users);
-            Box.data("room", roomData.name);
-            CHAT.Method.generateUserList(Userlist.elem(), roomData.userIds);
-            CHAT.Method.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj("connected-users"));
+            Userlist = Box.descendants(CHAT.DOM.users);
+            Box.data('room', roomData.name);
+            CHAT.Components.User.generateList(Userlist.elem(), roomData.userIds);
+            CHAT.Components.User.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj('connected-users'));
             CHAT.socket.emit('roomJoin', {roomName : roomData.name});
-            CHAT.Method.notification(Box.elem(), roomData.starter, "create");
+            CHAT.Components.Notification.trigger(Box.elem(), {
+                type : 'create',
+                fromId : roomData.starter,
+                local : false
+            });
         }
     },
 
@@ -102,27 +106,32 @@ CHAT.Events.Server = {
      * }
      */
     roomJoined : function(roomData){
-        let Box, Userlist;
+        let box, Box, Userlist;
 
-        if (roomData.joinedUserId === CHAT.USER.id){
+        if (roomData.joinedUserId === CHAT.userId){
             // Létre kell hozni a dobozt a csatornához
             Box = HD.DOM(
-                CHAT.Util.cloneElement(HD.DOM(CHAT.DOM.cloneBox).elem(), HD.DOM(CHAT.DOM.container).elem())
+                HD.DOM(CHAT.DOM.cloneBox).copyPaste(HD.DOM(CHAT.DOM.container).elem())
             );
-            Userlist = Box.find(CHAT.DOM.users);
-            Box.data("room", roomData.name);
-            CHAT.Method.generateUserList(Userlist.elem(), roomData.userIds);
-            CHAT.Method.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj("connected-users"));
-            CHAT.Method.fillBox(Box.elem(), roomData.name);
+            Userlist = Box.descendants(CHAT.DOM.users);
+            Box.data('room', roomData.name);
+            CHAT.Components.User.generateList(Userlist.elem(), roomData.userIds);
+            CHAT.Components.User.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj('connected-users'));
+            CHAT.Components.Box.fill(Box.elem(), roomData.name);
         }
         else {
             // Csatlakozott a csatornához
             Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${roomData.name}"]`);
-            if (Box.elem()){
-                Userlist = Box.find(CHAT.DOM.users);
-                CHAT.Method.appendSystemMessage(Box.elem(), 'join', roomData.joinedUserId);
-                CHAT.Method.generateUserList(Userlist.elem(), roomData.userIds, true);
-                CHAT.Method.notification(Box.elem(), roomData.starter, "join");
+            box = Box.elem();
+            if (box){
+                Userlist = Box.descendants(CHAT.DOM.users);
+                CHAT.Components.Transfer.appendSystemMessage(box, 'join', roomData.joinedUserId);
+                CHAT.Components.User.generateList(Userlist.elem(), roomData.userIds, true);
+                CHAT.Components.Notification.trigger(box, {
+                    type : 'join',
+                    fromId : roomData.joinedUserId,
+                    local : true
+                });
             }
         }
     },
@@ -137,15 +146,20 @@ CHAT.Events.Server = {
      * }
      */
     roomLeaved : function(extData){
-        let Box;
+        let box, Box;
 
         if (extData.roomData){
             Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
-            if (Box.elem()){
-                CHAT.Method.appendSystemMessage(Box.elem(), 'leave', extData.userId);
-                CHAT.Method.notification(Box.elem(), extData.userId, "leave");
+            box = Box.elem();
+            if (box){
+                CHAT.Components.Transfer.appendSystemMessage(box, 'leave', extData.userId);
+                CHAT.Components.Notification.trigger(box, {
+                    type : 'leave',
+                    fromId : extData.userId,
+                    local : true
+                });
             }
-            Box.find(`[data-id="${extData.userId}"]`).remove();
+            Box.descendants(`[data-id="${extData.userId}"]`).remove();
         }
     },
 
@@ -160,42 +174,54 @@ CHAT.Events.Server = {
      * }
      */
     roomForceJoined : function(extData){
-        let Box, Userlist;
+        let box, Box, Userlist;
 
         Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
+        box = Box.elem();
 
-        if (extData.userId === CHAT.USER.id){
+        if (extData.userId === CHAT.userId){
             // Csatlakoztattak a csatornához
-            if (Box.elem()){
+            if (box){
                 // Van a csatornához tartozó doboz (korábban ki lett dobva)
-                Userlist = Box.find(CHAT.DOM.users);
-                CHAT.Method.changeBoxStatus(Box.elem(), "enabled");
-                CHAT.Method.generateUserList(Userlist.elem(), extData.roomData.userIds, true);
-                CHAT.Method.appendSystemMessage(Box.elem(), 'forceJoinYou', extData.triggerId);
+                Userlist = Box.descendants(CHAT.DOM.users);
+                CHAT.Components.Box.changeStatus(box, 'enabled');
+                CHAT.Components.User.generateList(Userlist.elem(), extData.roomData.userIds, true);
+                CHAT.Components.Transfer.appendSystemMessage(box, 'forceJoinYou', extData.triggerId);
             }
             else {
                 // Létre kell hozni a dobozt a csatornához
                 Box = HD.DOM(
-                    CHAT.Util.cloneElement(HD.DOM(CHAT.DOM.cloneBox).elem(), HD.DOM(CHAT.DOM.container).elem())
+                    HD.DOM(CHAT.DOM.cloneBox).copyPaste(HD.DOM(CHAT.DOM.container).elem())
                 );
-                Userlist = Box.find(CHAT.DOM.users);
-                Box.data("room", extData.roomData.name);
-                CHAT.Method.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj("connected-users"));
-                CHAT.Method.fillBox(Box.elem(), extData.roomData.name);
-                CHAT.Method.generateUserList(Userlist.elem(), extData.roomData.userIds);
-                CHAT.Method.appendSystemMessage(Box.elem(), 'forceJoinYou', extData.triggerId);
+                box = Box.elem();
+                Userlist = Box.descendants(CHAT.DOM.users);
+                Box.data('room', extData.roomData.name);
+                CHAT.Components.User.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj('connected-users'));
+                CHAT.Components.Box.fill(box, extData.roomData.name);
+                CHAT.Components.User.generateList(Userlist.elem(), extData.roomData.userIds);
+                CHAT.Components.Transfer.appendSystemMessage(box, 'forceJoinYou', extData.triggerId);
             }
             CHAT.socket.emit('roomJoin', {
-                userId : CHAT.USER.id,
+                userId : CHAT.userId,
                 roomName : extData.roomData.name
             });
-            CHAT.Method.notification(Box.elem(), extData.triggerId, "forceJoin");
+            CHAT.Components.Notification.trigger(box, {
+                type : 'forceJoinYou',
+                fromId : extData.triggerId,
+                local : false
+            });
         }
-        else if (Box.elem()){
+        else if (box){
             // Új user csatlakozott a csatornához
-            Userlist = Box.find(CHAT.DOM.users);
-            CHAT.Method.generateUserList(Userlist.elem(), extData.roomData.userIds, true);
-            CHAT.Method.appendSystemMessage(Box.elem(), 'forceJoinOther', extData.triggerId, extData.userId);
+            Userlist = Box.descendants(CHAT.DOM.users);
+            CHAT.Components.User.generateList(Userlist.elem(), extData.roomData.userIds, true);
+            CHAT.Components.Transfer.appendSystemMessage(box, 'forceJoinOther', extData.triggerId, extData.userId);
+            CHAT.Components.Notification.trigger(box, {
+                type : 'forceJoinOther',
+                fromId : extData.triggerId,
+                toId : extData.userId,
+                local : true
+            });
         }
     },
 
@@ -211,22 +237,33 @@ CHAT.Events.Server = {
      */
     roomForceLeaved : function(extData){
         const Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
+        const box = Box.elem();
 
-        if (Box.elem()){
-            if (extData.userId === CHAT.USER.id){
-                CHAT.Method.appendSystemMessage(Box.elem(), 'forceLeaveYou', extData.triggerId);
+        if (box){
+            if (extData.userId === CHAT.userId){
+                CHAT.Components.Transfer.appendSystemMessage(box, 'forceLeaveYou', extData.triggerId);
                 CHAT.socket.emit('roomLeave', {
                     silent : true,
-                    userId : CHAT.USER.id,
+                    userId : CHAT.userId,
                     roomName : extData.roomData.name
                 });
-                CHAT.Method.changeBoxStatus(Box.elem(), "disabled");
-                CHAT.Method.notification(Box.elem(), extData.triggerId, "forceLeave");
+                CHAT.Components.Box.changeStatus(box, 'disabled');
+                CHAT.Components.Notification.trigger(box, {
+                    type : 'forceLeaveYou',
+                    fromId : extData.triggerId,
+                    local : true
+                });
             }
             else {
-                CHAT.Method.appendSystemMessage(Box.elem(), 'forceLeaveOther', extData.triggerId, extData.userId);
+                CHAT.Components.Transfer.appendSystemMessage(box, 'forceLeaveOther', extData.triggerId, extData.userId);
+                CHAT.Components.Notification.trigger(box, {
+                    type : 'forceLeaveOther',
+                    fromId : extData.triggerId,
+                    toId : extData.userId,
+                    local : true
+                });
             }
-            Box.find(`[data-id="${extData.userId}"]`).remove();
+            Box.descendants(`[data-id="${extData.userId}"]`).remove();
         }
     },
 
@@ -245,9 +282,13 @@ CHAT.Events.Server = {
         const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`).elem();
 
         if (box){
-            CHAT.Method.appendUserMessage(box, data);
-            CHAT.Method.stopWrite(box, data.userId, '');
-            CHAT.Method.notification(box, data.userId, "message");
+            CHAT.Components.Transfer.appendUserMessage(box, data);
+            CHAT.Components.Notification.stopWrite(box, data.userId, '');
+            CHAT.Components.Notification.trigger(box, {
+                type : 'message',
+                fromId : data.userId,
+                local : true
+            });
         }
     },
 
@@ -266,15 +307,15 @@ CHAT.Events.Server = {
     fileReceive : function(data){
         const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`).elem();
 
-        if (CHAT.USER.id !== data.userId && box){
+        if (CHAT.userId !== data.userId && box){
             if (data.firstSend){
-                CHAT.Events.Server.barId = CHAT.Method.progressbar(
-                    box, "get", data.uploadedSize / data.fileSize, null, false
+                CHAT.Events.Server.barId = CHAT.Components.Transfer.progressbar(
+                    box, 'get', data.uploadedSize / data.fileSize, null, false
                 );
             }
             else {
-                CHAT.Method.progressbar(
-                    box, "get", data.uploadedSize / data.fileSize, CHAT.Events.Server.barId, false
+                CHAT.Components.Transfer.progressbar(
+                    box, 'get', data.uploadedSize / data.fileSize, CHAT.Events.Server.barId, false
                 );
             }
         }
@@ -296,15 +337,21 @@ CHAT.Events.Server = {
      *     type : String,
      *     time : Number,
      *     roomName : String
+     *     fileName : String
      * }
      */
     sendFile : function(data){
         const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`).elem();
 
         if (box){
-            CHAT.FileTransfer.action('serverSend', [box, data]);
-            CHAT.Method.stopWrite(box, data.userId, '');
-            CHAT.Method.notification(box, data.userId, "file");
+            CHAT.FileTransfer.action('serverSend', [box, data, function(){
+                CHAT.Components.Notification.trigger(box, {
+                    type : 'file',
+                    fromId : data.userId,
+                    local : true
+                });
+            }]);
+            CHAT.Components.Notification.stopWrite(box, data.userId, '');
         }
     },
 
@@ -323,14 +370,15 @@ CHAT.Events.Server = {
      *     store : String,
      *     type : String,
      *     time : Number,
-     *     roomName : String
+     *     roomName : String,
+     *     fileName : String
      * }
      */
     abortFile : function(data){
         const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`).elem();
 
         if (box){
-            CHAT.Method.progressbar(box, "abort", null, CHAT.Events.Server.barId, false);
+            CHAT.Components.Transfer.progressbar(box, 'abort', null, CHAT.Events.Server.barId, false);
         }
     },
 
@@ -347,16 +395,16 @@ CHAT.Events.Server = {
      */
     typeMessage : function(data){
         const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`).elem();
-        const writing = CHAT.timer.writing;
+        const writing = CHAT.Components.Timer.writing;
 
         if (box){
             writing.event = true;
             writing.message = data.message;
             if (!writing.timerID){
-                CHAT.Method.stillWrite(box, data.userId);
-                writing.timerID = window.setInterval(function(){
+                CHAT.Components.Notification.stillWrite(box, data.userId);
+                writing.timerID = setInterval(function(){
                     if (!writing.event){
-                        CHAT.Method.stopWrite(box, data.userId, writing.message);
+                        CHAT.Components.Notification.stopWrite(box, data.userId, writing.message);
                     }
                     writing.event = false;
                 }, writing.interval);

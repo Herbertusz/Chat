@@ -1,28 +1,28 @@
-/*!
- * HD-keret Tooltip v1.0.0
- * 2015.02.21.
+/**
+ * HD-keret Tooltip
  *
  * @description Tooltip-kezelő
- * @requires jQuery UI position
+ * @requires jQuery, jQuery UI position
  * @example
- *  var tooltip = new HD.Site.Tooltip({
+ *  const tooltip = new HD.Site.Tooltip({
  *      position : {
- *          my : "left center",
- *          at : "right center",
- *          collision : "flip fit"
+ *          my : 'left center',
+ *          at : 'right center',
+ *          collision : 'flip fit'
  *      },
  *      positionMouse : false
  *  });
  *  tooltip.init();
  */
 
-"use strict";
+'use strict';
 
-HD.Site = namespace("HD.Site");
+var HD = window.HD || {};
+HD.Site = HD.Site || {};
 
 /**
  * Tooltip objektum (Module minta)
- * @param {Object} options beállítások
+ * @param {Object} options - beállítások
  * @returns {Object} tooltip felület
  */
 HD.Site.Tooltip = function(options){
@@ -31,29 +31,29 @@ HD.Site.Tooltip = function(options){
      * Alapértelmezett beállítások
      * @type {Object}
      */
-    var defaultOptions = {
-        $trigger : $(".tooltip"),
-        $boxElement : $("#tooltipbox"),
+    const defaultOptions = {
+        $trigger : $('.tooltip'),
+        $boxElement : $('#tooltipbox'),
         boxContent : function($trigger){
-            var text = $trigger.attr("title");
-            $trigger.removeAttr("title");
+            const text = $trigger.attr('title');
+            $trigger.removeAttr('title');
             return text;
         },
         position : {
-            my : "left+15 top+10",
-            at : "right bottom",
-            collision : "flip fit"
+            my : 'left+15 top+10',
+            at : 'right bottom',
+            collision : 'flip fit'
         },
         positionMouse : true,
         drag : false,
-        afterInit : function(options){}
+        afterInit : function(){}
     };
 
     /**
      * Jelenleg látható-e a tooltip
      * @type {Boolean}
      */
-    var visible = false;
+    let visible = false;
 
     options = $.extend({}, defaultOptions, options);
 
@@ -61,10 +61,9 @@ HD.Site.Tooltip = function(options){
      * Tooltip pozicionálása
      * @param {jQuery.Event|HTMLElement} positionOf
      */
-    var setPosition = function(positionOf){
-        var position;
+    const setPosition = function(positionOf){
         if (visible){
-            position = options.position;
+            const position = options.position;
             position.of = positionOf;
             options.$boxElement.position(position);
         }
@@ -76,8 +75,8 @@ HD.Site.Tooltip = function(options){
      * @param {jQuery.Event} event
      * @param {HTMLElement} element
      */
-    var show = function(text, event, element){
-        if (typeof text !== "undefined" && text.length > 0){
+    const show = function(text, event, element){
+        if (typeof text !== 'undefined' && text.length > 0){
             options.$boxElement.show().html(text);
             visible = true;
             if (options.positionMouse){
@@ -92,8 +91,8 @@ HD.Site.Tooltip = function(options){
     /**
      * Tooltip eltüntetése
      */
-    var hide = function(){
-        options.$boxElement.hide().html("");
+    const hide = function(){
+        options.$boxElement.hide().html('');
         visible = false;
     };
 
@@ -101,7 +100,7 @@ HD.Site.Tooltip = function(options){
      * Publikus felület
      * @type {Object}
      */
-    var Interface = {
+    const Interface = {
 
         /**
          * Felülírt beállítások
@@ -114,13 +113,13 @@ HD.Site.Tooltip = function(options){
          * @public
          */
         init : function(){
-            var $trigger = options.$trigger;
+            const $trigger = options.$trigger;
             $trigger.each(function(){
-                var text = options.boxContent($(this));
-                $(this).data("text", text);
+                const text = options.boxContent($(this));
+                $(this).data('text', text);
             });
             $trigger.mouseover(function(event){
-                show($(this).data("text"), event, this);
+                show($(this).data('text'), event, this);
             });
             $trigger.mouseout(function(event){
                 hide();

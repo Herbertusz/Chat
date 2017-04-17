@@ -1,0 +1,62 @@
+<% /* global CHAT layout */ %>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <link rel="icon" type="image/png" href="/favicon.png" />
+        <link rel="stylesheet" href="/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="/css/common.css" />
+        <link rel="stylesheet" href="/css/layout.css" />
+        <link rel="stylesheet" href="/css/index.css" />
+        <script>
+            <% RegExp.prototype.toJSON = RegExp.prototype.toString; %>
+            var SERVER = {
+                domain : '<%- layout.DOMAIN %>',
+                wsport : '<%- layout.WSPORT %>',
+                userId : Number('<%- userId ? userId : 0 %>')
+            };
+            var CHAT = {
+                Config: (function(){
+                    return <%- JSON.stringify(CHAT.Config) %>;
+                })()
+            };
+        </script>
+        <script src="/js/libs/jquery.min.js"></script>
+        <script src="/js/hd/hd.js"></script>
+        <script src="/js/hd/hd.utility.js"></script>
+        <script src="/js/hd/hd.math.js"></script>
+        <script src="/js/hd/hd.dom.js"></script>
+        <script src="/js/hd/hd.datetime.js"></script>
+        <script src="/js/hd/hd.datetime.timer.js"></script>
+        <script src="/js/hd/hd.log.js"></script>
+
+        <% if (page.split('/').pop() === 'chat'){ %>
+            <link rel="stylesheet" href="/css/chat.css" />
+            <script src="/js/libs/jquery.idle-timer.js"></script>
+            <script src="/socket.io/socket.io.js"></script>
+            <script src="/js/compress/lz-string.min.js"></script>
+            <script src="/js/chat/init.js"></script>
+            <script src="/js/chat/labels.js"></script>
+            <script src="/js/chat/filetransfer.js"></script>
+            <script src="/js/chat/components.timer.js"></script>
+            <script src="/js/chat/components.transfer.js"></script>
+            <script src="/js/chat/components.user.js"></script>
+            <script src="/js/chat/components.box.js"></script>
+            <script src="/js/chat/components.notification.js"></script>
+            <script src="/js/chat/events.client.js"></script>
+            <script src="/js/chat/events.server.js"></script>
+            <script src="/js/chat/controller.js"></script>
+
+            <title><%- CHAT.Config.defaultTitle %></title>
+        <% } %>
+    </head>
+    <body>
+        <%- include(layout.publicPath + "/images/icons.svg") %>
+
+        <div id="container">
+
+            <%- include(page) %>
+
+        </div>
+    </body>
+</html>

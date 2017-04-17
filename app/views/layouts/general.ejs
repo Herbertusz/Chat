@@ -1,0 +1,163 @@
+<% /* global CHAT layout */ %>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <link rel="icon" type="image/png" href="/favicon.png" />
+        <link rel="stylesheet" href="/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="/css/common.css" />
+        <link rel="stylesheet" href="/css/layout.css" />
+        <link rel="stylesheet" href="/css/index.css" />
+        <script>
+            <% RegExp.prototype.toJSON = RegExp.prototype.toString; %>
+            var SERVER = {
+                domain : '<%- layout.DOMAIN %>',
+                wsport : '<%- layout.WSPORT %>',
+                userId : Number('<%- userId ? userId : 0 %>')
+            };
+            var CHAT = {
+                Config: (function(){
+                    return <%- JSON.stringify(CHAT.Config) %>;
+                })()
+            };
+        </script>
+        <script src="/js/libs/jquery.min.js"></script>
+        <script src="/js/hd/hd.js"></script>
+        <script src="/js/hd/hd.utility.js"></script>
+        <script src="/js/hd/hd.math.js"></script>
+        <script src="/js/hd/hd.dom.js"></script>
+        <script src="/js/hd/hd.datetime.js"></script>
+        <script src="/js/hd/hd.datetime.timer.js"></script>
+        <script src="/js/hd/hd.log.js"></script>
+
+        <script>
+            HD.DOM(document).event('DOMContentLoaded', function(){
+
+                HD.DOM('.menupoint').event('mouseover', function(event){
+                    const elem = event.currentTarget;
+                    const id = HD.DOM('.menupoint').elements.findIndex(elem => this === elem);
+                    const original = HD.Math.Animation.stop(`menuout-${id}`) || 0;
+                    HD.Math.Animation.run(`menuover-${id}`, {
+                        action : function(value){
+                            HD.DOM(elem).css({
+                                borderBottomColor : `rgba(0, 0, 0, ${value})`
+                            });
+                        },
+                        callback : function(){
+                            HD.DOM(elem).css({
+                                borderBottomColor : `rgba(0, 0, 0, 1)`
+                            });
+                        },
+                        delay : 5000,
+                        range : [original, 1],
+                        easing : 'linear'
+                    });
+                });
+                HD.DOM('.menupoint').event('mouseout', function(event){
+                    const elem = event.currentTarget;
+                    const id = HD.DOM('.menupoint').elements.findIndex(elem => this === elem);
+                    const original = HD.Math.Animation.stop(`menuover-${id}`);
+                    HD.Math.Animation.run(`menuout-${id}`, {
+                        action : function(value){
+                            HD.DOM(elem).css({
+                                borderBottomColor : `rgba(0, 0, 0, ${value})`
+                            });
+                        },
+                        callback : function(){
+                            HD.DOM(elem).css({
+                                borderBottomColor : `rgba(0, 0, 0, 0)`
+                            });
+                        },
+                        delay : 5000 * original,
+                        range : [original, 0],
+                        easing : 'linear'
+                    });
+                });
+
+            });
+        </script>
+
+        <% if (page.split('/').pop() === 'chat' && login){ %>
+            <link rel="stylesheet" href="/css/chat.css" />
+            <script src="/js/libs/jquery.idle-timer.js"></script>
+            <script src="/socket.io/socket.io.js"></script>
+            <script src="/js/compress/lz-string.min.js"></script>
+            <script src="/js/chat/init.js"></script>
+            <script src="/js/chat/labels.js"></script>
+            <script src="/js/chat/filetransfer.js"></script>
+            <script src="/js/chat/components.timer.js"></script>
+            <script src="/js/chat/components.transfer.js"></script>
+            <script src="/js/chat/components.user.js"></script>
+            <script src="/js/chat/components.box.js"></script>
+            <script src="/js/chat/components.notification.js"></script>
+            <script src="/js/chat/events.client.js"></script>
+            <script src="/js/chat/events.server.js"></script>
+            <script src="/js/chat/controller.js"></script>
+
+            <title><%- CHAT.Config.defaultTitle %></title>
+        <% } else if (page.split('/').pop() === 'videochat'){ %>
+            <link rel="stylesheet" href="/css/videochat.css" />
+            <script src="/js/compress/lz-string.min.js"></script>
+            <script src="/socket.io/socket.io.js"></script>
+            <script src="/js/videochat/webcam.js"></script>
+            <!-- <script src="/js/libs/rmc3.js"></script> -->
+            <!-- <script src="/js/videochat/webrtc.js"></script> -->
+            <title>Videochat</title>
+        <% } else { %>
+            <title>CHAT app</title>
+        <% } %>
+    </head>
+    <body>
+        <%- include(layout.publicPath + "/images/icons.svg") %>
+
+        <div id="container">
+
+            <header>
+                <nav>
+                    <ul>
+                        <% layout.menu.forEach(function(menupoint){ %>
+                            <li><a class="menupoint" href="<%- menupoint.url %>"><%- menupoint.text %></a></li>
+                        <% }); %>
+                    </ul>
+                </nav>
+                <div class="clearfix"></div>
+            </header>
+
+            <h1 class="game">Chat</h1>
+
+            <% if (typeof(login) === 'undefined' || !login){ %>
+                <div class="login">
+                    <form method="post" action="/login">
+                        <% if (loginMessage){ %>
+                            <label class="error"><%- loginMessage %></label>
+                        <% } %>
+                        <label>
+                            <span>Felhasználónév:</span>
+                            <input type="text" name="username" value="" />
+                        </label>
+                        <label>
+                            <span>Jelszó:</span>
+                            <input type="password" name="password" value="" />
+                        </label>
+                        <input class="submit" type="submit" name="submit" value="Belépés" />
+                    </form>
+                    <div class="clear"></div>
+                </div>
+            <% } else { %>
+                <div class="login">
+                    Üdvözöljük, <strong><%- userName %></strong>
+                    <a href="/logout">Kijelentkezés</a>
+                </div>
+            <% } %>
+
+            <%- include(page) %>
+
+            <footer>
+                <a class="html5logo" href="http://www.w3.org/html/logo/">
+                    <img src="https://www.w3.org/html/logo/badge/html5-badge-h-connectivity-css3-device-multimedia-performance-semantics.png" width="293" height="64" alt="HTML5 Powered with Connectivity / Realtime, CSS3 / Styling, Device Access, Multimedia, Performance &amp; Integration, and Semantics" title="HTML5 Powered with Connectivity / Realtime, CSS3 / Styling, Device Access, Multimedia, Performance &amp; Integration, and Semantics" />
+                </a>
+            </footer>
+
+        </div>
+    </body>
+</html>

@@ -1,6 +1,6 @@
 /* global HD */
 
-"use strict";
+'use strict';
 
 var CHAT = window.CHAT || {};
 CHAT.Events = CHAT.Events || {};
@@ -13,26 +13,32 @@ CHAT.Events.Client = {
 
     /**
      * Csatorna létrehozása
+     * @returns {String} csatona azonosítója
      */
     createRoom : function(){
         const roomData = {
-            name : "",
-            userIds : [CHAT.USER.id],
-            starter : CHAT.USER.id
+            name : '',
+            userIds : [CHAT.userId],
+            starter : CHAT.userId
         };
         const Box = HD.DOM(
-            CHAT.Util.cloneElement(HD.DOM(CHAT.DOM.cloneBox).elem(), HD.DOM(CHAT.DOM.container).elem())
+            HD.DOM(CHAT.DOM.cloneBox).copyPaste(HD.DOM(CHAT.DOM.container).elem())
         );
-        const Userlist = Box.find(CHAT.DOM.users);
+        const Userlist = Box.descendants(CHAT.DOM.users);
 
-        HD.DOM(CHAT.DOM.online).find(CHAT.DOM.selectedUsers).elements.forEach(function(selectedUser){
+        Box.css({
+            width : `${CHAT.Config.box.defaultSize.width}px`,
+            height : `${CHAT.Config.box.defaultSize.height}px`
+        });
+        HD.DOM(CHAT.DOM.selectedUsers).elements.forEach(function(selectedUser){
             const userId = Number(selectedUser.value);
             roomData.userIds.push(userId);
         });
-        CHAT.Method.generateUserList(Userlist.elem(), roomData.userIds);
+        CHAT.Components.User.generateList(Userlist.elem(), roomData.userIds);
         roomData.name = `room-${roomData.starter}-${Date.now()}`;
-        Box.data("room", roomData.name);
+        Box.data('room', roomData.name);
         CHAT.socket.emit('roomCreated', roomData);
+        return roomData.name;
     },
 
     /**
@@ -41,11 +47,11 @@ CHAT.Events.Client = {
      */
     leaveRoom : function(box){
         const Box = HD.DOM(box);
-        const roomName = Box.data("room");
+        const roomName = Box.data('room');
 
         Box.remove();
         CHAT.socket.emit('roomLeave', {
-            userId : CHAT.USER.id,
+            userId : CHAT.userId,
             roomName : roomName
         });
     },
@@ -56,18 +62,18 @@ CHAT.Events.Client = {
      * @param {Number} userId
      */
     forceJoinRoom : function(add, userId){
-        const Box = HD.DOM(add).ancestor(CHAT.DOM.box);
-        const Userlist = Box.find(CHAT.DOM.users);
+        const Box = HD.DOM(add).ancestors(CHAT.DOM.box);
+        const Userlist = Box.descendants(CHAT.DOM.users);
         const currentUserIds = [];
-        const roomName = Box.data("room");
+        const roomName = Box.data('room');
 
-        Userlist.find(CHAT.DOM.userItems).filter(':not(.cloneable)').elements.forEach(function(user){
-            currentUserIds.push(HD.DOM(user).dataNum("id"));
+        Userlist.descendants(CHAT.DOM.userItems).filter(':not(.cloneable)').elements.forEach(function(user){
+            currentUserIds.push(HD.DOM(user).dataNum('id'));
         });
         if (currentUserIds.indexOf(userId) === -1){
-            CHAT.Method.generateUserList(Userlist.elem(), [userId]);
+            CHAT.Components.User.generateList(Userlist.elem(), [userId]);
             CHAT.socket.emit('roomForceJoin', {
-                triggerId : CHAT.USER.id,
+                triggerId : CHAT.userId,
                 userId : userId,
                 roomName : roomName
             });
@@ -80,16 +86,16 @@ CHAT.Events.Client = {
      */
     forceLeaveRoom : function(close){
         const Close = HD.DOM(close);
-        const Box = Close.ancestor(CHAT.DOM.box);
-        const User = Close.ancestor(CHAT.DOM.userItems);
-        const roomName = Box.data("room");
-        const userId = User.dataNum("id");
+        const Box = Close.ancestors(CHAT.DOM.box);
+        const User = Close.ancestors(CHAT.DOM.userItems);
+        const roomName = Box.data('room');
+        const userId = User.dataNum('id');
 
-        if (userId === CHAT.USER.id){
+        if (userId === CHAT.userId){
             // kilépés
             Box.remove();
             CHAT.socket.emit('roomLeave', {
-                userId : CHAT.USER.id,
+                userId : CHAT.userId,
                 roomName : roomName
             });
         }
@@ -97,7 +103,7 @@ CHAT.Events.Client = {
             // másik felhasználó kidobása
             User.remove();
             CHAT.socket.emit('roomForceLeave', {
-                triggerId : CHAT.USER.id,
+                triggerId : CHAT.userId,
                 userId : userId,
                 roomName : roomName
             });
@@ -110,18 +116,19 @@ CHAT.Events.Client = {
      */
     sendMessage : function(box){
         const Box = HD.DOM(box);
-        const Message = Box.find(CHAT.DOM.message);
+        const Message = Box.descendants(CHAT.DOM.textarea);
         const data = {
-            userId : CHAT.USER.id,
+            userId : CHAT.userId,
             message : Message.elem().value,
-            time : Math.round(Date.now() / 1000),
-            roomName : Box.data("room")
+            time : Date.now(),
+            roomName : Box.data('room')
         };
 
         if (data.message.trim().length > 0){
             CHAT.socket.emit('sendMessage', data);
-            CHAT.Method.appendUserMessage(box, data, true);
-            Box.find(CHAT.DOM.message).elem().value = '';
+            CHAT.Components.Transfer.appendUserMessage(box, data, true);
+            CHAT.Components.Box.scrollToBottom(box);
+            Box.descendants(CHAT.DOM.textarea).elem().value = '';
         }
     },
 
@@ -133,6 +140,7 @@ CHAT.Events.Client = {
     sendFile : function(box, files){
         const store = CHAT.Config.fileTransfer.store;
         const types = CHAT.Config.fileTransfer.types;
+        const extensions = CHAT.Config.fileTransfer.typeFallback;
         const allowedTypes = CHAT.Config.fileTransfer.allowedTypes;
         const maxSize = CHAT.Config.fileTransfer.maxSize;
 
@@ -148,7 +156,7 @@ CHAT.Events.Client = {
             const errors = [];
             if (rawFile.size > maxSize){
                 errors.push({
-                    type : "fileSize",
+                    type : 'fileSize',
                     value : rawFile.size,
                     restrict : maxSize
                 });
@@ -159,9 +167,18 @@ CHAT.Events.Client = {
                     break;
                 }
             }
+            if (fileData.type === 'file'){
+                const ext = rawFile.name.split('.').pop();
+                for (i in extensions){
+                    if (extensions[i].indexOf(ext) > -1){
+                        fileData.type = i;
+                        break;
+                    }
+                }
+            }
             if (allowedTypes.indexOf(fileData.type) === -1){
                 errors.push({
-                    type : "fileType",
+                    type : 'fileType',
                     value : fileData.type,
                     restrict : allowedTypes
                 });
@@ -171,7 +188,7 @@ CHAT.Events.Client = {
 
         const filePrepare = function(rawFile){
             const fileData = {
-                userId : CHAT.USER.id,
+                userId : CHAT.userId,
                 fileData : {
                     name : rawFile.name,
                     size : rawFile.size,
@@ -180,24 +197,30 @@ CHAT.Events.Client = {
                 file : null,  // base64
                 store : store,
                 type : '',
-                time : Math.round(Date.now() / 1000),
-                roomName : HD.DOM(box).data("room")
+                time : Date.now(),
+                roomName : HD.DOM(box).data('room'),
+                fileName : `${Date.now()}-${HD.Math.rand(100, 999)}.${rawFile.name.split('.').pop()}`
             };
             const errors = fileCheck(fileData, rawFile);
 
             if (errors.length === 0){
                 const reader = new FileReader();
                 (new Promise(function(resolve){
-                    CHAT.Method.progress(box, "show");
+                    CHAT.Components.Transfer.progress(box, 'show');
                     reader.onload = resolve;
-                })).then((function(){
-                    CHAT.Method.progress(box, "hide");
-                    return CHAT.FileTransfer.action('clientSend', [box, fileData, reader, rawFile]);
-                }));
+                })).then(function(){
+                    CHAT.Components.Transfer.progress(box, 'hide');
+                    CHAT.Components.Box.scrollToBottom(box);
+                    return CHAT.FileTransfer.action('clientSend', [box, fileData, reader, rawFile, function(){
+                        CHAT.Components.Box.scrollToBottom(box);
+                    }]);
+                }).catch(function(error){
+                    HD.Log.error(error);
+                });
                 reader.readAsDataURL(rawFile);
             }
             else {
-                CHAT.Method.showError(box, errors);
+                CHAT.Components.Notification.error(box, errors);
             }
         };
 
@@ -211,8 +234,9 @@ CHAT.Events.Client = {
      * @param {HTMLElement} progressbar
      */
     abortFile : function(progressbar){
-        const barId = HD.DOM(progressbar).dataNum("id");
-        if (typeof CHAT.FileTransfer.XHR[barId] !== "undefined"){
+        const barId = HD.DOM(progressbar).dataNum('id');
+
+        if (HD.Misc.defined(CHAT.FileTransfer.XHR[barId])){
             CHAT.FileTransfer.XHR[barId].abort();
         }
     },
@@ -223,12 +247,12 @@ CHAT.Events.Client = {
      */
     typeMessage : function(box){
         const Box = HD.DOM(box);
-        const Message = Box.find(CHAT.DOM.message);
+        const Message = Box.descendants(CHAT.DOM.textarea);
         const data = {
-            userId : CHAT.USER.id,
+            userId : CHAT.userId,
             message : Message.elem().value,
-            time : Math.round(Date.now() / 1000),
-            roomName : Box.data("room")
+            time : Date.now(),
+            roomName : Box.data('room')
         };
 
         CHAT.socket.emit('typeMessage', data);
@@ -240,13 +264,13 @@ CHAT.Events.Client = {
      */
     sendMethod : function(change){
         const Change = HD.DOM(change);
-        const Box = Change.ancestor(CHAT.DOM.box);
+        const Box = Change.ancestors(CHAT.DOM.box);
 
-        if (Change.prop("checked")){
-            Box.find(CHAT.DOM.sendButton).class("add", "hidden");
+        if (Change.prop('checked')){
+            Box.descendants(CHAT.DOM.sendButton).class('add', 'hidden');
         }
         else {
-            Box.find(CHAT.DOM.sendButton).class("remove", "hidden");
+            Box.descendants(CHAT.DOM.sendButton).class('remove', 'hidden');
         }
     }
 

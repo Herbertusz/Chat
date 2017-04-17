@@ -1,13 +1,13 @@
-/*!
- * HD-keret Math v1.0.0
- * 2015.02.21.
+/**
+ * HD-keret Math
+ *
+ * @description Matematikai segédfüggvények
+ * @requires -
  */
 
-/* global HD namespace */
+'use strict';
 
-"use strict";
-
-var HD = namespace("HD");
+var HD = (typeof global !== 'undefined' ? global.HD : window.HD) || {};
 
 /**
  * Matematikai műveletek (Math objektum kiegészítései)
@@ -17,8 +17,8 @@ HD.Math = {
 
     /**
      * Véletlenszám a és b között
-     * @param {Number} min egész szám
-     * @param {Number} max egész szám
+     * @param {Number} min - egész szám
+     * @param {Number} max - egész szám
      * @returns {Number} egész szám
      */
     rand : function(min, max){
@@ -27,14 +27,14 @@ HD.Math = {
 
     /**
      * Tizes számrendszerbeli kerekítés
-     * @param {String} type kjerekítés típusa
-     * @param {*} value szám
-     * @param {Number} [exp=0] exponens (...|-2|-1|0|1|2|...) (a kerekítési alap 10-es alapú logaritmusa)
+     * @param {String} type - kjerekítés típusa
+     * @param {*} value - szám
+     * @param {Number} [exp=0] - exponens (...|-2|-1|0|1|2|...) (a kerekítési alap 10-es alapú logaritmusa)
      * @returns {Number} kerekített érték
      */
-    _decimalAdjust : function(type, value, exp){
+    _decimalAdjust : function(type, value, exp = 0){
         // If the exp is undefined or zero...
-        if (typeof exp === 'undefined' || +exp === 0){
+        if (+exp === 0){
             return Math[type](value);
         }
         value = +value;
@@ -53,8 +53,8 @@ HD.Math = {
 
     /**
      * Szám kerekítése
-     * @param {Number} value szám
-     * @param {Number} [exp=0] pontosság (helyiérték csúsztatása)
+     * @param {Number} value - szám
+     * @param {Number} [exp=0] - pontosság (helyiérték csúsztatása)
      * @returns {Number} kerekített érték
      */
     round : function(value, exp){
@@ -62,8 +62,8 @@ HD.Math = {
     },
     /**
      * Szám lefelé kerekítése
-     * @param {Number} value szám
-     * @param {Number} [exp=0] pontosság (helyiérték csúsztatása)
+     * @param {Number} value - szám
+     * @param {Number} [exp=0] - pontosság (helyiérték csúsztatása)
      * @returns {Number} kerekített érték
      */
     floor : function(value, exp){
@@ -71,8 +71,8 @@ HD.Math = {
     },
     /**
      * Szám felfelé kerekítése
-     * @param {Number} value szám
-     * @param {Number} [exp=0] pontosság (helyiérték csúsztatása)
+     * @param {Number} value - szám
+     * @param {Number} [exp=0] - pontosság (helyiérték csúsztatása)
      * @returns {Number} kerekített érték
      */
     ceil : function(value, exp){
@@ -92,8 +92,8 @@ HD.Math = {
          * @returns {Array} A|B
          */
         union : function(A, B){
-            var n;
-            var ret = A;
+            let n;
+            const ret = A;
             for (n = 0; n < B.length; n++){
                 if (ret.indexOf(B[n]) === -1){
                     ret.push(B[n]);
@@ -109,8 +109,8 @@ HD.Math = {
          * @returns {Array} A&B
          */
         intersection : function(A, B){
-            var n;
-            var ret = [];
+            let n;
+            const ret = [];
             for (n = 0; n < A.length; n++){
                 if (B.indexOf(A[n]) > -1){
                     ret.push(A[n]);
@@ -126,8 +126,8 @@ HD.Math = {
          * @returns {Array} A\B
          */
         difference : function(A, B){
-            var n;
-            var ret = [];
+            let n;
+            const ret = [];
             for (n = 0; n < A.length; n++){
                 if (B.indexOf(A[n]) === -1){
                     ret.push(A[n]);
@@ -143,7 +143,7 @@ HD.Math = {
          * @returns {Boolean} A === B sorrendtől eltekintve
          */
         equal : function(A, B){
-            var i;
+            let i;
             if (A === B) return true;
             if (A.length !== B.length) return false;
             A.sort();
@@ -164,8 +164,8 @@ HD.Math = {
 
         /**
          * Két pont távolsága
-         * @param {Object} a pont {x : Number, y : Number}
-         * @param {Object} b pont {x : Number, y : Number}
+         * @param {Object} a - pont {x : Number, y : Number}
+         * @param {Object} b - pont {x : Number, y : Number}
          * @returns {Number} távolság
          */
         distance : function(a, b){
@@ -174,18 +174,16 @@ HD.Math = {
 
         /**
          * Abszolút koordináták kiszámítása (csomópontok, korongok, stb)
-         * @param {Array} positions relatív koordináták [[Number, Number], ...]
-         * @param {Number} w abszolút szélesség
-         * @param {Number} h abszolút magasság
-         * @param {Number} [xOffset=0] abszolút vízszintes eltolás
-         * @param {Number} [yOffset=0] abszolút függőleges eltolás
+         * @param {Array} positions - relatív koordináták [[Number, Number], ...]
+         * @param {Number} w - abszolút szélesség
+         * @param {Number} h - abszolút magasság
+         * @param {Number} [xOffset=0] - abszolút vízszintes eltolás
+         * @param {Number} [yOffset=0] - abszolút függőleges eltolás
          * @returns {Array} abszolút koordináták [{x : Number, y : Number}, ...]
          */
-        getAbsoluteCoords : function(positions, w, h, xOffset, yOffset){
-            var coords = [];
-            var x, y;
-            if (typeof xOffset === "undefined") xOffset = 0;
-            if (typeof yOffset === "undefined") yOffset = 0;
+        getAbsoluteCoords : function(positions, w, h, xOffset = 0, yOffset = 0){
+            let x, y;
+            const coords = [];
             positions.forEach(function(elem, index){
                 x = elem[0] / 100;
                 y = elem[1] / 100;
@@ -199,8 +197,8 @@ HD.Math = {
 
         /**
          * Pont benne van-e egy téglalapban
-         * @param {Object} point {x : Number, y : Number}
-         * @param {Object} rectangle {x : Number, y : Number, w : Number, h : Number}
+         * @param {Object} point - {x : Number, y : Number}
+         * @param {Object} rectangle - {x : Number, y : Number, w : Number, h : Number}
          * @returns {Boolean}
          */
         isPointInsideRectangle : function(point, rectangle){
@@ -211,27 +209,46 @@ HD.Math = {
     },
 
     /**
-     * Általános animáció futtató
-     * @param {Function} func minden lépésnél meghívott függvény (megkapja az animáció értékét)
-     * @param {Function} callback az animáció végén meghívott függvény
-     * @param {Number} delay animáció hossza (ms)
-     * @param {Number} [range=1] maximális animációs érték
-     * @param {String} [easing="swing"] animációs függvény
+     * Animációk kezelése
+     * @type {Object}
      */
-    animate : function(func, callback, delay, range, easing){
-        let i, len;
-        let value = 0;
-        const steps = delay / 20;
-        if (typeof range === "undefined") range = 1;
-        if (typeof easing === "undefined") easing = "swing";
+    Animation : {
 
-        const Easings = {
+        /**
+         * Timeout ID-k
+         * @type {Object}
+         * @desc timers = {
+         *     <ID> : Number,
+         *     ...
+         * }
+         */
+        timers : {},
+
+        /**
+         * Aktulási animációs értékek
+         * @type {Object}
+         * @desc values = {
+         *     <ID> : Number,
+         *     ...
+         * }
+         */
+        values : {},
+
+        /**
+         * Animáció lefutási görbéjét meghatározó függvények
+         * @type {Object}
+         * @desc easings = {
+         *     <name> : Function,
+         *     ...
+         * }
+         */
+        easings : {
             /**
              * Easing függvény (továbbiak: https://github.com/danro/jquery-easing/blob/master/jquery.easing.js)
-             * @param {Number} t független változó (idő)
-             * @param {Number} b kezdeti érték y(t0)
-             * @param {Number} c érték változása y(t1) - y(t0)
-             * @param {Number} d időtartam (t1 - t0)
+             * @param {Number} t - független változó (idő)
+             * @param {Number} b - kezdeti érték y(t0)
+             * @param {Number} c - érték változása y(t1) - y(t0)
+             * @param {Number} d - időtartam (t1 - t0)
              * @returns {Number} függvény értéke y(t)
              */
             linear : function(t, b, c, d){
@@ -240,20 +257,75 @@ HD.Math = {
             swing : function(t, b, c, d){
                 return ((-Math.cos(t * Math.PI / d) / 2) + 0.5) * c + b;
             }
-        };
+        },
 
-        // TODO: felül kell vizsgálni ezt a szerkezetet
-        for (i = 0, len = Math.floor(steps); i <= len; i++){
-            value = Easings[easing](i, 0, range, steps);
-            (function(val, currentStep){
-                window.setTimeout(function(){
-                    func.call(this, val);
-                    if (currentStep === len && typeof callback === "function"){
-                        callback.call(this);
+        /**
+         * Animáció futtatása
+         * @param {String} ID - animáció azonosítója (ajánlott minden elemre egyedi ID)
+         * @param {Object} options - beállítások
+         * @desc options = {
+         *     action : Function    // minden lépésnél meghívott függvény (megkapja az animáció értékét): (Number) => {}
+         *     callback : Function  // az animáció végén meghívott függvény: () => {}
+         *     delay : Number       // animáció hossza (ms): 1000
+         *     range : Array        // animációs érték tartománya: [0, 1]
+         *     easing : String      // animációs függvény: 'swing'
+         * }
+         */
+        run : function(ID, options){
+            options = Object.assign({
+                action : () => {},
+                callback : () => {},
+                delay : 1000,
+                range : [0, 1],
+                easing : 'swing'
+            }, options);
+
+            let i, len;
+            let value = 0;
+            const steps = options.delay / 20;
+
+            const makeStep = function(val, currentStep){
+                const timerID = setTimeout(function(){
+                    HD.Math.Animation.values[ID] = val;
+                    options.action.call(this, val);
+                    if (currentStep === len && typeof callback === 'function'){
+                        options.callback.call(this);
+                        delete HD.Math.Animation.timers[ID];
                     }
-                }.bind(this), delay / steps * i);
-            })(value, i);
+                }.bind(this), options.delay / steps * i);
+                HD.Math.Animation.timers[ID].push(timerID);
+            };
+
+            HD.Math.Animation.timers[ID] = [];
+            for (i = 0, len = Math.floor(steps); i <= len; i++){
+                value = HD.Math.Animation.easings[options.easing](
+                    i, options.range[0], options.range[1] - options.range[0], steps
+                );
+                makeStep(value, i);
+            }
+        },
+
+        /**
+         * Animáció megállítása
+         * @param {Number} ID - timeout ID
+         * @returns {Number} animáció utolsó értéke
+         */
+        stop : function(ID){
+            if (HD.Math.Animation.timers.hasOwnProperty(ID)){
+                HD.Math.Animation.timers[ID].forEach(function(id){
+                    clearTimeout(id);
+                });
+                return HD.Math.Animation.values[ID];
+            }
+            else {
+                return null;
+            }
         }
+
     }
 
 };
+
+if (typeof exports !== 'undefined'){
+    exports.Math = HD.Math;
+}

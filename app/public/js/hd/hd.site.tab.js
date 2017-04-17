@@ -1,41 +1,38 @@
-/*!
- * HD-keret Tab v1.0.0
- * 2015.02.21.
+/**
+ * HD-keret Tab
  *
  * @description Tab-kezelő
+ * @requires jQuery
  * @example
  *  HTML-CSS: http://blog.webprog.biz/jquery-tabok
- *  var tab = new HD.Site.Tab({
+ *  const tab = new HD.Site.Tab({
  *      $trigger : $('ul.tab li'),
- *      activeClass : "selected"
+ *      activeClass : 'selected'
  *  });
  *  tab.init();
  */
 
-/* global HD namespace */
+'use strict';
 
-"use strict";
-
-HD.Site = namespace("HD.Site");
+var HD = window.HD || {};
+HD.Site = HD.Site || {};
 
 /**
  * Tab objektum (Module minta)
- * @param {Object} options beállítások
+ * @param {Object} options - beállítások
  * @returns {Object} tab-kezelő felület
  */
 HD.Site.Tab = function(options){
-
-    var Interface;
 
     /**
      * Alapértelmezett beállítások
      * @type {Object}
      */
-    var defaultOptions = {
-        $trigger : $(".tab"),
-        activeClass : "active",
-        dataGroup : "tabgroup",
-        dataId : "tabid"
+    const defaultOptions = {
+        $trigger : $('.tab'),
+        activeClass : 'active',
+        dataGroup : 'tabgroup',
+        dataId : 'tabid'
     };
 
     options = $.extend({}, defaultOptions, options);
@@ -44,7 +41,7 @@ HD.Site.Tab = function(options){
      * Publikus felület
      * @type {Object}
      */
-    Interface = {
+    const Interface = {
 
         /**
          * Felülírt beállítások
@@ -58,9 +55,9 @@ HD.Site.Tab = function(options){
          */
         init : function(){
             options.$trigger.click(function(){
-                var group = $(this).data(options.dataGroup);
-                var id = $(this).data(options.dataId);
-                var $all = $('*');
+                const group = $(this).data(options.dataGroup);
+                const id = $(this).data(options.dataId);
+                const $all = $('*');
                 $all.filter(function(){
                     return $(this).data(options.dataGroup) === group;
                 }).removeClass(options.activeClass);
