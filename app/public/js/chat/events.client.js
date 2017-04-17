@@ -140,6 +140,7 @@ CHAT.Events.Client = {
     sendFile : function(box, files){
         const store = CHAT.Config.fileTransfer.store;
         const types = CHAT.Config.fileTransfer.types;
+        const extensions = CHAT.Config.fileTransfer.typeFallback;
         const allowedTypes = CHAT.Config.fileTransfer.allowedTypes;
         const maxSize = CHAT.Config.fileTransfer.maxSize;
 
@@ -164,6 +165,15 @@ CHAT.Events.Client = {
                 if (HD.String.createRegExp(types[i]).test(rawFile.type)){
                     fileData.type = i;
                     break;
+                }
+            }
+            if (fileData.type === 'file'){
+                const ext = rawFile.name.split('.').pop();
+                for (i in extensions){
+                    if (extensions[i].indexOf(ext) > -1){
+                        fileData.type = i;
+                        break;
+                    }
                 }
             }
             if (allowedTypes.indexOf(fileData.type) === -1){

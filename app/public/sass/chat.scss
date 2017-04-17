@@ -592,6 +592,24 @@ aside.online {
                             }
                         }
                     }
+
+                    .filedisplay {
+
+                        .image { }
+
+                        .file {
+                            display: table-row;
+
+                            img {
+                                display: table-cell;
+                            }
+                            span {
+                                display: table-cell;
+                                padding: 0 0 0 10px;
+                                vertical-align: middle;
+                            }
+                        }
+                    }
                 }
             }
         }

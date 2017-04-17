@@ -70,7 +70,21 @@ CHAT.Labels = {
         cancel : 'Megszakítás',
         percent : (percent) => `${percent}%`,
         error : 'Hiba a fájl betöltése közben',
-        deleted : 'A fájlküldés meg lett szakítva vagy a fájl törölve lett'
+        deleted : 'A fájlküldés meg lett szakítva vagy a fájl törölve lett',
+        types : {
+            image : 'Kép',
+            text  : 'Szöveges fájl',
+            code  : 'Forráskód',
+            pdf   : 'PDF dokumentum',
+            doc   : 'Word dokumentum',
+            xls   : 'Excel dokumentum',
+            ppt   : 'Diavetítés',
+            zip   : 'Tömörített állomány',
+            audio : 'Hangfájl',
+            video : 'Videófájl',
+            exec  : 'Futtatható állomány',
+            file  : 'Ismeretlen fájltípus'
+        }
     },
     // Üzenetátvitel
     message : {
@@ -127,7 +141,7 @@ CHAT.Labels = {
                 // Az értesítés "title" része alatti szöveg
                 // body : '',
                 // A szöveg melletti kép
-                icon : '/images/notification/icon.png'
+                icon : '/images/notification.png'
             },
             message : (fromUserName) =>
                 `${fromUserName} üzenetet írt`,

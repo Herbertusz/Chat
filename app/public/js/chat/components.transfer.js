@@ -261,17 +261,17 @@ CHAT.Components.Transfer = {
         if (data.type === 'image'){
             imgSrc = data.file;
             tpl = `
-                <a href="${data.file}" target="_blank">
+                <a class="image" href="${data.file}" target="_blank">
                     <img class="send-image" alt="${data.fileData.name}" src="${imgSrc}" />
                 </a>
             `;
         }
         else {
-            imgSrc = `/images/filetypes/${data.type}.gif`;
+            imgSrc = CHAT.Config.fileTransfer.typeIcons.replace('{type}', data.type);
             tpl = `
-                <a href="${data.file}" target="_blank">
+                <a class="file" href="${data.file}" target="_blank" title="${CHAT.Labels.file.types[data.type]}">
                     <img alt="" src="${imgSrc}" />
-                    ${data.fileData.name}
+                    <span>${data.fileData.name}</span>
                 </a>
             `;
         }

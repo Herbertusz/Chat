@@ -198,7 +198,7 @@ CHAT.Config = {
         // Fájltípusok definiálása mime típus alapján
         types : {
             image : /^image\/.*$/,
-            text  : /^(text\/.*|.*javascript|.*ecmascript)$/,
+            text  : /^(text\/plain)$/,
             pdf   : /^application\/pdf$/,
             doc   : /^.*(msword|ms-word|wordprocessingml).*/,
             xls   : /^.*(ms-excel|spreadsheetml).*$/,
@@ -210,8 +210,22 @@ CHAT.Config = {
             file  : /^.*$/
         },
 
+        // Meghatározatlan fájltípus definiálása kiterjesztés alapján
+        typeFallback : {
+            text : ['log', 'ini'],
+            zip  : ['7z', 'ace', 'cab', 'gz', 'rar', 'tgz', 'zip'],
+            exec : ['bat', 'sh'],
+            code : [
+                '.asm', 'asp', 'awk', 'c', 'cpp', 'css', 'h', 'hpp', 'htc', 'htm', 'html', 'inc',
+                'java', 'js', 'jsp', 'php', 'pl', 'pm', 'sh', 'sql', 'src', 'xmd', 'xml', 'xsl'
+            ]
+        },
+
+        // Fájltípusokhoz társított szimbólumok ({type} a fenti objektum property-je)
+        typeIcons : '/images/filetypes/{type}.png',
+
         // Engedélyezett fájltípusok a types tulajdonságban definiáltak közül
-        allowedTypes : ['image', 'text', 'pdf', 'doc', 'xls', 'ppt', 'zip', 'audio', 'video'],
+        allowedTypes : ['image', 'text', 'pdf', 'doc', 'xls', 'ppt', 'zip', 'audio', 'video', 'exec', 'file', 'code'],
 
         // Fájl maximális mérete
         // Javaslat: 'upload': <100MB; 'base64': <5MB
