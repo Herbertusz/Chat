@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Layer</title>
-    <script src="hd.canvas.js"></script>
+    <script src="../js/hd/hd.canvas.js"></script>
     <script>
         const layerTest = function(){
 
@@ -11,25 +11,25 @@
             const container2 = document.getElementById("container2");
 
             const Layerset = HD.Canvas.Layerset;
-            const Layer = HD.Canvas.Canvas;
+            const Layer = HD.Canvas.Level;
 
             // rétegek definiálása és színek beállítása
-            const layerRectRed = Layer(function(canvas){
+            const layerRectRed = Layer(null, null, function(canvas){
                 const ctx = canvas.getContext("2d");
                 ctx.fillStyle = "rgba(255, 0, 0, 1)";
             });
-            const layerRectGreen = Layer(function(canvas){
+            const layerRectGreen = Layer(null, null, function(canvas){
                 const ctx = canvas.getContext("2d");
                 ctx.fillStyle = "rgba(0, 255, 0, 1)";
             });
             const layerRotatedImg = Layer();
-            const layerCircle = new Layer(function(canvas){
+            const layerCircle = Layer(null, null, function(canvas){
                 const ctx = canvas.getContext("2d");
                 ctx.fillStyle = "rgba(0, 0, 255, 1)";
                 ctx.strokeStyle = "rgba(0, 0, 255, 1)";
             });
 
-            const layerRectPurple = Layer(function(canvas){
+            const layerRectPurple = Layer(null, null, function(canvas){
                 const ctx = canvas.getContext("2d");
                 ctx.fillStyle = "rgba(255, 0, 255, 1)";
             });
@@ -53,6 +53,15 @@
                 ctx.fillRect(100, 50, 300, 50);
             });
 
+            // SVARCI-réteg
+            const selfCanvas = document.getElementById("selfCanvas");
+            const layerSelf = Layer(selfCanvas, '2d');
+            Layerset(null, layerSelf);
+            layerSelf.clear().draw(function(canvas, ctx){
+                ctx.fillStyle = 'rgba(0, 100, 0, 1)';
+                ctx.fillRect(50, 50, 150, 50);
+            });
+
             window.setTimeout(function(){
                 // kép betöltése az egyik rétegre
                 const img = new Image();
@@ -60,6 +69,7 @@
                     // animációk indítása a betöltés után
                     let i = 0;
                     let timer = window.setInterval(function(){
+						// let t0 = performance.now();
 
                         // kér mozgatása jobbra le
                         layerCircle.clear();
@@ -113,8 +123,16 @@
                             layerRectGreen.remove();
                             window.clearTimeout(timer);
                         }
+
+                        layerSelf.clear().draw(function(canvas, ctx){
+                            ctx.fillStyle = 'rgba(0, 100, 0, 1)';
+                            ctx.fillRect(50, 50, 150, i);
+                        });
+
                         i++;
 
+						// let t1 = performance.now();
+						// console.log(t1 - t0);
                     }, 50);
                 };
                 img.src = "bee.png";
@@ -134,6 +152,7 @@
     <br /><br />
     <div id="container" style="display: inline-block; width: 600px; height: 400px; border: 1px solid #000000;"></div>
     <div id="container2" style="display: inline-block; width: 600px; height: 400px; border: 1px solid #ff0000;"></div>
+    <canvas id="selfCanvas" width="600" height="400" style="border: 1px solid #0000ff;"></canvas>
 
 </body>
 </html>

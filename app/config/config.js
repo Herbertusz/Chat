@@ -221,9 +221,6 @@ CHAT.Config = {
             ]
         },
 
-        // Fájltípusokhoz társított szimbólumok ({type} a fenti objektum property-je)
-        typeIcons : '/images/filetypes/{type}.png',
-
         // Engedélyezett fájltípusok a types tulajdonságban definiáltak közül
         allowedTypes : ['image', 'text', 'pdf', 'doc', 'xls', 'ppt', 'zip', 'audio', 'video', 'exec', 'file', 'code'],
 

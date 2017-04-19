@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Layer</title>
-    <script src="hd.canvas.js"></script>
+    <script src="../js/hd/hd.canvas.js"></script>
     <script>
         const layerTest = function(){
 
@@ -23,7 +23,7 @@
                 ctx.fillStyle = "rgba(0, 255, 0, 1)";
             });
             const layerRotatedImg = Layer();
-            const layerCircle = new Layer(function(){
+            const layerCircle = Layer(function(){
                 ctx.fillStyle = "rgba(0, 0, 255, 1)";
                 ctx.strokeStyle = "rgba(0, 0, 255, 1)";
             });
@@ -55,6 +55,7 @@
                     // animációk indítása a betöltés után
                     let i = 0;
                     let timer = window.setInterval(function(){
+						let t0 = performance.now();
 
                         // kér mozgatása jobbra le
                         layerCircle.clear();
@@ -106,6 +107,8 @@
                         }
                         i++;
 
+						let t1 = performance.now();
+						console.log(t1 - t0);
                     }, 50);
                 };
                 img.src = "bee.png";

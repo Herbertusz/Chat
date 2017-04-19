@@ -258,6 +258,7 @@ CHAT.Components.Transfer = {
         const tplError = `
             <a href="${data.file}" target="_blank">${CHAT.Labels.file.error}</a>
         `;
+
         if (data.type === 'image'){
             imgSrc = data.file;
             tpl = `
@@ -267,11 +268,11 @@ CHAT.Components.Transfer = {
             `;
         }
         else {
-            imgSrc = CHAT.Config.fileTransfer.typeIcons.replace('{type}', data.type);
+            imgSrc = '/images/filetypes.png';
             tpl = `
                 <a class="file" href="${data.file}" target="_blank" title="${CHAT.Labels.file.types[data.type]}">
-                    <img alt="" src="${imgSrc}" />
-                    <span>${data.fileData.name}</span>
+                    <span class="filetype filetype-${data.type}"></span>
+                    <span class="text">${data.fileData.name}</span>
                 </a>
             `;
         }
