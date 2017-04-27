@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Layer</title>
-    <script src="../js/hd/hd.canvas.js"></script>
+    <script src="hd.canvas.js"></script>
     <script>
         const layerTest = function(){
 
@@ -26,6 +26,9 @@
             const layerCircle = Layer(function(){
                 ctx.fillStyle = "rgba(0, 0, 255, 1)";
                 ctx.strokeStyle = "rgba(0, 0, 255, 1)";
+            });
+            const layerPush = Layer(function(){
+                ctx.fillStyle = 'rgba(0, 200, 200, 0.2)';
             });
 
             const layerRectPurple = Layer(function(){
@@ -55,14 +58,14 @@
                     // animációk indítása a betöltés után
                     let i = 0;
                     let timer = window.setInterval(function(){
-						let t0 = performance.now();
+						//let t0 = performance.now();
 
                         // kér mozgatása jobbra le
                         layerCircle.clear();
                         layerCircle.draw(function(){
                             ctx.lineWidth = 10;
                             ctx.beginPath();
-                            ctx.arc(200 + (i / 2), 100 + (i / 2), 60, 0, Math.PI * 2);
+                            ctx.arc(200 + (i / 1.7), 100 + (i / 1.7), 60, 0, Math.PI * 2);
                             ctx.stroke();
                         });
 
@@ -95,6 +98,11 @@
                             layerCircle.subCommand = function(){
                                 ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
                             };
+                            // új réteg beszúrása
+                            graph.pushLayer(layerPush, 'top');
+                            layerPush.draw(function(){
+                                ctx.fillRect(150, 70, 200, 200);
+                            });
                         }
                         if (i == 150){
                             // kör réteg megjelenítése
@@ -105,10 +113,18 @@
                             layerRectGreen.remove();
                             window.clearTimeout(timer);
                         }
+
+                        //layerSelf1.clear().draw(function(canvas, ctx){
+                        //    ctx.fillRect(50, 50, 150, i);
+                        //});
+                        //layerSelf2.clear().draw(function(canvas, ctx){
+                        //    ctx.fillRect(50, 50, i, 50);
+                        //});
+
                         i++;
 
-						let t1 = performance.now();
-						console.log(t1 - t0);
+						//let t1 = performance.now();
+						//console.log(t1 - t0);
                     }, 50);
                 };
                 img.src = "bee.png";

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Layer</title>
-    <script src="../js/hd/hd.canvas.js"></script>
+    <script src="hd.canvas.js"></script>
     <script>
         const layerTest = function(){
 
@@ -14,23 +14,23 @@
             const Layer = HD.Canvas.Level;
 
             // rétegek definiálása és színek beállítása
-            const layerRectRed = Layer(null, null, function(canvas){
+            const layerRectRed = Layer(function(canvas){
                 const ctx = canvas.getContext("2d");
                 ctx.fillStyle = "rgba(255, 0, 0, 1)";
             });
-            const layerRectGreen = Layer(null, null, function(canvas){
-                const ctx = canvas.getContext("2d");
+            const layerRectGreen = Layer('2d', function(canvas, ctx){
                 ctx.fillStyle = "rgba(0, 255, 0, 1)";
             });
-            const layerRotatedImg = Layer();
-            const layerCircle = Layer(null, null, function(canvas){
-                const ctx = canvas.getContext("2d");
+            const layerRotatedImg = Layer('2d');
+            const layerCircle = Layer('2d', function(canvas, ctx){
                 ctx.fillStyle = "rgba(0, 0, 255, 1)";
                 ctx.strokeStyle = "rgba(0, 0, 255, 1)";
             });
+            const layerPush = Layer('2d', function(canvas, ctx){
+                ctx.fillStyle = 'rgba(0, 200, 200, 0.2)';
+            });
 
-            const layerRectPurple = Layer(null, null, function(canvas){
-                const ctx = canvas.getContext("2d");
+            const layerRectPurple = Layer('2d', function(canvas, ctx){
                 ctx.fillStyle = "rgba(255, 0, 255, 1)";
             });
 
@@ -43,23 +43,28 @@
                 const ctx = canvas.getContext("2d");
                 ctx.fillRect(20, 10, 200, 100);
             });
-            layerCircle.draw(function(canvas){
-                const ctx = canvas.getContext("2d");
+            layerCircle.draw(function(canvas, ctx){
                 ctx.arc(200, 100, 65, 0, Math.PI * 2);
                 ctx.fill();
             });
-            layerRectPurple.draw(function(canvas){
-                const ctx = canvas.getContext("2d");
+            layerRectPurple.draw(function(canvas, ctx){
                 ctx.fillRect(100, 50, 300, 50);
             });
 
-            // SVARCI-réteg
-            const selfCanvas = document.getElementById("selfCanvas");
-            const layerSelf = Layer(selfCanvas, '2d');
-            Layerset(null, layerSelf);
-            layerSelf.clear().draw(function(canvas, ctx){
+            // saját canvas definiálása
+            const selfCanvas1 = document.getElementById("selfCanvas1");
+            const selfCanvas2 = document.getElementById("selfCanvas2");
+            const layerSelf1 = Layer(selfCanvas1, '2d', function(canvas, ctx){
                 ctx.fillStyle = 'rgba(0, 100, 0, 1)';
-                ctx.fillRect(50, 50, 150, 50);
+            });
+            const layerSelf2 = Layer(selfCanvas2, '2d');
+            Layerset(null, layerSelf1, layerSelf2);
+            layerSelf1.clear().draw(function(canvas, ctx){
+                ctx.fillRect(50, 50, 150, 0);
+            });
+            layerSelf2.clear().draw(function(canvas, ctx){
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(50, 50, 0, 50);
             });
 
             window.setTimeout(function(){
@@ -77,7 +82,7 @@
                             const ctx = canvas.getContext("2d");
                             ctx.lineWidth = 10;
                             ctx.beginPath();
-                            ctx.arc(200 + (i / 2), 100 + (i / 2), 60, 0, Math.PI * 2);
+                            ctx.arc(200 + (i / 1.7), 100 + (i / 1.7), 60, 0, Math.PI * 2);
                             ctx.stroke();
                         });
 
@@ -113,6 +118,11 @@
                                 const ctx = canvas.getContext("2d");
                                 ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
                             };
+                            // új réteg beszúrása
+                            graph.pushLayer(layerPush, 'top');
+                            layerPush.draw(function(canvas, ctx){
+                                ctx.fillRect(150, 70, 200, 200);
+                            });
                         }
                         if (i == 150){
                             // kör réteg megjelenítése
@@ -124,9 +134,11 @@
                             window.clearTimeout(timer);
                         }
 
-                        layerSelf.clear().draw(function(canvas, ctx){
-                            ctx.fillStyle = 'rgba(0, 100, 0, 1)';
+                        layerSelf1.clear().draw(function(canvas, ctx){
                             ctx.fillRect(50, 50, 150, i);
+                        });
+                        layerSelf2.clear().draw(function(canvas, ctx){
+                            ctx.fillRect(50, 50, i, 50);
                         });
 
                         i++;
@@ -152,7 +164,8 @@
     <br /><br />
     <div id="container" style="display: inline-block; width: 600px; height: 400px; border: 1px solid #000000;"></div>
     <div id="container2" style="display: inline-block; width: 600px; height: 400px; border: 1px solid #ff0000;"></div>
-    <canvas id="selfCanvas" width="600" height="400" style="border: 1px solid #0000ff;"></canvas>
+    <canvas id="selfCanvas1" width="600" height="400" style="border: 1px solid #0000ff; position: absolute; top: 450px; left: 50px;"></canvas>
+    <canvas id="selfCanvas2" width="600" height="400" style="border: 1px solid #00ff00; position: absolute; top: 480px; left: 80px;"></canvas>
 
 </body>
 </html>
