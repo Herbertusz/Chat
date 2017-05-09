@@ -34,7 +34,7 @@ const createMongoDB = function(){
                         },
                         {
                             'id' : 3,
-                            'name' : 'Pistike',
+                            'name' : 'Hosszúnevű Gedeon',
                             'password' : 'x',
                             'lastActive' : null,
                             'created' : 1469215006264,
@@ -42,6 +42,14 @@ const createMongoDB = function(){
                         },
                         {
                             'id' : 4,
+                            'name' : 'Pistike',
+                            'password' : 'x',
+                            'lastActive' : null,
+                            'created' : 1469215006264,
+                            'active' : true
+                        },
+                        {
+                            'id' : 5,
                             'name' : 'Richi',
                             'password' : 'x',
                             'lastActive' : null,
@@ -84,7 +92,7 @@ const createMongoDB = function(){
                                 'type' : 'image/jpeg',
                                 'mainType' : 'image',
                                 'store' : 'upload',
-                                'data' : 'upload/1464111822726-805.jpg',
+                                'data' : '1464111822726-805.jpg',
                                 'deleted' : false
                             },
                             'created' : 1469215245070
@@ -216,8 +224,9 @@ const createMySQL = function(){
                 VALUES
                     (1, 'Hörb', 'x', 1469215006264, 1469215006264, 1),
                     (2, 'Dan', 'x', 1469215006264, 1469215006264, 1),
-                    (3, 'Pistike', 'x', NULL, 1469215006264, 1),
-                    (4, 'Richi', 'x', NULL, 1469215006264, 1)
+                    (3, 'Hosszúnevű Gedeon', 'x', NULL, 1469215006264, 1),
+                    (4, 'Pistike', 'x', NULL, 1469215006264, 1),
+                    (5, 'Richi', 'x', NULL, 1469215006264, 1)
             `);
         })
         .then(function(){

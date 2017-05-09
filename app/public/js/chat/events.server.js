@@ -84,6 +84,11 @@ CHAT.Events.Server = {
                 HD.DOM(CHAT.DOM.cloneBox).copyPaste(HD.DOM(CHAT.DOM.container).elem())
             );
             Userlist = Box.descendants(CHAT.DOM.users);
+
+            Box.css({
+                width : `${CHAT.Config.box.defaultSize.width}px`,
+                height : `${CHAT.Config.box.defaultSize.height}px`
+            });
             Box.data('room', roomData.name);
             CHAT.Components.User.generateList(Userlist.elem(), roomData.userIds);
             CHAT.Components.User.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj('connected-users'));
@@ -114,6 +119,11 @@ CHAT.Events.Server = {
                 HD.DOM(CHAT.DOM.cloneBox).copyPaste(HD.DOM(CHAT.DOM.container).elem())
             );
             Userlist = Box.descendants(CHAT.DOM.users);
+
+            Box.css({
+                width : `${CHAT.Config.box.defaultSize.width}px`,
+                height : `${CHAT.Config.box.defaultSize.height}px`
+            });
             Box.data('room', roomData.name);
             CHAT.Components.User.generateList(Userlist.elem(), roomData.userIds);
             CHAT.Components.User.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj('connected-users'));
@@ -195,6 +205,11 @@ CHAT.Events.Server = {
                 );
                 box = Box.elem();
                 Userlist = Box.descendants(CHAT.DOM.users);
+
+                Box.css({
+                    width : `${CHAT.Config.box.defaultSize.width}px`,
+                    height : `${CHAT.Config.box.defaultSize.height}px`
+                });
                 Box.data('room', extData.roomData.name);
                 CHAT.Components.User.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj('connected-users'));
                 CHAT.Components.Box.fill(box, extData.roomData.name);

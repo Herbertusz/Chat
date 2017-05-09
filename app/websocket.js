@@ -137,7 +137,7 @@ module.exports = function(server, ioSession, app){
     };
 
     /**
-     *
+     * User-ek állapotváltozásának logolása adatbázisba
      * @param {Object} prevUserData
      * @param {Object} nextUserData
      * @desc *UserData = {
@@ -338,10 +338,10 @@ module.exports = function(server, ioSession, app){
 
         // Fájlátvitel megszakítás emitter
         socket.on('abortFile', function(data){
-            const filePath = `${app.get('public path')}/upload/${data.fileName}`;
+            const filePath = `${app.get('upload')}/${data.fileName}`;
             socket.broadcast.to(data.roomName).emit('abortFile', data);
             ChatModel.setEvent('abortFile', data.roomName, data);
-            ChatModel.deleteFile(filePath)
+            ChatModel.deleteFile(data.fileName)
                 .then(function(){
                     return fs.access(filePath, fs.W_OK);
                 })

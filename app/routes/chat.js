@@ -6,6 +6,7 @@
 
 let UserModel, ChatModel;
 const ENV = require.main.require('../app/env.js');
+const path = require('path');
 const express = require('express');
 const router = express.Router();
 // const session = require('express-session');
@@ -13,12 +14,14 @@ const fs = require('fs'); // TODO: mz/fs
 const log = require.main.require('../libs/log.js');
 const HD = require.main.require('../app/public/js/hd/hd.js')(['datetime']);
 
+// Model-ek betöltése
 router.use(function(req, res, next){
     UserModel = require.main.require(`../app/models/${ENV.DBDRIVER}/user.js`)(req.app.get('db'));
     ChatModel = require.main.require(`../app/models/${ENV.DBDRIVER}/chat.js`)(req.app.get('db'));
     next();
 });
 
+// Chat felület megjelenítése
 router.get('/', function(req, res){
 
     UserModel
@@ -39,6 +42,7 @@ router.get('/', function(req, res){
 
 });
 
+// Chat felület megjelenítése iframe-ben (iframe-en kívüli rész)
 router.get('/remote/:userId', function(req, res){
 
     const userId = Number(req.params.userId);
@@ -63,6 +67,7 @@ router.get('/remote/:userId', function(req, res){
 
 });
 
+// Egy csatorna átvitelei (doboz feltöltéséhez)
 router.post('/getroommessages', function(req, res){
 
     ChatModel.getRoomMessages(req.body.roomName)
@@ -77,6 +82,7 @@ router.post('/getroommessages', function(req, res){
 
 });
 
+// Felhasználó állapota
 router.post('/getstatus', function(req, res){
 
     ChatModel.getLastStatus(Number(req.body.userId))
@@ -91,12 +97,16 @@ router.post('/getstatus', function(req, res){
 
 });
 
+// Fájl kiszolgálása
 router.get('/file/:roomName/:fileName', function(req, res, next){
 
     ChatModel
-        .getFile(req.param.roomName, req.param.fileName)
+        .getFile(req.params.roomName, req.params.fileName)
         .then(function(file){
-            // TODO: fájl megjelenítése
+            if (file && !file.deleted){
+                // TODO: user benne van-e a file.room csatornában?
+                res.sendFile(path.resolve(`${req.app.get('upload')}/${file.data}`));
+            }
         })
         .catch(function(error){
             log.error(error);
@@ -104,6 +114,7 @@ router.get('/file/:roomName/:fileName', function(req, res, next){
 
 });
 
+// Fájl feltöltése
 router.post('/uploadfile', function(req, res){
 
     if (req.xhr){
@@ -111,7 +122,7 @@ router.post('/uploadfile', function(req, res){
         const io = req.app.get('io');
         const data = JSON.parse(decodeURIComponent(req.header('X-File-Data')));
         const userId = Number(data.userId);
-        const fileStream = fs.createWriteStream(`${req.app.get('public path')}/upload/${data.fileName}`);
+        const fileStream = fs.createWriteStream(`${req.app.get('upload')}/${data.fileName}`);
         const fileSize = Number(data.fileData.size);
 
         req.on('data', function(file){
@@ -137,7 +148,7 @@ router.post('/uploadfile', function(req, res){
                 firstSend : false
             });
             res.send({
-                filePath : `/upload/${data.fileName}`
+                fileName : `${data.fileName}`
             });
             fileStream.end();
         });
@@ -149,6 +160,7 @@ router.post('/uploadfile', function(req, res){
 
 });
 
+// Kliens oldali log
 router.post('/clientlog', function(req, res){
 
     const name = decodeURIComponent(req.body.name);
