@@ -3,7 +3,7 @@
  *
  * @description Canvas kezelése
  * @requires -
- * @example 2D layer-kezelés: http://canvas.webprog.biz/layer
+ * @example 2D layer-kezelés: http://blog.web-prog.hu/public/layer/layertest.html
  */
 
 'use strict';
@@ -53,75 +53,54 @@ HD.Canvas = {
 
     /**
      * Rétegcsoportokat kezelő objektum (Module minta)
-     * @param {HTMLElement} element - az elem amelyikhez a layerset tartozik
-     * @param {Layer|Canvas} [layers] - tetszőleges számú réteg
+     * @param {HTMLElement|null} element - az elem amelyikhez a layerset tartozik
+     * @param {Layer|Level} [layers] - tetszőleges számú réteg
      * @returns {Object}
      */
     Layerset : function(element, ...layers){
 
-        const type = (element instanceof HTMLCanvasElement) ? 'layer' : 'canvas';
+        /**
+         * Rétegezés típusa ('layer'|'level')
+         * @type {String}
+         */
+        const type = (typeof element === 'object' && element instanceof HTMLCanvasElement) ? 'layer' : 'level';
 
         /**
          * Réteg keresése a layerset-ben
          * @private
-         * @param {Layer|Canvas} currentLayer - a keresett réteg
-         * @returns {Number|Boolean} a réteg indexe vagy false
+         * @param {Layer|Level} currentLayer - a keresett réteg
+         * @returns {Number} a réteg indexe vagy -1
          */
         const getLayerIndex = function(currentLayer){
-            for (let n = 0; n < layers.length; n++){
-                if (layers[n] === currentLayer){
-                    return n;
-                }
-            }
-            return false;
+            return layers.findIndex(function(layer){
+                return layer === currentLayer;
+            });
         };
 
         /**
-         * A zAxis értékek beállítása a zIndex-ek alapján
+         * A zIndex értékek beállítása a layers tömb sorrendje alapján
          * @private
          */
-        const resetZAxis = function(){
+        const setZIndex = function(){
             let n;
-            layers.sort(function(a, b){
-                if (a.zIndex === null) a.zIndex = 0;
-                if (b.zIndex === null) b.zIndex = 0;
-                if (a.zIndex > b.zIndex){
-                    return 1;
-                }
-                if (a.zIndex < b.zIndex){
-                    return -1;
-                }
-                return 0;
-            });
             for (n = 0; n < layers.length; n++){
-                layers[n].zIndex = null;
-                layers[n].zAxis = n;
+                layers[n].zIndex = n;
+                if (type === 'level'){
+                    layers[n].getCanvas().style.zIndex = n;
+                }
             }
         };
 
         /**
-         * Réteg áthelyezése a layers tömbben
-         * @param {Number} from - a mozdítandó réteg sorszáma
-         * @param {String} direction - mozgatás iránya ('down'|'up'|'bg'|'top')
-         * @param {Number} step - down és up esetében a lépések száma
+         * Inicializálás
+         * @param {Array} _layers - a konstruktornak átadott rétegek
+         * @param {Object} _Interface - a konstruktor által visszaadott felület
          */
-        const changeZAxis = function(from, direction, step){
-            const max = layers.length - 1;
-            let to;
-            if (direction === 'up'){
-                to = Math.min(from + step, max);
-            }
-            else if (direction === 'down'){
-                to = Math.max(from - step, 0);
-            }
-            else if (direction === 'top'){
-                to = max;
-            }
-            else if (direction === 'bg'){
-                to = 0;
-            }
-            layers.splice(to, 0, layers.splice(from, 1)[0]);
-            resetZAxis();
+        const init = function(_layers, _Interface){
+            _layers.forEach(function(layer, i){
+                layer.ownerSet = _Interface;
+            });
+            setZIndex();
         };
 
         /**
@@ -138,76 +117,81 @@ HD.Canvas = {
 
             /**
              * Réteg beszúrása
-             * @param {Layer|Canvas} currentLayer - az új réteg
-             * @param {Number|String} [zOverwrite='remain'] - az új réteg helye (Number|'remain'|'top'|'bg')
+             * @param {Layer|Level} currentLayer - az új réteg
+             * @param {Number|String} zIndex - az új réteg helye (Number|'top'|'bg')
              * @returns {Layerset}
              */
-            pushLayer : function(currentLayer, zOverwrite = 'remain'){
-                if (zOverwrite === 'top'){
+            pushLayer : function(currentLayer, zIndex){
+                if (zIndex === 'top'){
                     // legfelső réteg
                     layers.push(currentLayer);
                 }
-                else if (zOverwrite === 'bg'){
+                else if (zIndex === 'bg'){
                     // háttérréteg
                     layers.unshift(currentLayer);
                 }
-                else if (zOverwrite === 'remain'){
-                    // beszúrás a benne tárolt zIndex alapján
-                    resetZAxis();
-                }
                 else {
                     // beszúrás a paraméter alapján
-                    layers.splice(zOverwrite, 0, currentLayer);
+                    layers.splice(zIndex, 0, currentLayer);
                 }
                 currentLayer.ownerSet = this;
+                setZIndex();
                 return this;
             },
 
             /**
              * Réteg törlése
-             * @param {Layer|Canvas} currentLayer - az eltávolítandó réteg
+             * @param {Layer|Level} currentLayer - az eltávolítandó réteg
              * @returns {Layerset}
              */
             removeLayer : function(currentLayer){
                 const n = getLayerIndex(currentLayer);
-                if (n !== false){
+                if (n > -1){
                     layers.splice(n, 1);
                     if (type === 'layer'){
                         currentLayer.clear();
                         this.reDraw();
                     }
                     else {
-                        currentLayer.parentNode.removeChild(currentLayer);
+                        const canvasElement = currentLayer.getCanvas();
+                        canvasElement.parentNode.removeChild(canvasElement);
                     }
+                    setZIndex();
                 }
                 return this;
             },
 
             /**
              * Réteg mozgatása a z-tengelyen
-             * @param {Layer|Canvas} currentLayer - a mozdítandó réteg
-             * @param {String} location - mozgatás iránya ('down'|'up'|'bg'|'top')
-             * @param {Number} [num=1] - down és up esetében a lépések száma
+             * @param {Layer|Level} currentLayer - a mozdítandó réteg
+             * @param {String} direction - mozgatás iránya ('down'|'up'|'bg'|'top')
+             * @param {Number} [step=1] - down és up esetében a lépések száma
              * @returns {Layerset}
              */
-            moveLayer : function(currentLayer, location, num = 1){
-                const n = getLayerIndex(currentLayer);
-                if (n !== false){
-                    changeZAxis(n, location, num);
-                    if (type === 'layer'){
-                        this.reDraw();
+            moveLayer : function(currentLayer, direction, step = 1){
+                const from = getLayerIndex(currentLayer);
+                if (from > -1){
+                    // réteg áthelyezése a layers tömbben
+                    const max = layers.length - 1;
+                    let to;
+                    if (direction === 'up'){
+                        to = Math.min(from + step, max);
                     }
-                    else {
-                        const unsortedLayers = [];
-                        const chArr = Array.from(this.element.children);
-                        let i;
-                        chArr.forEach(function(elem){
-                            unsortedLayers.push(elem.parentNode.removeChild(elem));
-                        });
-                        layers.forEach(function(layer){
-                            ;
-                        });
-                        this.element.appendChild();
+                    else if (direction === 'down'){
+                        to = Math.max(from - step, 0);
+                    }
+                    else if (direction === 'top'){
+                        to = max;
+                    }
+                    else if (direction === 'bg'){
+                        to = 0;
+                    }
+                    layers.splice(to, 0, layers.splice(from, 1)[0]);
+                    setZIndex();
+
+                    if (type === 'layer'){
+                        // újrarajzolás
+                        this.reDraw();
                     }
                 }
                 return this;
@@ -215,12 +199,16 @@ HD.Canvas = {
 
             /**
              * Újrarajzolás
-             * @param {Array.<Layer|Canvas>} [except=[]] - ezeket a rétegeket nem rajzolja újra
+             * @param {Array.<Layer|Level>} [except=[]] - ezeket a rétegeket nem rajzolja újra
              * @returns {Layerset}
              */
             reDraw : function(except = []){
                 let n;
-                resetZAxis();
+                if (type === 'layer'){
+                    const canvas = this.element;
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
                 for (n = 0; n < layers.length; n++){
                     // FIXME: indexOf argumentuma egy objektum!
                     if (except.indexOf(layers[n]) === -1 && !layers[n].hidden){
@@ -232,10 +220,7 @@ HD.Canvas = {
 
         };
 
-        layers.forEach(function(layer, i){
-            layer.ownerSet = Interface;
-        });
-        resetZAxis();
+        init(layers, Interface);
 
         return Interface;
 
@@ -243,11 +228,10 @@ HD.Canvas = {
 
     /**
      * Rétegeket kezelő objektum (Module minta)
-     * @param {Function} [subCommand] - műveletek
-     * @param {Number} [z] - előírt zIndex érték (különben a Layerset-ben megadott sorrend határozza meg)
+     * @param {Function} [subCommand=function(){}] - minden újrarajzoló művelet előtt végrehajtandó függvény
      * @returns {Object}
      */
-    Layer : function(subCommand, z){
+    Layer : function(subCommand){
 
         /**
          * Az eddigi műveletek tárolása
@@ -255,6 +239,17 @@ HD.Canvas = {
          * @type {Array.<Function>}
          */
         let drawing = [];
+
+        /**
+         * Inicializálás
+         * @param {Function} _subCommand - a konstruktornak átadott argumentum
+         * @param {Object} _Interface - a konstruktor által visszaadott felület
+         */
+        const init = function(_subCommand, _Interface){
+            if (typeof _subCommand === 'function'){
+                _Interface.subCommand = _subCommand;
+            }
+        };
 
         /**
          * API
@@ -270,17 +265,10 @@ HD.Canvas = {
             ownerSet : null,
 
             /**
-             * Kívánt pozíció a z-tengelyen
-             * @private
-             * @type {Number}
-             */
-            zIndex : null,
-
-            /**
              * Pozíció a z-tengelyen (hézagmentes, automatikusan állítódik be)
              * @type {Number}
              */
-            zAxis : 0,
+            zIndex : 0,
 
             /**
              * Láthatóság szabályozása
@@ -292,8 +280,7 @@ HD.Canvas = {
              * Minden újrarajzoló művelet előtt végrehajtandó függvény
              * @type {Function}
              */
-            subCommand : function(){
-            },
+            subCommand : function(){},
 
             /**
              * Újrarajzolás
@@ -301,7 +288,7 @@ HD.Canvas = {
              */
             reDraw : function(){
                 for (let n = 0; n < drawing.length; n++){
-                    this.subCommand(this);
+                    this.subCommand();
                     drawing[n].call(this);
                 }
                 return this;
@@ -398,24 +385,21 @@ HD.Canvas = {
 
         };
 
-        if (typeof subCommand === 'function'){
-            Interface.subCommand = subCommand;
-        }
-        if (typeof z !== 'undefined'){
-            Interface.zIndex = z;
-        }
+        init(subCommand, Interface);
 
         return Interface;
 
     },
 
     /**
-     * Canvas elemenet rétegekként kezelő objektum (Module minta)
-     * @param {Function} [subCommand] - műveletek
-     * @param {Number} [z] - előírt zIndex érték (különben a Layerset-ben megadott sorrend határozza meg)
+     * Canvas elemeket rétegekként kezelő objektum (Module minta)
+	 * @param {HTMLCanvasElement|String|Function} [args]
+	 *  {HTMLCanvasElement} [predefinedCanvas=null] - saját canvas
+	 *  {String} [ctxType=null] - alapértelmezett rajzoló kontextus ('2d'|'webgl'|...)
+     *  {Function} [subCommand=function(){}] - minden újrarajzoló művelet előtt végrehajtandó függvény
      * @returns {Object}
      */
-    Canvas : function(subCommand, z){
+    Level : function(...args){
 
         /**
          * A canvas elem (réteg)
@@ -425,11 +409,54 @@ HD.Canvas = {
         let canvas = null;
 
         /**
+         * Rajzoló kontextus
+         * @private
+         * @type {Object}
+         */
+        let defaultCtx = null;
+
+        /**
          * Az eddigi műveletek tárolása
          * @private
          * @type {Array.<Function>}
          */
         let drawing = [];
+
+        /**
+         * Inicializálás
+         * @param {Array} _args - a konstruktornak átadott argumentumok
+         * @param {Object} _Interface - a konstruktor által visszaadott felület
+         */
+        const init = function(_args, _Interface){
+            // argumentumok kezelése
+            let predefinedCanvas = null;
+            let ctxType = null;
+            let subCommand = function(){};
+            _args.forEach(function(arg){
+                if (typeof arg === 'object'){
+                    predefinedCanvas = arg;
+                }
+                else if (typeof arg === 'string'){
+                    ctxType = arg;
+                }
+                else if (typeof arg === 'function'){
+                    subCommand = arg;
+                }
+            });
+
+			// inicializálás
+            if (predefinedCanvas !== null && predefinedCanvas instanceof HTMLCanvasElement){
+                canvas = predefinedCanvas;
+                canvas.dataset.appended = true;
+            }
+            else {
+                canvas = document.createElement('canvas');
+            }
+            if (ctxType !== null){
+                defaultCtx = canvas.getContext(ctxType);
+            }
+            _Interface.subCommand = subCommand;
+        };
 
         /**
          * API
@@ -445,17 +472,10 @@ HD.Canvas = {
             ownerSet : null,
 
             /**
-             * Kívánt pozíció a z-tengelyen
-             * @private
-             * @type {Number}
-             */
-            zIndex : null,
-
-            /**
              * Pozíció a z-tengelyen (hézagmentes, automatikusan állítódik be)
              * @type {Number}
              */
-            zAxis : 0,
+            zIndex : 0,
 
             /**
              * Láthatóság szabályozása
@@ -467,17 +487,15 @@ HD.Canvas = {
              * Minden újrarajzoló művelet előtt végrehajtandó függvény
              * @type {Function}
              */
-            subCommand : function(ctx){
-            },
+            subCommand : function(canvasElement, ctx){},
 
             /**
              * A canvas elem létrehozása
-             * @returns {Canvas}
+             * @returns {Level}
              */
             create : function(){
-                if (!canvas){
+                if (!canvas.dataset.appended){
                     const container = this.ownerSet.element;
-                    canvas = document.createElement('canvas');
                     container.style.position = 'relative';
                     canvas.style.position = 'absolute';
                     canvas.style.left = 0;
@@ -485,6 +503,7 @@ HD.Canvas = {
                     canvas.width = container.clientWidth;
                     canvas.height = container.clientHeight;
                     container.appendChild(canvas);
+                    canvas.dataset.appended = true;
                 }
                 return this;
             },
@@ -500,13 +519,13 @@ HD.Canvas = {
 
             /**
              * Újrarajzolás
-             * @returns {Canvas}
+             * @returns {Level}
              */
             reDraw : function(){
                 this.create();
                 for (let n = 0; n < drawing.length; n++){
-                    this.subCommand(this);
-                    drawing[n].call(this);
+                    this.subCommand(canvas, defaultCtx);
+                    drawing[n].call(this, canvas, defaultCtx);
                 }
                 return this;
             },
@@ -514,7 +533,7 @@ HD.Canvas = {
             /**
              * Művelet beszúrása a sorba
              * @param {Function} command - műveletek
-             * @returns {Canvas}
+             * @returns {Level}
              */
             push : function(command){
                 drawing.push(command);
@@ -524,62 +543,68 @@ HD.Canvas = {
             /**
              * Művelet beszúrása és végrehajtása
              * @param {Function} command - műveletek
-             * @returns {Canvas}
+             * @returns {Level}
              */
             draw : function(command){
                 this.create();
                 drawing.push(command);
+                this.subCommand(canvas, defaultCtx);
+                command.call(this, canvas, defaultCtx);
                 return this;
             },
 
             /**
              * Réteg eltüntetése
-             * @returns {Canvas}
+             * @returns {Level}
              */
             hide : function(){
+                this.create();
                 canvas.style.visibility = 'hidden';
                 this.hidden = true;
+                this.subCommand(canvas, defaultCtx);
                 return this;
             },
 
             /**
              * Réteg megjelenítése
-             * @returns {Layer}
+             * @returns {Level}
              */
             show : function(){
+                this.create();
                 canvas.style.visibility = 'visible';
                 this.hidden = false;
+                this.subCommand(canvas, defaultCtx);
                 return this;
             },
 
             /**
              * Réteg leradírozása (ürítés, a drawing sor megmarad)
-             * @returns {Layer}
+             * @returns {Level}
              */
             erase : function(){
-                const canvas = this.ownerSet.element;
+                this.create();
                 const ctx = canvas.getContext('2d');
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                this.ownerSet.reDraw();
+                this.subCommand(canvas, defaultCtx);
                 return this;
             },
 
             /**
              * Réteg ürítése
-             * @returns {Layer}
+             * @returns {Level}
              */
             clear : function(){
-                const canvas = this.ownerSet.element;
+                this.create();
                 const ctx = canvas.getContext('2d');
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 drawing = [];
-                this.ownerSet.reDraw();
+                this.subCommand(canvas, defaultCtx);
                 return this;
             },
 
             /**
              * Réteg törlése
-             * @returns {Layer}
+             * @returns {Level}
              */
             remove : function(){
                 this.ownerSet.removeLayer(this);
@@ -590,7 +615,7 @@ HD.Canvas = {
              * Réteg mozgatása a z-tengelyen
              * @param {String} location - mozgatás iránya ('down'|'up'|'bg'|'top')
              * @param {Number} [num=1] - down és up esetében a lépések száma
-             * @returns {Layer}
+             * @returns {Level}
              */
             move : function(location, num){
                 this.ownerSet.moveLayer(this, location, num);
@@ -599,12 +624,7 @@ HD.Canvas = {
 
         };
 
-        if (typeof subCommand === 'function'){
-            Interface.subCommand = subCommand;
-        }
-        if (typeof z !== 'undefined'){
-            Interface.zIndex = z;
-        }
+        init(args, Interface);
 
         return Interface;
 

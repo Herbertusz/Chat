@@ -246,6 +246,7 @@ CHAT.Components.Transfer = {
         const List = HD.DOM(box).descendants(CHAT.DOM.list);
         const time = HD.DateTime.formatMS('Y-m-d H:i:s', data.time);
         const userName = CHAT.Components.User.getName(data.userId);
+        const fileSrc = data.store === 'upload' ? `/chat/file/${HD.DOM(box).data('room')}/${data.file}` : data.file;
 
         const ListItem = HD.DOM(`
             <li>
@@ -258,20 +259,21 @@ CHAT.Components.Transfer = {
         const tplError = `
             <a href="${data.file}" target="_blank">${CHAT.Labels.file.error}</a>
         `;
+
         if (data.type === 'image'){
-            imgSrc = data.file;
+            imgSrc = fileSrc;
             tpl = `
-                <a class="image" href="${data.file}" target="_blank">
+                <a class="image" href="${fileSrc}" target="_blank">
                     <img class="send-image" alt="${data.fileData.name}" src="${imgSrc}" />
                 </a>
             `;
         }
         else {
-            imgSrc = CHAT.Config.fileTransfer.typeIcons.replace('{type}', data.type);
+            imgSrc = '/images/filetypes.png';
             tpl = `
-                <a class="file" href="${data.file}" target="_blank" title="${CHAT.Labels.file.types[data.type]}">
-                    <img alt="" src="${imgSrc}" />
-                    <span>${data.fileData.name}</span>
+                <a class="file" href="${fileSrc}" target="_blank" title="${CHAT.Labels.file.types[data.type]}">
+                    <span class="filetype filetype-${data.type}"></span>
+                    <span class="text">${data.fileData.name}</span>
                 </a>
             `;
         }

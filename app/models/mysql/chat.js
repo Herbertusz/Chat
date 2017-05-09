@@ -89,10 +89,10 @@ const Model = function(db){
             return db.getRow(`
                     SELECT
                         cm.*,
-                        cu.name AS userName
+                        cmf.*
                     FROM
                         chat_messages cm
-                        LEFT JOIN chat_files cf ON cm.transferId = cf.id
+                        LEFT JOIN chat_messages_files cmf ON cm.transferId = cmf.id
                     WHERE
                         cm.room = :roomName AND
                         cf.data = :fileName
@@ -300,11 +300,11 @@ const Model = function(db){
 
         /**
          * Egy átvitelhez tartozó fájl töröltre állítása
-         * @param {String} filePath
+         * @param {String} fileName
          * @param {Function} [callback]
          * @returns {Promise}
          */
-        deleteFile : function(filePath, callback = () => {}){
+        deleteFile : function(fileName, callback = () => {}){
             return db.getRow(`
                     SELECT
                         cmf.*
@@ -314,11 +314,11 @@ const Model = function(db){
                     WHERE
                         cm.type = 'file' AND
                         cmf.store = 'upload' AND
-                        cmf.data = :filePath
+                        cmf.data = :fileName
                     LIMIT
                         1
                 `, {
-                    'filePath' : filePath
+                    'fileName' : fileName
                 })
                 .then(function(file){
                     let url = '';

@@ -73,7 +73,7 @@ CHAT.FileTransfer = {
                 };
                 xhr.onload = function(){
                     const response = JSON.parse(xhr.responseText);
-                    data.file = response.filePath;
+                    data.file = response.fileName;
                     CHAT.Components.Transfer.progressbar(box, 'send', 1, barId);
                     CHAT.Components.Transfer.appendFile(box, data, true)
                         .then(callback)

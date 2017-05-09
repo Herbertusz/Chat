@@ -95,8 +95,14 @@ const Model = function(db){
                     'file.data' : fileName
                 })
                 .toArray()
-                .then(function(file){
-                    const ret = file || false;
+                .then(function(files){
+                    let ret = false;
+                    if (files.length){
+                        const file = files[0];
+                        ret = Object.assign(file.file, {
+                            room : file.room
+                        });
+                    }
                     callback(ret);
                     return ret;
                 })
@@ -204,16 +210,16 @@ const Model = function(db){
 
         /**
          * Egy átvitelhez tartozó fájl töröltre állítása
-         * @param {String} filePath
+         * @param {String} fileName
          * @param {Function} [callback]
          * @returns {Promise}
          */
-        deleteFile : function(filePath, callback = () => {}){
+        deleteFile : function(fileName, callback = () => {}){
             return db.collection('chat_messages')
                 .find({'$and' : [
-                    {'data' : filePath},
                     {'file' : {'$exists' : true}},
-                    {'file.store' : 'upload'}
+                    {'file.store' : 'upload'},
+                    {'file.data' : fileName}
                 ]}, {
                     'file' : 1
                 })

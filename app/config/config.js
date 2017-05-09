@@ -84,7 +84,7 @@ CHAT.Config = {
         // Hangos értesítés
         sound : {
             // Hangos értesítés engedélyezése
-            allowed : true,
+            allowed : false,
             // Különféle értesítések esetén lejátszódó hangfájlok
             audio : {
                 'message'         : '/audio/send.mp3',
@@ -101,7 +101,7 @@ CHAT.Config = {
         // Asztali értesítés
         desktop : {
             // Asztali értesítés engedélyezése
-            allowed : true,
+            allowed : false,
             // Értesítés eltüntetése előtt eltelt idő (ms) (falsy érték: a program nem tünteti el)
             closeTime : 10000,
             // Asztali értesítés beállításai (a Notification() konstruktor második argumentuma)
@@ -216,16 +216,13 @@ CHAT.Config = {
             zip  : ['7z', 'ace', 'cab', 'gz', 'rar', 'tgz', 'zip'],
             exec : ['bat', 'sh'],
             code : [
-                '.asm', 'asp', 'awk', 'c', 'cpp', 'css', 'h', 'hpp', 'htc', 'htm', 'html', 'inc',
+                'asm', 'asp', 'awk', 'c', 'cpp', 'css', 'h', 'hpp', 'htc', 'htm', 'html', 'inc',
                 'java', 'js', 'jsp', 'php', 'pl', 'pm', 'sh', 'sql', 'src', 'xmd', 'xml', 'xsl'
             ]
         },
 
-        // Fájltípusokhoz társított szimbólumok ({type} a fenti objektum property-je)
-        typeIcons : '/images/filetypes/{type}.png',
-
         // Engedélyezett fájltípusok a types tulajdonságban definiáltak közül
-        allowedTypes : ['image', 'text', 'pdf', 'doc', 'xls', 'ppt', 'zip', 'audio', 'video', 'exec', 'file', 'code'],
+        allowedTypes : ['image', 'text', 'pdf', 'doc', 'xls', 'ppt', 'zip', 'audio', 'video', 'exec', 'code', 'file'],
 
         // Fájl maximális mérete
         // Javaslat: 'upload': <100MB; 'base64': <5MB
