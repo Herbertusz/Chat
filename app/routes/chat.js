@@ -47,7 +47,12 @@ router.get('/remote/:userId', function(req, res){
 
     const userId = Number(req.params.userId);
 
-    req.app.set('userId', userId);
+    req.session.login = {
+        loginned : true,
+        userId : userId,
+        userName : '',
+        error : null
+    };
 
     UserModel
         .getUsers()
@@ -103,9 +108,16 @@ router.get('/file/:roomName/:fileName', function(req, res, next){
     ChatModel
         .getFile(req.params.roomName, req.params.fileName)
         .then(function(file){
-            if (file && !file.deleted){
-                // TODO: user benne van-e a file.room csatornában?
+            const userId = req.session.login ? req.session.login.userId : null;
+            const currentRoom = req.app.get('socket').getState().rooms.find(function(room){
+                return room.name === req.params.roomName;
+            });
+            if (file && !file.deleted && currentRoom.userIds.indexOf(userId) > -1){
                 res.sendFile(path.resolve(`${req.app.get('upload')}/${file.data}`));
+            }
+            else {
+                next();
+                return;
             }
         })
         .catch(function(error){
@@ -119,7 +131,7 @@ router.post('/uploadfile', function(req, res){
 
     if (req.xhr){
         let uploadedSize = 0;
-        const io = req.app.get('io');
+        const io = req.app.get('socket').io;
         const data = JSON.parse(decodeURIComponent(req.header('X-File-Data')));
         const userId = Number(data.userId);
         const fileStream = fs.createWriteStream(`${req.app.get('upload')}/${data.fileName}`);

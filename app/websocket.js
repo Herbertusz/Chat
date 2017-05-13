@@ -13,15 +13,10 @@ const HD = require.main.require('../app/public/js/hd/hd.js')(['utility', 'math']
 const CHAT = require.main.require('../app/config/config.js');
 
 /**
- * Websocket vezérlés
- * @param {Object} server - http szerver
- * @param {Object} ioSession - express-session
- * @param {Object} app - express
- * @returns {Object}
+ * Állapot tároló objektum
+ * @type {Object}
  */
-module.exports = function(server, ioSession, app){
-
-    ChatModel = require.main.require(`../app/models/${ENV.DBDRIVER}/chat.js`)(app.get('db'));
+const ChatState = {
 
     /**
      * Chat-be belépett userek
@@ -37,7 +32,7 @@ module.exports = function(server, ioSession, app){
      *     ...
      * }
      */
-    let connectedUsers = {};
+    connectedUsers : {},
 
     /**
      * Futó chat-csatornák
@@ -52,7 +47,20 @@ module.exports = function(server, ioSession, app){
      *     ...
      * ]
      */
-    const rooms = [];
+    rooms : []
+
+};
+
+/**
+ * Websocket vezérlés
+ * @param {Object} server - http szerver
+ * @param {Object} ioSession - express-session
+ * @param {Object} app - express
+ * @returns {Object}
+ */
+module.exports = function(server, ioSession, app){
+
+    ChatModel = require.main.require(`../app/models/${ENV.DBDRIVER}/chat.js`)(app.get('db'));
 
     /**
      * Csatorna adatainak lekérése név alapján
@@ -60,7 +68,7 @@ module.exports = function(server, ioSession, app){
      * @returns {Object}
      */
     const getRoom = function(name){
-        return rooms.find(function(room){
+        return ChatState.rooms.find(function(room){
             return room.name === name;
         });
     };
@@ -74,10 +82,10 @@ module.exports = function(server, ioSession, app){
         const onlineUserIds = [];
         let key;
 
-        for (key in connectedUsers){
-            onlineUserIds.push(connectedUsers[key].id);
+        for (key in ChatState.connectedUsers){
+            onlineUserIds.push(ChatState.connectedUsers[key].id);
         }
-        rooms.forEach(function(room, index){
+        ChatState.rooms.forEach(function(room, index){
             if (room.userIds.length === 0 || HD.Math.Set.intersection(room.userIds, onlineUserIds).length === 0){
                 // fájlok törlése
                 ChatModel.deleteRoomFiles(room.name)
@@ -95,7 +103,7 @@ module.exports = function(server, ioSession, app){
                     });
 
                 deleted.push(room.name);
-                rooms.splice(index, 1);
+                ChatState.rooms.splice(index, 1);
             }
         });
     };
@@ -111,25 +119,25 @@ module.exports = function(server, ioSession, app){
 
         if (!roomName){
             // összes csatorna
-            rooms.forEach(function(room){
+            ChatState.rooms.forEach(function(room){
                 roomUpdate(operation, room.name, userId);
             });
             return;
         }
-        const roomIndex = rooms.findIndex(function(room){
+        const roomIndex = ChatState.rooms.findIndex(function(room){
             return room.name === roomName;
         });
         if (roomIndex > -1){
             if (operation === 'add'){
-                userIdIndex = rooms[roomIndex].userIds.indexOf(userId);
+                userIdIndex = ChatState.rooms[roomIndex].userIds.indexOf(userId);
                 if (userIdIndex === -1){
-                    rooms[roomIndex].userIds.push(userId);
+                    ChatState.rooms[roomIndex].userIds.push(userId);
                 }
             }
             else if (operation === 'remove'){
-                userIdIndex = rooms[roomIndex].userIds.indexOf(userId);
+                userIdIndex = ChatState.rooms[roomIndex].userIds.indexOf(userId);
                 if (userIdIndex > -1){
-                    rooms[roomIndex].userIds.splice(userIdIndex, 1);
+                    ChatState.rooms[roomIndex].userIds.splice(userIdIndex, 1);
                 }
                 roomGarbageCollect();
             }
@@ -212,21 +220,14 @@ module.exports = function(server, ioSession, app){
                 isIdle : false
             };
         }
-        else if (app.get('userId')){
-            userData = {
-                id : app.get('userId'),
-                status : CHAT.Config.status.online[0],
-                isIdle : false
-            };
-        }
 
         if (userData){
             // csatlakozás emitter
-            connectedUsers[socket.id] = userData;
+            ChatState.connectedUsers[socket.id] = userData;
             socket.broadcast.emit('userConnected', userData);
-            io.of('/chat').emit('statusChanged', connectedUsers);
+            io.of('/chat').emit('statusChanged', ChatState.connectedUsers);
             statusLog(null, userData);
-            rooms.forEach(function(roomData){
+            ChatState.rooms.forEach(function(roomData){
                 if (roomData.userIds.indexOf(userData.id) > -1){
                     socket.join(roomData.name);
                     io.of('/chat').to(roomData.name).emit(
@@ -238,29 +239,29 @@ module.exports = function(server, ioSession, app){
 
         // Csatlakozás bontása
         socket.on('disconnect', function(){
-            const discUserData = connectedUsers[socket.id];
+            const discUserData = ChatState.connectedUsers[socket.id];
 
             if (discUserData){
-                Reflect.deleteProperty(connectedUsers, socket.id);
+                Reflect.deleteProperty(ChatState.connectedUsers, socket.id);
                 roomUpdate('remove', null, discUserData.id);
                 statusLog(discUserData, null);
-                io.of('/chat').emit('statusChanged', connectedUsers);
+                io.of('/chat').emit('statusChanged', ChatState.connectedUsers);
                 io.of('/chat').emit('disconnect', discUserData);
             }
         });
 
         // User állapotváltozása
         socket.on('statusChanged', function(updatedConnectedUsers, triggerUserId){
-            const prevUserData = HD.Object.search(connectedUsers, user => user.id === triggerUserId);
+            const prevUserData = HD.Object.search(ChatState.connectedUsers, user => user.id === triggerUserId);
             const nextUserData = HD.Object.search(updatedConnectedUsers, user => user.id === triggerUserId);
             statusLog(prevUserData, nextUserData);
-            connectedUsers = updatedConnectedUsers;
+            ChatState.connectedUsers = updatedConnectedUsers;
             socket.broadcast.emit('statusChanged', updatedConnectedUsers);
         });
 
         // Csatorna létrehozása
         socket.on('roomCreated', function(roomData){
-            rooms.push(roomData);
+            ChatState.rooms.push(roomData);
             socket.join(roomData.name);
             socket.broadcast.emit('roomCreated', roomData);
             ChatModel.setEvent('roomCreated', roomData.name, roomData);
@@ -397,6 +398,9 @@ module.exports = function(server, ioSession, app){
 
     });
 
-    return io;
+    return {
+        io : io,
+        getState : () => ChatState
+    };
 
 };
