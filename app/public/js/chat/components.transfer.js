@@ -46,6 +46,11 @@ CHAT.Components.Transfer = {
         CHAT.DOM.inBox(CHAT.DOM.sendSwitch).event('change', function(){
             CHAT.Events.Client.sendMethod(this);
         });
+
+        // Előredefiniált karakterlánc beszúrás
+        CHAT.DOM.inBox(`${CHAT.DOM.imageReplacement} .toggle`).event('click', function(){
+            HD.DOM(this).ancestors(CHAT.DOM.imageReplacement).descendants('.images').class('toggle', 'active');
+        });
     },
 
     /**

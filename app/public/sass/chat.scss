@@ -460,6 +460,57 @@ aside.online {
                 }
             }
 
+            .image-replacement {
+                position: absolute;
+                top: 6px;
+                right: 30px;
+
+                .smiley {
+                    width: 21px;
+                    height: 21px;
+                    opacity: 0.7;
+                    cursor: pointer;
+
+                    &:hover {
+                        opacity: 1;
+                    }
+                }
+
+                ul.images {
+                    display: none;
+                    position: absolute;
+                    left: 0;
+                    top: 25px;
+                    z-index: 1;
+                    list-style-type: none;
+                    margin: 0;
+                    padding: 0;
+                    width: 168px;
+                    background-color: #dedede;
+                    font-size: 0;
+
+                    &.active {
+                        display: block;
+                    }
+
+                    li {
+                        display: inline-block;
+                        border: 1px solid transparent;
+                        padding: 2px;
+                        width: 28px;
+                        height: 28px;
+                        text-align: center;
+                        vertical-align: top;
+                        cursor: pointer;
+
+                        &:hover {
+                            border: 1px solid #000000;
+                            background-color: #b9b9b9;
+                        }
+                    }
+                }
+            }
+
             .submitmode {
                 padding: 10px 10px 15px 10px;
 

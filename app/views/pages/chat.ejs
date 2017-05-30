@@ -115,6 +115,32 @@
                             <svg class="trigger"><use xlink:href="#picture"></use></svg>
                         </div>
                     <% } %>
+                    <% if (CHAT.Config.textTransfer.imageReplacement.allowed){ %>
+                        <span class="image-replacement">
+                            <span class="toggle" title="<%= CHAT.Labels.action.smiley %>">
+                                <svg class="smiley"><use xlink:href="#smiley"></use></svg>
+                            </span>
+                            <ul class="images">
+                                <li><img src="/images/emoticons/01.gif" /></li>
+                                <li><img src="/images/emoticons/02.gif" /></li>
+                                <li><img src="/images/emoticons/03.gif" /></li>
+                                <li><img src="/images/emoticons/04.gif" /></li>
+                                <li><img src="/images/emoticons/05.gif" /></li>
+                                <li><img src="/images/emoticons/06.gif" /></li>
+                                <li><img src="/images/emoticons/07.gif" /></li>
+                                <li><img src="/images/emoticons/08.gif" /></li>
+                                <li><img src="/images/emoticons/09.gif" /></li>
+                                <li><img src="/images/emoticons/10.gif" /></li>
+                                <li><img src="/images/emoticons/11.gif" /></li>
+                                <li><img src="/images/emoticons/12.gif" /></li>
+                                <li><img src="/images/emoticons/13.gif" /></li>
+                                <li><img src="/images/emoticons/14.gif" /></li>
+                                <li><img src="/images/emoticons/15.gif" /></li>
+                                <li><img src="/images/emoticons/16.gif" /></li>
+                                <li><img src="/images/emoticons/17.gif" /></li>
+                            </ul>
+                        </span>
+                    <% } %>
                     <% if (CHAT.Config.textTransfer.sendMode.allowed){ %>
                         <div class="submitmode">
                             <label>

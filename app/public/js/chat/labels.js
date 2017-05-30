@@ -36,6 +36,7 @@ CHAT.Labels = {
         chatStart : 'Chat',
         sendMessage : 'Küldés',
         sendFile : 'Fájlküldés',
+        smiley : 'Emoticon beszúrása',
         leave : 'Kilépés',
         minimize : 'Összecsukás',
         resize : {

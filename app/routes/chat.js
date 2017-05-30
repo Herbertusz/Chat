@@ -72,6 +72,11 @@ router.get('/remote/:userId', function(req, res){
 
 });
 
+// Egy csatorna megjelenítése
+router.get('/room/:roomId', function(req, res){
+    ;
+});
+
 // Egy csatorna átvitelei (doboz feltöltéséhez)
 router.post('/getroommessages', function(req, res){
 
