@@ -48,8 +48,14 @@ CHAT.Components.Transfer = {
         });
 
         // Előredefiniált karakterlánc beszúrás
-        CHAT.DOM.inBox(`${CHAT.DOM.imageReplacement} .toggle`).event('click', function(){
-            HD.DOM(this).ancestors(CHAT.DOM.imageReplacement).descendants('.images').class('toggle', 'active');
+        CHAT.DOM.inBox(CHAT.DOM.imageReplacementToggle).event('click', function(){
+            CHAT.DOM.inBox(CHAT.DOM.imageReplacementList).class('toggle', 'active');
+        });
+        CHAT.DOM.inBox(`${CHAT.DOM.imageReplacementItems}`).event('click', function(){
+            const Item = HD.DOM(this);
+
+            CHAT.Components.Transfer.insertText(Item.ancestors(CHAT.DOM.box).elem(), Item.data('string'));
+            CHAT.DOM.inBox(CHAT.DOM.imageReplacementList).class('remove', 'active');
         });
     },
 
@@ -137,6 +143,18 @@ CHAT.Components.Transfer = {
         });
         str = str.replace(/\n/g, '<br />');
         return str;
+    },
+
+    /**
+     * Karakterlánc beszúrása a szövegmezőbe
+     * @param {HTMLElement} box
+     * @param {String} text
+     */
+    insertText : function(box, text){
+        const textarea = HD.DOM(box).descendants(CHAT.DOM.textarea).elem();
+
+        textarea.value += ` ${text}`;
+        textarea.focus();
     },
 
     /**

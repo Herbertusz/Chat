@@ -479,13 +479,13 @@ aside.online {
                 ul.images {
                     display: none;
                     position: absolute;
-                    left: 0;
+                    right: 0;
                     top: 25px;
                     z-index: 1;
                     list-style-type: none;
                     margin: 0;
                     padding: 0;
-                    width: 168px;
+                    width: 112px;
                     background-color: #dedede;
                     font-size: 0;
 
@@ -496,7 +496,7 @@ aside.online {
                     li {
                         display: inline-block;
                         border: 1px solid transparent;
-                        padding: 2px;
+                        padding: 6px;
                         width: 28px;
                         height: 28px;
                         text-align: center;
