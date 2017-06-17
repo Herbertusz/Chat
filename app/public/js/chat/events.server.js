@@ -342,17 +342,17 @@ CHAT.Events.Server = {
      * @description
      * data = {
      *     userId : Number,
-     *     fileData : {
+     *     raw : {
      *         name : String,
      *         size : Number,
-     *         type : String
+     *         type : String,
+     *         source : String
      *     },
-     *     file : String,
      *     store : String,
      *     type : String,
      *     time : Number,
-     *     roomName : String
-     *     fileName : String
+     *     roomName : String,
+     *     name : String
      * }
      */
     sendFile : function(data){
@@ -375,25 +375,29 @@ CHAT.Events.Server = {
      * @param {Object} data
      * @description
      * data = {
-     *     userId : Number,
-     *     fileData : {
-     *         name : String,
-     *         size : Number,
-     *         type : String
-     *     },
-     *     file : String,
-     *     store : String,
-     *     type : String,
-     *     time : Number,
-     *     roomName : String,
-     *     fileName : String
+     *     forced : Boolean,
+     *     file : {
+     *         userId : Number,
+     *         raw : {
+     *             name : String,
+     *             size : Number,
+     *             type : String,
+     *             source : String
+     *         },
+     *         store : String,
+     *         type : String,
+     *         time : Number,
+     *         roomName : String,
+     *         name : String
+     *     }
      * }
      */
     abortFile : function(data){
-        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`).elem();
+        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.file.roomName}"]`).elem();
 
         if (box){
-            CHAT.Components.Transfer.progressbar(box, 'abort', null, CHAT.Events.Server.barId, false);
+            const method = data.forced ? 'forceAbort' : 'abort';
+            CHAT.Components.Transfer.progressbar(box, method, null, CHAT.Events.Server.barId, false);
         }
     },
 

@@ -2,28 +2,94 @@
 
 'use strict';
 
-var CHAT = window.CHAT || {};
+var HD = (typeof global !== 'undefined' ? global.HD : window.HD) || {};
+var CHAT = (typeof global !== 'undefined' ? global.CHAT : window.CHAT) || {};
+if (typeof global !== 'undefined'){
+    HD = require('../hd/hd.js')(['utility']);
+}
 
 /**
- *
+ * Fájlátvitel kezelése
  * @type {Object}
  */
 CHAT.FileTransfer = {
 
     /**
-     *
+     * Fájlátvitel megszakításához használt segédváltozó
      * @type {Object.<XMLHttpRequest>}
+     * @description
+     * data = {
+     *     <barId> : {XMLHttpRequest}
+     * }
      */
     XHR : {},
 
     /**
-     *
+     * Fájl ellenőrzése
+     * @param {Object} data
+     * @param {Object} fileTransferConfig
+     * @returns {Array}
+     */
+    fileCheck : function(data, fileTransferConfig){
+        let i;
+        const allowed = fileTransferConfig.allowed;
+        const types = fileTransferConfig.types;
+        const extensions = fileTransferConfig.typeFallback;
+        const allowedTypes = fileTransferConfig.allowedTypes;
+        const maxSize = fileTransferConfig.maxSize;
+        const errors = [];
+
+        if (!allowed){
+            errors.push({
+                type : 'fileAllowed'
+            });
+        }
+        else {
+            if (data.raw.size > maxSize){
+                errors.push({
+                    type : 'fileSize',
+                    value : data.raw.size,
+                    restrict : maxSize
+                });
+            }
+            for (i in types){
+                if (!(types[i] instanceof RegExp)){
+                    types[i] = HD.String.createRegExp(types[i]);
+                }
+                if (types[i].test(data.raw.type)){
+                    data.type = i;
+                    break;
+                }
+            }
+            if (data.type === 'file'){
+                const ext = data.raw.name.split('.').pop();
+                for (i in extensions){
+                    if (extensions[i].indexOf(ext) > -1){
+                        data.type = i;
+                        break;
+                    }
+                }
+            }
+            if (allowedTypes.indexOf(data.type) === -1){
+                errors.push({
+                    type : 'fileType',
+                    value : data.type,
+                    restrict : allowedTypes
+                });
+            }
+        }
+
+        return errors;
+    },
+
+    /**
+     * Különböző fájlátviteli módok
      * @type {Object}
      */
     strategies : {
 
         /**
-         * URL tárolása db-ben
+         * URL tárolása db-ben és fájlfeltöltés
          * @type {Object}
          */
         upload : {
@@ -39,17 +105,17 @@ CHAT.FileTransfer = {
              * @description
              * data = {
              *     userId : Number,
-             *     fileData : {
+             *     raw : {
              *         name : String,
              *         size : Number,
-             *         type : String
+             *         type : String,
+             *         source : String
              *     },
-             *     file : String,
              *     store : String,
              *     type : String,
              *     time : Number,
              *     roomName : String,
-             *     fileName : String
+             *     name : String
              * }
              */
             clientSend : function(box, data, reader, rawFile, callback = () => {}){
@@ -69,18 +135,30 @@ CHAT.FileTransfer = {
                 };
                 xhr.onabort = function(){
                     CHAT.Components.Transfer.progressbar(box, 'abort', null, barId);
-                    CHAT.socket.emit('abortFile', data);
+                    CHAT.socket.emit('abortFile', {
+                        forced : false,
+                        file : data
+                    });
                 };
                 xhr.onload = function(){
                     const response = JSON.parse(xhr.responseText);
-                    data.file = response.fileName;
-                    CHAT.Components.Transfer.progressbar(box, 'send', 1, barId);
-                    CHAT.Components.Transfer.appendFile(box, data, true)
-                        .then(callback)
-                        .catch(function(error){
-                            HD.Log.error(error);
+                    if (response.success){
+                        data.raw.source = response.fileName;
+                        CHAT.Components.Transfer.progressbar(box, 'send', 1, barId);
+                        CHAT.Components.Transfer.appendFile(box, data, true)
+                            .then(callback)
+                            .catch(function(error){
+                                HD.Log.error(error);
+                            });
+                        CHAT.socket.emit('sendFile', data);
+                    }
+                    else {
+                        CHAT.Components.Transfer.progressbar(box, 'forceAbort', null, barId);
+                        CHAT.socket.emit('abortFile', {
+                            forced : true,
+                            file : data
                         });
-                    CHAT.socket.emit('sendFile', data);
+                    }
                 };
                 xhr.send(rawFile);
                 CHAT.FileTransfer.XHR[barId] = xhr;
@@ -95,17 +173,17 @@ CHAT.FileTransfer = {
              * @description
              * data = {
              *     userId : Number,
-             *     fileData : {
+             *     raw : {
              *         name : String,
              *         size : Number,
-             *         type : String
+             *         type : String,
+             *         source : String
              *     },
-             *     file : String,
              *     store : String,
              *     type : String,
              *     time : Number,
              *     roomName : String,
-             *     fileName : String
+             *     name : String
              * }
              */
             serverSend : function(box, data, callback = () => {}){
@@ -120,42 +198,23 @@ CHAT.FileTransfer = {
              * Korábban feltöltött fájl fogadása
              * @param {HTMLElement} box
              * @param {Object} data
-             * @param {Object} msgData
              * @description
              * data = {
              *     userId : Number,
-             *     fileData : {
+             *     raw : {
              *         name : String,
              *         size : Number,
-             *         type : String
+             *         type : String,
+             *         source : String
              *     },
-             *     file : String,
              *     store : String,
              *     type : String,
              *     time : Number,
              *     roomName : String,
-             *     fileName : String
-             * }
-             * msgData = {
-             *     _id : ObjectID,
-             *     userId : Number,
-             *     userName : String,
-             *     room : String,
-             *     message : String|undefined,
-             *     file : Object|undefined {
-             *         name : String,
-             *         size : Number,
-             *         type : String,
-             *         mainType : String,
-             *         store : String,
-             *         data : String,
-             *         deleted : Boolean
-             *     },
-             *     created : String
+             *     name : String
              * }
              */
-            receive : function(box, data, msgData){
-                data.file = msgData.file.data;
+            receive : function(box, data){
                 if (!data.fileData.deleted){
                     return CHAT.Components.Transfer.appendFile(box, data);
                 }
@@ -182,21 +241,21 @@ CHAT.FileTransfer = {
              * @description
              * data = {
              *     userId : Number,
-             *     fileData : {
+             *     raw : {
              *         name : String,
              *         size : Number,
-             *         type : String
+             *         type : String,
+             *         source : String
              *     },
-             *     file : String,
              *     store : String,
              *     type : String,
              *     time : Number,
              *     roomName : String,
-             *     fileName : String
+             *     name : String
              * }
              */
             clientSend : function(box, data, reader, rawFile, callback = () => {}){
-                data.file = reader.result;
+                data.raw.source = reader.result;
                 CHAT.Components.Transfer.appendFile(box, data, true)
                     .then(callback)
                     .catch(function(error){
@@ -213,17 +272,17 @@ CHAT.FileTransfer = {
              * @description
              * data = {
              *     userId : Number,
-             *     fileData : {
+             *     raw : {
              *         name : String,
              *         size : Number,
-             *         type : String
+             *         type : String,
+             *         source : String
              *     },
-             *     file : String,
              *     store : String,
              *     type : String,
              *     time : Number,
              *     roomName : String,
-             *     fileName : String
+             *     name : String
              * }
              */
             serverSend : function(box, data, callback = () => {}){
@@ -238,42 +297,23 @@ CHAT.FileTransfer = {
              * Korábban küldött fájl fogadása
              * @param {HTMLElement} box
              * @param {Object} data
-             * @param {Object} msgData
              * @description
              * data = {
              *     userId : Number,
-             *     fileData : {
+             *     raw : {
              *         name : String,
              *         size : Number,
-             *         type : String
+             *         type : String,
+             *         source : String
              *     },
-             *     file : String,
              *     store : String,
              *     type : String,
              *     time : Number,
              *     roomName : String,
-             *     fileName : String
-             * }
-             * msgData = {
-             *     _id : ObjectID,
-             *     userId : Number,
-             *     userName : String,
-             *     room : String,
-             *     message : String|undefined,
-             *     file : Object|undefined {
-             *         name : String,
-             *         size : Number,
-             *         type : String,
-             *         mainType : String,
-             *         store : String,
-             *         data : String,
-             *         deleted : Boolean
-             *     },
-             *     created : String
+             *     name : String
              * }
              */
-            receive : function(box, data, msgData){
-                data.file = msgData.file.data;
+            receive : function(box, data){
                 if (!data.fileData.deleted){
                     return CHAT.Components.Transfer.appendFile(box, data);
                 }
@@ -316,13 +356,8 @@ CHAT.FileTransfer = {
              * Korábban küldött fájl fogadása
              * @param {HTMLElement} box
              * @param {Object} data
-             * @param {Object} msgData
              */
-            receive : function(box, data, msgData){
-                msgData.fileZip.data.forEach(function(element, index, arr){
-                    arr[index] -= 128;
-                });
-
+            receive : function(box, data){
                 // TODO
             }
 
@@ -331,8 +366,8 @@ CHAT.FileTransfer = {
     },
 
     /**
-     *
-     * @param {String }operation
+     * A beállított fájlátviteli mód lefuttatása
+     * @param {String} operation
      * @param {Array} args
      */
     action : function(operation, args){
@@ -344,3 +379,7 @@ CHAT.FileTransfer = {
     }
 
 };
+
+if (typeof exports !== 'undefined'){
+    exports.FileTransfer = CHAT.FileTransfer;
+}

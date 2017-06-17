@@ -87,12 +87,15 @@ const createMongoDB = function(){
                             'userId' : 1,
                             'room' : 'room-1-1464111818071',
                             'file' : {
-                                'name' : '4.jpg',
-                                'size' : 60205,
-                                'type' : 'image/jpeg',
-                                'mainType' : 'image',
+                                'raw' : {
+                                    'name' : '4.jpg',
+                                    'size' : 60205,
+                                    'type' : 'image/jpeg',
+                                    'source' : '1464111822726-805.jpg'
+                                },
                                 'store' : 'upload',
-                                'data' : '1464111822726-805.jpg',
+                                'type' : 'image',
+                                'name' : '1464111822726-805.jpg',
                                 'deleted' : false
                             },
                             'created' : 1469215245070
@@ -178,12 +181,13 @@ const createMySQL = function(){
                 db.query(`
                     CREATE TABLE chat_messages_files (
                         id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                        name varchar(200) COLLATE utf8_unicode_ci NOT NULL,
-                        size int(11) NOT NULL,
-                        type varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-                        mainType varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+                        rawName varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+                        rawSize int(11) NOT NULL,
+                        rawType varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+                        rawSource text COLLATE utf8_unicode_ci NOT NULL,
                         store varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-                        data text COLLATE utf8_unicode_ci NOT NULL,
+                        type varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+                        name varchar(200) COLLATE utf8_unicode_ci NOT NULL,
                         deleted tinyint(1) NOT NULL
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
                 `),

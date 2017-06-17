@@ -251,17 +251,17 @@ CHAT.Components.Transfer = {
      * @description
      * data = {
      *     userId : Number,
-     *     fileData : {
+     *     raw : {
      *         name : String,
      *         size : Number,
-     *         type : String
+     *         type : String,
+     *         source : String
      *     },
-     *     file : String,
      *     store : String,
      *     type : String,
      *     time : Number,
      *     roomName : String,
-     *     fileName : String
+     *     name : String
      * }
      */
     appendFile : function(box, data, highlighted = false){
@@ -269,7 +269,9 @@ CHAT.Components.Transfer = {
         const List = HD.DOM(box).descendants(CHAT.DOM.list);
         const time = HD.DateTime.formatMS('Y-m-d H:i:s', data.time);
         const userName = CHAT.Components.User.getName(data.userId);
-        const fileSrc = data.store === 'upload' ? `/chat/file/${HD.DOM(box).data('room')}/${data.file}` : data.file;
+        const fileSrc = data.store === 'upload' ?
+            `/chat/file/${HD.DOM(box).data('room')}/${data.raw.source}` :
+            data.raw.source;
 
         const ListItem = HD.DOM(`
             <li>
@@ -280,14 +282,14 @@ CHAT.Components.Transfer = {
             </li>
         `);
         const tplError = `
-            <a href="${data.file}" target="_blank">${CHAT.Labels.file.error}</a>
+            <a href="${data.raw.source}" target="_blank">${CHAT.Labels.file.error}</a>
         `;
 
         if (data.type === 'image'){
             imgSrc = fileSrc;
             tpl = `
                 <a class="image" href="${fileSrc}" target="_blank">
-                    <img class="send-image" alt="${data.fileData.name}" src="${imgSrc}" />
+                    <img class="send-image" alt="${data.raw.name}" src="${imgSrc}" />
                 </a>
             `;
         }
@@ -296,7 +298,7 @@ CHAT.Components.Transfer = {
             tpl = `
                 <a class="file" href="${fileSrc}" target="_blank" title="${CHAT.Labels.file.types[data.type]}">
                     <span class="filetype filetype-${data.type}"></span>
-                    <span class="text">${data.fileData.name}</span>
+                    <span class="text">${data.raw.name}</span>
                 </a>
             `;
         }
@@ -365,7 +367,7 @@ CHAT.Components.Transfer = {
         }
         else {
             const Progressbar = List.descendants('.progressbar').filter(`[data-id="${barId}"]`);
-            if (direction === 'abort'){
+            if (direction === 'abort' || direction === 'forceAbort'){
                 Progressbar.descendants('.label').elem().innerHTML = CHAT.Labels.file[direction];
                 Progressbar.descendants('.line').class('add', 'aborted');
             }

@@ -267,7 +267,7 @@ HD.String = {
 
     /**
      * Karakterlánc átalakítása RegExp objektummá
-     * @param {String} str - pl.: '/x/gi'
+     * @param {String} str - regexp literál pl.: '/x/gi'
      * @returns {RegExp}
      */
     createRegExp : function(str){

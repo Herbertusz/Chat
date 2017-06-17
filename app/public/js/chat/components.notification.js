@@ -57,10 +57,12 @@ CHAT.Components.Notification = {
         });
         Box.descendants(CHAT.DOM.errorList).elem().innerHTML = errorMessages.join('<br />');
         Box.descendants(CHAT.DOM.error).class('remove', 'hidden');
-        setTimeout(function(){
-            Box.descendants(CHAT.DOM.error).class('add', 'hidden');
-            Box.descendants(CHAT.DOM.errorList).elem().innerHTML = '';
-        }, CHAT.Config.box.error.messageWait);
+        if (CHAT.Config.box.error.messageWait){
+            setTimeout(function(){
+                Box.descendants(CHAT.DOM.error).class('add', 'hidden');
+                Box.descendants(CHAT.DOM.errorList).elem().innerHTML = '';
+            }, CHAT.Config.box.error.messageWait);
+        }
     },
 
     /**

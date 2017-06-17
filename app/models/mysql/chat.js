@@ -323,7 +323,7 @@ const Model = function(db){
                 .then(function(file){
                     let url = '';
                     if (file.id){
-                        url = file.data;
+                        url = file.name;
                         db.query(`
                             UPDATE
                                 chat_messages_files
@@ -366,7 +366,7 @@ const Model = function(db){
                 .then(function(files){
                     const urls = [];
                     files.forEach(function(file){
-                        urls.push(file.data);
+                        urls.push(file.name);
                         db.query(`
                             UPDATE
                                 chat_messages_files

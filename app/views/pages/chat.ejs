@@ -101,7 +101,7 @@
                             <svg class="arrow arrow-right"><use xlink:href="#arrow-down"></use></svg>
                         </div>
                     </div>
-                    <% if (CHAT.Config.fileTransfer.dragndrop){ %>
+                    <% if (CHAT.Config.fileTransfer.allowed && CHAT.Config.fileTransfer.dragndrop){ %>
                         <div class="drop-file"><%= CHAT.Labels.legend.dropFile %></div>
                     <% } %>
                     <ul class="list"></ul>

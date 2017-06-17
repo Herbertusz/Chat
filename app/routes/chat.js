@@ -6,13 +6,15 @@
 
 let UserModel, ChatModel;
 const ENV = require.main.require('../app/env.js');
+const fs = require('fs'); // TODO: mz/fs
 const path = require('path');
 const express = require('express');
 const router = express.Router();
-// const session = require('express-session');
-const fs = require('fs'); // TODO: mz/fs
 const log = require.main.require('../libs/log.js');
 const HD = require.main.require('../app/public/js/hd/hd.js')(['datetime']);
+const Config = require.main.require('../app/config/config.js');
+const FileTransfer = require.main.require('../app/public/js/chat/filetransfer.js');
+const CHAT = Object.assign({}, Config, FileTransfer);  // TODO: nincs erre jobb módszer?
 
 // Model-ek betöltése
 router.use(function(req, res, next){
@@ -118,7 +120,7 @@ router.get('/file/:roomName/:fileName', function(req, res, next){
                 return room.name === req.params.roomName;
             });
             if (file && !file.deleted && currentRoom.userIds.indexOf(userId) > -1){
-                res.sendFile(path.resolve(`${req.app.get('upload')}/${file.data}`));
+                res.sendFile(path.resolve(`${req.app.get('upload')}/${file.raw.source}`));
             }
             else {
                 next();
@@ -139,13 +141,27 @@ router.post('/uploadfile', function(req, res){
         const io = req.app.get('socket').io;
         const data = JSON.parse(decodeURIComponent(req.header('X-File-Data')));
         const userId = Number(data.userId);
-        const fileStream = fs.createWriteStream(`${req.app.get('upload')}/${data.fileName}`);
-        const fileSize = Number(data.fileData.size);
+        const fileStream = fs.createWriteStream(`${req.app.get('upload')}/${data.name}`);
+        const fileSize = Number(data.raw.size);
+
+        const errors = CHAT.FileTransfer.fileCheck(data, CHAT.Config.fileTransfer);
+        if (errors.length > 0){
+            res.send({
+                success : false
+            });
+            fileStream.end();
+            return;
+        }
 
         req.on('data', function(file){
             // Fájlátvitel folyamatban
             const first = (uploadedSize === 0);
             uploadedSize += file.byteLength;
+            // TODO: header manipulálás esetén megszakítás a maximális méretnél (?)
+            // if (uploadedSize > CHAT.Config.fileTransfer.maxSize){
+            //     fileStream.end();
+            //     return;
+            // }
             io.of('/chat').to(data.roomName).emit('fileReceive', {
                 userId : userId,
                 roomName : data.roomName,
@@ -165,7 +181,8 @@ router.post('/uploadfile', function(req, res){
                 firstSend : false
             });
             res.send({
-                fileName : `${data.fileName}`
+                success : true,
+                fileName : `${data.name}`
             });
             fileStream.end();
         });

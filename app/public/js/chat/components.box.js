@@ -342,12 +342,15 @@ CHAT.Components.Box = {
              *             room : String,
              *             message : String|undefined,
              *             file : Object|undefined {
-             *                 name : String,
-             *                 size : Number,
-             *                 type : String,
-             *                 mainType : String,
+             *                 raw : {
+             *                     name : String,
+             *                     size : Number,
+             *                     type : String,
+             *                     source : String
+             *                 },
              *                 store : String,
-             *                 data : String,
+             *                 type : String,
+             *                 name : String,
              *                 deleted : Boolean
              *             },
              *             created : String
@@ -375,18 +378,20 @@ CHAT.Components.Box = {
                             // fájlküldés
                             data = {
                                 userId : msgData.userId,
-                                fileData : {
-                                    name : msgData.file.name,
-                                    size : msgData.file.size,
-                                    type : msgData.file.type,
-                                    deleted : msgData.file.deleted
+                                raw : {
+                                    name : msgData.file.raw.name,
+                                    size : msgData.file.raw.size,
+                                    type : msgData.file.raw.type,
+                                    source : msgData.file.raw.source
                                 },
-                                file : null,
-                                type : msgData.file.mainType,
+                                store : msgData.file.store,
+                                type : msgData.file.type,
                                 time : timestamp,
-                                roomName : roomName
+                                roomName : roomName,
+                                name : msgData.file.name,
+                                deleted : msgData.file.deleted
                             };
-                            return CHAT.FileTransfer.action('receive', [box, data, msgData]);
+                            return CHAT.FileTransfer.action('receive', [box, data]);
                         }
                         else {
                             // esemény

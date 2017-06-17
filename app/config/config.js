@@ -9,7 +9,17 @@ var CHAT = global.CHAT || {};
 CHAT.Config = {
 
     // Alapértelmezett szöveg a title tegben
-    defaultTitle : 'Chat',
+    defaultTitle : 'HD-Chat',
+
+    // Csatorna-műveletek
+    room : {
+        // Felhasználók maximális száma (null: tetszőleges)
+        maxUsers : null,
+        // Új user hozzáadásának engedélyezése
+        forceJoin : true,
+        // User kidobásának engedélyezése
+        forceLeave : true
+    },
 
     // Felhasználó állapotai
     status : {
@@ -50,8 +60,8 @@ CHAT.Config = {
         },
         // Hibaüzenetek
         error : {
-            // Hibaüzenet eltüntetése előtt eltelt idő
-            messageWait : 6000
+            // Hibaüzenet eltüntetése előtt eltelt idő ms-ban (falsy érték esetén nem tűnik el)
+            messageWait : false
         }
     },
 

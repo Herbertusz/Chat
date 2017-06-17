@@ -139,10 +139,6 @@ CHAT.Events.Client = {
      */
     sendFile : function(box, files){
         const store = CHAT.Config.fileTransfer.store;
-        const types = CHAT.Config.fileTransfer.types;
-        const extensions = CHAT.Config.fileTransfer.typeFallback;
-        const allowedTypes = CHAT.Config.fileTransfer.allowedTypes;
-        const maxSize = CHAT.Config.fileTransfer.maxSize;
 
         if (!CHAT.Config.fileTransfer.multiple){
             files = [files[0]];
@@ -151,57 +147,22 @@ CHAT.Events.Client = {
             files = Array.from(files);
         }
 
-        const fileCheck = function(fileData, rawFile){
-            let i;
-            const errors = [];
-            if (rawFile.size > maxSize){
-                errors.push({
-                    type : 'fileSize',
-                    value : rawFile.size,
-                    restrict : maxSize
-                });
-            }
-            for (i in types){
-                if (HD.String.createRegExp(types[i]).test(rawFile.type)){
-                    fileData.type = i;
-                    break;
-                }
-            }
-            if (fileData.type === 'file'){
-                const ext = rawFile.name.split('.').pop();
-                for (i in extensions){
-                    if (extensions[i].indexOf(ext) > -1){
-                        fileData.type = i;
-                        break;
-                    }
-                }
-            }
-            if (allowedTypes.indexOf(fileData.type) === -1){
-                errors.push({
-                    type : 'fileType',
-                    value : fileData.type,
-                    restrict : allowedTypes
-                });
-            }
-            return errors;
-        };
-
         const filePrepare = function(rawFile){
             const fileData = {
                 userId : CHAT.userId,
-                fileData : {
+                raw : {
                     name : rawFile.name,
                     size : rawFile.size,
-                    type : rawFile.type
+                    type : rawFile.type,
+                    source : null  // base64 string vagy üres
                 },
-                file : null,  // base64
                 store : store,
                 type : '',
                 time : Date.now(),
                 roomName : HD.DOM(box).data('room'),
-                fileName : `${Date.now()}-${HD.Math.rand(100, 999)}.${rawFile.name.split('.').pop()}`
+                name : `${Date.now()}-${HD.Math.rand(100, 999)}.${rawFile.name.split('.').pop()}`
             };
-            const errors = fileCheck(fileData, rawFile);
+            const errors = CHAT.FileTransfer.fileCheck(fileData, CHAT.Config.fileTransfer);
 
             if (errors.length === 0){
                 const reader = new FileReader();

@@ -92,16 +92,13 @@ const Model = function(db){
             return db.collection('chat_messages')
                 .find({
                     'room' : roomName,
-                    'file.data' : fileName
+                    'file.name' : fileName
                 })
                 .toArray()
                 .then(function(files){
                     let ret = false;
                     if (files.length){
-                        const file = files[0];
-                        ret = Object.assign(file.file, {
-                            room : file.room
-                        });
+                        ret = files[0].file;
                     }
                     callback(ret);
                     return ret;
@@ -186,23 +183,40 @@ const Model = function(db){
          * @returns {Promise}
          * @description
          * data = {
-         *     // TODO
+         *     userId : Number,
+         *     file = {
+         *         userId : Number,
+         *         raw : {
+         *             name : String,
+         *             size : Number,
+         *             type : String,
+         *             source : String
+         *         },
+         *         store : String,
+         *         type : String,
+         *         time : Number,
+         *         roomName : String,
+         *         name : String
+         *     }
          * }
          */
         setFile : function(data, callback = () => {}){
             return this.setMessage({
                 'userId' : data.userId,
-                'room' : data.room,
+                'room' : data.file.roomName,
                 'file' : {
-                    'name' : data.fileData.name,
-                    'size' : data.fileData.size,
-                    'type' : data.fileData.type,
-                    'mainType' : data.mainType,
-                    'store' : data.store,
-                    'data' : data.file,
+                    'raw' : {
+                        'name' : data.file.raw.name,
+                        'size' : data.file.raw.size,
+                        'type' : data.file.raw.type,
+                        'source' : data.file.raw.source
+                    },
+                    'store' : data.file.store,
+                    'type' : data.file.type,
+                    'name' : data.file.name,
                     'deleted' : false
                 },
-                'created' : data.time
+                'created' : data.file.time
             }, function(messageId){
                 callback(messageId);
             });
@@ -219,7 +233,7 @@ const Model = function(db){
                 .find({'$and' : [
                     {'file' : {'$exists' : true}},
                     {'file.store' : 'upload'},
-                    {'file.data' : fileName}
+                    {'file.name' : fileName}
                 ]}, {
                     'file' : 1
                 })
@@ -228,7 +242,7 @@ const Model = function(db){
                 .then(function(docs){
                     let url = '';
                     if (docs.length){
-                        url = docs[0].file.data;
+                        url = docs[0].file.name;
                         db.collection('chat_messages')
                             .updateOne({
                                 '_id' : docs[0]._id
@@ -265,7 +279,7 @@ const Model = function(db){
                 .then(function(docs){
                     const urls = [];
                     docs.forEach(function(doc){
-                        urls.push(doc.file.data);
+                        urls.push(doc.file.name);
                         db.collection('chat_messages')
                             .updateOne({
                                 '_id' : doc._id

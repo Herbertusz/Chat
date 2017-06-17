@@ -7,13 +7,17 @@
 let ChatModel;
 const ENV = require.main.require('../app/env.js');
 const fs = require('mz/fs');
+const path = require('path');
 const ioExpressSession = require('socket.io-express-session');
 const log = require.main.require('../libs/log.js');
 const HD = require.main.require('../app/public/js/hd/hd.js')(['utility', 'math']);
-const CHAT = require.main.require('../app/config/config.js');
+const Config = require.main.require('../app/config/config.js');
+const FileTransfer = require.main.require('../app/public/js/chat/filetransfer.js');
+const CHAT = Object.assign({}, Config, FileTransfer);  // TODO: nincs erre jobb módszer?
 
 /**
  * Állapot tároló objektum
+ * Külső elérés: req.app.get('socket').getState()
  * @type {Object}
  */
 const ChatState = {
@@ -91,10 +95,10 @@ module.exports = function(server, ioSession, app){
                 ChatModel.deleteRoomFiles(room.name)
                     .then(function(urls){
                         for (let i = 0; i < urls.length; i++){
-                            const path = `${app.get('public path')}/${urls[i]}`;
-                            fs.access(path, fs.W_OK)
+                            const filePath = path.resolve(`${app.get('upload')}/${urls[i]}`);
+                            fs.access(filePath, fs.W_OK)
                                 .then(function(){
-                                    return fs.unlink(path);
+                                    return fs.unlink(filePath);
                                 })
                                 .catch(function(error){
                                     log.error(error);
@@ -325,24 +329,28 @@ module.exports = function(server, ioSession, app){
 
         // Fájlküldés emitter
         socket.on('sendFile', function(data){
-            socket.broadcast.to(data.roomName).emit('sendFile', data);
-            ChatModel.setFile({
-                userId : userData.id,
-                room : data.roomName,
-                store : data.store,
-                fileData : data.fileData,
-                mainType : data.type,
-                file : data.file,
-                time : data.time
-            });
+            const errors = CHAT.FileTransfer.fileCheck(data, CHAT.Config.fileTransfer);
+            if (errors.length > 0){
+                socket.broadcast.to(data.roomName).emit('abortFile', {
+                    forced : true,
+                    file : data
+                });
+            }
+            else {
+                socket.broadcast.to(data.roomName).emit('sendFile', data);
+                ChatModel.setFile({
+                    userId : userData.id,
+                    file : data
+                });
+            }
         });
 
         // Fájlátvitel megszakítás emitter
         socket.on('abortFile', function(data){
-            const filePath = `${app.get('upload')}/${data.fileName}`;
-            socket.broadcast.to(data.roomName).emit('abortFile', data);
-            ChatModel.setEvent('abortFile', data.roomName, data);
-            ChatModel.deleteFile(data.fileName)
+            const filePath = path.resolve(`${app.get('upload')}/${data.file.name}`);
+            socket.broadcast.to(data.file.roomName).emit('abortFile', data);
+            ChatModel.setEvent('abortFile', data.file.roomName, data.file);
+            ChatModel.deleteFile(data.file.name)
                 .then(function(){
                     return fs.access(filePath, fs.W_OK);
                 })
