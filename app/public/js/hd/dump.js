@@ -94,7 +94,6 @@ HD.var_dump = function(variable, withType = true, maxDeep = 5, maxNum = 30, inde
                 }
                 else if (typeof variable.nodeType !== 'undefined'){
                     n = 0;
-                    type = 'DOM element';
                     ++indent;
                     dump += '{\n';
                     for (i in variable){

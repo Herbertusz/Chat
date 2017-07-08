@@ -182,8 +182,8 @@ CHAT.Labels = {
             `Túl nagy a fájl mérete (${HD.Number.displaySize(size)})!
             Maximális méret: ${HD.Number.displaySize(maxSize)}.`,
         fileType : (type, allowedTypes) =>
-            `Nem megfelelő a fájl típusa (${type})!
-            Megengedett typusok: ${allowedTypes.join(', ')}.`
+            `Nem megfelelő a fájl típusa (${CHAT.Labels.file.types[type]})!
+            Megengedett típusok: ${allowedTypes.map(t => CHAT.Labels.file.types[t]).join(', ')}.`
     }
 };
 
