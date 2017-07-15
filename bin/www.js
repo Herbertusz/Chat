@@ -18,8 +18,8 @@ require.main.require('../app/app.js')
         app.set('port', ENV.PORT);
 
         // Port figyelése
-        app.httpServer.listen(ENV.PORT, ENV.IPADDRESS, function(){
-            console.log(`Listening ${ENV.IPADDRESS}:${ENV.PORT}  driver: ${ENV.DBDRIVER}`);
+        app.httpServer.listen(ENV.PORT, ENV.HOST, function(){
+            console.log(`Listening ${ENV.HOST}:${ENV.PORT}  driver: ${ENV.DBDRIVER}`);
         });
 
     })

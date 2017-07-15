@@ -7,25 +7,18 @@
 const ENV = require.main.require('../app/env.js');
 
 const connections = {
-    dev : {
-        host : ENV.IPADDRESS,
+    development : {
+        host : ENV.HOST,
         user : 'root',
         pass : '',
-        database : 'chat',
+        database : 'hdchat',
         charset : 'utf8_unicode_ci'
     },
-    test : {
-        host : ENV.IPADDRESS,
-        user : 'chat',
+    production : {
+        host : ENV.HOST,
+        user : 'root',
         pass : '',
-        database : 'chat',
-        charset : 'utf8_unicode_ci'
-    },
-    prod : {
-        host : ENV.IPADDRESS,
-        user : 'chat',
-        pass : '',
-        database : 'chat',
+        database : 'hdchat',
         charset : 'utf8_unicode_ci'
     }
 };

@@ -29,31 +29,24 @@ const normalizePort = function(val){
 };
 
 /**
- * Alkalmazás státusza ('dev'|'test'|'prod')
+ * Alkalmazás státusza ('development'|'production')
  * @type {String}
  */
-ENV.PROJECT = 'dev';
+ENV.PROJECT = process.env.NODE_ENV || 'development';
 
 // Környezet beállítása
-if (ENV.PROJECT === 'dev'){
+if (ENV.PROJECT === 'development'){
     ENV.DOMAIN = 'localhost';
     ENV.WSPORT = '3000';
     ENV.PORT = '3000';
-    ENV.IPADDRESS = '127.0.0.1';
+    ENV.HOST = 'localhost';
     ENV.DBDRIVER = 'mongodb'; // mongodb|mysql
 }
-else if (ENV.PROJECT === 'test'){
-    ENV.DOMAIN = '213.181.208.32';
-    ENV.WSPORT = '3000';
-    ENV.PORT = '3000';
-    ENV.IPADDRESS = '213.181.208.32';
-    ENV.DBDRIVER = 'mongodb';
-}
-else if (ENV.PROJECT === 'prod'){
-    ENV.DOMAIN = 'chat.web-prog.hu';
+else if (ENV.PROJECT === 'production'){
+    ENV.DOMAIN = 'chat.bauhh.hu';
     ENV.WSPORT = '80';
-    ENV.PORT = '80';
-    ENV.IPADDRESS = '213.181.208.32';
+    ENV.PORT = '3000';
+    ENV.HOST = 'localhost';
     ENV.DBDRIVER = 'mongodb';
 }
 

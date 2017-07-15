@@ -8,26 +8,19 @@ const ENV = require.main.require('../app/env.js');
 let dbUrl;
 
 const connections = {
-    dev : {
-        host : ENV.IPADDRESS,
+    development : {
+        host : ENV.HOST,
         port : 27017,
         user : '',
         pass : '',
         app : 'chat'
     },
-    test : {
-        host : ENV.IPADDRESS,
+    production : {
+        host : ENV.HOST,
         port : 27017,
-        user : 'chat',
-        pass : 'bALtiGqzKfSqdAN',
-        app : 'chat'
-    },
-    prod : {
-        host : ENV.IPADDRESS,
-        port : 27017,
-        user : 'chat',
-        pass : 'bALtiGqzKfSqdAN',
-        app : 'chat'
+        user : 'hdchat',
+        pass : 'bALtiGqzKfSqdAN8',
+        app : 'hdchat'
     }
 };
 
