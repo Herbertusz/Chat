@@ -3,6 +3,12 @@
 const ENV = require.main.require('../app/env.js');
 
 const createMongoDB = function(){
+    // Adatbázis és user létrehozás:
+    // use hdchat
+    // db.createUser({ user: "hdchat", pwd: "<password>", roles: [{ role: "dbOwner", db: "hdchat" }] })
+    // db.auth("hdchat", "<password>")
+    // db.dummy.insert({"name", "hd"})
+
     const MongoClient = require('mongodb').MongoClient;
     const url = require.main.require('../app/models/mongodb/dbconnect.js');
 
@@ -140,11 +146,15 @@ const createMongoDB = function(){
 };
 
 const createMySQL = function(){
-    // adatbázis létrehozás: 'CREATE DATABASE `chat` DEFAULT CHARACTER SET utf8'
+    // Adatbázis és user létrehozás:
+    // CREATE DATABASE `hdchat` DEFAULT CHARACTER SET utf8;
+    // CREATE USER 'hdchat'@'localhost' IDENTIFIED BY '<password>';
+    // GRANT ALL PRIVILEGES ON `hdchat`.* TO 'hdchat'@'localhost';
 
     let db;
     const DB = require.main.require('../libs/mysql.js');
     const dbConnectionString = require.main.require('../app/models/mysql/dbconnect.js');
+
     DB.connect(dbConnectionString)
         .then(function(dbConnection){
             console.log('Drop tables...');

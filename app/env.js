@@ -6,6 +6,7 @@
 
 const ENV = {};
 const path = require('path');
+const environment = require.main.require('../storage/env.js');
 
 /**
  * Normalize a port into a number, string, or false
@@ -35,21 +36,11 @@ const normalizePort = function(val){
 ENV.PROJECT = process.env.NODE_ENV || 'development';
 
 // Környezet beállítása
-if (ENV.PROJECT === 'development'){
-    ENV.DOMAIN = 'localhost';
-    ENV.WSPORT = '3000';
-    ENV.PORT = '3000';
-    ENV.HOST = 'localhost';
-    ENV.DBDRIVER = 'mongodb'; // mongodb|mysql
-}
-else if (ENV.PROJECT === 'production'){
-    ENV.DOMAIN = 'chat.bauhh.hu';
-    ENV.WSPORT = '80';
-    ENV.PORT = '3000';
-    ENV.HOST = 'localhost';
-    ENV.DBDRIVER = 'mongodb';
-}
-
-ENV.PORT = normalizePort(ENV.PORT);
+ENV.DOMAIN = environment[ENV.PROJECT].domain;
+ENV.WSPORT = normalizePort(environment[ENV.PROJECT].wsport);
+ENV.PORT = normalizePort(environment[ENV.PROJECT].port);
+ENV.HOST = environment[ENV.PROJECT].host;
+ENV.DBDRIVER = environment[ENV.PROJECT].dbdriver;
+ENV.DB = environment[ENV.PROJECT].db;
 
 module.exports = ENV;
