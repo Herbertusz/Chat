@@ -208,7 +208,7 @@ CHAT.Components.Transfer = {
      *     userId : Number,
      *     message : String,
      *     time : Number,
-     *     roomName : String
+     *     room : String
      * }
      */
     appendUserMessage : function(box, data, highlighted = false){
@@ -260,8 +260,9 @@ CHAT.Components.Transfer = {
      *     store : String,
      *     type : String,
      *     time : Number,
-     *     roomName : String,
-     *     name : String
+     *     room : String,
+     *     name : String,
+     *     deleted : Boolean
      * }
      */
     appendFile : function(box, data, highlighted = false){
@@ -282,7 +283,7 @@ CHAT.Components.Transfer = {
             </li>
         `);
         const tplError = `
-            <a href="${data.raw.source}" target="_blank">${CHAT.Labels.file.error}</a>
+            <a href="${fileSrc}" target="_blank">${CHAT.Labels.file.error}</a>
         `;
 
         if (data.type === 'image'){

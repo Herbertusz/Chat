@@ -4,6 +4,7 @@
 
 'use strict';
 
+const HD = require.main.require('../app/public/js/hd/hd.js')(['utility']);
 const log = require.main.require('../libs/log.js');
 
 /**
@@ -53,11 +54,11 @@ const Model = function(db){
 
         /**
          * Egy csatorna átviteleinek lekérdezése
-         * @param {String} roomName
+         * @param {String} room
          * @param {Function} [callback]
          * @returns {Promise}
          */
-        getRoomMessages : function(roomName, callback = () => {}){
+        getRoomMessages : function(room, callback = () => {}){
             return db.getRows(`
                     SELECT
                         cm.*,
@@ -66,11 +67,24 @@ const Model = function(db){
                         chat_messages cm
                         LEFT JOIN chat_users cu ON cm.userId = cu.id
                     WHERE
-                        cm.room = :roomName
+                        cm.room = :room
                     ORDER BY
                         cm.created ASC
-                `)
+                `, {
+                    'room' : room
+                })
                 .then(function(messages){
+                    messages.forEach(function(message, i){
+                        if (message.type === 'message'){
+                            //messages[i]
+                        }
+                        else if (message.type === 'file'){
+                            ;
+                        }
+                        else if (message.type === 'event'){
+                            ;
+                        }
+                    });
                     callback(messages);
                     return messages;
                 })
@@ -81,11 +95,11 @@ const Model = function(db){
 
         /**
          * Egy fájl adatainak lekérése csatorna és fájlnév alapján
-         * @param {String} roomName
+         * @param {String} room
          * @param {String} fileName
          * @param {Function} [callback]
          */
-        getFile : function(roomName, fileName, callback = () => {}){
+        getFile : function(room, fileName, callback = () => {}){
             return db.getRow(`
                     SELECT
                         cm.*,
@@ -94,11 +108,31 @@ const Model = function(db){
                         chat_messages cm
                         LEFT JOIN chat_messages_files cmf ON cm.transferId = cmf.id
                     WHERE
-                        cm.room = :roomName AND
-                        cf.data = :fileName
-                `)
+                        cm.room = :room AND
+                        cmf.name = :fileName
+                `, {
+                    'room' : room,
+                    'fileName' : fileName
+                })
                 .then(function(file){
-                    const ret = file || false;
+                    let ret = false;
+                    if (file){
+                        ret = {
+                            userId : file.userId,
+                            raw : {
+                                name : file.rawName,
+                                size : file.rawSize,
+                                type : file.rawType,
+                                source : file.rawSource
+                            },
+                            store : file.store,
+                            type : file.type,
+                            time : file.created,
+                            room : file.room,
+                            name : file.name,
+                            deleted : file.deleted
+                        };
+                    }
                     callback(ret);
                     return ret;
                 })
@@ -110,16 +144,18 @@ const Model = function(db){
         /**
          * Esemény beszúrása adatbázisba
          * @param {String} eventName
-         * @param {String} roomName
+         * @param {String} room
          * @param {Object} data
          * @param {Function} [callback]
          * @returns {Promise}
          * @description
          * data = {
-         *     // TODO
+         *     triggerId : Number,     // eseményt kiváltó userId
+         *     userId : Number|Array,  // eseményt elszenvedő userId(k)
+         *     room : String           // csatorna azonosító
          * }
          */
-        setEvent : function(eventName, roomName, data, callback = () => {}){
+        setEvent : function(eventName, room, data, callback = () => {}){
             const time = Date.now();
 
             return db.query(`
@@ -154,7 +190,7 @@ const Model = function(db){
                             :created
                         )
                     `, {
-                        'room' : roomName,
+                        'room' : room,
                         'id' : result.insertId,
                         'created' : time
                     });
@@ -176,7 +212,10 @@ const Model = function(db){
          * @returns {Promise}
          * @description
          * data = {
-         *     // TODO
+         *     userId : Number,   // üzenetet küldő user
+         *     room : String,     // csatorna azonosító
+         *     message : String,  // üzenet
+         *     time : Number      // timestamp
          * }
          */
         setMessage : function(data, callback = () => {}){
@@ -232,7 +271,22 @@ const Model = function(db){
          * @returns {Promise}
          * @description
          * data = {
-         *     // TODO
+         *     userId : Number,
+         *     file = {
+         *         userId : Number,
+         *         raw : {
+         *             name : String,
+         *             size : Number,
+         *             type : String,
+         *             source : String
+         *         },
+         *         store : String,
+         *         type : String,
+         *         time : Number,
+         *         room : String,
+         *         name : String,
+         *         deleted : Boolean
+         *     }
          * }
          */
         setFile : function(data, callback = () => {}){
@@ -240,29 +294,32 @@ const Model = function(db){
                     INSERT INTO
                         chat_messages_files
                     (
-                        name,
-                        size,
-                        type,
-                        mainType,
+                        rawName,
+                        rawSize,
+                        rawType,
+                        rawSource,
                         store,
-                        data,
+                        type,
+                        name,
                         deleted
                     ) VALUES (
-                        :name,
-                        :size,
-                        :type,
-                        :mainType,
+                        :rawName,
+                        :rawSize,
+                        :rawType,
+                        :rawSource,
                         :store,
-                        :data,
+                        :type,
+                        :name,
                         0
                     )
                 `, {
-                    'name' : data.fileData.name,
-                    'size' : data.fileData.size,
-                    'type' : data.fileData.type,
-                    'mainType' : data.mainType,
-                    'store' : data.store,
-                    'data' : data.file
+                    'rawName' : data.file.raw.name,
+                    'rawSize' : data.file.raw.size,
+                    'rawType' : data.file.raw.type,
+                    'rawSource' : data.file.raw.source,
+                    'store' : data.file.store,
+                    'type' : data.file.type,
+                    'name' : data.file.name
                 })
                 .then(function(result){
                     return db.query(`
@@ -283,9 +340,9 @@ const Model = function(db){
                         )
                     `, {
                         'userId' : data.userId,
-                        'room' : data.room,
+                        'room' : data.file.room,
                         'id' : result.insertId,
-                        'created' : data.time
+                        'created' : data.file.time
                     });
                 })
                 .then(function(result){
@@ -345,11 +402,11 @@ const Model = function(db){
 
         /**
          * Egy csatornához tartozó fájlok töröltre állítása
-         * @param {String} roomName
+         * @param {String} room
          * @param {Function} [callback]
          * @returns {Promise}
          */
-        deleteRoomFiles : function(roomName, callback = () => {}){
+        deleteRoomFiles : function(room, callback = () => {}){
             return db.getRows(`
                     SELECT
                         cmf.*
@@ -359,9 +416,9 @@ const Model = function(db){
                     WHERE
                         cm.type = 'file' AND
                         cmf.store = 'upload' AND
-                        cm.room = :roomName
+                        cm.room = :room
                 `, {
-                    'roomName' : roomName
+                    'room' : room
                 })
                 .then(function(files){
                     const urls = [];
@@ -387,55 +444,31 @@ const Model = function(db){
         },
 
         /**
-         * Állapotváltozások lekérdezése
-         * @param {Function} [callback]
-         */
-        getStatuses : function(callback = () => {}){
-            return db.getRows(`
-                    SELECT
-                        *
-                    FROM
-                        chat_statuses
-                `)
-                .then(function(statuses){
-                    callback(statuses);
-                    return statuses;
-                })
-                .catch(function(error){
-                    log.error(error);
-                });
-        },
-
-        /**
          * Felhasználó utolsó állapotváltozásának lekérdezése
          * @param {Number} userId
          * @param {Function} [callback]
          */
-        getLastStatus : function(userId, callback = () => {}){
+        getStatus : function(userId, callback = () => {}){
             return db.getRow(`
                     SELECT
                         *
                     FROM
-                        chat_statuses
+                        chat_users
                     WHERE
-                        userId = :userId
-                    ORDER BY
-                        created DESC
+                        id = :userId
                     LIMIT
                         1
                 `, {
                     'userId' : userId
                 })
-                .then(function(status){
-                    if (!status){
-                        status = {
-                            userId : userId,
-                            type : null,
-                            prevStatus : null,
-                            nextStatus : null,
-                            created : Date.now()
-                        };
-                    }
+                .then(function(user){
+                    const status = {
+                        userId : userId,
+                        prevStatus : user.statusPrev,
+                        nextStatus : user.statusNext,
+                        type : user.statusType,
+                        created : user.statusCreated || Date.now()
+                    };
                     callback(status);
                     return status;
                 })
@@ -452,46 +485,32 @@ const Model = function(db){
          * @description
          * data = {
          *     userId : Number,
+         *     type : Number,
          *     prevStatus : String,
          *     nextStatus : String
          * }
          */
         setStatus : function(data, callback = () => {}){
-            const insertData = {
-                userId : data.userId,
-                type : data.type,
-                prevStatus : data.prevStatus,
-                nextStatus : data.nextStatus,
-                created : Date.now()
+            const status = {
+                statusPrev : data.prevStatus,
+                statusNext : data.nextStatus,
+                statusType : data.type,
+                statusCreated : Date.now()
             };
 
             return db.query(`
-                    DELETE FROM
-                        chat_statuses
+                    UPDATE
+                        chat_users
+                    SET
+                        statusPrev = :statusPrev,
+                        statusNext = :statusNext,
+                        statusType = :statusType,
+                        statusCreated = :statusCreated
                     WHERE
-                        userId = :userId
-                `, {
-                    'userId' : data.userId
-                })
-                .then(function(){
-                    return db.query(`
-                            INSERT INTO
-                                chat_statuses
-                            (
-                                userId,
-                                type,
-                                prevStatus,
-                                nextStatus,
-                                created
-                            ) VALUES (
-                                :userId,
-                                :type,
-                                :prevStatus,
-                                :nextStatus,
-                                :created
-                            )
-                        `, insertData);
-                })
+                        id = :userId
+                `, Object.assign(status, {
+                    userId : data.userId
+                }))
                 .then(function(result){
                     const statusId = result.insertId;
                     callback(statusId);

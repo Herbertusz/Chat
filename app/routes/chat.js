@@ -6,7 +6,7 @@
 
 let UserModel, ChatModel;
 const ENV = require.main.require('../app/env.js');
-const fs = require('fs'); // TODO: mz/fs
+const fs = require('mz/fs');
 const path = require('path');
 const express = require('express');
 const router = express.Router();
@@ -82,7 +82,7 @@ router.get('/room/:roomId', function(req, res){
 // Egy csatorna átvitelei (doboz feltöltéséhez)
 router.post('/getroommessages', function(req, res){
 
-    ChatModel.getRoomMessages(req.body.roomName)
+    ChatModel.getRoomMessages(req.body.room)
         .then(function(messages){
             res.send({
                 messages : messages
@@ -97,7 +97,7 @@ router.post('/getroommessages', function(req, res){
 // Felhasználó állapota
 router.post('/getstatus', function(req, res){
 
-    ChatModel.getLastStatus(Number(req.body.userId))
+    ChatModel.getStatus(Number(req.body.userId))
         .then(function(status){
             res.send({
                 status : status
@@ -110,14 +110,14 @@ router.post('/getstatus', function(req, res){
 });
 
 // Fájl kiszolgálása
-router.get('/file/:roomName/:fileName', function(req, res, next){
+router.get('/file/:room/:fileName', function(req, res, next){
 
     ChatModel
-        .getFile(req.params.roomName, req.params.fileName)
+        .getFile(req.params.room, req.params.fileName)
         .then(function(file){
             const userId = req.session.login ? req.session.login.userId : null;
             const currentRoom = req.app.get('socket').getState().rooms.find(function(room){
-                return room.name === req.params.roomName;
+                return room.name === req.params.room;
             });
             if (file && !file.deleted && currentRoom.userIds.indexOf(userId) > -1){
                 res.sendFile(path.resolve(`${req.app.get('upload')}/${file.raw.source}`));
@@ -162,9 +162,9 @@ router.post('/uploadfile', function(req, res){
             //     fileStream.end();
             //     return;
             // }
-            io.of('/chat').to(data.roomName).emit('fileReceive', {
+            io.of('/chat').to(data.room).emit('receiveFile', {
                 userId : userId,
-                roomName : data.roomName,
+                room : data.room,
                 uploadedSize : uploadedSize,
                 fileSize : fileSize,
                 firstSend : first
@@ -173,9 +173,9 @@ router.post('/uploadfile', function(req, res){
         });
         req.on('end', function(){
             // Fájlátvitel befejezve
-            io.of('/chat').to(data.roomName).emit('fileReceive', {
+            io.of('/chat').to(data.room).emit('receiveFile', {
                 userId : userId,
-                roomName : data.roomName,
+                room : data.room,
                 uploadedSize : fileSize,
                 fileSize : fileSize,
                 firstSend : false
@@ -209,12 +209,13 @@ router.post('/clientlog', function(req, res){
         \n-----\n
     `.replace(/^\s+/gm, '');
 
-    fs.appendFile(`${__dirname}/../../logs/client.log`, logMessage, function(error){
-        if (error){
+    fs.appendFile(`${__dirname}/../../logs/client.log`, logMessage)
+        .then(function(){
+            res.send({});
+        })
+        .catch(function(error){
             log.error(error);
-        }
-        res.send({});
-    });
+        });
 
 });
 

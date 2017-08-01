@@ -114,8 +114,9 @@ CHAT.FileTransfer = {
              *     store : String,
              *     type : String,
              *     time : Number,
-             *     roomName : String,
-             *     name : String
+             *     room : String,
+             *     name : String,
+             *     deleted : Boolean
              * }
              */
             clientSend : function(box, data, reader, rawFile, callback = () => {}){
@@ -145,11 +146,13 @@ CHAT.FileTransfer = {
                     if (response.success){
                         data.raw.source = response.fileName;
                         CHAT.Components.Transfer.progressbar(box, 'send', 1, barId);
-                        CHAT.Components.Transfer.appendFile(box, data, true)
-                            .then(callback)
-                            .catch(function(error){
-                                HD.Log.error(error);
-                            });
+                        CHAT.socket.on('dbFile', function(){
+                            CHAT.Components.Transfer.appendFile(box, data, true)
+                                .then(callback)
+                                .catch(function(error){
+                                    HD.Log.error(error);
+                                });
+                        });
                         CHAT.socket.emit('sendFile', data);
                     }
                     else {
@@ -182,8 +185,9 @@ CHAT.FileTransfer = {
              *     store : String,
              *     type : String,
              *     time : Number,
-             *     roomName : String,
-             *     name : String
+             *     room : String,
+             *     name : String,
+             *     deleted : Boolean
              * }
              */
             serverSend : function(box, data, callback = () => {}){
@@ -210,12 +214,13 @@ CHAT.FileTransfer = {
              *     store : String,
              *     type : String,
              *     time : Number,
-             *     roomName : String,
-             *     name : String
+             *     room : String,
+             *     name : String,
+             *     deleted : Boolean
              * }
              */
             receive : function(box, data){
-                if (!data.fileData.deleted){
+                if (!data.deleted){
                     return CHAT.Components.Transfer.appendFile(box, data);
                 }
                 else {
@@ -250,8 +255,9 @@ CHAT.FileTransfer = {
              *     store : String,
              *     type : String,
              *     time : Number,
-             *     roomName : String,
-             *     name : String
+             *     room : String,
+             *     name : String,
+             *     deleted : Boolean
              * }
              */
             clientSend : function(box, data, reader, rawFile, callback = () => {}){
@@ -281,8 +287,9 @@ CHAT.FileTransfer = {
              *     store : String,
              *     type : String,
              *     time : Number,
-             *     roomName : String,
-             *     name : String
+             *     room : String,
+             *     name : String,
+             *     deleted : Boolean
              * }
              */
             serverSend : function(box, data, callback = () => {}){
@@ -309,12 +316,13 @@ CHAT.FileTransfer = {
              *     store : String,
              *     type : String,
              *     time : Number,
-             *     roomName : String,
-             *     name : String
+             *     room : String,
+             *     name : String,
+             *     deleted : Boolean
              * }
              */
             receive : function(box, data){
-                if (!data.fileData.deleted){
+                if (!data.deleted){
                     return CHAT.Components.Transfer.appendFile(box, data);
                 }
                 else {

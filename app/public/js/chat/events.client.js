@@ -16,11 +16,7 @@ CHAT.Events.Client = {
      * @returns {String} csatona azonosítója
      */
     createRoom : function(){
-        const roomData = {
-            name : '',
-            userIds : [CHAT.userId],
-            starter : CHAT.userId
-        };
+        const userIds = [CHAT.userId];
         const Box = HD.DOM(
             HD.DOM(CHAT.DOM.cloneBox).copyPaste(HD.DOM(CHAT.DOM.container).elem())
         );
@@ -32,13 +28,17 @@ CHAT.Events.Client = {
         });
         HD.DOM(CHAT.DOM.selectedUsers).elements.forEach(function(selectedUser){
             const userId = Number(selectedUser.value);
-            roomData.userIds.push(userId);
+            userIds.push(userId);
         });
-        CHAT.Components.User.generateList(Userlist.elem(), roomData.userIds);
-        roomData.name = `room-${roomData.starter}-${Date.now()}`;
-        Box.data('room', roomData.name);
-        CHAT.socket.emit('roomCreated', roomData);
-        return roomData.name;
+        CHAT.Components.User.generateList(Userlist.elem(), userIds);
+        const room = `room-${CHAT.userId}-${Date.now()}`;
+        Box.data('room', room);
+        CHAT.socket.emit('roomCreated', {
+            triggerId : CHAT.userId,
+            userId : userIds,
+            room : room
+        });
+        return room;
     },
 
     /**
@@ -47,12 +47,13 @@ CHAT.Events.Client = {
      */
     leaveRoom : function(box){
         const Box = HD.DOM(box);
-        const roomName = Box.data('room');
+        const room = Box.data('room');
 
         Box.remove();
         CHAT.socket.emit('roomLeave', {
+            triggerId : CHAT.userId,
             userId : CHAT.userId,
-            roomName : roomName
+            room : room
         });
     },
 
@@ -65,7 +66,7 @@ CHAT.Events.Client = {
         const Box = HD.DOM(add).ancestors(CHAT.DOM.box);
         const Userlist = Box.descendants(CHAT.DOM.users);
         const currentUserIds = [];
-        const roomName = Box.data('room');
+        const room = Box.data('room');
 
         Userlist.descendants(CHAT.DOM.userItems).filter(':not(.cloneable)').elements.forEach(function(user){
             currentUserIds.push(HD.DOM(user).dataNum('id'));
@@ -75,7 +76,7 @@ CHAT.Events.Client = {
             CHAT.socket.emit('roomForceJoin', {
                 triggerId : CHAT.userId,
                 userId : userId,
-                roomName : roomName
+                room : room
             });
         }
     },
@@ -88,15 +89,16 @@ CHAT.Events.Client = {
         const Close = HD.DOM(close);
         const Box = Close.ancestors(CHAT.DOM.box);
         const User = Close.ancestors(CHAT.DOM.userItems);
-        const roomName = Box.data('room');
+        const room = Box.data('room');
         const userId = User.dataNum('id');
 
         if (userId === CHAT.userId){
             // kilépés
             Box.remove();
             CHAT.socket.emit('roomLeave', {
+                triggerId : CHAT.userId,
                 userId : CHAT.userId,
-                roomName : roomName
+                room : room
             });
         }
         else {
@@ -105,7 +107,7 @@ CHAT.Events.Client = {
             CHAT.socket.emit('roomForceLeave', {
                 triggerId : CHAT.userId,
                 userId : userId,
-                roomName : roomName
+                room : room
             });
         }
     },
@@ -119,9 +121,9 @@ CHAT.Events.Client = {
         const Message = Box.descendants(CHAT.DOM.textarea);
         const data = {
             userId : CHAT.userId,
+            room : Box.data('room'),
             message : Message.elem().value,
-            time : Date.now(),
-            roomName : Box.data('room')
+            time : Date.now()
         };
 
         if (data.message.trim().length > 0){
@@ -159,8 +161,9 @@ CHAT.Events.Client = {
                 store : store,
                 type : '',
                 time : Date.now(),
-                roomName : HD.DOM(box).data('room'),
-                name : `${Date.now()}-${HD.Math.rand(100, 999)}.${rawFile.name.split('.').pop()}`
+                room : HD.DOM(box).data('room'),
+                name : `${Date.now()}-${HD.Math.rand(100, 999)}.${rawFile.name.split('.').pop()}`,
+                deleted : false
             };
             const errors = CHAT.FileTransfer.fileCheck(fileData, CHAT.Config.fileTransfer);
 
@@ -211,9 +214,9 @@ CHAT.Events.Client = {
         const Message = Box.descendants(CHAT.DOM.textarea);
         const data = {
             userId : CHAT.userId,
+            room : Box.data('room'),
             message : Message.elem().value,
-            time : Date.now(),
-            roomName : Box.data('room')
+            time : Date.now()
         };
 
         CHAT.socket.emit('typeMessage', data);

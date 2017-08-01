@@ -92,7 +92,11 @@ CHAT.Events.Server = {
             Box.data('room', roomData.name);
             CHAT.Components.User.generateList(Userlist.elem(), roomData.userIds);
             CHAT.Components.User.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj('connected-users'));
-            CHAT.socket.emit('roomJoin', {roomName : roomData.name});
+            CHAT.socket.emit('roomJoin', {
+                triggerId : CHAT.userId,
+                userId : CHAT.userId,
+                room : roomData.name
+            });
             CHAT.Components.Notification.trigger(Box.elem(), {
                 type : 'create',
                 fromId : roomData.starter,
@@ -106,15 +110,17 @@ CHAT.Events.Server = {
      * @param {Object} roomData
      * @description
      * roomData = {
-     *     userId : Number,
-     *     roomData : Object
+     *     name : String,         // 'room-x-y'; x: létrehozó userId, y: létrehozás timestamp
+     *     userIds : Array,       // csatornába rakott userIdk
+     *     starter : Number       // csatorna létrehozó userId
+     *     joinedUserId : Number  // most csatlakozott userId
      * }
      */
     roomJoined : function(roomData){
         let box, Box, Userlist;
 
         if (roomData.joinedUserId === CHAT.userId){
-            // Létre kell hozni a dobozt a csatornához
+            // Létre kell hozni a dobozt a csatornához (a bejelentkezett user-nél fut le)
             Box = HD.DOM(
                 HD.DOM(CHAT.DOM.cloneBox).copyPaste(HD.DOM(CHAT.DOM.container).elem())
             );
@@ -130,7 +136,7 @@ CHAT.Events.Server = {
             CHAT.Components.Box.fill(Box.elem(), roomData.name);
         }
         else {
-            // Csatlakozott a csatornához
+            // Értesítést kell küldeni (a többi user-nél fut le)
             Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${roomData.name}"]`);
             box = Box.elem();
             if (box){
@@ -151,7 +157,9 @@ CHAT.Events.Server = {
      * @param {Object} extData
      * @description
      * extData = {
+     *     triggerId : Number,
      *     userId : Number,
+     *     room : String,
      *     roomData : Object
      * }
      */
@@ -159,7 +167,7 @@ CHAT.Events.Server = {
         let box, Box;
 
         if (extData.roomData){
-            Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
+            Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${extData.room}"]`);
             box = Box.elem();
             if (box){
                 CHAT.Components.Transfer.appendSystemMessage(box, 'leave', extData.userId);
@@ -180,13 +188,14 @@ CHAT.Events.Server = {
      * extData = {
      *     triggerId : Number,
      *     userId : Number,
+     *     room : String,
      *     roomData : Object
      * }
      */
     roomForceJoined : function(extData){
         let box, Box, Userlist;
 
-        Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
+        Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${extData.room}"]`);
         box = Box.elem();
 
         if (extData.userId === CHAT.userId){
@@ -210,15 +219,16 @@ CHAT.Events.Server = {
                     width : `${CHAT.Config.box.defaultSize.width}px`,
                     height : `${CHAT.Config.box.defaultSize.height}px`
                 });
-                Box.data('room', extData.roomData.name);
+                Box.data('room', extData.room);
                 CHAT.Components.User.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj('connected-users'));
-                CHAT.Components.Box.fill(box, extData.roomData.name);
+                CHAT.Components.Box.fill(box, extData.room);
                 CHAT.Components.User.generateList(Userlist.elem(), extData.roomData.userIds);
                 CHAT.Components.Transfer.appendSystemMessage(box, 'forceJoinYou', extData.triggerId);
             }
             CHAT.socket.emit('roomJoin', {
+                triggerId : extData.triggerId,
                 userId : CHAT.userId,
-                roomName : extData.roomData.name
+                room : extData.room
             });
             CHAT.Components.Notification.trigger(box, {
                 type : 'forceJoinYou',
@@ -247,21 +257,23 @@ CHAT.Events.Server = {
      * extData = {
      *     triggerId : Number,
      *     userId : Number,
+     *     room : String,
      *     roomData : Object
      * }
      */
     roomForceLeaved : function(extData){
-        const Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
+        const Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${extData.room}"]`);
         const box = Box.elem();
 
         if (box){
             if (extData.userId === CHAT.userId){
                 CHAT.Components.Transfer.appendSystemMessage(box, 'forceLeaveYou', extData.triggerId);
-                CHAT.socket.emit('roomLeave', {
-                    silent : true,
-                    userId : CHAT.userId,
-                    roomName : extData.roomData.name
-                });
+                //CHAT.socket.emit('roomLeave', {
+                //    triggerId : extData.triggerId,
+                //    userId : CHAT.userId,
+                //    room : extData.room,
+                //    silent : true
+                //});
                 CHAT.Components.Box.changeStatus(box, 'disabled');
                 CHAT.Components.Notification.trigger(box, {
                     type : 'forceLeaveYou',
@@ -287,14 +299,14 @@ CHAT.Events.Server = {
      * @param {Object} data
      * @description
      * data = {
-     *     userId : Number,
-     *     message : String,
-     *     time : Number,
-     *     roomName : String
+     *     userId : Number,   // üzenetet küldő user
+     *     room : String,     // csatorna azonosító
+     *     message : String,  // üzenet
+     *     time : Number      // timestamp
      * }
      */
     sendMessage : function(data){
-        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`).elem();
+        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.room}"]`).elem();
 
         if (box){
             CHAT.Components.Transfer.appendUserMessage(box, data);
@@ -313,14 +325,14 @@ CHAT.Events.Server = {
      * @description
      * data = {
      *     userId : Number,
-     *     roomName : String,
+     *     room : String,
      *     uploadedSize : Number,
      *     fileSize : Number,
      *     firstSend : Boolean
      * }
      */
-    fileReceive : function(data){
-        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`).elem();
+    receiveFile : function(data){
+        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.room}"]`).elem();
 
         if (CHAT.userId !== data.userId && box){
             if (data.firstSend){
@@ -351,12 +363,13 @@ CHAT.Events.Server = {
      *     store : String,
      *     type : String,
      *     time : Number,
-     *     roomName : String,
-     *     name : String
+     *     room : String,
+     *     name : String,
+     *     deleted : Boolean
      * }
      */
     sendFile : function(data){
-        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`).elem();
+        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.room}"]`).elem();
 
         if (box){
             CHAT.FileTransfer.action('serverSend', [box, data, function(){
@@ -387,13 +400,14 @@ CHAT.Events.Server = {
      *         store : String,
      *         type : String,
      *         time : Number,
-     *         roomName : String,
-     *         name : String
+     *         room : String,
+     *         name : String,
+     *         deleted : Boolean
      *     }
      * }
      */
     abortFile : function(data){
-        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.file.roomName}"]`).elem();
+        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.file.room}"]`).elem();
 
         if (box){
             const method = data.forced ? 'forceAbort' : 'abort';
@@ -409,11 +423,11 @@ CHAT.Events.Server = {
      *     userId : Number,
      *     message : String,
      *     time : Number,
-     *     roomName : String
+     *     room : String
      * }
      */
     typeMessage : function(data){
-        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`).elem();
+        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.room}"]`).elem();
         const writing = CHAT.Components.Timer.writing;
 
         if (box){

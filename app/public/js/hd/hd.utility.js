@@ -343,34 +343,36 @@ HD.String = {
             ret += chars[Math.floor(Math.random() * chars.length)];
         }
         return ret;
-    }
+    },
 
-    // /**
-    //  * Jelszó kódolása
-    //  * @param {String} pwd - kódolandó jelszó
-    //  * @param {String} [salt] - só
-    //  * @returns {String} kódolt jelszó
-    //  */
-    // hash : function(pwd, salt){
-    //     var sha1 = (s) => s;
-    //     var PROJECT_NAME = '';
-    //
-    //     if (typeof salt === 'undefined'){
-    //         pwd = sha1(pwd);
-    //     }
-    //     else {
-    //         let i;
-    //         let salt2 = '';
-    //         const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    //         const salt1 = salt;
-    //         const salt2_original = PROJECT_NAME;
-    //         for (i = 0; i < salt2_original.length; i++){
-    //             salt2 += chars[chars.indexOf(salt2_original[i]) + 1 % chars.length];
-    //         }
-    //         pwd = sha1(salt1 + pwd + salt2);
-    //     }
-    //     return pwd;
-    // }
+    /**
+     * Jelszó kódolása
+     * @param {String} pwd - kódolandó jelszó
+     * @param {String} [salt] - só
+     * @returns {String} kódolt jelszó
+     * TODO: sha1 függvény
+     * TODO: tesztelés
+     */
+    hash : function(pwd, salt){
+        const sha1 = (s) => s;
+        const PROJECT_NAME = '';
+
+        if (typeof salt === 'undefined'){
+            pwd = sha1(pwd);
+        }
+        else {
+            let i;
+            let salt2 = '';
+            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const salt1 = salt;
+            const salt2_original = PROJECT_NAME;
+            for (i = 0; i < salt2_original.length; i++){
+                salt2 += chars[chars.indexOf(salt2_original[i]) + 1 % chars.length];
+            }
+            pwd = sha1(salt1 + pwd + salt2);
+        }
+        return pwd;
+    }
 
 };
 

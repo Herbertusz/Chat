@@ -115,21 +115,21 @@ module.exports = function(server, ioSession, app){
     /**
      * Csatorna módosítása
      * @param {String} operation - művelet ('add'|'remove')
-     * @param {String} roomName - csatorna azonosító
+     * @param {String} room - csatorna azonosító
      * @param {Number} userId - user azonosító
      */
-    const roomUpdate = function(operation, roomName, userId){
+    const roomUpdate = function(operation, room, userId){
         let userIdIndex = -1;
 
-        if (!roomName){
+        if (!room){
             // összes csatorna
-            ChatState.rooms.forEach(function(room){
-                roomUpdate(operation, room.name, userId);
+            ChatState.rooms.forEach(function(roomData){
+                roomUpdate(operation, roomData.name, userId);
             });
             return;
         }
-        const roomIndex = ChatState.rooms.findIndex(function(room){
-            return room.name === roomName;
+        const roomIndex = ChatState.rooms.findIndex(function(roomData){
+            return roomData.name === room;
         });
         if (roomIndex > -1){
             if (operation === 'add'){
@@ -152,7 +152,8 @@ module.exports = function(server, ioSession, app){
      * User-ek állapotváltozásának logolása adatbázisba
      * @param {Object} prevUserData
      * @param {Object} nextUserData
-     * @desc *UserData = {
+     * @description
+     * *UserData = {
      *     id : Number,      // user azonosító
      *     name : String,    // user login név
      *     status : String,  // user státusz (CHAT.Labels.status.online + offline)
@@ -209,7 +210,10 @@ module.exports = function(server, ioSession, app){
     const io = require('socket.io')(server);
     io.of('/chat').use(ioExpressSession(ioSession));
 
-    // Belépés a chat-be
+    /**
+     * Belépés a chat-be
+     * @param {Object} socket
+     */
     io.of('/chat').on('connection', function(socket){
 
         let userData = null;
@@ -225,8 +229,10 @@ module.exports = function(server, ioSession, app){
             };
         }
 
+        /**
+         * Csatlakozás emitter
+         */
         if (userData){
-            // csatlakozás emitter
             ChatState.connectedUsers[socket.id] = userData;
             socket.broadcast.emit('userConnected', userData);
             io.of('/chat').emit('statusChanged', ChatState.connectedUsers);
@@ -241,20 +247,36 @@ module.exports = function(server, ioSession, app){
             });
         }
 
-        // Csatlakozás bontása
+        /**
+         * Csatlakozás bontása emitter
+         */
         socket.on('disconnect', function(){
             const discUserData = ChatState.connectedUsers[socket.id];
 
             if (discUserData){
                 Reflect.deleteProperty(ChatState.connectedUsers, socket.id);
-                roomUpdate('remove', null, discUserData.id);
+                //roomUpdate('remove', null, discUserData.id);
                 statusLog(discUserData, null);
                 io.of('/chat').emit('statusChanged', ChatState.connectedUsers);
                 io.of('/chat').emit('disconnect', discUserData);
             }
         });
 
-        // User állapotváltozása
+        /**
+         * User állapotváltozása emitter
+         * @param {Object} updatedConnectedUsers - a pillanatnyilag csatlakozott usereket tároló objektum
+         * @param {Number} triggerUserId - az eseményt kiváltó userId
+         * @description
+         * connectedUsers = {
+         *     <socket.id> : {
+         *         id : Number,      // user azonosító
+         *         name : String,    // user login név
+         *         status : String,  // user státusz (CHAT.Labels.status.online + offline)
+         *         isIdle : Boolean  // user tétlen státuszban van
+         *     },
+         *     ...
+         * }
+         */
         socket.on('statusChanged', function(updatedConnectedUsers, triggerUserId){
             const prevUserData = HD.Object.search(ChatState.connectedUsers, user => user.id === triggerUserId);
             const nextUserData = HD.Object.search(updatedConnectedUsers, user => user.id === triggerUserId);
@@ -263,93 +285,172 @@ module.exports = function(server, ioSession, app){
             socket.broadcast.emit('statusChanged', updatedConnectedUsers);
         });
 
-        // Csatorna létrehozása
-        socket.on('roomCreated', function(roomData){
+        /**
+         * Csatorna létrehozása emitter
+         * @param {Object} data
+         * data = {
+         *     triggerId : Number,      // csatornát létrehozó userId
+         *     userId : Array<Number>,  // csatornában lévő userId-k
+         *     room : String            // csatorna azonosító
+         * }
+         */
+        socket.on('roomCreated', function(data){
+            const roomData = {
+                name : data.room,
+                userIds : data.userId,
+                starter : data.triggerId
+            };
             ChatState.rooms.push(roomData);
             socket.join(roomData.name);
             socket.broadcast.emit('roomCreated', roomData);
-            ChatModel.setEvent('roomCreated', roomData.name, roomData);
+            ChatModel.setEvent('roomCreated', data);
         });
 
-        // Belépés csatornába
+        /**
+         * Belépés csatornába emitter
+         * @param {Object} data
+         * data = {
+         *     triggerId : Number,  // belépést kiváltó userId
+         *     userId : Number,     // belépett userId (ugyanaz mint a fenti)
+         *     room : String        // csatorna azonosító
+         * }
+         */
         socket.on('roomJoin', function(data){
-            socket.join(data.roomName);
-            ChatModel.setEvent('roomJoin', data.roomName, data);
+            socket.join(data.room);
+            ChatModel.setEvent('roomJoin', data);
         });
 
-        // Kilépés csatornából
+        /**
+         * Kilépés csatornából emitter
+         * @param {Object} data
+         * data = {
+         *     triggerId : Number,  // kilépést kiváltó userId
+         *     userId : Number,     // kilépett userId (ugyanaz mint a fenti)
+         *     room : String,       // csatorna azonosító
+         *     silent : Boolean     // nem megy ki róla értesítés
+         * }
+         */
         socket.on('roomLeave', function(data){
-            const roomData = getRoom(data.roomName);
-            const emitData = {
-                userId : data.userId,
-                roomData : roomData
-            };
+            const roomData = getRoom(data.room);
             if (!data.silent){
-                socket.broadcast.emit('roomLeaved', emitData);
+                socket.broadcast.emit('roomLeaved', Object.assign(data, {roomData : roomData}));
             }
-            roomUpdate('remove', data.roomName, data.userId);
-            socket.leave(data.roomName, () => {});
-            ChatModel.setEvent('roomLeave', data.roomName, emitData);
+            roomUpdate('remove', data.room, data.userId);
+            socket.leave(data.room, () => {});
+            ChatModel.setEvent('roomLeave', data);
         });
 
-        // Hozzáadás csatornához emitter
+        /**
+         * Hozzáadás csatornához emitter
+         * @param {Object} data
+         * data = {
+         *     triggerId : Number,  // hozzáadást kiváltó userId
+         *     userId : Number,     // beléptetett userId (nem egyezik a fentivel)
+         *     room : String        // csatorna azonosító
+         * }
+         */
         socket.on('roomForceJoin', function(data){
-            const emitData = {
-                triggerId : data.triggerId,
-                userId : data.userId,
-                roomData : getRoom(data.roomName)
-            };
-            roomUpdate('add', data.roomName, data.userId);
-            socket.broadcast.emit('roomForceJoined', emitData);
-            ChatModel.setEvent('roomForceJoin', data.roomName, emitData);
+            const roomData = getRoom(data.room);
+            roomUpdate('add', data.room, data.userId);
+            socket.broadcast.emit('roomForceJoined', Object.assign(data, {roomData : roomData}));
+            ChatModel.setEvent('roomForceJoin', data);
         });
 
-        // Kidobás csatornából emitter
+        /**
+         * Kidobás csatornából emitter
+         * @param {Object} data
+         * data = {
+         *     triggerId : Number,  // kidobást kiváltó userId
+         *     userId : Number,     // kidobott userId (nem egyezik a fentivel)
+         *     room : String        // csatorna azonosító
+         * }
+         */
         socket.on('roomForceLeave', function(data){
-            const emitData = {
-                triggerId : data.triggerId,
-                userId : data.userId,
-                roomData : getRoom(data.roomName)
-            };
-            roomUpdate('remove', data.roomName, data.userId);
-            socket.broadcast.emit('roomForceLeaved', emitData);
-            ChatModel.setEvent('roomForceLeave', data.roomName, emitData);
+            const roomData = getRoom(data.room);
+            roomUpdate('remove', data.room, data.userId);
+            socket.broadcast.emit('roomForceLeaved', Object.assign(data, {roomData : roomData}));
+            ChatModel.setEvent('roomForceLeave', data);
         });
 
-        // Üzenetküldés emitter
+        /**
+         * Üzenetküldés emitter
+         * @param {Object} data
+         * data = {
+         *     userId : Number,   // üzenetet küldő user
+         *     room : String,     // csatorna azonosító
+         *     message : String,  // üzenet
+         *     time : Number      // timestamp
+         * }
+         */
         socket.on('sendMessage', function(data){
-            socket.broadcast.to(data.roomName).emit('sendMessage', data);
-            ChatModel.setMessage({
-                userId : userData.id,
-                room : data.roomName,
-                message : data.message,
-                time : data.time
-            });
+            data.userId = userData.id;  // TODO: ez kell?
+            socket.broadcast.to(data.room).emit('sendMessage', data);
+            ChatModel.setMessage(data);
         });
 
-        // Fájlküldés emitter
+        /**
+         * Fájlküldés emitter
+         * @param {Object} data
+         * data = {
+         *     userId : Number,
+         *     raw : {
+         *         name : String,
+         *         size : Number,
+         *         type : String,
+         *         source : String
+         *     },
+         *     store : String,
+         *     type : String,
+         *     time : Number,
+         *     room : String,
+         *     name : String,
+         *     deleted : Boolean
+         * }
+         */
         socket.on('sendFile', function(data){
             const errors = CHAT.FileTransfer.fileCheck(data, CHAT.Config.fileTransfer);
             if (errors.length > 0){
-                socket.broadcast.to(data.roomName).emit('abortFile', {
+                socket.broadcast.to(data.room).emit('abortFile', {
                     forced : true,
                     file : data
                 });
             }
             else {
-                socket.broadcast.to(data.roomName).emit('sendFile', data);
                 ChatModel.setFile({
                     userId : userData.id,
                     file : data
+                }).then(function(){
+                    socket.broadcast.to(data.room).emit('sendFile', data);
+                    socket.emit('dbFile', data);
+                }).catch(function(error){
+                    log.error(error);
                 });
             }
         });
 
-        // Fájlátvitel megszakítás emitter
+        /**
+         * Fájlátvitel megszakítás emitter
+         * @param {Object} data
+         * data = {
+         *     userId : Number,
+         *     raw : {
+         *         name : String,
+         *         size : Number,
+         *         type : String,
+         *         source : String
+         *     },
+         *     store : String,
+         *     type : String,
+         *     time : Number,
+         *     room : String,
+         *     name : String,
+         *     deleted : Boolean
+         * }
+         */
         socket.on('abortFile', function(data){
             const filePath = path.resolve(`${app.get('upload')}/${data.file.name}`);
-            socket.broadcast.to(data.file.roomName).emit('abortFile', data);
-            ChatModel.setEvent('abortFile', data.file.roomName, data.file);
+            socket.broadcast.to(data.file.room).emit('abortFile', data);
+            ChatModel.setEvent('abortFile', data.file.room, data.file);
             ChatModel.deleteFile(data.file.name)
                 .then(function(){
                     return fs.access(filePath, fs.W_OK);
@@ -362,9 +463,18 @@ module.exports = function(server, ioSession, app){
                 });
         });
 
-        // Üzenetírás emitter
+        /**
+         * Üzenetírás emitter
+         * @param {Object} data
+         * data = {
+         *     userId : Number,   // üzenetet író user
+         *     room : String,     // csatorna azonosító
+         *     message : String,  // eddig beírt üzenet
+         *     time : Number      // timestamp
+         * };
+         */
         socket.on('typeMessage', function(data){
-            socket.broadcast.to(data.roomName).emit('typeMessage', data);
+            socket.broadcast.to(data.room).emit('typeMessage', data);
         });
 
     });

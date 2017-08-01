@@ -318,15 +318,15 @@ CHAT.Components.Box = {
     /**
      * Doboz kitöltése DB-ből származó adatokkal
      * @param {HTMLElement} box
-     * @param {String} roomName
+     * @param {String} room
      * @returns {Promise}
      */
-    fill : function(box, roomName){
+    fill : function(box, room){
 
         HD.DOM.ajax({
             method : 'POST',
             url : '/chat/getroommessages',
-            data : `roomName=${roomName}`
+            data : `room=${room}`
         }).then(function(resp){
             resp = JSON.parse(resp);
             let sequence = Promise.resolve();
@@ -370,7 +370,7 @@ CHAT.Components.Box = {
                                 userId : msgData.userId,
                                 time : timestamp,
                                 message : msgData.message,
-                                roomName : roomName
+                                room : room
                             }, msgData.userId === CHAT.userId);
                             return Promise.resolve();
                         }
@@ -387,7 +387,7 @@ CHAT.Components.Box = {
                                 store : msgData.file.store,
                                 type : msgData.file.type,
                                 time : timestamp,
-                                roomName : roomName,
+                                room : room,
                                 name : msgData.file.name,
                                 deleted : msgData.file.deleted
                             };

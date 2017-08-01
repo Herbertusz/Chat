@@ -42,12 +42,6 @@ router.get('/', function(req, res){
         .then(function(items){
             messages = items;
         })
-        .then(function(){
-            return ChatModel.getStatuses();
-        })
-        .then(function(items){
-            statuses = items;
-        })
         .catch(function(error){
             log.error(error);
         })
