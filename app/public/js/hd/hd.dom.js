@@ -4,7 +4,7 @@
  * @description DOM-kezelő
  * @requires HD.Misc.switching
  * @example
- *  HD.DOM('.class').event('click', function(target){...});
+ *  HD.DOM('.class').event('click', function(event){...});
  *  HD.DOM('.class').descendants('button').data('clickable', 'true').trigger('click');
  *  const cloneElement = HD.DOM('.class').filter('[data-disabled]').clone(true).elem();
  */

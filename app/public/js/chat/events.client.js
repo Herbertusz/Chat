@@ -13,22 +13,19 @@ CHAT.Events.Client = {
 
     /**
      * Csatorna létrehozása
+     * @param {Array} selectedUserIds - kiválasztott userId-k
      * @returns {String} csatona azonosítója
      */
-    createRoom : function(){
-        const userIds = [CHAT.userId];
+    createRoom : function(selectedUserIds){
         const Box = HD.DOM(
             HD.DOM(CHAT.DOM.cloneBox).copyPaste(HD.DOM(CHAT.DOM.container).elem())
         );
         const Userlist = Box.descendants(CHAT.DOM.users);
+        const userIds = [CHAT.userId, ...selectedUserIds];
 
         Box.css({
             width : `${CHAT.Config.box.defaultSize.width}px`,
             height : `${CHAT.Config.box.defaultSize.height}px`
-        });
-        HD.DOM(CHAT.DOM.selectedUsers).elements.forEach(function(selectedUser){
-            const userId = Number(selectedUser.value);
-            userIds.push(userId);
         });
         CHAT.Components.User.generateList(Userlist.elem(), userIds);
         const room = `room-${CHAT.userId}-${Date.now()}`;

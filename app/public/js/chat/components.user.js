@@ -23,6 +23,19 @@ CHAT.Components.User = {
     },
 
     /**
+     * User-listában kiválasztott userId-k
+     * @returns {Array}
+     */
+    getSelectedUserIds : function(){
+        const userIds = [];
+        HD.DOM(CHAT.DOM.selectedUsers).elements.forEach(function(selectedUser){
+            const userId = Number(selectedUser.value);
+            userIds.push(userId);
+        });
+        return userIds;
+    },
+
+    /**
      * User-sáv görgetése
      * @deprecated nincs használva, helyette a CHAT.Components.User.openList használandó
      */
@@ -178,7 +191,7 @@ CHAT.Components.User = {
             status : CHAT.Config.status.offline[0],
             isIdle : false
         };
-        const connectedUsers = HD.DOM(CHAT.DOM.online).dataObj('connected-users');
+        const connectedUsers = CHAT.State.connectedUsers;
 
         for (const socketId in connectedUsers){
             if (connectedUsers[socketId].id === userId){
@@ -271,7 +284,7 @@ CHAT.Components.User = {
     changeStatus : function(newStatus){
         let socketId;
         let thisSocket = null;
-        const connectedUsers = HD.DOM(CHAT.DOM.online).dataObj('connected-users');
+        const connectedUsers = CHAT.State.connectedUsers;
 
         for (socketId in connectedUsers){
             if (connectedUsers[socketId].id === CHAT.userId){
@@ -290,7 +303,7 @@ CHAT.Components.User = {
                 connectedUsers[thisSocket].status = newStatus;
             }
         }
-        HD.DOM(CHAT.DOM.online).dataObj('connected-users', connectedUsers);
+        CHAT.State.connectedUsers = connectedUsers;
         CHAT.Components.User.updateStatuses(connectedUsers);
         return connectedUsers;
     },

@@ -110,6 +110,7 @@ module.exports = function(server, ioSession, app){
                 ChatState.rooms.splice(index, 1);
             }
         });
+        return deleted;
     };
 
     /**
@@ -219,11 +220,86 @@ module.exports = function(server, ioSession, app){
         let userData = null;
         const session = socket.handshake.session;
 
+        /**
+         * Socket események emittálása
+         * @type {Object}
+         */
+        const Emit = {
+
+            /**
+             * Saját magamnak
+             * @param {String} event - esemény neve
+             * @param {Object} data - eseménnyel küldött adatok
+             * @returns {Namespace|Socket} láncolhatóság biztosítása
+             */
+            me : function(event, data){
+                return socket.emit(event, data);
+            },
+
+            /**
+             * Egy usernek
+             * @param {Number} userId - ez a user kapja meg
+             * @param {String} event - esemény neve
+             * @param {Object} data - eseménnyel küldött adatok
+             * @returns {Namespace|Socket} láncolhatóság biztosítása
+             */
+            user : function(userId, event, data){
+                const socketId = Object.keys(ChatState.connectedUsers).find(function(sId){
+                    return ChatState.connectedUsers[sId].id === userId;
+                });
+                return socket.broadcast.to(socketId).emit(event, data);
+            },
+
+            /**
+             * Egy csatornában lévő usereknek (kivéve magamat)
+             * @param {String} room - csatorna azonosító
+             * @param {String} event - esemény neve
+             * @param {Object} data - eseménnyel küldött adatok
+             * @returns {Namespace|Socket} láncolhatóság biztosítása
+             */
+            themRoom : function(room, event, data){
+                return socket.to(room).emit(event, data);
+            },
+
+            /**
+             * Mindenkinek (kivéve magamat)
+             * @param {String} event - esemény neve
+             * @param {Object} data - eseménnyel küldött adatok
+             * @returns {Namespace|Socket} láncolhatóság biztosítása
+             */
+            themAll : function(event, data){
+                return socket.broadcast.emit(event, data);
+            },
+
+            /**
+             * Egy csatornában lévő usereknek
+             * @param {String} room - csatorna azonosító
+             * @param {String} event - esemény neve
+             * @param {Object} data - eseménnyel küldött adatok
+             * @returns {Namespace|Socket} láncolhatóság biztosítása
+             */
+            room : function(room, event, data){
+                return io.of('/chat').to(room).emit(event, data);
+            },
+
+            /**
+             * Mindenkinek
+             * @param {String} event - esemény neve
+             * @param {Object} data - eseménnyel küldött adatok
+             * @returns {Namespace|Socket} láncolhatóság biztosítása
+             */
+            all : function(event, data){
+                return io.of('/chat').emit(event, data);
+            }
+
+        };
+
         // user azonosítása
         if (session.login && session.login.loginned){
             // belépett user
             userData = {
                 id : session.login.userId,
+                name : session.login.userName,
                 status : CHAT.Config.status.online[0],
                 isIdle : false
             };
@@ -234,15 +310,17 @@ module.exports = function(server, ioSession, app){
          */
         if (userData){
             ChatState.connectedUsers[socket.id] = userData;
-            socket.broadcast.emit('userConnected', userData);
-            io.of('/chat').emit('statusChanged', ChatState.connectedUsers);
+            Emit.all('userConnected', userData);
+            Emit.all('statusChanged', ChatState.connectedUsers);
             statusLog(null, userData);
             ChatState.rooms.forEach(function(roomData){
                 if (roomData.userIds.indexOf(userData.id) > -1){
                     socket.join(roomData.name);
-                    io.of('/chat').to(roomData.name).emit(
-                        'roomJoined', Object.assign(roomData, {joinedUserId : userData.id})
-                    );
+                    Emit.me('roomUpdate', {
+                        operation : 'create',
+                        roomData : roomData
+                    });
+                    Emit.room(roomData.name, 'roomJoined', Object.assign(roomData, {joinedUserId : userData.id}));
                 }
             });
         }
@@ -250,15 +328,22 @@ module.exports = function(server, ioSession, app){
         /**
          * Csatlakozás bontása emitter
          */
-        socket.on('disconnect', function(){
+        socket.on('disconnect', function(reason){ // TODO: reason-t kiíratni
             const discUserData = ChatState.connectedUsers[socket.id];
 
             if (discUserData){
                 Reflect.deleteProperty(ChatState.connectedUsers, socket.id);
-                //roomUpdate('remove', null, discUserData.id);
+                if (CHAT.Config.room.leaveOnDisconnect){
+                    roomUpdate('remove', null, discUserData.id);
+                }
                 statusLog(discUserData, null);
-                io.of('/chat').emit('statusChanged', ChatState.connectedUsers);
-                io.of('/chat').emit('disconnect', discUserData);
+                Emit.themAll('roomUpdate', {
+                    operation : 'remove',
+                    room : null,
+                    userId : discUserData.id
+                });
+                Emit.all('statusChanged', ChatState.connectedUsers);
+                Emit.all('disconnect', discUserData);
             }
         });
 
@@ -282,7 +367,7 @@ module.exports = function(server, ioSession, app){
             const nextUserData = HD.Object.search(updatedConnectedUsers, user => user.id === triggerUserId);
             statusLog(prevUserData, nextUserData);
             ChatState.connectedUsers = updatedConnectedUsers;
-            socket.broadcast.emit('statusChanged', updatedConnectedUsers);
+            Emit.themAll('statusChanged', updatedConnectedUsers);
         });
 
         /**
@@ -302,7 +387,11 @@ module.exports = function(server, ioSession, app){
             };
             ChatState.rooms.push(roomData);
             socket.join(roomData.name);
-            socket.broadcast.emit('roomCreated', roomData);
+            Emit.themAll('roomCreated', roomData);
+            Emit.me('roomUpdate', {
+                operation : 'create',
+                roomData : roomData
+            });
             ChatModel.setEvent('roomCreated', data);
         });
 
@@ -316,7 +405,12 @@ module.exports = function(server, ioSession, app){
          * }
          */
         socket.on('roomJoin', function(data){
+            const roomData = getRoom(data.room);
             socket.join(data.room);
+            Emit.me('roomUpdate', {
+                operation : 'create',
+                roomData : roomData
+            });
             ChatModel.setEvent('roomJoin', data);
         });
 
@@ -327,15 +421,21 @@ module.exports = function(server, ioSession, app){
          *     triggerId : Number,  // kilépést kiváltó userId
          *     userId : Number,     // kilépett userId (ugyanaz mint a fenti)
          *     room : String,       // csatorna azonosító
-         *     silent : Boolean     // nem megy ki róla értesítés
          * }
          */
         socket.on('roomLeave', function(data){
             const roomData = getRoom(data.room);
-            if (!data.silent){
-                socket.broadcast.emit('roomLeaved', Object.assign(data, {roomData : roomData}));
-            }
             roomUpdate('remove', data.room, data.userId);
+            Emit.themRoom(data.room, 'roomLeaved', Object.assign(data, {roomData : roomData}));
+            Emit.me('roomUpdate', {
+                operation : 'delete',
+                roomData : roomData
+            });
+            Emit.themRoom(data.room, 'roomUpdate', {
+                operation : 'remove',
+                room : data.room,
+                userId : data.userId
+            });
             socket.leave(data.room, () => {});
             ChatModel.setEvent('roomLeave', data);
         });
@@ -350,9 +450,15 @@ module.exports = function(server, ioSession, app){
          * }
          */
         socket.on('roomForceJoin', function(data){
+            if (!CHAT.Config.room.forceJoin) return;
             const roomData = getRoom(data.room);
             roomUpdate('add', data.room, data.userId);
-            socket.broadcast.emit('roomForceJoined', Object.assign(data, {roomData : roomData}));
+            Emit.themAll('roomForceJoined', Object.assign(data, {roomData : roomData}));
+            Emit.room(data.room, 'roomUpdate', {
+                operation : 'add',
+                room : data.room,
+                userId : data.userId
+            });
             ChatModel.setEvent('roomForceJoin', data);
         });
 
@@ -366,9 +472,19 @@ module.exports = function(server, ioSession, app){
          * }
          */
         socket.on('roomForceLeave', function(data){
+            if (!CHAT.Config.room.forceLeave) return;
             const roomData = getRoom(data.room);
             roomUpdate('remove', data.room, data.userId);
-            socket.broadcast.emit('roomForceLeaved', Object.assign(data, {roomData : roomData}));
+            Emit.themRoom(data.room, 'roomForceLeaved', Object.assign(data, {roomData : roomData}));
+            Emit.user(data.userId, 'roomUpdate', {
+                operation : 'delete',
+                roomData : roomData
+            });
+            Emit.room(data.room, 'roomUpdate', {
+                operation : 'remove',
+                room : data.room,
+                userId : data.userId
+            });
             ChatModel.setEvent('roomForceLeave', data);
         });
 
@@ -384,8 +500,22 @@ module.exports = function(server, ioSession, app){
          */
         socket.on('sendMessage', function(data){
             data.userId = userData.id;  // TODO: ez kell?
-            socket.broadcast.to(data.room).emit('sendMessage', data);
+            Emit.themRoom(data.room, 'sendMessage', data);
             ChatModel.setMessage(data);
+        });
+
+        /**
+         * Üzenetírás emitter
+         * @param {Object} data
+         * data = {
+         *     userId : Number,   // üzenetet író user
+         *     room : String,     // csatorna azonosító
+         *     message : String,  // eddig beírt üzenet
+         *     time : Number      // timestamp
+         * };
+         */
+        socket.on('typeMessage', function(data){
+            Emit.themRoom(data.room, 'typeMessage', data);
         });
 
         /**
@@ -410,7 +540,7 @@ module.exports = function(server, ioSession, app){
         socket.on('sendFile', function(data){
             const errors = CHAT.FileTransfer.fileCheck(data, CHAT.Config.fileTransfer);
             if (errors.length > 0){
-                socket.broadcast.to(data.room).emit('abortFile', {
+                Emit.themRoom(data.room, 'abortFile', {
                     forced : true,
                     file : data
                 });
@@ -420,8 +550,8 @@ module.exports = function(server, ioSession, app){
                     userId : userData.id,
                     file : data
                 }).then(function(){
-                    socket.broadcast.to(data.room).emit('sendFile', data);
-                    socket.emit('dbFile', data);
+                    Emit.themRoom(data.room, 'sendFile', data);
+                    Emit.me('dbFile', data);
                 }).catch(function(error){
                     log.error(error);
                 });
@@ -449,7 +579,7 @@ module.exports = function(server, ioSession, app){
          */
         socket.on('abortFile', function(data){
             const filePath = path.resolve(`${app.get('upload')}/${data.file.name}`);
-            socket.broadcast.to(data.file.room).emit('abortFile', data);
+            Emit.themRoom(data.file.room, 'abortFile', data);
             ChatModel.setEvent('abortFile', data.file.room, data.file);
             ChatModel.deleteFile(data.file.name)
                 .then(function(){
@@ -461,20 +591,6 @@ module.exports = function(server, ioSession, app){
                 .catch(function(error){
                     log.error(error);
                 });
-        });
-
-        /**
-         * Üzenetírás emitter
-         * @param {Object} data
-         * data = {
-         *     userId : Number,   // üzenetet író user
-         *     room : String,     // csatorna azonosító
-         *     message : String,  // eddig beírt üzenet
-         *     time : Number      // timestamp
-         * };
-         */
-        socket.on('typeMessage', function(data){
-            socket.broadcast.to(data.room).emit('typeMessage', data);
         });
 
     });

@@ -18,7 +18,9 @@ CHAT.Config = {
         // Új user hozzáadásának engedélyezése
         forceJoin : true,
         // User kidobásának engedélyezése
-        forceLeave : true
+        forceLeave : true,
+        // User kidobása a csatornákból kapcsolat megszakadása (pl. elnavigáléás, frissítés) esetén
+        leaveOnDisconnect : false
     },
 
     // Felhasználó állapotai
@@ -33,9 +35,9 @@ CHAT.Config = {
         inactive : ['idle', 'away', 'inv', 'off'],
         // Tétlen állapot érzékelése
         idle : {
-            // Tételen állapot érzékelésének engedélyezése
+            // Tétlen állapot érzékelésének engedélyezése
             allowed : true,
-            // Idle állapot figyelmen kívül hagyása ezeknél az állapotoknál (megjelenítéshez)
+            // Tétlen állapot figyelmen kívül hagyása ezeknél az állapotoknál (megjelenítéshez)
             except : ['inv', 'away'],
             // Várakozás tétlen állpotba állítás előtt ms-ban (5 perc)
             time : 300000,

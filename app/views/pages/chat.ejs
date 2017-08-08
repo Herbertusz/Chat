@@ -1,6 +1,6 @@
 <div class="chat-outer-container">
     <% if (login){ %>
-        <aside class="online" data-connected-users="">
+        <aside class="online">
             <ul>
                 <li data-id="<%- userId %>" data-name="<%= userName %>" class="self">
                     <label>
@@ -40,9 +40,11 @@
                         <span class="user-item cloneable" data-id="">
                             <svg class="status"><use xlink:href="#<%= CHAT.Config.status.offline[0] %>"></use></svg>
                             <span class="name"></span>
-                            <span title="<%= CHAT.Labels.action.forceLeave %>">
-                                <svg class="throw"><use xlink:href="#cross"></use></svg>
-                            </span>
+                            <% if (CHAT.Config.room.forceLeave){ %>
+                                <span title="<%= CHAT.Labels.action.forceLeave %>">
+                                    <svg class="throw"><use xlink:href="#cross"></use></svg>
+                                </span>
+                            <% } %>
                             <span>
                                 <svg class="dropdown"><use xlink:href="#triangle"></use></svg>
                             </span>
@@ -83,7 +85,9 @@
                         </ul>
                     </span>
                     -->
-                    <button class="add-user hidden"><%= CHAT.Labels.action.forceJoin %></button>
+                    <% if (CHAT.Config.room.forceJoin){ %>
+                        <button class="add-user hidden"><%= CHAT.Labels.action.forceJoin %></button>
+                    <% } %>
                 </div>
                 <div class="list-area">
                     <div class="system-message">

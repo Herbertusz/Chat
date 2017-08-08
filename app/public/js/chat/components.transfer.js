@@ -49,7 +49,7 @@ CHAT.Components.Transfer = {
 
         // Előredefiniált karakterlánc beszúrás
         CHAT.DOM.inBox(CHAT.DOM.imageReplacementToggle).event('click', function(){
-            CHAT.DOM.inBox(CHAT.DOM.imageReplacementList).class('toggle', 'active');
+            HD.DOM(this).ancestors(CHAT.DOM.box).descendants(CHAT.DOM.imageReplacementList).class('toggle', 'active');
         });
         CHAT.DOM.inBox(`${CHAT.DOM.imageReplacementItems}`).event('click', function(){
             const Item = HD.DOM(this);

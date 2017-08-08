@@ -651,7 +651,7 @@
     "generator-star-spacing": [
       "warn",
       {
-        "before": true,
+        "before": false,
         "after": false
       }
     ],

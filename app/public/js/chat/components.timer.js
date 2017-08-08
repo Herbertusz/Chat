@@ -10,6 +10,7 @@ CHAT.Components = CHAT.Components || {};
  * @type {Object}
  */
 CHAT.Components.Timer = {
+
     /**
      * Gépelés
      * @type {Object}
@@ -20,11 +21,13 @@ CHAT.Components.Timer = {
         event : false,
         message : ''
     },
+
     /**
      * Tételen állapotba lépés
      * @type {Number}
      */
     idle : CHAT.Config.status.idle.time,
+
     /**
      * Felhasználókhoz kapcsolt idle-időmérők
      * @type {Object}
@@ -35,4 +38,5 @@ CHAT.Components.Timer = {
      * }
      */
     counters : {}
+
 };

@@ -17,6 +17,45 @@ CHAT.userId = SERVER.userId;
 CHAT.socket = io.connect(`http://${SERVER.domain}:${SERVER.wsport}/chat`);
 
 /**
+ * Állapot tároló objektum
+ * @type {Object}
+ */
+CHAT.State = {
+
+    /**
+     * Chat-be belépett userek
+     * @type {Object}
+     * @description
+     * connectedUsers = {
+     *     <socket.id> : {
+     *         id : Number,      // user azonosító
+     *         name : String,    // user login név
+     *         status : String,  // user státusz (CHAT.Labels.status.online + offline)
+     *         isIdle : Boolean  // user tétlen státuszban van
+     *     },
+     *     ...
+     * }
+     */
+    connectedUsers : {},
+
+    /**
+     * Futó chat-csatornák (amikben a belépett user is benne van)
+     * @type {Array}
+     * @description
+     * rooms = [
+     *     {
+     *         name : String,    // 'room-x-y'; x: létrehozó userId, y: létrehozás timestamp
+     *         userIds : Array,  // csatornába rakott userId-k
+     *         starter : Number  // csatorna létrehozó userId
+     *     },
+     *     ...
+     * ]
+     */
+    rooms : []
+
+};
+
+/**
  * Szelektorok és alkalmazás-specifikus DOM-műveletek
  * @type {Object}
  */

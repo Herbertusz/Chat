@@ -529,6 +529,20 @@ HD.Array = {
 HD.Object = {
 
     /**
+     * Objektum iterálhatóvá tétele
+     * @param {Object} obj
+     * @returns {Object}
+     */
+    iterable : function(obj){
+        obj[Symbol.iterator] = function*(){
+            for (const i in obj){
+                yield obj[i];
+            }
+        };
+        return obj;
+    },
+
+    /**
      * Egyszintű keresés objektumban callback függvény alapján
      * @param {Object} obj - haystack
      * @param {Function} callback - keresendő elemre truthy értéket kell adnia

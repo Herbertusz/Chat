@@ -12,6 +12,63 @@ CHAT.Components = CHAT.Components || {};
 CHAT.Components.Box = {
 
     /**
+     * Csatorna módosítása
+     * @param {String} operation - művelet ('add'|'remove')
+     * @param {String} room - csatorna azonosító
+     * @param {Number} userId - user azonosító
+     */
+    roomUpdate : function(operation, room, userId){
+        let userIdIndex = -1;
+
+        if (!room){
+            // összes csatorna
+            CHAT.State.rooms.forEach(function(roomData){
+                CHAT.Components.Box.roomUpdate(operation, roomData.name, userId);
+            });
+            return;
+        }
+        const roomIndex = CHAT.State.rooms.findIndex(function(roomData){
+            return roomData.name === room;
+        });
+        if (roomIndex > -1){
+            if (operation === 'add'){
+                userIdIndex = CHAT.State.rooms[roomIndex].userIds.indexOf(userId);
+                if (userIdIndex === -1){
+                    CHAT.State.rooms[roomIndex].userIds.push(userId);
+                }
+            }
+            else if (operation === 'remove'){
+                userIdIndex = CHAT.State.rooms[roomIndex].userIds.indexOf(userId);
+                if (userIdIndex > -1){
+                    CHAT.State.rooms[roomIndex].userIds.splice(userIdIndex, 1);
+                }
+                CHAT.Components.Box.roomGarbageCollect();
+            }
+        }
+    },
+
+    /**
+     * Csatornák törlése, melyekben nincs user, vagy csak offline userek vannak
+     * @returns {Array<String>} törölt csatornák azonosítói
+     */
+    roomGarbageCollect : function(){
+        const deleted = [];
+        const onlineUserIds = [];
+        let key;
+
+        for (key in CHAT.State.connectedUsers){
+            onlineUserIds.push(CHAT.State.connectedUsers[key].id);
+        }
+        CHAT.State.rooms.forEach(function(room, index){
+            if (room.userIds.length === 0 || HD.Math.Set.intersection(room.userIds, onlineUserIds).length === 0){
+                deleted.push(room.name);
+                CHAT.State.rooms.splice(index, 1);
+            }
+        });
+        return deleted;
+    },
+
+    /**
      * Doboz scrollozása az aljára
      * @param {HTMLElement} box - Chat-doboz
      * @param {Boolean} [conditional=false]
@@ -271,9 +328,13 @@ CHAT.Components.Box = {
     roomEvents : function(){
         // Csatorna létrehozása
         HD.DOM(CHAT.DOM.start).event('click', function(){
-            const room = CHAT.Events.Client.createRoom();
-            HD.DOM(CHAT.DOM.userSelect).prop('checked', false).trigger('change');
-            CHAT.DOM.setTitle(`[data-room="${room}"]`);
+            const userIds = CHAT.Components.User.getSelectedUserIds();
+
+            if (CHAT.Components.Box.userRestriction('create', userIds)){
+                const room = CHAT.Events.Client.createRoom(userIds);
+                HD.DOM(CHAT.DOM.userSelect).prop('checked', false).trigger('change');
+                CHAT.DOM.setTitle(`[data-room="${room}"]`);
+            }
         });
 
         // Kilépés csatornából
@@ -295,8 +356,10 @@ CHAT.Components.Box = {
         });
         CHAT.DOM.inBox(CHAT.DOM.addUser).event('click', function(){
             const Add = HD.DOM(this);
+            const room = Add.ancestors(CHAT.DOM.box).data('room');
+            const userIds = CHAT.Components.User.getSelectedUserIds();
 
-            if (!Add.dataBool('disabled')){
+            if (CHAT.Components.Box.userRestriction('add', userIds, room) && !Add.dataBool('disabled')){
                 HD.DOM(CHAT.DOM.selectedUsers).elements.forEach(function(selectedUser){
                     CHAT.Events.Client.forceJoinRoom(Add.elem(), Number(selectedUser.value));
                 });
@@ -313,6 +376,21 @@ CHAT.Components.Box = {
                 CHAT.Events.Client.forceLeaveRoom(Remove.elem());
             }
         });
+    },
+
+    /**
+     * Felhasználók kiválasztásának korlátozásai
+     * @param {String} operation - művelet ('create'|'add')
+     * @param {Array} userIds - userId-k
+     * @param {String} [room=null] - csatorna azonosító
+     * @returns {Boolean} megadott művelet lefuttatása engedélyezett
+     */
+    userRestriction : function(operation, userIds, room = null){
+        const roomData = CHAT.State.rooms.find(function(thisRoomData){
+            return thisRoomData.room === room;
+        });
+        console.log(roomData);
+        return true;
     },
 
     /**
