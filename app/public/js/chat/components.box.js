@@ -335,6 +335,12 @@ CHAT.Components.Box = {
                 HD.DOM(CHAT.DOM.userSelect).prop('checked', false).trigger('change');
                 CHAT.DOM.setTitle(`[data-room="${room}"]`);
             }
+            else {
+                CHAT.Components.Notification.error([{
+                    type : 'maxUsers',
+                    value : CHAT.Config.room.maxUsers
+                }]);
+            }
         });
 
         // Kilépés csatornából
@@ -356,7 +362,8 @@ CHAT.Components.Box = {
         });
         CHAT.DOM.inBox(CHAT.DOM.addUser).event('click', function(){
             const Add = HD.DOM(this);
-            const room = Add.ancestors(CHAT.DOM.box).data('room');
+            const Box = Add.ancestors(CHAT.DOM.box);
+            const room = Box.data('room');
             const userIds = CHAT.Components.User.getSelectedUserIds();
 
             if (CHAT.Components.Box.userRestriction('add', userIds, room) && !Add.dataBool('disabled')){
@@ -365,6 +372,12 @@ CHAT.Components.Box = {
                 });
                 HD.DOM(CHAT.DOM.userSelect).prop('checked', false).trigger('change');
                 CHAT.DOM.setTitle(CHAT.DOM.box);
+            }
+            else {
+                CHAT.Components.Notification.error([{
+                    type : 'maxUsers',
+                    value : CHAT.Config.room.maxUsers
+                }], Box.elem());
             }
         });
 
@@ -387,10 +400,22 @@ CHAT.Components.Box = {
      */
     userRestriction : function(operation, userIds, room = null){
         const roomData = CHAT.State.rooms.find(function(thisRoomData){
-            return thisRoomData.room === room;
+            return thisRoomData.name === room;
         });
-        console.log(roomData);
-        return true;
+        const max = CHAT.Config.room.maxUsers;
+        let permission = true;
+        let userIdSet;
+
+        if (operation === 'create'){
+            userIdSet = new Set([...userIds, CHAT.userId]);
+        }
+        else if (operation === 'add'){
+            userIdSet = new Set([...userIds, ...roomData.userIds]);
+        }
+        if (userIdSet.size > max){
+            permission = false;
+        }
+        return permission;
     },
 
     /**

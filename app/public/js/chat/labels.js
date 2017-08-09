@@ -176,6 +176,8 @@ CHAT.Labels = {
     },
     // Hibaüzenetek
     error : {
+        maxUsers : (maxUser) =>
+            `Legfeljebb ${maxUser} felhasználó lehet egy csatornában!`,
         fileAllowed : () =>
             `Fájlfeltöltés nincs engedélyezve!`,
         fileSize : (size, maxSize) =>

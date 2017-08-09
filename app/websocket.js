@@ -221,7 +221,7 @@ module.exports = function(server, ioSession, app){
         const session = socket.handshake.session;
 
         /**
-         * Socket események emittálása
+         * Socket események emittálása (burkoló)
          * @type {Object}
          */
         const Emit = {
@@ -320,7 +320,9 @@ module.exports = function(server, ioSession, app){
                         operation : 'create',
                         roomData : roomData
                     });
-                    Emit.room(roomData.name, 'roomJoined', Object.assign(roomData, {joinedUserId : userData.id}));
+                    Emit.room(
+                        roomData.name, 'roomJoined', Object.assign({}, roomData, {joinedUserId : userData.id})
+                    );
                 }
             });
         }
@@ -426,7 +428,9 @@ module.exports = function(server, ioSession, app){
         socket.on('roomLeave', function(data){
             const roomData = getRoom(data.room);
             roomUpdate('remove', data.room, data.userId);
-            Emit.themRoom(data.room, 'roomLeaved', Object.assign(data, {roomData : roomData}));
+            Emit.themRoom(
+                data.room, 'roomLeaved', Object.assign({}, data, {roomData : roomData})
+            );
             Emit.me('roomUpdate', {
                 operation : 'delete',
                 roomData : roomData
@@ -453,7 +457,9 @@ module.exports = function(server, ioSession, app){
             if (!CHAT.Config.room.forceJoin) return;
             const roomData = getRoom(data.room);
             roomUpdate('add', data.room, data.userId);
-            Emit.themAll('roomForceJoined', Object.assign(data, {roomData : roomData}));
+            Emit.themAll(
+                'roomForceJoined', Object.assign({}, data, {roomData : roomData})
+            );
             Emit.room(data.room, 'roomUpdate', {
                 operation : 'add',
                 room : data.room,
@@ -475,7 +481,9 @@ module.exports = function(server, ioSession, app){
             if (!CHAT.Config.room.forceLeave) return;
             const roomData = getRoom(data.room);
             roomUpdate('remove', data.room, data.userId);
-            Emit.themRoom(data.room, 'roomForceLeaved', Object.assign(data, {roomData : roomData}));
+            Emit.themRoom(
+                data.room, 'roomForceLeaved', Object.assign({}, data, {roomData : roomData})
+            );
             Emit.user(data.userId, 'roomUpdate', {
                 operation : 'delete',
                 roomData : roomData

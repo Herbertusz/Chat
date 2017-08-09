@@ -45,11 +45,11 @@ CHAT.Components.Notification = {
 
     /**
      * Hibaüzenetek jelzése
-     * @param {HTMLElement} box
      * @param {Array} errors
+     * @param {HTMLElement} [box=null] - ha null, a hibaüzenet globális, egyébként csatornához tartozik
      */
-    error : function(box, errors){
-        const Box = HD.DOM(box);
+    error : function(errors, box = null){
+        const Box = box ? HD.DOM(box) : HD.DOM('body');  // FIXME
         const errorMessages = [];
 
         errors.forEach(function(error){

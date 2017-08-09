@@ -181,7 +181,7 @@ CHAT.Events.Client = {
                 reader.readAsDataURL(rawFile);
             }
             else {
-                CHAT.Components.Notification.error(box, errors);
+                CHAT.Components.Notification.error(errors, box);
             }
         };
 
