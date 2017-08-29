@@ -13,8 +13,8 @@ CHAT.Config = {
 
     // Csatorna-műveletek
     room : {
-        // Felhasználók maximális száma egy csatornában (null: tetszőleges)
-        maxUsers : 3,
+        // Felhasználók maximális száma egy csatornában (falsy érték: tetszőleges)
+        maxUsers : false,
         // Új user hozzáadásának engedélyezése
         forceJoin : true,
         // User kidobásának engedélyezése

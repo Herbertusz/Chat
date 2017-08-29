@@ -412,7 +412,7 @@ CHAT.Components.Box = {
         else if (operation === 'add'){
             userIdSet = new Set([...userIds, ...roomData.userIds]);
         }
-        if (userIdSet.size > max){
+        if (max && userIdSet.size > max){
             permission = false;
         }
         return permission;
