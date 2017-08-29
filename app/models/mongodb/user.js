@@ -48,15 +48,34 @@ const Model = function(db){
                 })
                 .limit(1)
                 .toArray()
-                .then(function(docs){
-                    if (docs.length > 0){
-                        callback(docs[0]);
-                        return docs[0];
+                .then(function(user){
+                    if (user.length > 0){
+                        callback(user[0]);
+                        return user[0];
                     }
                     else {
                         callback(false);
                         return false;
                     }
+                })
+                .catch(function(error){
+                    log.error(error);
+                });
+        },
+
+        /**
+         * Userek lekérdezése id-lista alapján
+         * @param {Array} userIds
+         * @param {Function} [callback]
+         * @returns {Promise}
+         */
+        getUserList : function(userIds, callback = () => {}){
+            return db.collection('chat_users')
+                .find({'id' : {$in : userIds}})
+                .toArray()
+                .then(function(users){
+                    callback(users);
+                    return users;
                 })
                 .catch(function(error){
                     log.error(error);

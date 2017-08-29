@@ -330,17 +330,24 @@ CHAT.Components.Box = {
         HD.DOM(CHAT.DOM.start).event('click', function(){
             const userIds = CHAT.Components.User.getSelectedUserIds();
 
-            if (CHAT.Components.Box.userRestriction('create', userIds)){
-                const room = CHAT.Events.Client.createRoom(userIds);
-                HD.DOM(CHAT.DOM.userSelect).prop('checked', false).trigger('change');
-                CHAT.DOM.setTitle(`[data-room="${room}"]`);
-            }
-            else {
-                CHAT.Components.Notification.error([{
-                    type : 'maxUsers',
-                    value : CHAT.Config.room.maxUsers
-                }]);
-            }
+            CHAT.Components.Box.userRestriction('create', userIds)
+                .then(function(permission){
+                    if (permission){
+                        const room = CHAT.Events.Client.createRoom(userIds);
+                        HD.DOM(CHAT.DOM.userSelect).prop('checked', false).trigger('change');
+                        CHAT.DOM.setTitle(`[data-room="${room}"]`);
+                    }
+                    else {
+                        CHAT.Components.Notification.error([{
+                            type : 'maxUsers',
+                            value : CHAT.Config.room.maxUsers
+                        }]);
+                    }
+                })
+                .catch(function(error){
+                    HD.Log.error(error);
+                });
+
         });
 
         // Kilépés csatornából
@@ -366,19 +373,25 @@ CHAT.Components.Box = {
             const room = Box.data('room');
             const userIds = CHAT.Components.User.getSelectedUserIds();
 
-            if (CHAT.Components.Box.userRestriction('add', userIds, room) && !Add.dataBool('disabled')){
-                HD.DOM(CHAT.DOM.selectedUsers).elements.forEach(function(selectedUser){
-                    CHAT.Events.Client.forceJoinRoom(Add.elem(), Number(selectedUser.value));
+            CHAT.Components.Box.userRestriction('add', userIds, room)
+                .then(function(permission){
+                    if (permission && !Add.dataBool('disabled')){
+                        HD.DOM(CHAT.DOM.selectedUsers).elements.forEach(function(selectedUser){
+                            CHAT.Events.Client.forceJoinRoom(Add.elem(), Number(selectedUser.value));
+                        });
+                        HD.DOM(CHAT.DOM.userSelect).prop('checked', false).trigger('change');
+                        CHAT.DOM.setTitle(CHAT.DOM.box);
+                    }
+                    else {
+                        CHAT.Components.Notification.error([{
+                            type : 'maxUsers',
+                            value : CHAT.Config.room.maxUsers
+                        }], Box.elem());
+                    }
+                })
+                .catch(function(error){
+                    HD.Log.error(error);
                 });
-                HD.DOM(CHAT.DOM.userSelect).prop('checked', false).trigger('change');
-                CHAT.DOM.setTitle(CHAT.DOM.box);
-            }
-            else {
-                CHAT.Components.Notification.error([{
-                    type : 'maxUsers',
-                    value : CHAT.Config.room.maxUsers
-                }], Box.elem());
-            }
         });
 
         // User kidobása csatornából
@@ -395,27 +408,20 @@ CHAT.Components.Box = {
      * Felhasználók kiválasztásának korlátozásai
      * @param {String} operation - művelet ('create'|'add')
      * @param {Array} userIds - userId-k
-     * @param {String} [room=null] - csatorna azonosító
-     * @returns {Boolean} megadott művelet lefuttatása engedélyezett
+     * @param {String} [room=''] - csatorna azonosító
+     * @returns {Promise} megadott művelet lefuttatása engedélyezett
      */
-    userRestriction : function(operation, userIds, room = null){
-        const roomData = CHAT.State.rooms.find(function(thisRoomData){
-            return thisRoomData.name === room;
+    userRestriction : function(operation, userIds, room = ''){
+        return HD.DOM.ajax({
+            method : 'POST',
+            url : '/chat/getrestrictions',
+            data : `operation=${operation}&userIds=${userIds.toString()}&room=${room}`
+        }).then(function(resp){
+            resp = JSON.parse(resp);
+            return resp.permission;
+        }).catch(function(error){
+            HD.Log.error(error);
         });
-        const max = CHAT.Config.room.maxUsers;
-        let permission = true;
-        let userIdSet;
-
-        if (operation === 'create'){
-            userIdSet = new Set([...userIds, CHAT.userId]);
-        }
-        else if (operation === 'add'){
-            userIdSet = new Set([...userIds, ...roomData.userIds]);
-        }
-        if (max && userIdSet.size > max){
-            permission = false;
-        }
-        return permission;
     },
 
     /**
@@ -505,6 +511,8 @@ CHAT.Components.Box = {
                         HD.Log.error(error);
                     });
             });
+        }).catch(function(error){
+            HD.Log.error(error);
         });
 
     }

@@ -662,12 +662,12 @@ HD.DOM.ajax = function(options){
             xhr.onerror = function(){
                 reject({
                     name : 'XHR error',
-                    message : `Url: ${options.url}; Data: ${options.data}`
+                    message : `Url: ${options.url}; Data: ${data}`
                 });
             };
         });
     }
-    xhr.send(options.data);
+    xhr.send(data);
     return promise;
 };
 
