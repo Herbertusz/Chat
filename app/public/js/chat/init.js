@@ -61,6 +61,11 @@ CHAT.State = {
  */
 CHAT.DOM = {
     idleCheck : 'body',
+    globalError : {
+        container : '.global-error',
+        list : '.global-error .error-list',
+        close : '.global-error .error-close'
+    },
     // user-sáv
     start : '.online .start',
     online : '.online',
@@ -71,6 +76,7 @@ CHAT.DOM = {
     selectedUsers : '.user-select:checked',
     idleTimer : '.idle-timer',
     // chat-dobozok
+    outerContainer : '.chat-outer-container',
     container : '.chat-container',
     cloneBox : '.chat.cloneable',
     box : '.chat',
@@ -102,9 +108,11 @@ CHAT.DOM = {
     indicator : '.indicator',
     sendButton : '.send',
     sendSwitch : '.send-switch',
-    error : '.error',
-    errorList : '.error .error-list',
-    errorClose : '.error .error-close',
+    boxError : {
+        container : '.error',
+        list : '.error .error-list',
+        close : '.error .error-close'
+    },
     progress : '.progress',
     progressText : '.text',
     localNotification : '.local-notification',

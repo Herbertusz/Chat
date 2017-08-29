@@ -1,5 +1,9 @@
 <div class="chat-outer-container">
     <% if (login){ %>
+        <div class="global-error hidden">
+            <div class="error-list"></div>
+            <svg class="error-close"><use xlink:href="#cross"></use></svg>
+        </div>
         <aside class="online">
             <ul>
                 <li data-id="<%- userId %>" data-name="<%= userName %>" class="self">

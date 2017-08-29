@@ -8,7 +8,39 @@
 @import "_utility.scss";
 
 .chat-outer-container {
+    position: relative;
     padding: 10px;
+
+    .global-error {
+        position: absolute;
+        right: 0;
+        top: 0;
+        z-index: 4;
+        padding: 5px;
+        border-radius: 7px;
+        min-height: 30px;
+        overflow: hidden;
+        background-color: #aa0000;
+        color: #ffffff;
+
+        .error-list {
+            float: left;
+            width: 80%;
+        }
+
+        .error-close {
+            width: 12px;
+            height: 12px;
+            fill: #ffffff;
+            margin: 5px;
+            float: right;
+            cursor: pointer;
+
+            &:hover {
+                fill: #000000;
+            }
+        }
+    }
 }
 
 .status {

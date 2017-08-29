@@ -38,8 +38,14 @@ CHAT.Components.Notification = {
             }
         });
         // Hibaüzenet eltüntetése
-        CHAT.DOM.inBox(CHAT.DOM.errorClose).event('click', function(){
-            HD.DOM(this).ancestors(CHAT.DOM.box).descendants(CHAT.DOM.error).class('add', 'hidden');
+        HD.DOM(CHAT.DOM.globalError.close).event('click', function(){
+            HD.DOM(this)
+                .ancestors(CHAT.DOM.outerContainer)
+                .descendants(CHAT.DOM.globalError.container)
+                .class('add', 'hidden');
+        });
+        CHAT.DOM.inBox(CHAT.DOM.boxError.close).event('click', function(){
+            HD.DOM(this).ancestors(CHAT.DOM.box).descendants(CHAT.DOM.boxError.container).class('add', 'hidden');
         });
     },
 
@@ -49,18 +55,19 @@ CHAT.Components.Notification = {
      * @param {HTMLElement} [box=null] - ha null, a hibaüzenet globális, egyébként csatornához tartozik
      */
     error : function(errors, box = null){
-        const Box = box ? HD.DOM(box) : HD.DOM('body');  // FIXME
+        const Box = box ? HD.DOM(box) : HD.DOM(CHAT.DOM.outerContainer);
+        const display = box ? CHAT.DOM.boxError : CHAT.DOM.globalError;
         const errorMessages = [];
 
         errors.forEach(function(error){
             errorMessages.push(CHAT.Labels.error[error.type](error.value, error.restrict));
         });
-        Box.descendants(CHAT.DOM.errorList).elem().innerHTML = errorMessages.join('<br />');
-        Box.descendants(CHAT.DOM.error).class('remove', 'hidden');
+        Box.descendants(display.list).elem().innerHTML = errorMessages.join('<br />');
+        Box.descendants(display.container).class('remove', 'hidden');
         if (CHAT.Config.box.error.messageWait){
             setTimeout(function(){
-                Box.descendants(CHAT.DOM.error).class('add', 'hidden');
-                Box.descendants(CHAT.DOM.errorList).elem().innerHTML = '';
+                Box.descendants(display.container).class('add', 'hidden');
+                Box.descendants(display.list).elem().innerHTML = '';
             }, CHAT.Config.box.error.messageWait);
         }
     },
