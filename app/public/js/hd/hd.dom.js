@@ -4,7 +4,7 @@
  * @description DOM-kezelő
  * @requires HD.Misc.switching
  * @example
- *  HD.DOM('.class').event('click', function(event){...});
+ *  HD.DOM('.class').event('click', function(target, event){...});
  *  HD.DOM('.class').descendants('button').data('clickable', 'true').trigger('click');
  *  const cloneElement = HD.DOM('.class').filter('[data-disabled]').clone(true).elem();
  */
@@ -111,11 +111,11 @@ HD.DOM = function(identifier){
                     // HTML kód
                     const div = document.createElement('div');
                     div.innerHTML = ident;
-                    return Array.from(div.children);
+                    return [...div.children];
                 }
                 else {
                     // Szelektor
-                    return Array.from(document.querySelectorAll(ident));
+                    return [...document.querySelectorAll(ident)];
                 }
             }
             else if (typeof ident === 'object'){
@@ -133,7 +133,7 @@ HD.DOM = function(identifier){
                 }
                 else if (ident instanceof NodeList || ident instanceof HTMLCollection){
                     // Elemlista
-                    return Array.from(ident);
+                    return [...ident];
                 }
                 else if (ident === null){
                     return [];
@@ -172,7 +172,7 @@ HD.DOM = function(identifier){
             let elements = [];
 
             this.elements.forEach(function(elem){
-                elements = elements.concat(Array.from(elem.querySelectorAll(selector)));
+                elements = elements.concat([...elem.querySelectorAll(selector)]);
             });
             return HD.DOM(elements);
         },
@@ -530,7 +530,7 @@ HD.DOM = function(identifier){
             this.elements.forEach(function(target){
                 eventNames.split(' ').forEach(function(eventName){
                     target.addEventListener(eventName, function(event){
-                        handler.call(target, event);
+                        handler.call(target, target, event);
                     }, false);
                     HD.DOM.eventListeners.push({
                         target : target,

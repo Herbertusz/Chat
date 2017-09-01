@@ -146,14 +146,8 @@ CHAT.FileTransfer = {
                     if (response.success){
                         data.raw.source = response.fileName;
                         CHAT.Components.Transfer.progressbar(box, 'send', 1, barId);
-                        CHAT.socket.on('dbFile', function(){
-                            CHAT.Components.Transfer.appendFile(box, data, true)
-                                .then(callback)
-                                .catch(function(error){
-                                    HD.Log.error(error);
-                                });
-                        });
                         CHAT.socket.emit('sendFile', data);
+                        callback();
                     }
                     else {
                         CHAT.Components.Transfer.progressbar(box, 'forceAbort', null, barId);
@@ -380,9 +374,10 @@ CHAT.FileTransfer = {
      */
     action : function(operation, args){
         const store = CHAT.Config.fileTransfer.store;
+        const strategies = this.strategies;
 
-        if (this.strategies[store] && this.strategies[store][operation]){
-            return this.strategies[store][operation](...args);
+        if (strategies[store] && strategies[store][operation]){
+            return strategies[store][operation](...args);
         }
     }
 

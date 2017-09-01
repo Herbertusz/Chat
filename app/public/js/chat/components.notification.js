@@ -32,20 +32,20 @@ CHAT.Components.Notification = {
             });
 
         // Helyi értesítés eltüntetése
-        CHAT.DOM.inBox(CHAT.DOM.list).event('scroll', function(){
-            if (this.scrollHeight - this.offsetHeight - this.scrollTop < CHAT.Config.notification.local.scroll){
-                HD.DOM(this).ancestors(CHAT.DOM.box).descendants(CHAT.DOM.localNotification).class('add', 'hidden');
+        CHAT.DOM.inBox(CHAT.DOM.list).event('scroll', function(target){
+            if (target.scrollHeight - target.offsetHeight - target.scrollTop < CHAT.Config.notification.local.scroll){
+                HD.DOM(target).ancestors(CHAT.DOM.box).descendants(CHAT.DOM.localNotification).class('add', 'hidden');
             }
         });
         // Hibaüzenet eltüntetése
-        HD.DOM(CHAT.DOM.globalError.close).event('click', function(){
-            HD.DOM(this)
+        HD.DOM(CHAT.DOM.globalError.close).event('click', function(target){
+            HD.DOM(target)
                 .ancestors(CHAT.DOM.outerContainer)
                 .descendants(CHAT.DOM.globalError.container)
                 .class('add', 'hidden');
         });
-        CHAT.DOM.inBox(CHAT.DOM.boxError.close).event('click', function(){
-            HD.DOM(this).ancestors(CHAT.DOM.box).descendants(CHAT.DOM.boxError.container).class('add', 'hidden');
+        CHAT.DOM.inBox(CHAT.DOM.boxError.close).event('click', function(target){
+            HD.DOM(target).ancestors(CHAT.DOM.box).descendants(CHAT.DOM.boxError.container).class('add', 'hidden');
         });
     },
 
@@ -220,10 +220,11 @@ CHAT.Components.Notification = {
                 LocalNotification.descendants(CHAT.DOM.text).elem().innerHTML = tpl;
                 LocalNotification.class('remove', 'hidden');
 
-                LocalNotification.event('click', function(){
+                LocalNotification.event('click', function(target){
+                    const Target = HD.DOM(target);
                     list.scrollTop = list.scrollHeight;
-                    HD.DOM(this).class('add', 'hidden');
-                    HD.DOM(this).descendants(CHAT.DOM.text).elem().innerHTML = '';
+                    Target.class('add', 'hidden');
+                    Target.descendants(CHAT.DOM.text).elem().innerHTML = '';
                 });
             }
         }

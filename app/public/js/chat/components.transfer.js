@@ -16,8 +16,8 @@ CHAT.Components.Transfer = {
      */
     initMessage : function(){
         // Üzenet gépelése
-        CHAT.DOM.inBox(CHAT.DOM.textarea).event('keyup', function(event){
-            const Box = HD.DOM(this).ancestors(CHAT.DOM.box);
+        CHAT.DOM.inBox(CHAT.DOM.textarea).event('keyup', function(target, event){
+            const Box = HD.DOM(target).ancestors(CHAT.DOM.box);
 
             if (event.which !== HD.Misc.keys.ENTER){
                 CHAT.Events.Client.typeMessage(Box.elem());
@@ -25,8 +25,8 @@ CHAT.Components.Transfer = {
         });
 
         // Üzenetküldés indítása ENTER leütésére
-        CHAT.DOM.inBox(CHAT.DOM.textarea).event('keydown', function(event){
-            const Box = HD.DOM(this).ancestors(CHAT.DOM.box);
+        CHAT.DOM.inBox(CHAT.DOM.textarea).event('keydown', function(target, event){
+            const Box = HD.DOM(target).ancestors(CHAT.DOM.box);
 
             if (event.which === HD.Misc.keys.ENTER){
                 if (!event.shiftKey && Box.descendants(CHAT.DOM.sendSwitch).prop('checked')){
@@ -37,22 +37,22 @@ CHAT.Components.Transfer = {
         });
 
         // Üzenetküldés indítása gombnyomásra
-        CHAT.DOM.inBox(CHAT.DOM.sendButton).event('click', function(){
-            const Box = HD.DOM(this).ancestors(CHAT.DOM.box);
+        CHAT.DOM.inBox(CHAT.DOM.sendButton).event('click', function(target){
+            const Box = HD.DOM(target).ancestors(CHAT.DOM.box);
             CHAT.Events.Client.sendMessage(Box.elem());
         });
 
         // Üzenetküldés módja
-        CHAT.DOM.inBox(CHAT.DOM.sendSwitch).event('change', function(){
-            CHAT.Events.Client.sendMethod(this);
+        CHAT.DOM.inBox(CHAT.DOM.sendSwitch).event('change', function(target){
+            CHAT.Events.Client.sendMethod(target);
         });
 
         // Előredefiniált karakterlánc beszúrás
-        CHAT.DOM.inBox(CHAT.DOM.imageReplacementToggle).event('click', function(){
-            HD.DOM(this).ancestors(CHAT.DOM.box).descendants(CHAT.DOM.imageReplacementList).class('toggle', 'active');
+        CHAT.DOM.inBox(CHAT.DOM.imageReplacementToggle).event('click', function(target){
+            HD.DOM(target).ancestors(CHAT.DOM.box).descendants(CHAT.DOM.imageReplacementList).class('toggle', 'active');
         });
-        CHAT.DOM.inBox(`${CHAT.DOM.imageReplacementItems}`).event('click', function(){
-            const Item = HD.DOM(this);
+        CHAT.DOM.inBox(`${CHAT.DOM.imageReplacementItems}`).event('click', function(target){
+            const Item = HD.DOM(target);
 
             CHAT.Components.Transfer.insertText(Item.ancestors(CHAT.DOM.box).elem(), Item.data('string'));
             CHAT.DOM.inBox(CHAT.DOM.imageReplacementList).class('remove', 'active');
@@ -64,15 +64,15 @@ CHAT.Components.Transfer = {
      */
     initFile : function(){
         // Fájlküldés (hagyományos)
-        CHAT.DOM.inBox(CHAT.DOM.fileTrigger).event('click', function(){
-            const Trigger = HD.DOM(this);
+        CHAT.DOM.inBox(CHAT.DOM.fileTrigger).event('click', function(target){
+            const Trigger = HD.DOM(target);
 
             if (!Trigger.dataBool('disabled')){
                 Trigger.ancestors(CHAT.DOM.box).descendants(CHAT.DOM.file).trigger('click');
             }
         });
-        CHAT.DOM.inBox(CHAT.DOM.file).event('change', function(){
-            const Box = HD.DOM(this).ancestors(CHAT.DOM.box);
+        CHAT.DOM.inBox(CHAT.DOM.file).event('change', function(target){
+            const Box = HD.DOM(target).ancestors(CHAT.DOM.box);
             const files = Box.descendants(CHAT.DOM.file).elem().files;
 
             if (files.length > 0){
@@ -101,24 +101,24 @@ CHAT.Components.Transfer = {
             CHAT.DOM.inBox(CHAT.DOM.dropFile)
                 .event(
                     'drag dragstart dragend dragover dragenter dragleave drop',
-                    function(event){
+                    function(target, event){
                         event.preventDefault();
                         if (event.type !== 'dragover'){
                             event.stopPropagation();
                         }
                     }
                 )
-                .event('dragenter', function(){
-                    HD.DOM(this).class('add', 'drop-active', 'drop-highlight');
+                .event('dragenter', function(target){
+                    HD.DOM(target).class('add', 'drop-active', 'drop-highlight');
                 })
-                .event('dragleave', function(){
-                    HD.DOM(this).class('remove', 'drop-highlight');
+                .event('dragleave', function(target){
+                    HD.DOM(target).class('remove', 'drop-highlight');
                 })
                 .event('dragend drop', function(){
                     CHAT.DOM.inBox(CHAT.DOM.dropFile).class('remove', 'drop-active', 'drop-highlight');
                 })
-                .event('drop', function(event){
-                    const Box = HD.DOM(this).ancestors(CHAT.DOM.box);
+                .event('drop', function(target, event){
+                    const Box = HD.DOM(target).ancestors(CHAT.DOM.box);
                     const files = event.dataTransfer.files;
                     CHAT.Events.Client.sendFile(Box.elem(), files);
                 });
@@ -355,10 +355,10 @@ CHAT.Components.Transfer = {
             List.elem().innerHTML += tpl.replace('{BARID}', barId.toString());
             CHAT.Components.Box.scrollToBottom(box, true);
             if (cancelable){
-                List.descendants('.cancel').event('click', function(){
-                    const Progressbar = HD.DOM(this).ancestors('.progressbar');
+                List.descendants('.cancel').event('click', function(target){
+                    const Progressbar = HD.DOM(target).ancestors('.progressbar');
                     CHAT.Events.Client.abortFile(Progressbar.elem());
-                    HD.DOM(this).class('add', 'hidden');
+                    HD.DOM(target).class('add', 'hidden');
                 });
             }
             else {

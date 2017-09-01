@@ -9,7 +9,7 @@
 
 .chat-outer-container {
     position: relative;
-    padding: 10px;
+    padding: 10px 0;
 
     .global-error {
         position: absolute;
@@ -52,7 +52,7 @@
 
 aside.online {
     float: left;
-    width: 200px;
+    width: 280px;
     background-color: #eeeeee;
 
     ul {
@@ -97,7 +97,7 @@ aside.online {
                     display: inline-block;
                     vertical-align: middle;
                     padding: 0;
-                    width: 70px;
+                    width: 150px;
                     overflow: hidden;
                     text-overflow: ellipsis;
                     white-space: nowrap;
@@ -131,8 +131,8 @@ aside.online {
 
 .chat-container {
     position: relative;
-    margin-left: 205px;
-    height: 500px;
+    margin-left: 285px;
+    height: 420px;
 
     .chat {
         display: flex;

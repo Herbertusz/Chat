@@ -20,11 +20,12 @@ const CHAT = Object.assign({}, Config, FileTransfer);  // TODO: nincs erre jobb 
  * Felhasználók kiválasztásának korlátozásai
  * @param {Object} app - express app (req.app)
  * @param {String} operation - művelet ('create'|'add')
+ * @param {Number} triggerUserId - műveletet kiváltó userId
  * @param {Array} userIds - userId-k
  * @param {String} [room=null] - csatorna azonosító
  * @returns {Promise} megadott művelet lefuttatása engedélyezett
  */
-const userRestriction = function(app, operation, userIds, room = null){
+const userRestriction = function(app, operation, triggerUserId, userIds, room = null){
     const roomData = app.get('socket').getState().rooms.find(function(thisRoomData){
         return thisRoomData.name === room;
     });
@@ -33,7 +34,7 @@ const userRestriction = function(app, operation, userIds, room = null){
     let userIdSet;
 
     if (operation === 'create'){
-        userIdSet = new Set([...userIds, CHAT.userId]);
+        userIdSet = new Set([...userIds, triggerUserId]);
     }
     else if (operation === 'add'){
         userIdSet = new Set([...userIds, ...roomData.userIds]);
@@ -41,7 +42,8 @@ const userRestriction = function(app, operation, userIds, room = null){
     if (max && userIdSet.size > max){
         permission = false;
     }
-    return UserModel.getUserList(userIds)
+    return UserModel
+        .getUserForbiddens([...userIdSet])
         .then(function(users){
             // TODO: letiltások kezelése
             return permission && true;
@@ -118,7 +120,8 @@ router.get('/room/:roomId', function(req, res){
 // Egy csatorna átvitelei (doboz feltöltéséhez)
 router.post('/getroommessages', function(req, res){
 
-    ChatModel.getRoomMessages(req.body.room)
+    ChatModel
+        .getRoomMessages(req.body.room)
         .then(function(messages){
             res.send({messages});
         })
@@ -131,7 +134,7 @@ router.post('/getroommessages', function(req, res){
 // Felhasználó állapota
 router.post('/getstatus', function(req, res){
 
-    ChatModel.getStatus(Number(req.body.userId))
+    UserModel.getStatus(Number(req.body.userId))
         .then(function(status){
             res.send({status});
         })
@@ -152,7 +155,7 @@ router.post('/getrestrictions', function(req, res){
 
     const userIds = req.body.userIds.split(',').map(id => Number(id));
 
-    userRestriction(req.app, req.body.operation, userIds, req.body.room)
+    userRestriction(req.app, req.body.operation, Number(req.body.triggerUserId), userIds, req.body.room)
         .then(function(permission){
             res.send({permission});
         })

@@ -99,8 +99,8 @@ CHAT.Components.Box = {
             mouse : {x : 0, y : 0}
         };
 
-        Mover.event('mousedown', function(event){
-            const element = HD.DOM(this).ancestors(CHAT.DOM.box).elem();
+        Mover.event('mousedown', function(target, event){
+            const element = HD.DOM(target).ancestors(CHAT.DOM.box).elem();
             event.preventDefault();
             drag.element = element;
             drag.active = true;
@@ -111,14 +111,14 @@ CHAT.Components.Box = {
             HD.DOM(CHAT.DOM.box).css({zIndex : 0});
             HD.DOM(drag.element).css({zIndex : 1000});
         });
-        Container.event('mouseup', function(event){
+        Container.event('mouseup', function(target, event){
             if (drag.active){
                 event.preventDefault();
                 drag.element = null;
                 drag.active = false;
             }
         });
-        Container.event('mousemove', function(event){
+        Container.event('mousemove', function(target, event){
             if (drag.active){
                 const element = drag.element;
                 element.style.left = `${drag.box.x + event.pageX - drag.mouse.x}px`;
@@ -152,12 +152,12 @@ CHAT.Components.Box = {
         if (!rest.maxWidth) rest.maxWidth = Infinity;
         if (!rest.maxHeight) rest.maxHeight = Infinity;
 
-        Resizer.all.event('mousedown', function(event){
-            const element = HD.DOM(this).ancestors(CHAT.DOM.box).elem();
+        Resizer.all.event('mousedown', function(target, event){
+            const element = HD.DOM(target).ancestors(CHAT.DOM.box).elem();
             const size = element.getBoundingClientRect();
             event.preventDefault();
             drag.element = element;
-            drag.trigger = HD.DOM(this).data('direction');
+            drag.trigger = HD.DOM(target).data('direction');
             drag.active = true;
             drag.box.x = element.offsetLeft;
             drag.box.y = element.offsetTop;
@@ -173,14 +173,14 @@ CHAT.Components.Box = {
                 zIndex : 1000
             });
         });
-        Container.event('mouseup', function(event){
+        Container.event('mouseup', function(target, event){
             if (drag.active){
                 event.preventDefault();
                 drag.element = null;
                 drag.active = false;
             }
         });
-        Container.event('mousemove', function(event){
+        Container.event('mousemove', function(target, event){
             if (drag.active){
                 const element = drag.element;
                 let l, t, w, h;
@@ -257,12 +257,12 @@ CHAT.Components.Box = {
             }
         };
 
-        CHAT.DOM.inBox(`${CHAT.DOM.clickResize} .toggle`).event('click', function(){
-            HD.DOM(this).ancestors(CHAT.DOM.clickResize).descendants('.actions').class('toggle', 'active');
+        CHAT.DOM.inBox(`${CHAT.DOM.clickResize} .toggle`).event('click', function(target){
+            HD.DOM(target).ancestors(CHAT.DOM.clickResize).descendants('.actions').class('toggle', 'active');
         });
 
-        Resizers.event('click', function(){
-            const Trigger = HD.DOM(this);
+        Resizers.event('click', function(target){
+            const Trigger = HD.DOM(target);
             const Box = Trigger.ancestors(CHAT.DOM.box);
             const size = Trigger.data('resize');
             if (size === 'box'){
@@ -351,8 +351,8 @@ CHAT.Components.Box = {
         });
 
         // Kilépés csatornából
-        CHAT.DOM.inBox(CHAT.DOM.close).event('click', function(){
-            CHAT.Events.Client.leaveRoom(HD.DOM(this).ancestors(CHAT.DOM.box).elem());
+        CHAT.DOM.inBox(CHAT.DOM.close).event('click', function(target){
+            CHAT.Events.Client.leaveRoom(HD.DOM(target).ancestors(CHAT.DOM.box).elem());
         });
 
         // User hozzáadása csatornához
@@ -367,8 +367,8 @@ CHAT.Components.Box = {
                 CHAT.DOM.inBox(CHAT.DOM.addUser).class('add', 'hidden');
             }
         });
-        CHAT.DOM.inBox(CHAT.DOM.addUser).event('click', function(){
-            const Add = HD.DOM(this);
+        CHAT.DOM.inBox(CHAT.DOM.addUser).event('click', function(target){
+            const Add = HD.DOM(target);
             const Box = Add.ancestors(CHAT.DOM.box);
             const room = Box.data('room');
             const userIds = CHAT.Components.User.getSelectedUserIds();
@@ -395,8 +395,8 @@ CHAT.Components.Box = {
         });
 
         // User kidobása csatornából
-        CHAT.DOM.inBox(CHAT.DOM.userThrow).event('click', function(){
-            const Remove = HD.DOM(this);
+        CHAT.DOM.inBox(CHAT.DOM.userThrow).event('click', function(target){
+            const Remove = HD.DOM(target);
 
             if (!Remove.dataBool('disabled')){
                 CHAT.Events.Client.forceLeaveRoom(Remove.elem());
@@ -415,7 +415,7 @@ CHAT.Components.Box = {
         return HD.DOM.ajax({
             method : 'POST',
             url : '/chat/getrestrictions',
-            data : `operation=${operation}&userIds=${userIds.toString()}&room=${room}`
+            data : `operation=${operation}&triggerUserId=${CHAT.userId}&userIds=${userIds.toString()}&room=${room}`
         }).then(function(resp){
             resp = JSON.parse(resp);
             return resp.permission;

@@ -32,6 +32,7 @@ const createMongoDB = function(){
                                 'type' : null,
                                 'created' : null
                             },
+                            'forbidden' : [4],
                             'lastActive' : 1469215006264,
                             'created' : 1469215006264,
                             'active' : true
@@ -46,6 +47,7 @@ const createMongoDB = function(){
                                 'type' : null,
                                 'created' : null
                             },
+                            'forbidden' : [],
                             'lastActive' : 1469215006264,
                             'created' : 1469215006264,
                             'active' : true
@@ -60,6 +62,7 @@ const createMongoDB = function(){
                                 'type' : null,
                                 'created' : null
                             },
+                            'forbidden' : [1, 2],
                             'lastActive' : null,
                             'created' : 1469215006264,
                             'active' : true
@@ -74,6 +77,22 @@ const createMongoDB = function(){
                                 'type' : null,
                                 'created' : null
                             },
+                            'forbidden' : [],
+                            'lastActive' : null,
+                            'created' : 1469215006264,
+                            'active' : true
+                        },
+                        {
+                            'id' : 5,
+                            'name' : 'Random Jeremiás',
+                            'password' : 'x',
+                            'status' : {
+                                'prev' : null,
+                                'next' : null,
+                                'type' : null,
+                                'created' : null
+                            },
+                            'forbidden' : [],
                             'lastActive' : null,
                             'created' : 1469215006264,
                             'active' : true
@@ -200,6 +219,7 @@ const createMySQL = function(){
                 db.query(`DROP TABLE IF EXISTS chat_messages_events`),
                 db.query(`DROP TABLE IF EXISTS chat_messages_files`),
                 db.query(`DROP TABLE IF EXISTS chat_messages_texts`),
+                db.query(`DROP TABLE IF EXISTS chat_users_forbiddens`),
                 db.query(`DROP TABLE IF EXISTS chat_users`)
             ]);
         })
@@ -221,6 +241,12 @@ const createMySQL = function(){
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
                 `),
                 db.query(`
+                    CREATE TABLE chat_users_forbiddens (
+                        fromUserId int(11) NOT NULL,
+                        toUserId int(11) NOT NULL
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
+                `),
+                db.query(`
                     CREATE TABLE chat_messages (
                         id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
                         userId int(11) DEFAULT NULL,
@@ -234,7 +260,7 @@ const createMySQL = function(){
                     CREATE TABLE chat_messages_events (
                         id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
                         event varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-                        triggerId int(11) DEFAULT NOT NULL,
+                        triggerId int(11) NOT NULL,
                         userId varchar(100) CHARACTER SET utf8 NOT NULL  -- lehet id-lista is
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
                 `),
@@ -278,7 +304,20 @@ const createMySQL = function(){
                     (1, 'Hörb', 'x', NULL, NULL, NULL, NULL, 1469215006264, 1469215006264, 1),
                     (2, 'Dan', 'x', NULL, NULL, NULL, NULL, 1469215006264, 1469215006264, 1),
                     (3, 'Hosszúnevű Gedeon', 'x', NULL, NULL, NULL, NULL, NULL, 1469215006264, 1),
-                    (4, 'Pistike', 'x', NULL, NULL, NULL, NULL, NULL, 1469215006264, 1)
+                    (4, 'Pistike', 'x', NULL, NULL, NULL, NULL, NULL, 1469215006264, 1),
+                    (5, 'Random Jeremiás', 'x', NULL, NULL, NULL, NULL, NULL, 1469215006264, 1)
+            `);
+        })
+        .then(function(){
+            console.log('Insert user forbiddens...');
+            return db.query(`
+                INSERT INTO
+                    chat_users_forbiddens
+                    (fromUserId, toUserId)
+                VALUES
+                    (1, 4),
+                    (3, 1),
+                    (3, 2)
             `);
         })
         .then(function(){

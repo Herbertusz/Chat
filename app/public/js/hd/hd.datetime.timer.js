@@ -163,10 +163,10 @@ HD.DateTime.Timer = function(add, stepInterval = 1000){
          */
         start : function(callback){
             if (!run){
-                callback.call(this);
+                callback.call(this, this);
                 timerID = setInterval(function(){
                     step();
-                    callback.call(this);
+                    callback.call(this, this);
                 }.bind(this), stepInterval);
                 run = true;
             }

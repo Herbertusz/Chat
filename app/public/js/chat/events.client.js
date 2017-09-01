@@ -143,7 +143,7 @@ CHAT.Events.Client = {
             files = [files[0]];
         }
         else {
-            files = Array.from(files);
+            files = [...files];
         }
 
         const filePrepare = function(rawFile){

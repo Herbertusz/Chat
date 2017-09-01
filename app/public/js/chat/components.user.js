@@ -46,24 +46,24 @@ CHAT.Components.User = {
             x : 0
         };
 
-        CHAT.DOM.inBox(CHAT.DOM.users).event('mousedown', function(event){
+        CHAT.DOM.inBox(CHAT.DOM.users).event('mousedown', function(target, event){
             event.preventDefault();
             userDrag.active = true;
             userDrag.x = event.pageX;
         });
-        CHAT.DOM.inBox(CHAT.DOM.users).event('mouseup mouseleave', function(event){
+        CHAT.DOM.inBox(CHAT.DOM.users).event('mouseup mouseleave', function(target, event){
             event.preventDefault();
             userDrag.active = false;
             userDrag.moving = false;
         });
-        CHAT.DOM.inBox(CHAT.DOM.users).event('mousemove', function(event){
+        CHAT.DOM.inBox(CHAT.DOM.users).event('mousemove', function(target, event){
             if (userDrag.active){
                 if (userDrag.moving){
-                    this.scrollLeft = userDrag.x - event.pageX;
+                    target.scrollLeft = userDrag.x - event.pageX;
                 }
                 else {
                     userDrag.moving = true;
-                    userDrag.x = this.scrollLeft + event.pageX;
+                    userDrag.x = target.scrollLeft + event.pageX;
                 }
             }
         });
@@ -73,9 +73,9 @@ CHAT.Components.User = {
      * User-sáv lenyíló lista
      */
     openList : function(){
-        CHAT.DOM.inBox(CHAT.DOM.userItems).event('click', function(){
-            const Trigger = HD.DOM(this);
-            if (this.classList.contains('current')){
+        CHAT.DOM.inBox(CHAT.DOM.userItems).event('click', function(target){
+            const Trigger = HD.DOM(target);
+            if (target.classList.contains('current')){
                 const List = Trigger.ancestors(CHAT.DOM.users);
                 List.dataBool('active', !List.dataBool('active'));
                 Trigger.descendants(CHAT.DOM.userDropdown).class('toggle', 'active');
@@ -123,6 +123,7 @@ CHAT.Components.User = {
                 UserElem.descendants('.name').elem().innerHTML = CHAT.Components.User.getName(currentUserId);
             }
         });
+        CHAT.DOM.setTitle(to);
     },
 
     /**
@@ -313,8 +314,8 @@ CHAT.Components.User = {
      */
     statusEvents : function(){
         // Státusz megváltoztatása
-        HD.DOM(CHAT.DOM.online).descendants(CHAT.DOM.statusChange).event('change', function(){
-            const connectedUsers = CHAT.Components.User.changeStatus(this.value);
+        HD.DOM(CHAT.DOM.online).descendants(CHAT.DOM.statusChange).event('change', function(target){
+            const connectedUsers = CHAT.Components.User.changeStatus(target.value);
             CHAT.socket.emit('statusChanged', connectedUsers, CHAT.userId);
         });
 
@@ -397,14 +398,14 @@ CHAT.Components.User = {
                         CHAT.Components.Timer.counters[timerId]
                             .stop()
                             .set(Math.round(time / 1000))
-                            .start(function(){
-                                if (this.get() < 60){
+                            .start(function(timer){
+                                if (timer.get() < 60){
                                     display.innerHTML = CHAT.Labels.time.lessThanMin;
                                 }
                                 else {
-                                    display.innerHTML = CHAT.Components.User.timerDisplay(this.get('D:h:m:s'));
+                                    display.innerHTML = CHAT.Components.User.timerDisplay(timer.get('D:h:m:s'));
                                 }
-                                // display.innerHTML = this.get('D nap, hh:mm:ss'); // debug mód
+                                // display.innerHTML = timer.get('D nap, hh:mm:ss'); // debug mód
                             });
                     }
                     else if (statuses.inactive.indexOf(prevStatus) > -1 && statuses.active.indexOf(nextStatus) > -1){

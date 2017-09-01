@@ -4,7 +4,7 @@
 
 'use strict';
 
-let ChatModel;
+let UserModel, ChatModel;
 const ENV = require.main.require('../app/env.js');
 const fs = require('mz/fs');
 const path = require('path');
@@ -64,6 +64,7 @@ const ChatState = {
  */
 module.exports = function(server, ioSession, app){
 
+    UserModel = require.main.require(`../app/models/${ENV.DBDRIVER}/user.js`)(app.get('db'));
     ChatModel = require.main.require(`../app/models/${ENV.DBDRIVER}/chat.js`)(app.get('db'));
 
     /**
@@ -200,7 +201,7 @@ module.exports = function(server, ioSession, app){
                 type = 1;  // aktiválás
             }
             if (type !== null){
-                ChatModel.setStatus({type, userId, prevStatus, nextStatus})
+                UserModel.setStatus({type, userId, prevStatus, nextStatus})
                     .catch(function(error){
                         log.error(error);
                     });

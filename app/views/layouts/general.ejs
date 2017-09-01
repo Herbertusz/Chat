@@ -35,9 +35,9 @@
         <script>
             HD.DOM(document).event('DOMContentLoaded', function(){
 
-                HD.DOM('.menupoint').event('mouseover', function(event){
+                HD.DOM('.menupoint').event('mouseover', function(target, event){
                     const elem = event.currentTarget;
-                    const id = HD.DOM('.menupoint').elements.findIndex(elem => this === elem);
+                    const id = HD.DOM('.menupoint').elements.findIndex(elem => target === elem);
                     const original = HD.Math.Animation.stop(`menuout-${id}`) || 0;
                     HD.Math.Animation.run(`menuover-${id}`, {
                         action : function(value){
@@ -55,9 +55,9 @@
                         easing : 'linear'
                     });
                 });
-                HD.DOM('.menupoint').event('mouseout', function(event){
+                HD.DOM('.menupoint').event('mouseout', function(target, event){
                     const elem = event.currentTarget;
-                    const id = HD.DOM('.menupoint').elements.findIndex(elem => this === elem);
+                    const id = HD.DOM('.menupoint').elements.findIndex(elem => target === elem);
                     const original = HD.Math.Animation.stop(`menuover-${id}`);
                     HD.Math.Animation.run(`menuout-${id}`, {
                         action : function(value){

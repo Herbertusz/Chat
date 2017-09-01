@@ -476,6 +476,39 @@ CHAT.Events.Server = {
             const method = fileAbortData.forced ? 'forceAbort' : 'abort';
             CHAT.Components.Transfer.progressbar(box, method, null, CHAT.Events.Server.barId, false);
         }
+    },
+
+    /**
+     *
+     * @param {Object} fileData
+     * fileData = {
+     *     userId : Number,
+     *     raw : {
+     *         name : String,
+     *         size : Number,
+     *         type : String,
+     *         source : String
+     *     },
+     *     store : String,
+     *     type : String,
+     *     time : Number,
+     *     room : String,
+     *     name : String,
+     *     deleted : Boolean
+     * }
+     */
+    dbFile : function(fileData){
+        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${fileData.room}"]`).elem();
+
+        if (box){
+            CHAT.Components.Transfer.appendFile(box, fileData, true)
+                .then(function(){
+                    CHAT.Components.Box.scrollToBottom(box);
+                })
+                .catch(function(error){
+                    HD.Log.error(error);
+                });
+        }
     }
 
 };
