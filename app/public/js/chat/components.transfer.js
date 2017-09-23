@@ -49,7 +49,7 @@ CHAT.Components.Transfer = {
 
         // Előredefiniált karakterlánc beszúrás
         CHAT.DOM.inBox(CHAT.DOM.imageReplacementToggle).event('click', function(target){
-            HD.DOM(target).ancestors(CHAT.DOM.box).descendants(CHAT.DOM.imageReplacementList).class('toggle', 'active');
+            HD.DOM(target).neighbours(CHAT.DOM.box, CHAT.DOM.imageReplacementList).class('toggle', 'active');
         });
         CHAT.DOM.inBox(`${CHAT.DOM.imageReplacementItems}`).event('click', function(target){
             const Item = HD.DOM(target);
@@ -68,7 +68,7 @@ CHAT.Components.Transfer = {
             const Trigger = HD.DOM(target);
 
             if (!Trigger.dataBool('disabled')){
-                Trigger.ancestors(CHAT.DOM.box).descendants(CHAT.DOM.file).trigger('click');
+                Trigger.neighbours(CHAT.DOM.box, CHAT.DOM.file).trigger('click');
             }
         });
         CHAT.DOM.inBox(CHAT.DOM.file).event('change', function(target){
@@ -324,19 +324,28 @@ CHAT.Components.Transfer = {
     /**
      * Folyamatjelzők kezelése
      * @param {HTMLElement} box
-     * @param {String} direction
-     * @param {Number} percent
      * @param {Number|null} barId - ha újat kell létrehozni, akkor null, egyébként egy létező progressbar id-ja
-     * @param {Boolean} [cancelable=true]
+     * @param {Object} options
      * @returns {Number|null}
+     * @description
+     * options = {
+     *     direction : String,
+     *     percent : Number,
+     *     cancelable : Boolean,
+     *     end : Boolean
+     * }
      */
-    progressbar : function(box, direction, percent, barId, cancelable = true){
-        percent = Math.round(percent * 100);
+    progressbar : function(box, barId, options){
+        options = Object.assign({
+            cancelable : true,
+            end : false
+        }, options);
+        const percent = Math.round(options.percent * 100);
         const List = HD.DOM(box).descendants(CHAT.DOM.list);
         const tpl = `
             <li>
                 <div class="progressbar" data-id="{BARID}">
-                    <span class="label">${CHAT.Labels.file[direction]}</span>
+                    <span class="label">${CHAT.Labels.file[options.direction]}</span>
                     <span title="${CHAT.Labels.file.cancel}">
                         <svg class="cancel"><use xlink:href="#cross"></use></svg>
                     </span>
@@ -354,7 +363,7 @@ CHAT.Components.Transfer = {
             barId = HD.Number.getUniqueId();
             List.elem().innerHTML += tpl.replace('{BARID}', barId.toString());
             CHAT.Components.Box.scrollToBottom(box, true);
-            if (cancelable){
+            if (options.cancelable){
                 List.descendants('.cancel').event('click', function(target){
                     const Progressbar = HD.DOM(target).ancestors('.progressbar');
                     CHAT.Events.Client.abortFile(Progressbar.elem());
@@ -368,18 +377,23 @@ CHAT.Components.Transfer = {
         }
         else {
             const Progressbar = List.descendants('.progressbar').filter(`[data-id="${barId}"]`);
-            if (direction === 'abort' || direction === 'forceAbort'){
-                Progressbar.descendants('.label').elem().innerHTML = CHAT.Labels.file[direction];
+            if (options.direction === 'abort' || options.direction === 'forceAbort'){
+                Progressbar.descendants('.label').elem().innerHTML = CHAT.Labels.file[options.direction];
                 Progressbar.descendants('.line').class('add', 'aborted');
             }
             else {
                 if (percent === 100){
-                    Progressbar.descendants('.label').elem().innerHTML = CHAT.Labels.file[`${direction}End`];
+                    Progressbar.descendants('.label').elem().innerHTML = CHAT.Labels.file[`${options.direction}End`];
                     Progressbar.descendants('.line').class('add', 'finished');
                     Progressbar.descendants('.cancel').class('add', 'hidden');
                 }
                 Progressbar.descendants('.line').css({'width' : `${percent}%`});
                 Progressbar.descendants('.numeric').elem().innerHTML = CHAT.Labels.file.percent(percent);
+            }
+            if (options.end){
+                Progressbar.ancestors('li').css({
+                    display : 'none'
+                });
             }
             return null;
         }

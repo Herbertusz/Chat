@@ -596,7 +596,9 @@ aside.online {
                 overflow-y: scroll;
 
                 li {
-                    padding: 5px 10px;
+                    margin: 0 5px;
+                    padding: 8px 5px;
+                    border-bottom: 1px solid #dddddd;
 
                     &.highlighted {
                         color: red;

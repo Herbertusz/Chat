@@ -54,15 +54,16 @@ HD.Site.Tab = function(options){
          * @public
          */
         init : function(){
-            options.$trigger.click(function(){
-                const group = $(this).data(options.dataGroup);
-                const id = $(this).data(options.dataId);
+            options.$trigger.click(function(event){
+                const group = $(event.target).data(options.dataGroup);
+                const id = $(event.target).data(options.dataId);
                 const $all = $('*');
                 $all.filter(function(){
-                    return $(this).data(options.dataGroup) === group;
+                    return $(event.target).data(options.dataGroup) === group;
                 }).removeClass(options.activeClass);
                 $all.filter(function(){
-                    return $(this).data(options.dataGroup) === group && $(this).data(options.dataId) === id;
+                    return $(event.target).data(options.dataGroup) === group &&
+                        $(event.target).data(options.dataId) === id;
                 }).addClass(options.activeClass);
             });
         }

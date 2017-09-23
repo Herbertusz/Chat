@@ -74,17 +74,72 @@ const Model = function(db){
                     'room' : room
                 })
                 .then(function(messages){
+                    const promises = [];
                     messages.forEach(function(message, i){
-                        if (message.type === 'message'){
-                            //messages[i]
-                        }
-                        else if (message.type === 'file'){
-                            ;
-                        }
-                        else if (message.type === 'event'){
-                            ;
-                        }
+                        promises.push(
+                            new Promise(function(resolve){
+                                if (message.type === 'message'){
+                                    db.getRow(`
+                                        SELECT
+                                            message
+                                        FROM
+                                            chat_messages_texts
+                                        WHERE
+                                            id = ${message.transferId}
+                                    `)
+                                    .then(function(details){
+                                        message = Object.assign(message, details);
+                                        resolve(message);
+                                    });
+                                }
+                                else if (message.type === 'file'){
+                                    db.getRow(`
+                                        SELECT
+                                            rawName, rawSize, rawType, rawSource, store, type, name, deleted
+                                        FROM
+                                            chat_messages_files
+                                        WHERE
+                                            id = ${message.transferId}
+                                    `)
+                                    .then(function(rawDetails){
+                                        const details = {
+                                            file : {
+                                                raw : {
+                                                    name : rawDetails.rawName,
+                                                    size : rawDetails.rawSize,
+                                                    type : rawDetails.rawType,
+                                                    source : rawDetails.rawSource
+                                                },
+                                                store : rawDetails.store,
+                                                type : rawDetails.type,
+                                                name : rawDetails.name,
+                                                deleted : rawDetails.deleted
+                                            }
+                                        };
+                                        message = Object.assign(message, details);
+                                        resolve(message);
+                                    });
+                                }
+                                else if (message.type === 'event'){
+                                    db.getRow(`
+                                        SELECT
+                                            event, triggerId, userId
+                                        FROM
+                                            chat_messages_events
+                                        WHERE
+                                            id = ${message.transferId}
+                                    `)
+                                    .then(function(details){
+                                        message = Object.assign(message, details);
+                                        resolve(message);
+                                    });
+                                }
+                            })
+                        );
                     });
+                    return Promise.all(promises);
+                })
+                .then(function(messages){
                     callback(messages);
                     return messages;
                 })
@@ -162,15 +217,18 @@ const Model = function(db){
                     INSERT INTO
                         chat_messages_events
                     (
-                        type,
-                        data
+                        event,
+                        triggerId,
+                        userId
                     ) VALUES (
-                        :type,
-                        :data
+                        :event,
+                        :triggerId,
+                        :userId
                     )
                 `, {
-                    'type' : eventName,
-                    'data' : JSON.stringify(data)
+                    'event' : eventName,
+                    'triggerId' : data.triggerId,
+                    'userId' : data.userId
                 })
                 .then(function(result){
                     return db.query(`

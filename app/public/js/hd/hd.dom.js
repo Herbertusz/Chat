@@ -93,9 +93,11 @@ HD.DOM = function(identifier){
      */
     const matches = function(element, selector){
         const p = Element.prototype;
-        const f = p.matches || p.webkitMatchesSelector || p.mozMatchesSelector || p.msMatchesSelector || function(s){
-            return [].indexOf.call(document.querySelectorAll(s), this) !== -1;
-        };
+        const f = p.matches ||
+            p.webkitMatchesSelector ||
+            p.mozMatchesSelector ||
+            p.msMatchesSelector ||
+            p.oMatchesSelector;
         return f.call(element, selector);
     };
 
@@ -193,6 +195,16 @@ HD.DOM = function(identifier){
                 parent = parent.parentNode;
             }
             return HD.DOM(elements);
+        },
+
+        /**
+         * Keresés a környező elemek közt
+         * @param {String} ancestorSelector
+         * @param {String} descendantSelector
+         * @returns {Object}
+         */
+        neighbours : function(ancestorSelector, descendantSelector){
+            return this.ancestors(ancestorSelector).descendants(descendantSelector);
         },
 
         /**

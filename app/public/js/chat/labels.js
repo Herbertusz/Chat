@@ -43,7 +43,7 @@ CHAT.Labels = {
             toggle : 'Átméretezés',
             box : 'Doboz méret',
             container : 'Konténer méret',
-            window : 'Teljes window méret',
+            window : 'Teljes ablak méret',
             screen : 'Teljes képernyő méret'
         },
         sound : 'Hangos értesítések',

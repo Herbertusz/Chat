@@ -290,9 +290,9 @@ HD.Math = {
                     options.action.call(this, val);
                     if (currentStep === len && typeof callback === 'function'){
                         options.callback.call(this);
-                        delete HD.Math.Animation.timers[ID];
+                        delete HD.Math.Animation.timers[ID]; // FIXME
                     }
-                }.bind(this), options.delay / steps * i);
+                }.bind(HD.Math.Animation), options.delay / steps * i);
                 HD.Math.Animation.timers[ID].push(timerID);
             };
 

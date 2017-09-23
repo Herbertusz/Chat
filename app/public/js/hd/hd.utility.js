@@ -69,6 +69,16 @@ HD.Misc = {
      */
     defined : function(param){
         return typeof param !== 'undefined';
+    },
+
+    /**
+     * Változó deklarálása ha nem deklarált
+     * @param {*} param - változó
+     * @param {*} value - alapértelmezett érték
+     * @returns {*} új érték
+     */
+    define : function(param, value){
+        return typeof param !== 'undefined' ? param : value;
     }
 
 };

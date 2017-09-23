@@ -398,15 +398,17 @@ CHAT.Events.Server = {
         const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${streamData.room}"]`).elem();
 
         if (CHAT.userId !== streamData.userId && box){
+            const options = {
+                direction : 'get',
+                percent : streamData.uploadedSize / streamData.fileSize,
+                cancelable : false,
+                end : streamData.uploadedSize === streamData.fileSize
+            };
             if (streamData.firstSend){
-                CHAT.Events.Server.barId = CHAT.Components.Transfer.progressbar(
-                    box, 'get', streamData.uploadedSize / streamData.fileSize, null, false
-                );
+                CHAT.Events.Server.barId = CHAT.Components.Transfer.progressbar(box, null, options);
             }
             else {
-                CHAT.Components.Transfer.progressbar(
-                    box, 'get', streamData.uploadedSize / streamData.fileSize, CHAT.Events.Server.barId, false
-                );
+                CHAT.Components.Transfer.progressbar(box, CHAT.Events.Server.barId, options);
             }
         }
     },
@@ -474,7 +476,12 @@ CHAT.Events.Server = {
 
         if (box){
             const method = fileAbortData.forced ? 'forceAbort' : 'abort';
-            CHAT.Components.Transfer.progressbar(box, method, null, CHAT.Events.Server.barId, false);
+            CHAT.Components.Transfer.progressbar(box, CHAT.Events.Server.barId, {
+                direction : method,
+                percent : null,
+                cancelable : false,
+                end : true
+            });
         }
     },
 

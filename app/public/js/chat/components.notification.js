@@ -34,7 +34,7 @@ CHAT.Components.Notification = {
         // Helyi értesítés eltüntetése
         CHAT.DOM.inBox(CHAT.DOM.list).event('scroll', function(target){
             if (target.scrollHeight - target.offsetHeight - target.scrollTop < CHAT.Config.notification.local.scroll){
-                HD.DOM(target).ancestors(CHAT.DOM.box).descendants(CHAT.DOM.localNotification).class('add', 'hidden');
+                HD.DOM(target).neighbours(CHAT.DOM.box, CHAT.DOM.localNotification).class('add', 'hidden');
             }
         });
         // Hibaüzenet eltüntetése
@@ -45,7 +45,7 @@ CHAT.Components.Notification = {
                 .class('add', 'hidden');
         });
         CHAT.DOM.inBox(CHAT.DOM.boxError.close).event('click', function(target){
-            HD.DOM(target).ancestors(CHAT.DOM.box).descendants(CHAT.DOM.boxError.container).class('add', 'hidden');
+            HD.DOM(target).neighbours(CHAT.DOM.box, CHAT.DOM.boxError.container).class('add', 'hidden');
         });
     },
 

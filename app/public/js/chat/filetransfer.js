@@ -121,7 +121,10 @@ CHAT.FileTransfer = {
              */
             clientSend : function(box, data, reader, rawFile, callback = () => {}){
                 const fileData = JSON.stringify(data);
-                const barId = CHAT.Components.Transfer.progressbar(box, 'send', 0, null);
+                const barId = CHAT.Components.Transfer.progressbar(box, null, {
+                    direction : 'send',
+                    percent : 0
+                });
                 const xhr = new XMLHttpRequest();
 
                 xhr.open('POST', '/chat/uploadfile');
@@ -131,11 +134,19 @@ CHAT.FileTransfer = {
                 xhr.upload.onprogress = function(event){
                     if (event.lengthComputable){
                         const percent = event.loaded / event.total;
-                        CHAT.Components.Transfer.progressbar(box, 'send', percent, barId);
+                        CHAT.Components.Transfer.progressbar(box, barId, {
+                            direction : 'send',
+                            percent : percent
+                        });
                     }
                 };
                 xhr.onabort = function(){
-                    CHAT.Components.Transfer.progressbar(box, 'abort', null, barId);
+                    CHAT.Components.Transfer.progressbar(box, barId, {
+                        direction : 'abort',
+                        percent : null,
+                        cancelable : true,
+                        end : true
+                    });
                     CHAT.socket.emit('abortFile', {
                         forced : false,
                         file : data
@@ -145,12 +156,22 @@ CHAT.FileTransfer = {
                     const response = JSON.parse(xhr.responseText);
                     if (response.success){
                         data.raw.source = response.fileName;
-                        CHAT.Components.Transfer.progressbar(box, 'send', 1, barId);
+                        CHAT.Components.Transfer.progressbar(box, barId, {
+                            direction : 'send',
+                            percent : 1,
+                            cancelable : true,
+                            end : true
+                        });
                         CHAT.socket.emit('sendFile', data);
                         callback();
                     }
                     else {
-                        CHAT.Components.Transfer.progressbar(box, 'forceAbort', null, barId);
+                        CHAT.Components.Transfer.progressbar(box, barId, {
+                            direction : 'forceAbort',
+                            percent : null,
+                            cancelable : true,
+                            end : true
+                        });
                         CHAT.socket.emit('abortFile', {
                             forced : true,
                             file : data

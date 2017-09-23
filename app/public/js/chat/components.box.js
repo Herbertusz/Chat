@@ -258,7 +258,7 @@ CHAT.Components.Box = {
         };
 
         CHAT.DOM.inBox(`${CHAT.DOM.clickResize} .toggle`).event('click', function(target){
-            HD.DOM(target).ancestors(CHAT.DOM.clickResize).descendants('.actions').class('toggle', 'active');
+            HD.DOM(target).neighbours(CHAT.DOM.clickResize, '.actions').class('toggle', 'active');
         });
 
         Resizers.event('click', function(target){

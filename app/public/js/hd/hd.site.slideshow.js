@@ -233,8 +233,8 @@ HD.Site.Slideshow = function(options){
             const $stepperright = options.stepper.right ? $(options.stepper.right) : null;
             const $jumpers = setJumper(current);
 
-            $items.each(function(index){
-                $(this).data(options.dataItem, index);
+            $items.each(function(index, elem){
+                $(elem).data(options.dataItem, index);
             });
             if ($stepperleft && $stepperleft.length > 0){
                 $stepperleft.click(function(){
@@ -247,13 +247,13 @@ HD.Site.Slideshow = function(options){
                 });
             }
             if ($jumpers && $jumpers.length > 0){
-                $jumpers.click(function(){
+                $jumpers.click(function(event){
                     let num = 0;
                     if (typeof $jumpers.data(options.dataJumper) !== 'undefined'){
-                        num = $(this).data(options.dataJumper);
+                        num = $(event.target).data(options.dataJumper);
                     }
                     else {
-                        num = $jumpers.index(this);
+                        num = $jumpers.index(event.target);
                     }
                     Interface.step(num);
                 });

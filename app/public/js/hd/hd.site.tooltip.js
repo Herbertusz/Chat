@@ -114,12 +114,12 @@ HD.Site.Tooltip = function(options){
          */
         init : function(){
             const $trigger = options.$trigger;
-            $trigger.each(function(){
-                const text = options.boxContent($(this));
-                $(this).data('text', text);
+            $trigger.each(function(i, elem){
+                const text = options.boxContent($(elem));
+                $(elem).data('text', text);
             });
             $trigger.mouseover(function(event){
-                show($(this).data('text'), event, this);
+                show($(event.target).data('text'), event, event.target);
             });
             $trigger.mouseout(function(event){
                 hide();
