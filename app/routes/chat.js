@@ -253,19 +253,35 @@ router.post('/uploadfile', function(req, res){
 // Kliens oldali log
 router.post('/clientlog', function(req, res){
 
-    const name = decodeURIComponent(req.body.name);
+    let fileName, logMessage;
+    const type = decodeURIComponent(req.body.type);
     const message = decodeURIComponent(req.body.message);
-    const stack = decodeURIComponent(req.body.stack);
-    const logMessage = `
-        ${HD.DateTime.formatMS('Y-m-d H:i:s', Date.now())}\n
-        name: ${name}\n
-        message: ${message}\n
-        stack:\n
-        ${stack}
-        \n-----\n
-    `.replace(/^\s+/gm, '');
+    const time = HD.DateTime.formatMS('Y-m-d H:i:s', Date.now());
 
-    fs.appendFile(`${__dirname}/../../logs/client.log`, logMessage)
+    if (type === 'error'){
+        const name = decodeURIComponent(req.body.name);
+        const stack = decodeURIComponent(req.body.stack);
+
+        fileName = 'client.log';
+        logMessage = `
+            ${time}\n
+            name: ${name}\n
+            message: ${message}\n
+            stack:\n
+            ${stack}
+            \n-----\n
+        `.replace(/^\s+/gm, '');
+    }
+    else {
+        fileName = 'info.log';
+        logMessage = `
+            ${time}\n
+            message: ${message}\n
+            \n-----\n
+        `.replace(/^\s+/gm, '');
+    }
+
+    fs.appendFile(`${__dirname}/../../logs/${fileName}`, logMessage)
         .then(function(){
             res.send({});
         })

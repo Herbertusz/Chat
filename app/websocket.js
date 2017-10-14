@@ -331,7 +331,7 @@ module.exports = function(server, ioSession, app){
         /**
          * Csatlakozás bontása emitter
          */
-        socket.on('disconnect', function(reason){ // TODO: reason-t kiíratni
+        socket.on('disconnect', function(reason){
             const discUserData = ChatState.connectedUsers[socket.id];
 
             if (discUserData){
@@ -340,6 +340,7 @@ module.exports = function(server, ioSession, app){
                     roomUpdate('remove', null, discUserData.id);
                 }
                 statusLog(discUserData, null);
+                log.info(`user ${discUserData.id} disconnected [${reason}]`);
                 Emit.themAll('roomUpdate', {
                     operation : 'remove',
                     room : null,

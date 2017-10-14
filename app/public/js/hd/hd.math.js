@@ -16,7 +16,7 @@ var HD = (typeof global !== 'undefined' ? global.HD : window.HD) || {};
 HD.Math = {
 
     /**
-     * Véletlenszám a és b között
+     * Véletlenszám a és b között (a és b is benne lehet)
      * @param {Number} min - egész szám
      * @param {Number} max - egész szám
      * @returns {Number} egész szám
@@ -173,7 +173,7 @@ HD.Math = {
         },
 
         /**
-         * Abszolút koordináták kiszámítása (csomópontok, korongok, stb)
+         * Abszolút koordináták kiszámítása
          * @param {Array} positions - relatív koordináták [[Number, Number], ...]
          * @param {Number} w - abszolút szélesség
          * @param {Number} h - abszolút magasság
@@ -290,7 +290,7 @@ HD.Math = {
                     options.action.call(this, val);
                     if (currentStep === len && typeof callback === 'function'){
                         options.callback.call(this);
-                        delete HD.Math.Animation.timers[ID]; // FIXME
+                        Reflect.deleteProperty(HD.Math.Animation.timers, ID);
                     }
                 }.bind(HD.Math.Animation), options.delay / steps * i);
                 HD.Math.Animation.timers[ID].push(timerID);

@@ -23,12 +23,6 @@ CHAT.Components.Timer = {
     },
 
     /**
-     * Tételen állapotba lépés
-     * @type {Number}
-     */
-    idle : CHAT.Config.status.idle.time,
-
-    /**
      * Felhasználókhoz kapcsolt idle-időmérők
      * @type {Object}
      * @description

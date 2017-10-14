@@ -319,17 +319,28 @@ CHAT.Components.User = {
             CHAT.socket.emit('statusChanged', connectedUsers, CHAT.userId);
         });
 
-        // Tétlen állapot TODO: saját kód
+        // Tétlen állapot
         if (CHAT.Config.status.idle.allowed){
-            $(CHAT.DOM.idleCheck).idleTimer(CHAT.Components.Timer.idle);
-            $(CHAT.DOM.idleCheck).on('idle.idleTimer', function(){
+            const startIdle = function(){
                 const connectedUsers = CHAT.Components.User.changeStatus('idle');
                 CHAT.socket.emit('statusChanged', connectedUsers, CHAT.userId);
-            });
-            $(CHAT.DOM.idleCheck).on('active.idleTimer', function(){
+            };
+            const endIdle = function(){
                 const connectedUsers = CHAT.Components.User.changeStatus('notidle');
                 CHAT.socket.emit('statusChanged', connectedUsers, CHAT.userId);
+            };
+            const startIdleCounter = function(){
+                CHAT.Components.Timer.idle = setTimeout(function(){
+                    startIdle();
+                }, CHAT.Config.status.idle.time);
+            };
+
+            HD.DOM(CHAT.DOM.idleCheck).event('mousemove mousedown wheel keydown touchstart touchmove', function(elem){
+                endIdle();
+                clearTimeout(CHAT.Components.Timer.idle);
+                startIdleCounter();
             });
+            startIdleCounter();
         }
     },
 
