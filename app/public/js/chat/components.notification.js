@@ -110,13 +110,13 @@ CHAT.Components.Notification = {
      * @param {HTMLElement|Boolean} [box]
      * @param {Object} [data={}]
      * @description
-     * data = {
-     *     type : String,   // 'message'|'file'|'create'|'join'|'leave'|
-     *                      // 'forceJoinYou'|'forceJoinOther'|'forceLeaveYou'|'forceLeaveOther'
-     *     fromId : Number,
-     *     toId : Number,
-     *     local : Boolean
-     * }
+     *  data = {
+     *      type : String,   // 'message'|'file'|'create'|'join'|'leave'|
+     *                       // 'forceJoinYou'|'forceJoinOther'|'forceLeaveYou'|'forceLeaveOther'
+     *      fromId : Number,
+     *      toId : Number,
+     *      local : Boolean
+     *  }
      */
     trigger : function(box, data = {}){
         const conf = CHAT.Config.notification;

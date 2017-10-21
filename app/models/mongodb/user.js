@@ -43,10 +43,10 @@ const Model = function(db){
          * @param {Function} [callback]
          * @returns {Promise}
          * @description
-         * data = {
-         *     username : String,
-         *     password : String
-         * }
+         *  data = {
+         *      username : String,
+         *      password : String
+         *  }
          */
         getUser : function(data, callback = () => {}){
             return db.collection('chat_users')
@@ -114,13 +114,16 @@ const Model = function(db){
                 .limit(1)
                 .toArray()
                 .then(function(users){
-                    const status = {
-                        userId : userId,
-                        prevStatus : users[0].status.prev,
-                        nextStatus : users[0].status.next,
-                        type : users[0].status.type,
-                        created : users[0].status.created || Date.now()
-                    };
+                    let status = null;
+                    if (users.length){
+                        status = {
+                            userId : userId,
+                            prevStatus : users[0].status.prev,
+                            nextStatus : users[0].status.next,
+                            type : users[0].status.type,
+                            created : users[0].status.created || Date.now()
+                        };
+                    }
                     callback(status);
                     return status;
                 })
@@ -135,12 +138,12 @@ const Model = function(db){
          * @param {Function} [callback]
          * @returns {Promise}
          * @description
-         * data = {
-         *     userId : Number,
-         *     type : Number,
-         *     prevStatus : String,
-         *     nextStatus : String
-         * }
+         *  data = {
+         *      userId : Number,
+         *      type : Number,
+         *      prevStatus : String,
+         *      nextStatus : String
+         *  }
          */
         setStatus : function(data, callback = () => {}){
             const status = {

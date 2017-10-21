@@ -79,13 +79,14 @@ HD.DateTime.Timer = function(add, stepInterval = null){
     /**
      * Eseménykezelők
      * @type {Array}
-     * @description szerkezet: [
-     *     {
-     *         value : Number,     // érték
-     *         handler : Function, // eseménykezelő
-     *         context : Object    // this = Timer
-     *     }
-     * ]
+     * @description
+     *  events = [
+     *      {
+     *          value : Number,     // érték
+     *          handler : Function, // eseménykezelő
+     *          context : Object    // this = Timer
+     *      }
+     *  ]
      */
     const events = [];
 

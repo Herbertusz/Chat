@@ -196,9 +196,14 @@ CHAT.Config = {
         // Fájlátvitel engedélyezése
         allowed : true,
 
-        // Fájl átviteli módja
-        // 'upload': feltöltés szerverre; 'base64': base64 string átvitele; 'zip': tömörített base64 átvitele
-        store : 'upload',
+        // Fájl átviteli módja a fájl méretétől föggően (növekvő sorrendben kell megadni)
+        // 'base64': base64 string átvitele; 'zip': tömörített base64 átvitele; 'upload': feltöltés szerverre
+        // Javaslat: 'base64': <5MB
+        store : {
+            base64 :       1024 * 1024,  // 0 MB - 1 MB
+            // zip    :   2 * 1024 * 1024,  // 1 MB - 2 MB  // TODO
+            upload : 100 * 1024 * 1024   // 2 MB - 100 MB
+        },
 
         // Egyszerre több fájl átvitelének engedélyezése
         multiple : true,
@@ -225,19 +230,15 @@ CHAT.Config = {
         typeFallback : {
             text : ['log', 'ini'],
             zip  : ['7z', 'ace', 'cab', 'gz', 'rar', 'tgz', 'zip'],
-            exec : ['bat', 'sh'],
+            exec : ['bat', 'sh', 'reg'],
             code : [
                 'asm', 'asp', 'awk', 'c', 'cpp', 'css', 'h', 'hpp', 'htc', 'htm', 'html', 'inc',
                 'java', 'js', 'jsp', 'php', 'pl', 'pm', 'sh', 'sql', 'src', 'xmd', 'xml', 'xsl'
             ]
         },
 
-        // Engedélyezett fájltípusok a types tulajdonságban definiáltak közül
-        allowedTypes : ['image', 'text', 'pdf', 'doc', 'xls', 'ppt', 'zip', 'audio', 'video', 'exec', 'code', 'file'],
-
-        // Fájl maximális mérete
-        // Javaslat: 'upload': <100MB; 'base64': <5MB
-        maxSize : 100 * 1024 * 1024
+        // Engedélyezett fájltípusok a types és typeFallback tulajdonságban definiáltak közül
+        allowedTypes : ['image', 'text', 'pdf', 'doc', 'xls', 'ppt', 'zip', 'audio', 'video', 'exec', 'code', 'file']
 
     }
 

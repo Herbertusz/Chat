@@ -45,7 +45,7 @@ const userRestriction = function(app, operation, triggerUserId, userIds, room = 
     return UserModel
         .getUserForbiddens([...userIdSet])
         .then(function(users){
-            // TODO: letiltások kezelése
+            // TODO: letiltások kezelése (?)
             return permission && true;
         })
         .catch(function(error){
@@ -214,7 +214,7 @@ router.post('/uploadfile', function(req, res){
             const first = (uploadedSize === 0);
             uploadedSize += file.byteLength;
             // TODO: header manipulálás esetén megszakítás a maximális méretnél (?)
-            // if (uploadedSize > CHAT.Config.fileTransfer.maxSize){
+            // if (uploadedSize > CHAT.FileTransfer.getMaxSize(CHAT.Config.fileTransfer)){
             //     fileStream.end();
             //     return;
             // }

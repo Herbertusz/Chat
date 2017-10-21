@@ -137,8 +137,6 @@ CHAT.Events.Client = {
      * @param {Object} files - FileList objektum
      */
     sendFile : function(box, files){
-        const store = CHAT.Config.fileTransfer.store;
-
         if (!CHAT.Config.fileTransfer.multiple){
             files = [files[0]];
         }
@@ -147,6 +145,7 @@ CHAT.Events.Client = {
         }
 
         const filePrepare = function(rawFile){
+            const store = CHAT.FileTransfer.getStore(rawFile.size);
             const fileData = {
                 userId : CHAT.userId,
                 raw : {
@@ -174,7 +173,7 @@ CHAT.Events.Client = {
                     CHAT.Components.Box.scrollToBottom(box);
                     return CHAT.FileTransfer.action('clientSend', [box, fileData, reader, rawFile, function(){
                         CHAT.Components.Box.scrollToBottom(box);
-                    }]);
+                    }], rawFile);
                 }).catch(function(error){
                     HD.Log.error(error);
                 });

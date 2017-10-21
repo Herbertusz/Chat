@@ -616,14 +616,14 @@ HD.DOM = function(identifier){
  * Csatolt eseménykezelők belső tárolása
  * @type {Array.<Object>}
  * @description
- * eventListeners = [
- *     {
- *         target : HTMLElement,
- *         eventName : String,
- *         handler : Function
- *     },
- *     ...
- * ]
+ *  eventListeners = [
+ *      {
+ *          target : HTMLElement,
+ *          eventName : String,
+ *          handler : Function
+ *      },
+ *      ...
+ *  ]
  */
 HD.DOM.eventListeners = [];
 
@@ -631,15 +631,15 @@ HD.DOM.eventListeners = [];
  * Csatolt adatok típusainak belső tárolása
  * @type {Array.<Object>}
  * @description
- * dataObjects = [
- *     {
- *         element : HTMLElement,
- *         type : String,
- *         name : String,
- *         value : *
- *     },
- *     ...
- * ]
+ *  dataObjects = [
+ *      {
+ *          element : HTMLElement,
+ *          type : String,
+ *          name : String,
+ *          value : *
+ *      },
+ *      ...
+ *  ]
  */
 HD.DOM.dataObjects = [];
 
@@ -648,12 +648,12 @@ HD.DOM.dataObjects = [];
  * @param {Object} options
  * @returns {Promise|null}
  * @description
- * options = {
- *     method : String ('GET'|'POST'|'PUT'|'DELETE'|...)
- *     url : String
- *     data : String
- *     callback : Function
- * }
+ *  options = {
+ *      method : String ('GET'|'POST'|'PUT'|'DELETE'|...)
+ *      url : String
+ *      data : String
+ *      callback : Function
+ *  }
  */
 HD.DOM.ajax = function(options){
     let promise = null;
@@ -689,10 +689,10 @@ HD.DOM.ajax = function(options){
  * @param {HTMLElement} [elem=document.body] - egy DOM elem
  * @returns {Object} egérpozíció
  * @description
- * return = {
- *     x : Number,
- *     y : Number
- * }
+ *  return = {
+ *      x : Number,
+ *      y : Number
+ *  }
  */
 HD.DOM.getMousePosition = function(event, elem = document.body){
     const offset = {x : 0, y : 0};

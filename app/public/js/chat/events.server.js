@@ -15,12 +15,12 @@ CHAT.Events.Server = {
      * Belépés a chat-be
      * @param {Object} userData
      * @description
-     * userData = {
-     *     id : Number,      // user azonosító
-     *     name : String,    // user login név
-     *     status : String,  // user státusz ('on'|'busy'|'off')
-     *     isIdle : Boolean  // user státusz: 'idle'
-     * }
+     *  userData = {
+     *      id : Number,      // user azonosító
+     *      name : String,    // user login név
+     *      status : String,  // user státusz ('on'|'busy'|'off')
+     *      isIdle : Boolean  // user státusz: 'idle'
+     *  }
      */
     userConnected : function(userData){
         // CHAT.Methods.appendSystemMessage(box, 'connect', userData.id);
@@ -30,12 +30,12 @@ CHAT.Events.Server = {
      * Kilépés a chat-ből
      * @param {Object} userData
      * @description
-     * userData = {
-     *     id : Number,      // user azonosító
-     *     name : String,    // user login név
-     *     status : String,  // user státusz ('on'|'busy'|'off')
-     *     isIdle : Boolean  // user státusz: 'idle'
-     * }
+     *  userData = {
+     *      id : Number,      // user azonosító
+     *      name : String,    // user login név
+     *      status : String,  // user státusz ('on'|'busy'|'off')
+     *      isIdle : Boolean  // user státusz: 'idle'
+     *  }
      */
     disconnect : function(userData){
         HD.DOM(CHAT.DOM.box).filter(':not(.cloneable)').elements.forEach(function(box){
@@ -51,15 +51,15 @@ CHAT.Events.Server = {
      * User-ek állapotváltozása
      * @param {Object} connectedUsers
      * @description
-     * connectedUsers = {
-     *     <socket.id> : {
-     *         id : Number,      // user azonosító
-     *         name : String,    // user login név
-     *         status : String,  // user státusz ('on'|'busy'|'off')
-     *         isIdle : Boolean  // user státusz: 'idle'
-     *     },
-     *     ...
-     * }
+     *  connectedUsers = {
+     *      <socket.id> : {
+     *          id : Number,      // user azonosító
+     *          name : String,    // user login név
+     *          status : String,  // user státusz ('on'|'busy'|'off')
+     *          isIdle : Boolean  // user státusz: 'idle'
+     *      },
+     *      ...
+     *  }
      */
     statusChanged : function(connectedUsers){
         CHAT.State.connectedUsers = connectedUsers;
@@ -70,21 +70,21 @@ CHAT.Events.Server = {
      * Csatorna létrehozása/megváltozása
      * @param {Object} changeData
      * @description
-     * csatorna létrehozás:
-     * changeData = {
-     *     operation : String,   // művelet a csatornával ('create'|'delete')
-     *     roomData : {
-     *         name : String,    // 'room-x-y'; x: létrehozó userId, y: létrehozás timestamp
-     *         userIds : Array,  // csatornába rakott userId-k
-     *         starter : Number  // csatorna létrehozó userId
-     *     }
-     * }
-     * csatorna módosítás:
-     * changeData = {
-     *     operation : String,   // művelet egy user-rel ('add'|'remove')
-     *     room : String,        // csatorna azonosító
-     *     userId : Number       // érintett userId
-     * }
+     *  csatorna létrehozás:
+     *   changeData = {
+     *       operation : String,   // művelet a csatornával ('create'|'delete')
+     *       roomData : {
+     *           name : String,    // 'room-x-y'; x: létrehozó userId, y: létrehozás timestamp
+     *           userIds : Array,  // csatornába rakott userId-k
+     *           starter : Number  // csatorna létrehozó userId
+     *       }
+     *   }
+     *  csatorna módosítás:
+     *   changeData = {
+     *       operation : String,   // művelet egy user-rel ('add'|'remove')
+     *       room : String,        // csatorna azonosító
+     *       userId : Number       // érintett userId
+     *   }
      */
     roomUpdate : function(changeData){
         if (changeData.operation === 'create'){
@@ -107,11 +107,11 @@ CHAT.Events.Server = {
      * Csatorna létrehozása
      * @param {Object} roomData
      * @description
-     * roomData = {
-     *     name : String,    // 'room-x-y'; x: létrehozó userId, y: létrehozás timestamp
-     *     userIds : Array,  // csatornába rakott userId-k
-     *     starter : Number  // csatorna létrehozó userId
-     * }
+     *  roomData = {
+     *      name : String,    // 'room-x-y'; x: létrehozó userId, y: létrehozás timestamp
+     *      userIds : Array,  // csatornába rakott userId-k
+     *      starter : Number  // csatorna létrehozó userId
+     *  }
      */
     roomCreated : function(roomData){
         let Box, Userlist;
@@ -146,12 +146,12 @@ CHAT.Events.Server = {
      * Csatornához csatlakozás (belépés hatására)
      * @param {Object} roomData
      * @description
-     * roomData = {
-     *     name : String,         // 'room-x-y'; x: létrehozó userId, y: létrehozás timestamp
-     *     userIds : Array,       // csatornába rakott userIdk
-     *     starter : Number       // csatorna létrehozó userId
-     *     joinedUserId : Number  // most csatlakozott userId
-     * }
+     *  roomData = {
+     *      name : String,         // 'room-x-y'; x: létrehozó userId, y: létrehozás timestamp
+     *      userIds : Array,       // csatornába rakott userIdk
+     *      starter : Number       // csatorna létrehozó userId
+     *      joinedUserId : Number  // most csatlakozott userId
+     *  }
      */
     roomJoined : function(roomData){
         let box, Box, Userlist;
@@ -193,12 +193,12 @@ CHAT.Events.Server = {
      * Csatorna elhagyása
      * @param {Object} eventData
      * @description
-     * eventData = {
-     *     triggerId : Number,
-     *     userId : Number,
-     *     room : String,
-     *     roomData : Object
-     * }
+     *  eventData = {
+     *      triggerId : Number,
+     *      userId : Number,
+     *      room : String,
+     *      roomData : Object
+     *  }
      */
     roomLeaved : function(eventData){
         let box, Box;
@@ -222,12 +222,12 @@ CHAT.Events.Server = {
      * Hozzáadás csatornához
      * @param {Object} eventData
      * @description
-     * eventData = {
-     *     triggerId : Number,
-     *     userId : Number,
-     *     room : String,
-     *     roomData : Object
-     * }
+     *  eventData = {
+     *      triggerId : Number,
+     *      userId : Number,
+     *      room : String,
+     *      roomData : Object
+     *  }
      */
     roomForceJoined : function(eventData){
         let box, Box, Userlist;
@@ -291,12 +291,12 @@ CHAT.Events.Server = {
      * Kidobás csatornából
      * @param {Object} eventData
      * @description
-     * eventData = {
-     *     triggerId : Number,
-     *     userId : Number,
-     *     room : String,
-     *     roomData : Object
-     * }
+     *  eventData = {
+     *      triggerId : Number,
+     *      userId : Number,
+     *      room : String,
+     *      roomData : Object
+     *  }
      */
     roomForceLeaved : function(eventData){
         const Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${eventData.room}"]`);
@@ -331,12 +331,12 @@ CHAT.Events.Server = {
      * Üzenetküldés
      * @param {Object} messageData
      * @description
-     * messageData = {
-     *     userId : Number,   // üzenetet küldő user
-     *     room : String,     // csatorna azonosító
-     *     message : String,  // üzenet
-     *     time : Number      // timestamp
-     * }
+     *  messageData = {
+     *      userId : Number,   // üzenetet küldő user
+     *      room : String,     // csatorna azonosító
+     *      message : String,  // üzenet
+     *      time : Number      // timestamp
+     *  }
      */
     sendMessage : function(messageData){
         const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${messageData.room}"]`).elem();
@@ -356,12 +356,12 @@ CHAT.Events.Server = {
      * Üzenetírás
      * @param {Object} messageData
      * @description
-     * messageData = {
-     *     userId : Number,   // üzenetet küldő user
-     *     room : String,     // csatorna azonosító
-     *     message : String,  // üzenet eddig megírt darabja
-     *     time : Number      // timestamp
-     * }
+     *  messageData = {
+     *      userId : Number,   // üzenetet küldő user
+     *      room : String,     // csatorna azonosító
+     *      message : String,  // üzenet eddig megírt darabja
+     *      time : Number      // timestamp
+     *  }
      */
     typeMessage : function(messageData){
         const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${messageData.room}"]`).elem();
@@ -386,13 +386,13 @@ CHAT.Events.Server = {
      * Fájlfogadás folyamata
      * @param {Object} streamData
      * @description
-     * streamData = {
-     *     userId : Number,
-     *     room : String,
-     *     uploadedSize : Number,
-     *     fileSize : Number,
-     *     firstSend : Boolean
-     * }
+     *  streamData = {
+     *      userId : Number,
+     *      room : String,
+     *      uploadedSize : Number,
+     *      fileSize : Number,
+     *      firstSend : Boolean
+     *  }
      */
     receiveFile : function(streamData){
         const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${streamData.room}"]`).elem();
@@ -417,21 +417,21 @@ CHAT.Events.Server = {
      * Fájlfogadás vége (a fájl átjött)
      * @param {Object} fileData
      * @description
-     * fileData = {
-     *     userId : Number,
-     *     raw : {
-     *         name : String,
-     *         size : Number,
-     *         type : String,
-     *         source : String
-     *     },
-     *     store : String,
-     *     type : String,
-     *     time : Number,
-     *     room : String,
-     *     name : String,
-     *     deleted : Boolean
-     * }
+     *  fileData = {
+     *      userId : Number,
+     *      raw : {
+     *          name : String,
+     *          size : Number,
+     *          type : String,
+     *          source : String
+     *      },
+     *      store : String,
+     *      type : String,
+     *      time : Number,
+     *      room : String,
+     *      name : String,
+     *      deleted : Boolean
+     *  }
      */
     sendFile : function(fileData){
         const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${fileData.room}"]`).elem();
@@ -452,24 +452,24 @@ CHAT.Events.Server = {
      * Fájlátvitel megszakítása a fogadó oldalon
      * @param {Object} fileAbortData
      * @description
-     * fileAbortData = {
-     *     forced : Boolean,
-     *     file : {
-     *         userId : Number,
-     *         raw : {
-     *             name : String,
-     *             size : Number,
-     *             type : String,
-     *             source : String
-     *         },
-     *         store : String,
-     *         type : String,
-     *         time : Number,
-     *         room : String,
-     *         name : String,
-     *         deleted : Boolean
-     *     }
-     * }
+     *  fileAbortData = {
+     *      forced : Boolean,
+     *      file : {
+     *          userId : Number,
+     *          raw : {
+     *              name : String,
+     *              size : Number,
+     *              type : String,
+     *              source : String
+     *          },
+     *          store : String,
+     *          type : String,
+     *          time : Number,
+     *          room : String,
+     *          name : String,
+     *          deleted : Boolean
+     *      }
+     *  }
      */
     abortFile : function(fileAbortData){
         const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${fileAbortData.file.room}"]`).elem();
@@ -488,21 +488,21 @@ CHAT.Events.Server = {
     /**
      *
      * @param {Object} fileData
-     * fileData = {
-     *     userId : Number,
-     *     raw : {
-     *         name : String,
-     *         size : Number,
-     *         type : String,
-     *         source : String
-     *     },
-     *     store : String,
-     *     type : String,
-     *     time : Number,
-     *     room : String,
-     *     name : String,
-     *     deleted : Boolean
-     * }
+     *  fileData = {
+     *      userId : Number,
+     *      raw : {
+     *          name : String,
+     *          size : Number,
+     *          type : String,
+     *          source : String
+     *      },
+     *      store : String,
+     *      type : String,
+     *      time : Number,
+     *      room : String,
+     *      name : String,
+     *      deleted : Boolean
+     *  }
      */
     dbFile : function(fileData){
         const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${fileData.room}"]`).elem();

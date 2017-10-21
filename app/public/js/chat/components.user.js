@@ -182,10 +182,10 @@ CHAT.Components.User = {
      * @param {Number} userId
      * @returns {Object}
      * @description
-     * returns = {
-     *     status : String   // user státusz (CHAT.Labels.status.online + offline)
-     *     isIdle : Boolean  // user tétlen státuszban van
-     * }
+     *  returns = {
+     *      status : String   // user státusz (CHAT.Labels.status.online + offline)
+     *      isIdle : Boolean  // user tétlen státuszban van
+     *  }
      */
     getStatusDetails : function(userId){
         const statusObj = {
@@ -209,10 +209,10 @@ CHAT.Components.User = {
      * @param {Object} statusObj
      * @returns {String}
      * @description
-     * statusObj = {
-     *     status : String   // user státusz (CHAT.Labels.status.online + offline)
-     *     isIdle : Boolean  // user tétlen státuszban van
-     * }
+     *  statusObj = {
+     *      status : String   // user státusz (CHAT.Labels.status.online + offline)
+     *      isIdle : Boolean  // user tétlen státuszban van
+     *  }
      */
     getStatusIcon : function(statusObj){
         let statusIcon;
@@ -232,15 +232,15 @@ CHAT.Components.User = {
      * Státuszok frissítése
      * @param {Object} connectedUsers
      * @description
-     * connectedUsers = {
-     *     <socket.id> : {
-     *         id : Number,      // user azonosító
-     *         name : String,    // user login név
-     *         status : String,  // user státusz (CHAT.Labels.status.online + offline)
-     *         isIdle : Boolean  // user tétlen státuszban van
-     *     },
-     *     ...
-     * }
+     *  connectedUsers = {
+     *      <socket.id> : {
+     *          id : Number,      // user azonosító
+     *          name : String,    // user login név
+     *          status : String,  // user státusz (CHAT.Labels.status.online + offline)
+     *          isIdle : Boolean  // user tétlen státuszban van
+     *      },
+     *      ...
+     *  }
      */
     updateStatuses : function(connectedUsers){
         const onlineUserStatuses = {};
@@ -272,15 +272,15 @@ CHAT.Components.User = {
      * @param {String} newStatus
      * @returns {Object}
      * @description
-     * return = {
-     *     <socket.id> : {
-     *         id : Number,      // user azonosító
-     *         name : String,    // user login név
-     *         status : String,  // user státusz (CHAT.Labels.status.online + offline)
-     *         isIdle : Boolean  // user tétlen státuszban van
-     *     },
-     *     ...
-     * }
+     *  return = {
+     *      <socket.id> : {
+     *          id : Number,      // user azonosító
+     *          name : String,    // user login név
+     *          status : String,  // user státusz (CHAT.Labels.status.online + offline)
+     *          isIdle : Boolean  // user tétlen státuszban van
+     *      },
+     *      ...
+     *  }
      */
     changeStatus : function(newStatus){
         let socketId;
@@ -369,6 +369,11 @@ CHAT.Components.User = {
                 data : `userId=${userId}`
             }).then(function(resp){
                 const lastChange = JSON.parse(resp).status;
+
+                // A user nem létezik
+                if (lastChange === null){
+                    return;
+                }
 
                 // A user offline, és még sose lépett be
                 if (

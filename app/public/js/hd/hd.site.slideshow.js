@@ -56,22 +56,23 @@ HD.Site.Slideshow = function(options){
     /**
      * Alapértelmezett beállítások
      * @type {Object}
-     * @description szerkezet: {
-     *     items : String,           // Léptetendő elemek szelektora
-     *     stepper : {
-     *         left : jQuery,        // Balra léptető elem
-     *         right : jQuery        // Jobbra léptető elem
-     *     },
-     *     jumpers : {
-     *         elements : jQuery,    // Megadott sorszámú helyre léptető elemek
-     *         activeClass : String  // Aktív elem CSS class-a
-     *     },
-     *     default : Function,       // Alapértelmezett művelet
-     *     timeout : Number,         // A default metódus lefuttatásának periódusideje
-     *     cycle : Boolean,          // Ciklikus léptetés
-     *     dataItem : String,        // Elemek data-* attribútumának neve (névütközés esetén cserélhető)
-     *     dataJumper : String       // Jumperek data-* attribútumának neve (névütközés esetén cserélhető)
-     * }
+     * @description
+     *  defaultOptions = {
+     *      items : String,           // Léptetendő elemek szelektora
+     *      stepper : {
+     *          left : jQuery,        // Balra léptető elem
+     *          right : jQuery        // Jobbra léptető elem
+     *      },
+     *      jumpers : {
+     *          elements : jQuery,    // Megadott sorszámú helyre léptető elemek
+     *          activeClass : String  // Aktív elem CSS class-a
+     *      },
+     *      default : Function,       // Alapértelmezett művelet
+     *      timeout : Number,         // A default metódus lefuttatásának periódusideje
+     *      cycle : Boolean,          // Ciklikus léptetés
+     *      dataItem : String,        // Elemek data-* attribútumának neve (névütközés esetén cserélhető)
+     *      dataJumper : String       // Jumperek data-* attribútumának neve (névütközés esetén cserélhető)
+     *  }
      */
     const defaultOptions = {
         items : '',

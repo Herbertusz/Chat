@@ -115,11 +115,11 @@ const Model = function(db){
          * @param {Function} [callback]
          * @returns {Promise}
          * @description
-         * data = {
-         *     triggerId : Number,     // eseményt kiváltó userId
-         *     userId : Number|Array,  // eseményt elszenvedő userId(k)
-         *     room : String           // csatorna azonosító
-         * }
+         *  data = {
+         *      triggerId : Number,     // eseményt kiváltó userId
+         *      userId : Number|Array,  // eseményt elszenvedő userId(k)
+         *      room : String           // csatorna azonosító
+         *  }
          */
         setEvent : function(eventName, data, callback = () => {}){
             const insertData = Object.assign({
@@ -145,12 +145,12 @@ const Model = function(db){
          * @param {Function} [callback]
          * @returns {Promise}
          * @description
-         * data = {
-         *     userId : Number,   // üzenetet küldő user
-         *     room : String,     // csatorna azonosító
-         *     message : String,  // üzenet
-         *     time : Number      // timestamp
-         * }
+         *  data = {
+         *      userId : Number,   // üzenetet küldő user
+         *      room : String,     // csatorna azonosító
+         *      message : String,  // üzenet
+         *      time : Number      // timestamp
+         *  }
          */
         setMessage : function(data, callback = () => {}){
             let insertData;
@@ -184,24 +184,24 @@ const Model = function(db){
          * @param {Function} [callback]
          * @returns {Promise}
          * @description
-         * data = {
-         *     userId : Number,
-         *     file = {
-         *         userId : Number,
-         *         raw : {
-         *             name : String,
-         *             size : Number,
-         *             type : String,
-         *             source : String
-         *         },
-         *         store : String,
-         *         type : String,
-         *         time : Number,
-         *         room : String,
-         *         name : String,
-         *         deleted : Boolean
-         *     }
-         * }
+         *  data = {
+         *      userId : Number,
+         *      file = {
+         *          userId : Number,
+         *          raw : {
+         *              name : String,
+         *              size : Number,
+         *              type : String,
+         *              source : String
+         *          },
+         *          store : String,
+         *          type : String,
+         *          time : Number,
+         *          room : String,
+         *          name : String,
+         *          deleted : Boolean
+         *      }
+         *  }
          */
         setFile : function(data, callback = () => {}){
             return this.setMessage({

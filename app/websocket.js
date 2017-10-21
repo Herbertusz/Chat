@@ -26,15 +26,15 @@ const ChatState = {
      * Chat-be belépett userek
      * @type {Object}
      * @description
-     * connectedUsers = {
-     *     <socket.id> : {
-     *         id : Number,      // user azonosító
-     *         name : String,    // user login név
-     *         status : String,  // user státusz (CHAT.Labels.status.online + offline)
-     *         isIdle : Boolean  // user tétlen státuszban van
-     *     },
-     *     ...
-     * }
+     *  connectedUsers = {
+     *      <socket.id> : {
+     *          id : Number,      // user azonosító
+     *          name : String,    // user login név
+     *          status : String,  // user státusz (CHAT.Labels.status.online + offline)
+     *          isIdle : Boolean  // user tétlen státuszban van
+     *      },
+     *      ...
+     *  }
      */
     connectedUsers : {},
 
@@ -42,14 +42,14 @@ const ChatState = {
      * Futó chat-csatornák
      * @type {Array}
      * @description
-     * rooms = [
-     *     {
-     *         name : String,    // 'room-x-y'; x: létrehozó userId, y: létrehozás timestamp
-     *         userIds : Array,  // csatornába rakott userId-k
-     *         starter : Number  // csatorna létrehozó userId
-     *     },
-     *     ...
-     * ]
+     *  rooms = [
+     *      {
+     *          name : String,    // 'room-x-y'; x: létrehozó userId, y: létrehozás timestamp
+     *          userIds : Array,  // csatornába rakott userId-k
+     *          starter : Number  // csatorna létrehozó userId
+     *      },
+     *      ...
+     *  ]
      */
     rooms : []
 
@@ -155,12 +155,12 @@ module.exports = function(server, ioSession, app){
      * @param {Object} prevUserData
      * @param {Object} nextUserData
      * @description
-     * *UserData = {
-     *     id : Number,      // user azonosító
-     *     name : String,    // user login név
-     *     status : String,  // user státusz (CHAT.Labels.status.online + offline)
-     *     isIdle : Boolean  // user tétlen státuszban van
-     * }
+     *  *UserData = {
+     *      id : Number,      // user azonosító
+     *      name : String,    // user login név
+     *      status : String,  // user státusz (CHAT.Labels.status.online + offline)
+     *      isIdle : Boolean  // user tétlen státuszban van
+     *  }
      */
     const statusLog = function(prevUserData, nextUserData){
         const statuses = {
@@ -330,6 +330,7 @@ module.exports = function(server, ioSession, app){
 
         /**
          * Csatlakozás bontása emitter
+         * reason: 'transport close'|'client error'
          */
         socket.on('disconnect', function(reason){
             const discUserData = ChatState.connectedUsers[socket.id];
@@ -356,15 +357,15 @@ module.exports = function(server, ioSession, app){
          * @param {Object} updatedConnectedUsers - a pillanatnyilag csatlakozott usereket tároló objektum
          * @param {Number} triggerUserId - az eseményt kiváltó userId
          * @description
-         * connectedUsers = {
-         *     <socket.id> : {
-         *         id : Number,      // user azonosító
-         *         name : String,    // user login név
-         *         status : String,  // user státusz (CHAT.Labels.status.online + offline)
-         *         isIdle : Boolean  // user tétlen státuszban van
-         *     },
-         *     ...
-         * }
+         *  connectedUsers = {
+         *      <socket.id> : {
+         *          id : Number,      // user azonosító
+         *          name : String,    // user login név
+         *          status : String,  // user státusz (CHAT.Labels.status.online + offline)
+         *          isIdle : Boolean  // user tétlen státuszban van
+         *      },
+         *      ...
+         *  }
          */
         socket.on('statusChanged', function(updatedConnectedUsers, triggerUserId){
             const prevUserData = HD.Object.search(ChatState.connectedUsers, user => user.id === triggerUserId);

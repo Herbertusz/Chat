@@ -18,11 +18,38 @@ CHAT.FileTransfer = {
      * Fájlátvitel megszakításához használt segédváltozó
      * @type {Object.<XMLHttpRequest>}
      * @description
-     * data = {
-     *     <barId> : {XMLHttpRequest}
-     * }
+     *  data = {
+     *      <barId> : {XMLHttpRequest}
+     *  }
      */
     XHR : {},
+
+    /**
+     * Tárolási mód meghatározása méret alapján
+     * @param {Number} size - fájl mérete bájtban
+     * @returns {String|Boolean} feltöltött fájl tárolási módja ('upload'|'base64'|...|false)
+     * @description
+     *  CHAT.Config.fileTransfer.store = {
+     *      base64 : Number,  // base64 max mérete
+     *      zip    : Number,  // zip max mérete
+     *      upload : Number   // feltöltött fájl max mérete
+     *  }
+     */
+    getStore : function(size){
+        const mode = Object.entries(CHAT.Config.fileTransfer.store).find(function(elem){
+            return size <= elem[1];
+        });
+        return mode ? mode[0] : false;
+    },
+
+    /**
+     * Fájl megengedett maximális mérete
+     * @returns {Number}
+     */
+    getMaxSize : function(fileTransferConfig){
+        const stores = Object.keys(fileTransferConfig.store);
+        return fileTransferConfig.store[stores[stores.length - 1]];
+    },
 
     /**
      * Fájl ellenőrzése
@@ -36,7 +63,7 @@ CHAT.FileTransfer = {
         const types = fileTransferConfig.types;
         const extensions = fileTransferConfig.typeFallback;
         const allowedTypes = fileTransferConfig.allowedTypes;
-        const maxSize = fileTransferConfig.maxSize;
+        const maxSize = CHAT.FileTransfer.getMaxSize(fileTransferConfig);
         const errors = [];
 
         if (!allowed){
@@ -103,21 +130,21 @@ CHAT.FileTransfer = {
              * @param {Function} [callback=function(){}]
              * @returns {XMLHttpRequest}
              * @description
-             * data = {
-             *     userId : Number,
-             *     raw : {
-             *         name : String,
-             *         size : Number,
-             *         type : String,
-             *         source : String
-             *     },
-             *     store : String,
-             *     type : String,
-             *     time : Number,
-             *     room : String,
-             *     name : String,
-             *     deleted : Boolean
-             * }
+             *  data = {
+             *      userId : Number,
+             *      raw : {
+             *          name : String,
+             *          size : Number,
+             *          type : String,
+             *          source : String
+             *      },
+             *      store : String,
+             *      type : String,
+             *      time : Number,
+             *      room : String,
+             *      name : String,
+             *      deleted : Boolean
+             *  }
              */
             clientSend : function(box, data, reader, rawFile, callback = () => {}){
                 const fileData = JSON.stringify(data);
@@ -189,21 +216,21 @@ CHAT.FileTransfer = {
              * @param {Object} data
              * @param {Function} [callback=function(){}]
              * @description
-             * data = {
-             *     userId : Number,
-             *     raw : {
-             *         name : String,
-             *         size : Number,
-             *         type : String,
-             *         source : String
-             *     },
-             *     store : String,
-             *     type : String,
-             *     time : Number,
-             *     room : String,
-             *     name : String,
-             *     deleted : Boolean
-             * }
+             *  data = {
+             *      userId : Number,
+             *      raw : {
+             *          name : String,
+             *          size : Number,
+             *          type : String,
+             *          source : String
+             *      },
+             *      store : String,
+             *      type : String,
+             *      time : Number,
+             *      room : String,
+             *      name : String,
+             *      deleted : Boolean
+             *  }
              */
             serverSend : function(box, data, callback = () => {}){
                 CHAT.Components.Transfer.appendFile(box, data, false)
@@ -218,21 +245,21 @@ CHAT.FileTransfer = {
              * @param {HTMLElement} box
              * @param {Object} data
              * @description
-             * data = {
-             *     userId : Number,
-             *     raw : {
-             *         name : String,
-             *         size : Number,
-             *         type : String,
-             *         source : String
-             *     },
-             *     store : String,
-             *     type : String,
-             *     time : Number,
-             *     room : String,
-             *     name : String,
-             *     deleted : Boolean
-             * }
+             *  data = {
+             *      userId : Number,
+             *      raw : {
+             *          name : String,
+             *          size : Number,
+             *          type : String,
+             *          source : String
+             *      },
+             *      store : String,
+             *      type : String,
+             *      time : Number,
+             *      room : String,
+             *      name : String,
+             *      deleted : Boolean
+             *  }
              */
             receive : function(box, data){
                 if (!data.deleted){
@@ -259,29 +286,24 @@ CHAT.FileTransfer = {
              * @param {Blob} rawFile
              * @param {Function} [callback=function(){}]
              * @description
-             * data = {
-             *     userId : Number,
-             *     raw : {
-             *         name : String,
-             *         size : Number,
-             *         type : String,
-             *         source : String
-             *     },
-             *     store : String,
-             *     type : String,
-             *     time : Number,
-             *     room : String,
-             *     name : String,
-             *     deleted : Boolean
-             * }
+             *  data = {
+             *      userId : Number,
+             *      raw : {
+             *          name : String,
+             *          size : Number,
+             *          type : String,
+             *          source : String
+             *      },
+             *      store : String,
+             *      type : String,
+             *      time : Number,
+             *      room : String,
+             *      name : String,
+             *      deleted : Boolean
+             *  }
              */
             clientSend : function(box, data, reader, rawFile, callback = () => {}){
                 data.raw.source = reader.result;
-                CHAT.Components.Transfer.appendFile(box, data, true)
-                    .then(callback)
-                    .catch(function(error){
-                        HD.Log.error(error);
-                    });
                 CHAT.socket.emit('sendFile', data);
             },
 
@@ -291,21 +313,21 @@ CHAT.FileTransfer = {
              * @param {Object} data
              * @param {Function} [callback=function(){}]
              * @description
-             * data = {
-             *     userId : Number,
-             *     raw : {
-             *         name : String,
-             *         size : Number,
-             *         type : String,
-             *         source : String
-             *     },
-             *     store : String,
-             *     type : String,
-             *     time : Number,
-             *     room : String,
-             *     name : String,
-             *     deleted : Boolean
-             * }
+             *  data = {
+             *      userId : Number,
+             *      raw : {
+             *          name : String,
+             *          size : Number,
+             *          type : String,
+             *          source : String
+             *      },
+             *      store : String,
+             *      type : String,
+             *      time : Number,
+             *      room : String,
+             *      name : String,
+             *      deleted : Boolean
+             *  }
              */
             serverSend : function(box, data, callback = () => {}){
                 CHAT.Components.Transfer.appendFile(box, data, false)
@@ -320,21 +342,21 @@ CHAT.FileTransfer = {
              * @param {HTMLElement} box
              * @param {Object} data
              * @description
-             * data = {
-             *     userId : Number,
-             *     raw : {
-             *         name : String,
-             *         size : Number,
-             *         type : String,
-             *         source : String
-             *     },
-             *     store : String,
-             *     type : String,
-             *     time : Number,
-             *     room : String,
-             *     name : String,
-             *     deleted : Boolean
-             * }
+             *  data = {
+             *      userId : Number,
+             *      raw : {
+             *          name : String,
+             *          size : Number,
+             *          type : String,
+             *          source : String
+             *      },
+             *      store : String,
+             *      type : String,
+             *      time : Number,
+             *      room : String,
+             *      name : String,
+             *      deleted : Boolean
+             *  }
              */
             receive : function(box, data){
                 if (!data.deleted){
@@ -394,7 +416,7 @@ CHAT.FileTransfer = {
      * @param {Array} args
      */
     action : function(operation, args){
-        const store = CHAT.Config.fileTransfer.store;
+        const store = CHAT.FileTransfer.getStore(args[1].raw.size);
         const strategies = this.strategies;
 
         if (strategies[store] && strategies[store][operation]){

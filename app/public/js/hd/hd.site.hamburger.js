@@ -34,17 +34,18 @@ HD.Site.Hamburger = function(options){
     /**
      * Alapértelmezett beállítások
      * @type {Object}
-     * @description szerkezet: {
-     *     menu : String,             // Menü szelektora
-     *     stretcher : String,        // Menün belüli "nyúlóelem" szelektora
-     *     hamb : String,             // Hamburgerjel szelektora
-     *     item : String,             // Menüpontok szelektora (hamburgerjel nélkül)
-     *     hambList : String,         // Hamburgerjel alatti menü szelektora
-     *     hambItem : String,         // Hamburgerjel alatti menüpontok szelektora
-     *     hambActiveClass : String,  // Látható hamburgerjel CSS class-a
-     *     cloneClass : String,       // Menü-klón szelektora
-     *     maxDiff : Number           // Maximális tűréshatár (px)
-     * }
+     * @description
+     *  defaultOptions = {
+     *      menu : String,             // Menü szelektora
+     *      stretcher : String,        // Menün belüli "nyúlóelem" szelektora
+     *      hamb : String,             // Hamburgerjel szelektora
+     *      item : String,             // Menüpontok szelektora (hamburgerjel nélkül)
+     *      hambList : String,         // Hamburgerjel alatti menü szelektora
+     *      hambItem : String,         // Hamburgerjel alatti menüpontok szelektora
+     *      hambActiveClass : String,  // Látható hamburgerjel CSS class-a
+     *      cloneClass : String,       // Menü-klón szelektora
+     *      maxDiff : Number           // Maximális tűréshatár (px)
+     *  }
      */
     const defaultOptions = {
         menu : '',

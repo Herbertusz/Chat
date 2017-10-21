@@ -4,8 +4,8 @@
  * @description HD-keret modulok behúzása szerver-oldalra
  * @requires -
  * @example
- * const HD = require('<path>/hd.js')(['utility', 'math', 'datetime.timer']);
- * const timer = HD.DateTime.Timer(-1), id = HD.Number.getUniqueId();
+ *  const HD = require('<path>/hd.js')(['utility', 'math', 'datetime.timer']);
+ *  const timer = HD.DateTime.Timer(-1), id = HD.Number.getUniqueId();
  */
 
 'use strict';

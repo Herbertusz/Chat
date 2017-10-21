@@ -41,10 +41,10 @@ const Model = function(db){
          * @param {Function} [callback]
          * @returns {Promise}
          * @description
-         * data = {
-         *     username : String,
-         *     password : String
-         * }
+         *  data = {
+         *      username : String,
+         *      password : String
+         *  }
          */
         getUser : function(data, callback = () => {}){
             return db.getRows(`
@@ -152,12 +152,12 @@ const Model = function(db){
          * @param {Function} [callback]
          * @returns {Promise}
          * @description
-         * data = {
-         *     userId : Number,
-         *     type : Number,
-         *     prevStatus : String,
-         *     nextStatus : String
-         * }
+         *  data = {
+         *      userId : Number,
+         *      type : Number,
+         *      prevStatus : String,
+         *      nextStatus : String
+         *  }
          */
         setStatus : function(data, callback = () => {}){
             const status = {

@@ -204,12 +204,12 @@ CHAT.Components.Transfer = {
      * @param {Object} data
      * @param {Boolean} [highlighted=false]
      * @description
-     * data = {
-     *     userId : Number,
-     *     message : String,
-     *     time : Number,
-     *     room : String
-     * }
+     *  data = {
+     *      userId : Number,
+     *      message : String,
+     *      time : Number,
+     *      room : String
+     *  }
      */
     appendUserMessage : function(box, data, highlighted = false){
         const time = HD.DateTime.formatMS('Y-m-d H:i:s', data.time);
@@ -249,27 +249,28 @@ CHAT.Components.Transfer = {
      * @param {Boolean} [highlighted=false]
      * @returns {Promise}
      * @description
-     * data = {
-     *     userId : Number,
-     *     raw : {
-     *         name : String,
-     *         size : Number,
-     *         type : String,
-     *         source : String
-     *     },
-     *     store : String,
-     *     type : String,
-     *     time : Number,
-     *     room : String,
-     *     name : String,
-     *     deleted : Boolean
-     * }
+     *  data = {
+     *      userId : Number,
+     *      raw : {
+     *          name : String,
+     *          size : Number,
+     *          type : String,
+     *          source : String
+     *      },
+     *      store : String,
+     *      type : String,
+     *      time : Number,
+     *      room : String,
+     *      name : String,
+     *      deleted : Boolean
+     *  }
      */
     appendFile : function(box, data, highlighted = false){
         let tpl, imgSrc;
         const List = HD.DOM(box).descendants(CHAT.DOM.list);
         const time = HD.DateTime.formatMS('Y-m-d H:i:s', data.time);
         const userName = CHAT.Components.User.getName(data.userId);
+        const download = data.store === 'base64' ? `download="${data.raw.name}"` : ``;  // Chrome base64 restriction
         const fileSrc = data.store === 'upload' ?
             `/chat/file/${HD.DOM(box).data('room')}/${data.raw.source}` :
             data.raw.source;
@@ -289,7 +290,7 @@ CHAT.Components.Transfer = {
         if (data.type === 'image'){
             imgSrc = fileSrc;
             tpl = `
-                <a class="image" href="${fileSrc}" target="_blank">
+                <a class="image" href="${fileSrc}" target="_blank" ${download}>
                     <img class="send-image" alt="${data.raw.name}" src="${imgSrc}" />
                 </a>
             `;
@@ -297,7 +298,8 @@ CHAT.Components.Transfer = {
         else {
             imgSrc = '/images/filetypes.png';
             tpl = `
-                <a class="file" href="${fileSrc}" target="_blank" title="${CHAT.Labels.file.types[data.type]}">
+                <a class="file" href="${fileSrc}" target="_blank"
+                    title="${CHAT.Labels.file.types[data.type]}" ${download}>
                     <span class="filetype filetype-${data.type}"></span>
                     <span class="text">${data.raw.name}</span>
                 </a>
@@ -328,12 +330,12 @@ CHAT.Components.Transfer = {
      * @param {Object} options
      * @returns {Number|null}
      * @description
-     * options = {
-     *     direction : String,
-     *     percent : Number,
-     *     cancelable : Boolean,
-     *     end : Boolean
-     * }
+     *  options = {
+     *      direction : String,
+     *      percent : Number,
+     *      cancelable : Boolean,
+     *      end : Boolean
+     *  }
      */
     progressbar : function(box, barId, options){
         options = Object.assign({

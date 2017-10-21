@@ -397,7 +397,8 @@ HD.Function = {
      * @param {*} param - paraméter
      * @param {*} value - alapértelmezett érték
      * @returns {*} ezt kell értékül adni a paraméternek
-     * @example par = HD.Function.param(par, 0);
+     * @example
+     *  par = HD.Function.param(par, 0);
      */
     param : function(param, value){
         if (typeof param === 'undefined'){
@@ -413,14 +414,14 @@ HD.Function = {
      * @param {Object} params - argumentumok adatai
      * @returns {Array} paraméterek értékei
      * @example
-     * HD.Function.multiParam({
-     *     sql      : [sql, 'string'],
-     *     binds    : [binds, 'object', {}],
-     *     run      : [run, 'boolean', true],
-     *     preserve : [preserve, 'boolean', false],
-     *     callback : [callback, 'function']
-     * });
-     * név : [érték, typus, alapértelmezett érték]
+     *  HD.Function.multiParam({
+     *      sql      : [sql, 'string'],
+     *      binds    : [binds, 'object', {}],
+     *      run      : [run, 'boolean', true],
+     *      preserve : [preserve, 'boolean', false],
+     *      callback : [callback, 'function']
+     *  });
+     *  név : [érték, típus, alapértelmezett érték]
      */
     multiParam : function(params){
         const newParams = [];
@@ -516,7 +517,7 @@ HD.Array = {
      * @param {Array} arr - tömb
      * @returns {Array}
      * @example
-     * [[1,2],[3,4],[5,6]] -> [[1,3,5],[2,4,6]]
+     *  [[1,2],[3,4],[5,6]] -> [[1,3,5],[2,4,6]]
      */
     rotate : function(arr){
         let i, j;

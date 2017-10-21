@@ -26,10 +26,10 @@ CHAT.Components.Timer = {
      * Felhasználókhoz kapcsolt idle-időmérők
      * @type {Object}
      * @description
-     * counters = {
-     *     `user-${userId}` : HD.DateTime.Timer,
-     *     ...
-     * }
+     *  counters = {
+     *      `user-${userId}` : HD.DateTime.Timer,
+     *      ...
+     *  }
      */
     counters : {}
 

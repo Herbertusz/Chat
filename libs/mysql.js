@@ -71,13 +71,13 @@ const DB = {
      * Kapcsolódás adatbázishoz
      * @param {Object} connectionData
      * @description
-     * connectionData = {
-     *     host : 'localhost',
-     *     user : 'root',
-     *     password : '',
-     *     database : 'nodejs',
-     *     charset : 'utf8_unicode_ci'
-     * }
+     *  connectionData = {
+     *      host : 'localhost',
+     *      user : 'root',
+     *      password : '',
+     *      database : 'nodejs',
+     *      charset : 'utf8_unicode_ci'
+     *  }
      */
     connect : function(connectionData){
         const db = this;

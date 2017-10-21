@@ -26,15 +26,15 @@ CHAT.State = {
      * Chat-be belépett userek
      * @type {Object}
      * @description
-     * connectedUsers = {
-     *     <socket.id> : {
-     *         id : Number,      // user azonosító
-     *         name : String,    // user login név
-     *         status : String,  // user státusz (CHAT.Labels.status.online + offline)
-     *         isIdle : Boolean  // user tétlen státuszban van
-     *     },
-     *     ...
-     * }
+     *  connectedUsers = {
+     *      <socket.id> : {
+     *          id : Number,      // user azonosító
+     *          name : String,    // user login név
+     *          status : String,  // user státusz (CHAT.Labels.status.online + offline)
+     *          isIdle : Boolean  // user tétlen státuszban van
+     *      },
+     *      ...
+     *  }
      */
     connectedUsers : {},
 
@@ -42,14 +42,14 @@ CHAT.State = {
      * Futó chat-csatornák (amikben a belépett user is benne van)
      * @type {Array}
      * @description
-     * rooms = [
-     *     {
-     *         name : String,    // 'room-x-y'; x: létrehozó userId, y: létrehozás timestamp
-     *         userIds : Array,  // csatornába rakott userId-k
-     *         starter : Number  // csatorna létrehozó userId
-     *     },
-     *     ...
-     * ]
+     *  rooms = [
+     *      {
+     *          name : String,    // 'room-x-y'; x: létrehozó userId, y: létrehozás timestamp
+     *          userIds : Array,  // csatornába rakott userId-k
+     *          starter : Number  // csatorna létrehozó userId
+     *      },
+     *      ...
+     *  ]
      */
     rooms : []
 
