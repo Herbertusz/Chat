@@ -330,7 +330,7 @@ module.exports = function(server, ioSession, app){
 
         /**
          * Csatlakozás bontása emitter
-         * reason: 'transport close'|'client error'
+         * reason: 'transport close'|'client error'|'ping timeout'
          */
         socket.on('disconnect', function(reason){
             const discUserData = ChatState.connectedUsers[socket.id];

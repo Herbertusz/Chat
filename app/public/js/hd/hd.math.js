@@ -184,7 +184,7 @@ HD.Math = {
         getAbsoluteCoords : function(positions, w, h, xOffset = 0, yOffset = 0){
             let x, y;
             const coords = [];
-            positions.forEach(function(elem, index){
+            positions.forEach((elem, index) => {
                 x = elem[0] / 100;
                 y = elem[1] / 100;
                 coords[index] = {
@@ -202,8 +202,10 @@ HD.Math = {
          * @returns {Boolean}
          */
         isPointInsideRectangle : function(point, rectangle){
-            return (rectangle.x < point.x && rectangle.x + rectangle.w > point.x &&
-            rectangle.y < point.y && rectangle.y + rectangle.h > point.y);
+            return (
+                rectangle.x < point.x && rectangle.x + rectangle.w > point.x &&
+                rectangle.y < point.y && rectangle.y + rectangle.h > point.y
+            );
         }
 
     },
@@ -280,9 +282,9 @@ HD.Math = {
                 easing : 'swing'
             }, options);
 
-            let i, len;
             let value = 0;
             const steps = options.delay / 20;
+            const len = Math.floor(steps);
 
             const makeStep = function(val, currentStep){
                 const timerID = setTimeout(function(){
@@ -292,17 +294,17 @@ HD.Math = {
                         options.callback.call(this);
                         Reflect.deleteProperty(HD.Math.Animation.timers, ID);
                     }
-                }.bind(HD.Math.Animation), options.delay / steps * i);
+                }.bind(HD.Math.Animation), options.delay / steps * currentStep);
                 HD.Math.Animation.timers[ID].push(timerID);
             };
 
             HD.Math.Animation.timers[ID] = [];
-            for (i = 0, len = Math.floor(steps); i <= len; i++){
+            [...Array(len).keys()].forEach(i => {
                 value = HD.Math.Animation.easings[options.easing](
                     i, options.range[0], options.range[1] - options.range[0], steps
                 );
                 makeStep(value, i);
-            }
+            });
         },
 
         /**

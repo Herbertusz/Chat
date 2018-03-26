@@ -15,6 +15,8 @@
  *  tooltip.init();
  */
 
+/* global $ */
+
 'use strict';
 
 var HD = window.HD || {};

@@ -422,7 +422,8 @@
         "code": 120,
         "tabWidth": 4,
         "ignoreUrls": true,
-        "ignorePattern": "/.*?/g"
+        "ignoreRegExpLiterals": true,
+        "ignoreStrings": true
       }
     ],
     // enforce a maximum depth that callbacks can be nested

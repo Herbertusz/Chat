@@ -1,6 +1,8 @@
 # HD-chat
 Chat alkalmazás (Node.js, Socket.io)
 
+Demo: [http://chat.bauhh.hu](http://chat.bauhh.hu)
+
 storage/env.js
 
     'use strict';
@@ -53,30 +55,3 @@ storage/env.js
             }
         }
     };
-
-Events
-
-event: 'roomCreated'
-triggerId: userId (=starter)
-userId: Array.userId
-room: roomName
-
-event: 'roomJoin'
-triggerId: userId (=)
-userId: userId (=)
-room: roomName
-
-event: 'roomLeave'
-triggerId: userId (=)
-userId: userId (=)
-room: roomName
-
-event: 'roomForceJoin'
-triggerId: userId
-userId: userId
-room: roomName
-
-event: 'roomForceLeave'
-triggerId: userId
-userId: userId
-room: roomName

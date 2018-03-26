@@ -167,7 +167,7 @@ CHAT.Components.Transfer = {
         if (CHAT.Config.textTransfer.escapeHTML){
             message = CHAT.Components.Transfer.escapeHtml(message);
         }
-        const messageArray = message.split(HD.String.createRegExp(disablePattern));
+        const messageArray = message.split(new RegExp(disablePattern));
         if (CHAT.Config.textTransfer.imageReplacement.allowed){
             let image;
             const images = CHAT.Config.textTransfer.imageReplacement.images;
@@ -188,9 +188,9 @@ CHAT.Components.Transfer = {
         if (CHAT.Config.textTransfer.stringReplacement.allowed){
             const strings = CHAT.Config.textTransfer.stringReplacement.strings;
             strings.forEach(function(str){
-                messageArray[0] = messageArray[0].replace(HD.String.createRegExp(str[0]), str[1]);
+                messageArray[0] = messageArray[0].replace(new RegExp(str[0], 'g'), str[1]);
                 if (messageArray.length > 1){
-                    messageArray[2] = messageArray[2].replace(HD.String.createRegExp(str[0]), str[1]);
+                    messageArray[2] = messageArray[2].replace(new RegExp(str[0], 'g'), str[1]);
                 }
             });
         }
