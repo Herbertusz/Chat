@@ -154,6 +154,127 @@
                     <span class="drag-resize resize-rb"></span>
                 </div>
             </div>
+            <div class="config">
+                <h2><%= CHAT.Labels.config._label %></h2>
+                <svg class="close"><use xlink:href="#cross"></use></svg>
+                <form id="config-form">
+                    <label>
+                        <span><%= CHAT.Labels.config.box.defaultSize %>:</span>
+                        <input type="number" name="box.defaultSize.width" value="300" /> x
+                        <input type="number" name="box.defaultSize.height" value="500" />
+                    </label>
+                    <fieldset>
+                        <legend><%= CHAT.Labels.config.notification._label %></legend>
+                        <label>
+                            <input type="checkbox" name="notification.allowed" value="1" checked />
+                            <span><%= CHAT.Labels.config.notification.allowed %></span>
+                        </label>
+                        <label>
+                            <input type="checkbox" name="notification.writing.allowed" value="1" checked />
+                            <span><%= CHAT.Labels.config.notification.writing.allowed %></span>
+                        </label>
+                        <label>
+                            <input type="checkbox" name="notification.local.allowed" value="1" checked />
+                            <span><%= CHAT.Labels.config.notification.local.allowed %></span>
+                        </label>
+                        <label>
+                            <span><%= CHAT.Labels.config.notification.local.scroll %>:</span>
+                            <input type="number" name="notification.local.scroll" value="200" />
+                            <br />
+                            <span class="small"><%= CHAT.Labels.config.notification.local.scrollDetails %></span>
+                        </label>
+                        <label>
+                            <input type="checkbox" name="notification.visual.allowed" value="1" checked />
+                            <span><%= CHAT.Labels.config.notification.visual.allowed %></span>
+                        </label>
+                        <label>
+                            <strong><%= CHAT.Labels.config.notification.visual.types._label %>:</strong>
+                            <div class="sub">
+                                <label>
+                                    <input type="checkbox" name="notification.visual.types[]" value="title" checked />
+                                    <span><%= CHAT.Labels.config.notification.visual.types.title %></span>
+                                </label>
+                                <label>
+                                    <input type="checkbox" name="notification.visual.types[]" value="box" checked />
+                                    <span><%= CHAT.Labels.config.notification.visual.types.box %></span>
+                                </label>
+                            </div>
+                        </label>
+                        <label>
+                            <input type="checkbox" name="notification.sound.allowed" value="1" />
+                            <span><%= CHAT.Labels.config.notification.sound.allowed %></span>
+                        </label>
+                        <label>
+                            <input type="checkbox" name="notification.desktop.allowed" value="1" />
+                            <span><%= CHAT.Labels.config.notification.desktop.allowed %></span>
+                        </label>
+                        <label>
+                            <span><%= CHAT.Labels.config.notification.desktop.closeTime %>:</span>
+                            <input type="number" name="notification.desktop.closeTime" min="0" value="<%= CHAT.Config.notification.desktop.closeTime %>" />
+                        </label>
+                    </fieldset>
+                    <fieldset>
+                        <legend><%= CHAT.Labels.config.textTransfer._label %></legend>
+                        <label>
+                            <span><%= CHAT.Labels.config.textTransfer.replaceDisable %>:</span>
+                            <input type="text" class="regexp" name="textTransfer.replaceDisable" value="`(.*)`" />
+                        </label>
+                        <label>
+                            <input type="checkbox" name="textTransfer.imageReplacement.allowed" value="1" checked />
+                            <span><%= CHAT.Labels.config.textTransfer.imageReplacement.allowed %></span>
+                        </label>
+                        <label>
+                            <input type="checkbox" name="textTransfer.stringReplacement.allowed" value="1" checked />
+                            <span><%= CHAT.Labels.config.textTransfer.stringReplacement.allowed %></span>
+                        </label>
+                        <label>
+                            <strong><%= CHAT.Labels.config.textTransfer.stringReplacement.strings._label %>:</strong>
+                            <div class="sub">
+                                <label>
+                                    <span class="width"><%= CHAT.Labels.config.textTransfer.stringReplacement.strings.B %>:</span>
+                                    <input type="text" class="regexp" name="textTransfer.stringReplacement.strings[0]" value="<%= CHAT.Config.textTransfer.stringReplacement.strings[0][0] %>" data-replace="<%= CHAT.Config.textTransfer.stringReplacement.strings[0][1] %>" />
+                                </label>
+                                <label>
+                                    <span class="width"><%= CHAT.Labels.config.textTransfer.stringReplacement.strings.I %>:</span>
+                                    <input type="text" class="regexp" name="textTransfer.stringReplacement.strings[1]" value="<%= CHAT.Config.textTransfer.stringReplacement.strings[1][0] %>" data-replace="<%= CHAT.Config.textTransfer.stringReplacement.strings[1][1] %>" />
+                                </label>
+                                <label>
+                                    <span class="width"><%= CHAT.Labels.config.textTransfer.stringReplacement.strings.U %>:</span>
+                                    <input type="text" class="regexp" name="textTransfer.stringReplacement.strings[2]" value="<%= CHAT.Config.textTransfer.stringReplacement.strings[2][0] %>" data-replace="<%= CHAT.Config.textTransfer.stringReplacement.strings[2][1] %>" />
+                                </label>
+                                <label>
+                                    <span class="width"><%= CHAT.Labels.config.textTransfer.stringReplacement.strings.S %>:</span>
+                                    <input type="text" class="regexp" name="textTransfer.stringReplacement.strings[3]" value="<%= CHAT.Config.textTransfer.stringReplacement.strings[3][0] %>" data-replace="<%= CHAT.Config.textTransfer.stringReplacement.strings[3][1] %>" />
+                                </label>
+                                <label>
+                                    <span class="width"><%= CHAT.Labels.config.textTransfer.stringReplacement.strings.color %>:</span>
+                                    <input type="text" class="regexp" name="textTransfer.stringReplacement.strings[4]" value="<%= CHAT.Config.textTransfer.stringReplacement.strings[4][0] %>" data-replace="<%= CHAT.Config.textTransfer.stringReplacement.strings[4][1] %>" />
+                                </label>
+                                <label>
+                                    <span class="width"><%= CHAT.Labels.config.textTransfer.stringReplacement.strings.link %>:</span>
+                                    <input type="text" class="regexp" name="textTransfer.stringReplacement.strings[5]" value="<%= CHAT.Config.textTransfer.stringReplacement.strings[5][0] %>" data-replace="<%= CHAT.Config.textTransfer.stringReplacement.strings[5][1] %>" />
+                                </label>
+                            </div>
+                        </label>
+                        <% if (CHAT.Config.textTransfer.sendMode.allowed){ %>
+                            <label>
+                                <strong><%= CHAT.Labels.config.textTransfer.sendMode._label %></strong>
+                                <div class="sub">
+                                    <label>
+                                        <input type="radio" name="textTransfer.sendMode.default" value="enter" checked />
+                                        <span><%= CHAT.Labels.config.textTransfer.sendMode.default.enter %></span>
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="textTransfer.sendMode.default" value="button" />
+                                        <span><%= CHAT.Labels.config.textTransfer.sendMode.default.button %></span>
+                                    </label>
+                                </div>
+                            </label>
+                        <% } %>
+                    </fieldset>
+                    <button type="button"><%= CHAT.Labels.config._submit %></button>
+                </form>
+            </div>
         </section>
         <div class="clearfix"></div>
     <% } else { %>

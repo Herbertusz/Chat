@@ -8,6 +8,7 @@ var CHAT = window.CHAT || {};
 HD.DOM(document).event('DOMContentLoaded', function(){
 
     CHAT.DOM.setTitle();
+    CHAT.Components.Config.init();
     CHAT.Components.Box.roomEvents();
     CHAT.Components.Box.dragPosition();
     CHAT.Components.Box.dragResize();

@@ -35,7 +35,59 @@ const createMongoDB = function(){
                             'forbidden' : [4],
                             'lastActive' : 1469215006264,
                             'created' : 1469215006264,
-                            'active' : true
+                            'active' : true,
+                            'config' : {
+                                'box' : {
+                                    'defaultSize' : {
+                                        'width' : 300,
+                                        'height' : 500
+                                    }
+                                },
+                                'notification' : {
+                                    'allowed' : true,
+                                    'writing' : {
+                                        'allowed' : true
+                                    },
+                                    'local' : {
+                                        'allowed' : true,
+                                        'scroll' : 200
+                                    },
+                                    'visual' : {
+                                        'allowed' : true,
+                                        'types' : ['title', 'box']
+                                    },
+                                    'sound' : {
+                                        'allowed' : false
+                                    },
+                                    'desktop' : {
+                                        'allowed' : false,
+                                        'closeTime' : 5000
+                                    }
+                                },
+                                'textTransfer' : {
+                                    'replaceDisable' : '`(.*)`',
+                                    'imageReplacement' : {
+                                        'allowed' : true
+                                    },
+                                    'stringReplacement' : {
+                                        'allowed' : true,
+                                        'strings' : [
+                                            ['\\*\\*(.*?)\\*\\*',              '<strong>$1</strong>'],
+                                            ['//(.*?)//',                      '<em>$1</em>'],
+                                            ['__(.*?)__',                      '<span style="text-decoration: underline;">$1</span>'],
+                                            ['--(.*?)--',                      '<span style="text-decoration: line-through;">$1</span>'],
+                                            ['\\[color=(.*?)](.*?)\\[/color]', '<span style="color: $1;">$2</span>'],
+                                            [
+                                                '((https?:)?//(www\\.)?([-a-zA-Z0-9@:%._+~#=]{2,256})\\.([a-z]{2,6})\\b([-a-zA-Z0-9@:%_+.~#?&/=]*))',
+                                                '<a href="$1" target="_blank">$1</a>'
+                                            ]
+                                        ]
+                                    },
+                                    'sendMode' : {
+                                        'default' : 'enter'
+                                    }
+                                }
+                            }
                         },
                         {
                             'id' : 2,

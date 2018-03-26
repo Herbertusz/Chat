@@ -1,6 +1,7 @@
 'use strict';
 
 var CHAT = global.CHAT || {};
+var deepmerge = require('deepmerge');
 
 /**
  * Chat beállításai
@@ -89,7 +90,7 @@ CHAT.Config = {
         visual : {
             // Vizuális értesítés engedélyezése
             allowed : true,
-            // Vizuális értesítés typusai
+            // Vizuális értesítés típusai
             // 'title': <title> teg változtatésa; 'box': chat-doboz kiemelése
             types : ['title', 'box']
         },
@@ -115,7 +116,7 @@ CHAT.Config = {
             // Asztali értesítés engedélyezése
             allowed : false,
             // Értesítés eltüntetése előtt eltelt idő (ms) (falsy érték: a program nem tünteti el)
-            closeTime : 10000,
+            closeTime : 5000,
             // Asztali értesítés beállításai (a Notification() konstruktor második argumentuma)
             options : {
                 // Ha megadjuk, az alkalmazástól származó értesítések össze lesznek vonva
@@ -135,7 +136,7 @@ CHAT.Config = {
         escapeHTML : true,
 
         // A mintán belül nincs kép- és szövegcsere
-        replaceDisable : /`(.*)`/,
+        replaceDisable : '`(.*)`',
 
         // Képcsere (karakterláncok képekre cserélése, pl emoticon-ok)
         imageReplacement : {
@@ -164,16 +165,17 @@ CHAT.Config = {
 
         // Szövegcsere (karakterláncok más karakterláncokra cserélése, pl BB-kódok)
         stringReplacement : {
-            // Szöveglecsere engedélyezése
+            // Szövegcsere engedélyezése
             allowed : true,
             // Karakterlánc cserék
             strings : [
-                [/\*\*(.*?)\*\*/g,                 '<strong>$1</strong>'],
-                [/__(.*?)__/g,                     '<em>$1</em>'],
-                [/--(.*?)--/g,                     '<span style="text-decoration: line-through;">$1</span>'],
-                [/\[color=(.*?)](.*?)\[\/color]/g, '<span style="color: $1;">$2</span>'],
+                ['\\*\\*(.*?)\\*\\*',              '<strong>$1</strong>'],
+                ['//(.*?)//',                      '<em>$1</em>'],
+                ['__(.*?)__',                      '<span style="text-decoration: underline;">$1</span>'],
+                ['--(.*?)--',                      '<span style="text-decoration: line-through;">$1</span>'],
+                ['\\[color=(.*?)](.*?)\\[/color]', '<span style="color: $1;">$2</span>'],
                 [
-                    /((https?:)?\/\/(www\.)?([-a-zA-Z0-9@:%._+~#=]{2,256})\.([a-z]{2,6})\b([-a-zA-Z0-9@:%_+.~#?&/=]*))/g,
+                    '((https?:)?//(www\\.)?([-a-zA-Z0-9@:%._+~#=]{2,256})\\.([a-z]{2,6})\\b([-a-zA-Z0-9@:%_+.~#?&/=]*))',
                     '<a href="$1" target="_blank">$1</a>'
                 ]
             ]
@@ -204,6 +206,10 @@ CHAT.Config = {
             // zip    :   2 * 1024 * 1024,  // 1 MB - 2 MB  // TODO
             upload : 100 * 1024 * 1024   // 2 MB - 100 MB
         },
+
+        // Feltöltött fájlok törlésének feltétele ('disabled'|'offline-all'|'offline-sender')
+        // TODO
+        garbageCollect : 'offline-all',
 
         // Egyszerre több fájl átvitelének engedélyezése
         multiple : true,
@@ -244,4 +250,8 @@ CHAT.Config = {
 
 };
 
-exports.Config = CHAT.Config;
+exports.merge = function(userConfig){
+    return deepmerge(CHAT.Config, userConfig, {
+        arrayMerge : (dest, source) => source
+    });
+};

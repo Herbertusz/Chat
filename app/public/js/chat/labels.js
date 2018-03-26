@@ -186,6 +186,71 @@ CHAT.Labels = {
         fileType : (type, allowedTypes) =>
             `Nem megfelelő a fájl típusa (${CHAT.Labels.file.types[type]})!
             Megengedett típusok: ${allowedTypes.map(t => CHAT.Labels.file.types[t]).join(', ')}.`
+    },
+    // Beállítások feliratai
+    config : {
+        _label : 'Beállítások',
+        _submit : 'OK',
+        box : {
+            defaultSize : 'Alapértelmezett doboz méret'
+        },
+        notification : {
+            _label : 'Értesítések',
+            allowed : 'Értesítések engedélyezése (hibaüzenetekre nem vonatkozik)',
+            writing : {
+                allowed : 'Üzenetírás értesítések engedélyezése'
+            },
+            local : {
+                allowed : 'Helyi értesítések engedélyezése',
+                scroll : 'Helyi értesítés és scrollozás választóvonala (px)',
+                scrollDetails : `
+                    Ha ennél nagyobb értékkel van feljebb görgetve a doboz, akkor értesítés érkezik,
+                    egyébként legörgeti a dobozt (egy üzenet átlagos magasságánál nagyobb érték javasolt)
+                `
+            },
+            visual : {
+                allowed : 'Vizuális értesítés engedélyezése',
+                types : {
+                    _label : 'Vizuális értesítés típusai',
+                    title : '<title> teg változtatása',
+                    box : 'chat-doboz kiemelése'
+                }
+            },
+            sound : {
+                allowed : 'Hangos értesítés engedélyezése'
+            },
+            desktop : {
+                allowed : 'Asztali értesítés engedélyezése',
+                closeTime : 'Értesítés eltüntetése előtt eltelt idő (ms) (0: a program nem tünteti el)'
+            }
+        },
+        textTransfer : {
+            _label : 'Üzenetküldés',
+            replaceDisable : 'A mintán belül nincs kép- és szövegcsere',
+            imageReplacement : {
+                allowed : 'Képcsere (karakterláncok képekre cserélése, pl emoticon-ok) engedélyezése'
+            },
+            stringReplacement : {
+                allowed : 'Szövegcsere (karakterláncok más karakterláncokra cserélése, pl BB-kódok) engedélyezése',
+                strings : {
+                    _label : 'Karakterlánc cserék',
+                    B : 'Félkövér',
+                    I : 'Dőlt',
+                    U : 'Aláhúzott',
+                    S : 'Áthúzott',
+                    color : 'Színezett',
+                    link : 'Link'
+                }
+            },
+            // Üzenetküldési mód
+            sendMode : {
+                _label : 'Alapértelmezett üzenetküldési mód',
+                default : {
+                    enter : 'enter megnyomására',
+                    button : 'gombra kattintva'
+                }
+            }
+        }
     }
 };
 

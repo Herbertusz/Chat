@@ -8,6 +8,7 @@
   "dependencies": {
     "body-parser": "^1.15.0",
     "cookie-parser": "^1.4.1",
+    "deepmerge": "^2.0.1",
     "ejs": "^2.4.1",
     "express": "^4.13.4",
     "express-mongo-db": "^2.0.3",

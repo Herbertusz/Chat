@@ -105,6 +105,7 @@ const Model = function(db){
          * Felhasználó utolsó állapotváltozásának lekérdezése
          * @param {Number} userId
          * @param {Function} [callback]
+         * @returns {Promise}
          */
         getStatus : function(userId, callback = () => {}){
             return db.collection('chat_users')
@@ -157,12 +158,67 @@ const Model = function(db){
                 .updateOne({
                     id : data.userId
                 }, {
-                    $set : {status : status}
+                    $set : {status}
                 })
                 .then(function(result){
-                    const statusId = result.insertedId;
-                    callback(statusId);
-                    return statusId;
+                    callback(result);
+                    return result;
+                })
+                .catch(function(error){
+                    log.error(error);
+                });
+        },
+
+        /**
+         * Felhasználó beállításainak lekérdezése
+         * @param {Number} userId
+         * @param {Function} [callback]
+         * @returns {Promise}
+         */
+        getConfig : function(userId, callback = () => {}){
+            return db.collection('chat_users')
+                .find({
+                    'id' : userId
+                })
+                .limit(1)
+                .toArray()
+                .then(function(users){
+                    let config = {};
+                    if (users.length && users[0].config){
+                        config = users[0].config;
+                    }
+                    callback(config);
+                    return config;
+                })
+                .catch(function(error){
+                    log.error(error);
+                });
+        },
+
+        /**
+         * Felhasználó beállításainak eltárolása
+         * @param {Number} userId
+         * @param {Object} config
+         * @param {Function} [callback]
+         * @returns {Promise}
+         * @description
+         *  data = {
+         *      userId : Number,
+         *      type : Number,
+         *      prevStatus : String,
+         *      nextStatus : String
+         *  }
+         */
+        setConfig : function(userId, config, callback = () => {}){
+            return db.collection('chat_users')
+                .updateOne({
+                    id : userId
+                }, {
+                    $set : {config}
+                })
+                .then(function(result){
+                    callback(result);
+                    return result;
                 })
                 .catch(function(error){
                     log.error(error);
