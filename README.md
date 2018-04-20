@@ -1,7 +1,7 @@
 # HD-chat
 Chat alkalmazás (Node.js, Socket.io)
 
-Demo: [http://chat.bauhh.hu](http://chat.bauhh.hu)
+Demo: [http://chat.web-prog.hu](http://chat.web-prog.hu)
 
 storage/env.js
 
