@@ -6,13 +6,53 @@
 
 let UserModel, ChatModel;
 const ENV = require.main.require('../app/env.js');
+const fs = require('mz/fs');
 const path = require('path');
 const express = require('express');
 const router = express.Router();
-// const session = require('express-session');
-const fs = require('fs'); // TODO: mz/fs
 const log = require.main.require('../libs/log.js');
 const HD = require.main.require('../app/public/js/hd/hd.js')(['datetime']);
+const Config = require.main.require('../app/config/config.js');
+const FileTransfer = require.main.require('../app/public/js/chat/filetransfer.js');
+const CHAT = Object.assign({}, Config, FileTransfer);  // TODO: nincs erre jobb módszer?
+
+/**
+ * Felhasználók kiválasztásának korlátozásai
+ * @param {Object} app - express app (req.app)
+ * @param {String} operation - művelet ('create'|'add')
+ * @param {Number} triggerUserId - műveletet kiváltó userId
+ * @param {Array} userIds - userId-k
+ * @param {String} [room=null] - csatorna azonosító
+ * @returns {Promise} megadott művelet lefuttatása engedélyezett
+ */
+const userRestriction = function(app, operation, triggerUserId, userIds, room = null){
+    const roomData = app.get('socket').getState().rooms.find(function(thisRoomData){
+        return thisRoomData.name === room;
+    });
+    const max = CHAT.Config.room.maxUsers;
+    let permission = true;
+    let userIdSet;
+
+    if (operation === 'create'){
+        userIdSet = new Set([...userIds, triggerUserId]);
+    }
+    else if (operation === 'add'){
+        userIdSet = new Set([...userIds, ...roomData.userIds]);
+    }
+    if (max && userIdSet.size > max){
+        permission = false;
+    }
+    return UserModel
+        .getUserForbiddens([...userIdSet])
+        .then(function(users){
+            // TODO: letiltások kezelése (?)
+            return permission && true;
+        })
+        .catch(function(error){
+            log.error(error);
+        });
+};
+
 
 // Model-ek betöltése
 router.use(function(req, res, next){
@@ -47,7 +87,12 @@ router.get('/remote/:userId', function(req, res){
 
     const userId = Number(req.params.userId);
 
-    req.app.set('userId', userId);
+    req.session.login = {
+        loginned : true,
+        userId : userId,
+        userName : '',
+        error : null
+    };
 
     UserModel
         .getUsers()
@@ -67,14 +112,18 @@ router.get('/remote/:userId', function(req, res){
 
 });
 
+// Egy csatorna megjelenítése
+router.get('/room/:roomId', function(req, res){
+    ;
+});
+
 // Egy csatorna átvitelei (doboz feltöltéséhez)
 router.post('/getroommessages', function(req, res){
 
-    ChatModel.getRoomMessages(req.body.roomName)
+    ChatModel
+        .getRoomMessages(req.body.room)
         .then(function(messages){
-            res.send({
-                messages : messages
-            });
+            res.send({messages});
         })
         .catch(function(error){
             log.error(error);
@@ -85,11 +134,30 @@ router.post('/getroommessages', function(req, res){
 // Felhasználó állapota
 router.post('/getstatus', function(req, res){
 
-    ChatModel.getLastStatus(Number(req.body.userId))
+    UserModel.getStatus(Number(req.body.userId))
         .then(function(status){
-            res.send({
-                status : status
-            });
+            res.send({status});
+        })
+        .catch(function(error){
+            log.error(error);
+        });
+
+});
+
+/**
+ * Felhasználók kiválasztásának korlátozásai
+ * @param {String} operation - művelet ('create'|'add')
+ * @param {Array} userIds - userId-k
+ * @param {String} [room] - csatorna azonosító
+ * @returns {Boolean} megadott művelet lefuttatása engedélyezett
+ */
+router.post('/getrestrictions', function(req, res){
+
+    const userIds = req.body.userIds.split(',').map(id => Number(id));
+
+    userRestriction(req.app, req.body.operation, Number(req.body.triggerUserId), userIds, req.body.room)
+        .then(function(permission){
+            res.send({permission});
         })
         .catch(function(error){
             log.error(error);
@@ -98,14 +166,21 @@ router.post('/getstatus', function(req, res){
 });
 
 // Fájl kiszolgálása
-router.get('/file/:roomName/:fileName', function(req, res, next){
+router.get('/file/:room/:fileName', function(req, res, next){
 
     ChatModel
-        .getFile(req.params.roomName, req.params.fileName)
+        .getFile(req.params.room, req.params.fileName)
         .then(function(file){
-            if (file && !file.deleted){
-                // TODO: user benne van-e a file.room csatornában?
-                res.sendFile(path.resolve(`${req.app.get('upload')}/${file.data}`));
+            const userId = req.session.login ? req.session.login.userId : null;
+            const currentRoom = req.app.get('socket').getState().rooms.find(function(room){
+                return room.name === req.params.room;
+            });
+            if (file && !file.deleted && currentRoom.userIds.indexOf(userId) > -1){
+                res.sendFile(path.resolve(`${req.app.get('upload')}/${file.raw.source}`));
+            }
+            else {
+                next();
+                return;
             }
         })
         .catch(function(error){
@@ -119,19 +194,33 @@ router.post('/uploadfile', function(req, res){
 
     if (req.xhr){
         let uploadedSize = 0;
-        const io = req.app.get('io');
+        const io = req.app.get('socket').io;
         const data = JSON.parse(decodeURIComponent(req.header('X-File-Data')));
         const userId = Number(data.userId);
-        const fileStream = fs.createWriteStream(`${req.app.get('upload')}/${data.fileName}`);
-        const fileSize = Number(data.fileData.size);
+        const fileStream = fs.createWriteStream(`${req.app.get('upload')}/${data.name}`);
+        const fileSize = Number(data.raw.size);
+
+        const errors = CHAT.FileTransfer.fileCheck(data, CHAT.Config.fileTransfer);
+        if (errors.length > 0){
+            res.send({
+                success : false
+            });
+            fileStream.end();
+            return;
+        }
 
         req.on('data', function(file){
             // Fájlátvitel folyamatban
             const first = (uploadedSize === 0);
             uploadedSize += file.byteLength;
-            io.of('/chat').to(data.roomName).emit('fileReceive', {
+            // TODO: header manipulálás esetén megszakítás a maximális méretnél (?)
+            // if (uploadedSize > CHAT.FileTransfer.getMaxSize(CHAT.Config.fileTransfer)){
+            //     fileStream.end();
+            //     return;
+            // }
+            io.of('/chat').to(data.room).emit('receiveFile', {
                 userId : userId,
-                roomName : data.roomName,
+                room : data.room,
                 uploadedSize : uploadedSize,
                 fileSize : fileSize,
                 firstSend : first
@@ -140,15 +229,16 @@ router.post('/uploadfile', function(req, res){
         });
         req.on('end', function(){
             // Fájlátvitel befejezve
-            io.of('/chat').to(data.roomName).emit('fileReceive', {
+            io.of('/chat').to(data.room).emit('receiveFile', {
                 userId : userId,
-                roomName : data.roomName,
+                room : data.room,
                 uploadedSize : fileSize,
                 fileSize : fileSize,
                 firstSend : false
             });
             res.send({
-                fileName : `${data.fileName}`
+                success : true,
+                fileName : `${data.name}`
             });
             fileStream.end();
         });
@@ -163,24 +253,41 @@ router.post('/uploadfile', function(req, res){
 // Kliens oldali log
 router.post('/clientlog', function(req, res){
 
-    const name = decodeURIComponent(req.body.name);
+    let fileName, logMessage;
+    const type = decodeURIComponent(req.body.type);
     const message = decodeURIComponent(req.body.message);
-    const stack = decodeURIComponent(req.body.stack);
-    const logMessage = `
-        ${HD.DateTime.formatMS('Y-m-d H:i:s', Date.now())}\n
-        name: ${name}\n
-        message: ${message}\n
-        stack:\n
-        ${stack}
-        \n-----\n
-    `.replace(/^\s+/gm, '');
+    const time = HD.DateTime.formatMS('Y-m-d H:i:s', Date.now());
 
-    fs.appendFile(`${__dirname}/../../logs/client.log`, logMessage, function(error){
-        if (error){
+    if (type === 'error'){
+        const name = decodeURIComponent(req.body.name);
+        const stack = decodeURIComponent(req.body.stack);
+
+        fileName = 'client.log';
+        logMessage = `
+            ${time}\n
+            name: ${name}\n
+            message: ${message}\n
+            stack:\n
+            ${stack}
+            \n-----\n
+        `.replace(/^\s+/gm, '');
+    }
+    else {
+        fileName = 'info.log';
+        logMessage = `
+            ${time}\n
+            message: ${message}\n
+            \n-----\n
+        `.replace(/^\s+/gm, '');
+    }
+
+    fs.appendFile(`${__dirname}/../../logs/${fileName}`, logMessage)
+        .then(function(){
+            res.send({});
+        })
+        .catch(function(error){
             log.error(error);
-        }
-        res.send({});
-    });
+        });
 
 });
 

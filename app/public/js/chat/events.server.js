@@ -13,36 +13,36 @@ CHAT.Events.Server = {
 
     /**
      * Belépés a chat-be
-     * @param {Object} data
+     * @param {Object} userData
      * @description
-     * data = {
-     *     id : Number,      // user azonosító
-     *     name : String,    // user login név
-     *     status : String,  // user státusz ('on'|'busy'|'off')
-     *     isIdle : Boolean  // user státusz: 'idle'
-     * }
+     *  userData = {
+     *      id : Number,      // user azonosító
+     *      name : String,    // user login név
+     *      status : String,  // user státusz ('on'|'busy'|'off')
+     *      isIdle : Boolean  // user státusz: 'idle'
+     *  }
      */
-    userConnected : function(data){
-        // CHAT.Methods.appendSystemMessage(box, 'connect', data.id);
+    userConnected : function(userData){
+        // CHAT.Methods.appendSystemMessage(box, 'connect', userData.id);
     },
 
     /**
      * Kilépés a chat-ből
-     * @param {Object} data
+     * @param {Object} userData
      * @description
-     * data = {
-     *     id : Number,      // user azonosító
-     *     name : String,    // user login név
-     *     status : String,  // user státusz ('on'|'busy'|'off')
-     *     isIdle : Boolean  // user státusz: 'idle'
-     * }
+     *  userData = {
+     *      id : Number,      // user azonosító
+     *      name : String,    // user login név
+     *      status : String,  // user státusz ('on'|'busy'|'off')
+     *      isIdle : Boolean  // user státusz: 'idle'
+     *  }
      */
-    disconnect : function(data){
+    disconnect : function(userData){
         HD.DOM(CHAT.DOM.box).filter(':not(.cloneable)').elements.forEach(function(box){
             const Box = HD.DOM(box);
-            if (Box.descendants(CHAT.DOM.userItems).filter(`[data-id="${data.id}"]`).elements.length > 0){
-                CHAT.Components.Transfer.appendSystemMessage(box, 'leave', data.id);
-                Box.descendants(`[data-id="${data.id}"]`).remove();
+            if (Box.descendants(CHAT.DOM.userItems).filter(`[data-id="${userData.id}"]`).elements.length > 0){
+                CHAT.Components.Transfer.appendSystemMessage(box, 'leave', userData.id);
+                Box.descendants(`[data-id="${userData.id}"]`).remove();
             }
         });
     },
@@ -51,30 +51,67 @@ CHAT.Events.Server = {
      * User-ek állapotváltozása
      * @param {Object} connectedUsers
      * @description
-     * connectedUsers = {
-     *     <socket.id> : {
-     *         id : Number,      // user azonosító
-     *         name : String,    // user login név
-     *         status : String,  // user státusz ('on'|'busy'|'off')
-     *         isIdle : Boolean  // user státusz: 'idle'
-     *     },
-     *     ...
-     * }
+     *  connectedUsers = {
+     *      <socket.id> : {
+     *          id : Number,      // user azonosító
+     *          name : String,    // user login név
+     *          status : String,  // user státusz ('on'|'busy'|'off')
+     *          isIdle : Boolean  // user státusz: 'idle'
+     *      },
+     *      ...
+     *  }
      */
     statusChanged : function(connectedUsers){
-        HD.DOM(CHAT.DOM.online).dataObj('connected-users', connectedUsers);
+        CHAT.State.connectedUsers = connectedUsers;
         CHAT.Components.User.updateStatuses(connectedUsers);
+    },
+
+    /**
+     * Csatorna létrehozása/megváltozása
+     * @param {Object} changeData
+     * @description
+     *  csatorna létrehozás:
+     *   changeData = {
+     *       operation : String,   // művelet a csatornával ('create'|'delete')
+     *       roomData : {
+     *           name : String,    // 'room-x-y'; x: létrehozó userId, y: létrehozás timestamp
+     *           userIds : Array,  // csatornába rakott userId-k
+     *           starter : Number  // csatorna létrehozó userId
+     *       }
+     *   }
+     *  csatorna módosítás:
+     *   changeData = {
+     *       operation : String,   // művelet egy user-rel ('add'|'remove')
+     *       room : String,        // csatorna azonosító
+     *       userId : Number       // érintett userId
+     *   }
+     */
+    roomUpdate : function(changeData){
+        if (changeData.operation === 'create'){
+            CHAT.State.rooms.push(changeData.roomData);
+        }
+        else if (changeData.operation === 'delete'){
+            const roomIndex = CHAT.State.rooms.findIndex(function(room){
+                return changeData.roomData.name === room.name;
+            });
+            if (roomIndex > -1){
+                CHAT.State.rooms.splice(roomIndex, 1);
+            }
+        }
+        else {
+            CHAT.Components.Box.roomUpdate(...HD.Object.iterable(changeData));
+        }
     },
 
     /**
      * Csatorna létrehozása
      * @param {Object} roomData
      * @description
-     * roomData = {
-     *     name : String,    // 'room-x-y'; x: létrehozó userId, y: létrehozás timestamp
-     *     userIds : Array,  // csatornába rakott userId-k
-     *     starter : Number  // csatorna létrehozó userId
-     * }
+     *  roomData = {
+     *      name : String,    // 'room-x-y'; x: létrehozó userId, y: létrehozás timestamp
+     *      userIds : Array,  // csatornába rakott userId-k
+     *      starter : Number  // csatorna létrehozó userId
+     *  }
      */
     roomCreated : function(roomData){
         let Box, Userlist;
@@ -91,8 +128,12 @@ CHAT.Events.Server = {
             });
             Box.data('room', roomData.name);
             CHAT.Components.User.generateList(Userlist.elem(), roomData.userIds);
-            CHAT.Components.User.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj('connected-users'));
-            CHAT.socket.emit('roomJoin', {roomName : roomData.name});
+            CHAT.Components.User.updateStatuses(CHAT.State.connectedUsers);
+            CHAT.socket.emit('roomJoin', {
+                triggerId : CHAT.userId,
+                userId : CHAT.userId,
+                room : roomData.name
+            });
             CHAT.Components.Notification.trigger(Box.elem(), {
                 type : 'create',
                 fromId : roomData.starter,
@@ -105,16 +146,18 @@ CHAT.Events.Server = {
      * Csatornához csatlakozás (belépés hatására)
      * @param {Object} roomData
      * @description
-     * roomData = {
-     *     userId : Number,
-     *     roomData : Object
-     * }
+     *  roomData = {
+     *      name : String,         // 'room-x-y'; x: létrehozó userId, y: létrehozás timestamp
+     *      userIds : Array,       // csatornába rakott userIdk
+     *      starter : Number       // csatorna létrehozó userId
+     *      joinedUserId : Number  // most csatlakozott userId
+     *  }
      */
     roomJoined : function(roomData){
         let box, Box, Userlist;
 
         if (roomData.joinedUserId === CHAT.userId){
-            // Létre kell hozni a dobozt a csatornához
+            // Létre kell hozni a dobozt a csatornához (a bejelentkezett user-nél fut le)
             Box = HD.DOM(
                 HD.DOM(CHAT.DOM.cloneBox).copyPaste(HD.DOM(CHAT.DOM.container).elem())
             );
@@ -126,11 +169,11 @@ CHAT.Events.Server = {
             });
             Box.data('room', roomData.name);
             CHAT.Components.User.generateList(Userlist.elem(), roomData.userIds);
-            CHAT.Components.User.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj('connected-users'));
+            CHAT.Components.User.updateStatuses(CHAT.State.connectedUsers);
             CHAT.Components.Box.fill(Box.elem(), roomData.name);
         }
         else {
-            // Csatlakozott a csatornához
+            // Értesítést kell küldeni (a többi user-nél fut le)
             Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${roomData.name}"]`);
             box = Box.elem();
             if (box){
@@ -148,55 +191,58 @@ CHAT.Events.Server = {
 
     /**
      * Csatorna elhagyása
-     * @param {Object} extData
+     * @param {Object} eventData
      * @description
-     * extData = {
-     *     userId : Number,
-     *     roomData : Object
-     * }
+     *  eventData = {
+     *      triggerId : Number,
+     *      userId : Number,
+     *      room : String,
+     *      roomData : Object
+     *  }
      */
-    roomLeaved : function(extData){
+    roomLeaved : function(eventData){
         let box, Box;
 
-        if (extData.roomData){
-            Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
+        if (eventData.roomData){
+            Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${eventData.room}"]`);
             box = Box.elem();
             if (box){
-                CHAT.Components.Transfer.appendSystemMessage(box, 'leave', extData.userId);
+                CHAT.Components.Transfer.appendSystemMessage(box, 'leave', eventData.userId);
                 CHAT.Components.Notification.trigger(box, {
                     type : 'leave',
-                    fromId : extData.userId,
+                    fromId : eventData.userId,
                     local : true
                 });
             }
-            Box.descendants(`[data-id="${extData.userId}"]`).remove();
+            Box.descendants(`[data-id="${eventData.userId}"]`).remove();
         }
     },
 
     /**
      * Hozzáadás csatornához
-     * @param {Object} extData
+     * @param {Object} eventData
      * @description
-     * extData = {
-     *     triggerId : Number,
-     *     userId : Number,
-     *     roomData : Object
-     * }
+     *  eventData = {
+     *      triggerId : Number,
+     *      userId : Number,
+     *      room : String,
+     *      roomData : Object
+     *  }
      */
-    roomForceJoined : function(extData){
+    roomForceJoined : function(eventData){
         let box, Box, Userlist;
 
-        Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
+        Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${eventData.room}"]`);
         box = Box.elem();
 
-        if (extData.userId === CHAT.userId){
+        if (eventData.userId === CHAT.userId){
             // Csatlakoztattak a csatornához
             if (box){
                 // Van a csatornához tartozó doboz (korábban ki lett dobva)
                 Userlist = Box.descendants(CHAT.DOM.users);
                 CHAT.Components.Box.changeStatus(box, 'enabled');
-                CHAT.Components.User.generateList(Userlist.elem(), extData.roomData.userIds, true);
-                CHAT.Components.Transfer.appendSystemMessage(box, 'forceJoinYou', extData.triggerId);
+                CHAT.Components.User.generateList(Userlist.elem(), eventData.roomData.userIds, true);
+                CHAT.Components.Transfer.appendSystemMessage(box, 'forceJoinYou', eventData.triggerId);
             }
             else {
                 // Létre kell hozni a dobozt a csatornához
@@ -210,31 +256,32 @@ CHAT.Events.Server = {
                     width : `${CHAT.Config.box.defaultSize.width}px`,
                     height : `${CHAT.Config.box.defaultSize.height}px`
                 });
-                Box.data('room', extData.roomData.name);
-                CHAT.Components.User.updateStatuses(HD.DOM(CHAT.DOM.online).dataObj('connected-users'));
-                CHAT.Components.Box.fill(box, extData.roomData.name);
-                CHAT.Components.User.generateList(Userlist.elem(), extData.roomData.userIds);
-                CHAT.Components.Transfer.appendSystemMessage(box, 'forceJoinYou', extData.triggerId);
+                Box.data('room', eventData.room);
+                CHAT.Components.User.updateStatuses(CHAT.State.connectedUsers);
+                CHAT.Components.Box.fill(box, eventData.room);
+                CHAT.Components.User.generateList(Userlist.elem(), eventData.roomData.userIds);
+                CHAT.Components.Transfer.appendSystemMessage(box, 'forceJoinYou', eventData.triggerId);
             }
             CHAT.socket.emit('roomJoin', {
+                triggerId : eventData.triggerId,
                 userId : CHAT.userId,
-                roomName : extData.roomData.name
+                room : eventData.room
             });
             CHAT.Components.Notification.trigger(box, {
                 type : 'forceJoinYou',
-                fromId : extData.triggerId,
+                fromId : eventData.triggerId,
                 local : false
             });
         }
         else if (box){
             // Új user csatlakozott a csatornához
             Userlist = Box.descendants(CHAT.DOM.users);
-            CHAT.Components.User.generateList(Userlist.elem(), extData.roomData.userIds, true);
-            CHAT.Components.Transfer.appendSystemMessage(box, 'forceJoinOther', extData.triggerId, extData.userId);
+            CHAT.Components.User.generateList(Userlist.elem(), eventData.roomData.userIds, true);
+            CHAT.Components.Transfer.appendSystemMessage(box, 'forceJoinOther', eventData.triggerId, eventData.userId);
             CHAT.Components.Notification.trigger(box, {
                 type : 'forceJoinOther',
-                fromId : extData.triggerId,
-                toId : extData.userId,
+                fromId : eventData.triggerId,
+                toId : eventData.userId,
                 local : true
             });
         }
@@ -242,188 +289,232 @@ CHAT.Events.Server = {
 
     /**
      * Kidobás csatornából
-     * @param {Object} extData
+     * @param {Object} eventData
      * @description
-     * extData = {
-     *     triggerId : Number,
-     *     userId : Number,
-     *     roomData : Object
-     * }
+     *  eventData = {
+     *      triggerId : Number,
+     *      userId : Number,
+     *      room : String,
+     *      roomData : Object
+     *  }
      */
-    roomForceLeaved : function(extData){
-        const Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${extData.roomData.name}"]`);
+    roomForceLeaved : function(eventData){
+        const Box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${eventData.room}"]`);
         const box = Box.elem();
 
         if (box){
-            if (extData.userId === CHAT.userId){
-                CHAT.Components.Transfer.appendSystemMessage(box, 'forceLeaveYou', extData.triggerId);
-                CHAT.socket.emit('roomLeave', {
-                    silent : true,
-                    userId : CHAT.userId,
-                    roomName : extData.roomData.name
-                });
+            if (eventData.userId === CHAT.userId){
+                CHAT.Components.Transfer.appendSystemMessage(box, 'forceLeaveYou', eventData.triggerId);
                 CHAT.Components.Box.changeStatus(box, 'disabled');
                 CHAT.Components.Notification.trigger(box, {
                     type : 'forceLeaveYou',
-                    fromId : extData.triggerId,
+                    fromId : eventData.triggerId,
                     local : true
                 });
             }
             else {
-                CHAT.Components.Transfer.appendSystemMessage(box, 'forceLeaveOther', extData.triggerId, extData.userId);
+                CHAT.Components.Transfer.appendSystemMessage(
+                    box, 'forceLeaveOther', eventData.triggerId, eventData.userId
+                );
                 CHAT.Components.Notification.trigger(box, {
                     type : 'forceLeaveOther',
-                    fromId : extData.triggerId,
-                    toId : extData.userId,
+                    fromId : eventData.triggerId,
+                    toId : eventData.userId,
                     local : true
                 });
             }
-            Box.descendants(`[data-id="${extData.userId}"]`).remove();
+            Box.descendants(`[data-id="${eventData.userId}"]`).remove();
         }
     },
 
     /**
      * Üzenetküldés
-     * @param {Object} data
+     * @param {Object} messageData
      * @description
-     * data = {
-     *     userId : Number,
-     *     message : String,
-     *     time : Number,
-     *     roomName : String
-     * }
+     *  messageData = {
+     *      userId : Number,   // üzenetet küldő user
+     *      room : String,     // csatorna azonosító
+     *      message : String,  // üzenet
+     *      time : Number      // timestamp
+     *  }
      */
-    sendMessage : function(data){
-        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`).elem();
+    sendMessage : function(messageData){
+        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${messageData.room}"]`).elem();
 
         if (box){
-            CHAT.Components.Transfer.appendUserMessage(box, data);
-            CHAT.Components.Notification.stopWrite(box, data.userId, '');
+            CHAT.Components.Transfer.appendUserMessage(box, messageData);
+            CHAT.Components.Notification.stopWrite(box, messageData.userId, '');
             CHAT.Components.Notification.trigger(box, {
                 type : 'message',
-                fromId : data.userId,
+                fromId : messageData.userId,
                 local : true
             });
         }
     },
 
     /**
-     * Fájlfogadás folyamata
-     * @param {Object} data
+     * Üzenetírás
+     * @param {Object} messageData
      * @description
-     * data = {
-     *     userId : Number,
-     *     roomName : String,
-     *     uploadedSize : Number,
-     *     fileSize : Number,
-     *     firstSend : Boolean
-     * }
+     *  messageData = {
+     *      userId : Number,   // üzenetet küldő user
+     *      room : String,     // csatorna azonosító
+     *      message : String,  // üzenet eddig megírt darabja
+     *      time : Number      // timestamp
+     *  }
      */
-    fileReceive : function(data){
-        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`).elem();
+    typeMessage : function(messageData){
+        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${messageData.room}"]`).elem();
+        const writing = CHAT.Components.Timer.writing;
 
-        if (CHAT.userId !== data.userId && box){
-            if (data.firstSend){
-                CHAT.Events.Server.barId = CHAT.Components.Transfer.progressbar(
-                    box, 'get', data.uploadedSize / data.fileSize, null, false
-                );
+        if (box){
+            writing.event = true;
+            writing.message = messageData.message;
+            if (!writing.timerID){
+                CHAT.Components.Notification.stillWrite(box, messageData.userId);
+                writing.timerID = setInterval(function(){
+                    if (!writing.event){
+                        CHAT.Components.Notification.stopWrite(box, messageData.userId, writing.message);
+                    }
+                    writing.event = false;
+                }, writing.interval);
+            }
+        }
+    },
+
+    /**
+     * Fájlfogadás folyamata
+     * @param {Object} streamData
+     * @description
+     *  streamData = {
+     *      userId : Number,
+     *      room : String,
+     *      uploadedSize : Number,
+     *      fileSize : Number,
+     *      firstSend : Boolean
+     *  }
+     */
+    receiveFile : function(streamData){
+        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${streamData.room}"]`).elem();
+
+        if (CHAT.userId !== streamData.userId && box){
+            const options = {
+                direction : 'get',
+                percent : streamData.uploadedSize / streamData.fileSize,
+                cancelable : false,
+                end : streamData.uploadedSize === streamData.fileSize
+            };
+            if (streamData.firstSend){
+                CHAT.Events.Server.barId = CHAT.Components.Transfer.progressbar(box, null, options);
             }
             else {
-                CHAT.Components.Transfer.progressbar(
-                    box, 'get', data.uploadedSize / data.fileSize, CHAT.Events.Server.barId, false
-                );
+                CHAT.Components.Transfer.progressbar(box, CHAT.Events.Server.barId, options);
             }
         }
     },
 
     /**
      * Fájlfogadás vége (a fájl átjött)
-     * @param {Object} data
+     * @param {Object} fileData
      * @description
-     * data = {
-     *     userId : Number,
-     *     fileData : {
-     *         name : String,
-     *         size : Number,
-     *         type : String
-     *     },
-     *     file : String,
-     *     store : String,
-     *     type : String,
-     *     time : Number,
-     *     roomName : String
-     *     fileName : String
-     * }
+     *  fileData = {
+     *      userId : Number,
+     *      raw : {
+     *          name : String,
+     *          size : Number,
+     *          type : String,
+     *          source : String
+     *      },
+     *      store : String,
+     *      type : String,
+     *      time : Number,
+     *      room : String,
+     *      name : String,
+     *      deleted : Boolean
+     *  }
      */
-    sendFile : function(data){
-        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`).elem();
+    sendFile : function(fileData){
+        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${fileData.room}"]`).elem();
 
         if (box){
-            CHAT.FileTransfer.action('serverSend', [box, data, function(){
+            CHAT.FileTransfer.action('serverSend', [box, fileData, function(){
                 CHAT.Components.Notification.trigger(box, {
                     type : 'file',
-                    fromId : data.userId,
+                    fromId : fileData.userId,
                     local : true
                 });
             }]);
-            CHAT.Components.Notification.stopWrite(box, data.userId, '');
+            CHAT.Components.Notification.stopWrite(box, fileData.userId, '');
         }
     },
 
     /**
      * Fájlátvitel megszakítása a fogadó oldalon
-     * @param {Object} data
+     * @param {Object} fileAbortData
      * @description
-     * data = {
-     *     userId : Number,
-     *     fileData : {
-     *         name : String,
-     *         size : Number,
-     *         type : String
-     *     },
-     *     file : String,
-     *     store : String,
-     *     type : String,
-     *     time : Number,
-     *     roomName : String,
-     *     fileName : String
-     * }
+     *  fileAbortData = {
+     *      forced : Boolean,
+     *      file : {
+     *          userId : Number,
+     *          raw : {
+     *              name : String,
+     *              size : Number,
+     *              type : String,
+     *              source : String
+     *          },
+     *          store : String,
+     *          type : String,
+     *          time : Number,
+     *          room : String,
+     *          name : String,
+     *          deleted : Boolean
+     *      }
+     *  }
      */
-    abortFile : function(data){
-        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`).elem();
+    abortFile : function(fileAbortData){
+        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${fileAbortData.file.room}"]`).elem();
 
         if (box){
-            CHAT.Components.Transfer.progressbar(box, 'abort', null, CHAT.Events.Server.barId, false);
+            const method = fileAbortData.forced ? 'forceAbort' : 'abort';
+            CHAT.Components.Transfer.progressbar(box, CHAT.Events.Server.barId, {
+                direction : method,
+                percent : null,
+                cancelable : false,
+                end : true
+            });
         }
     },
 
     /**
-     * Üzenetírás
-     * @param {Object} data
-     * @description
-     * data = {
-     *     userId : Number,
-     *     message : String,
-     *     time : Number,
-     *     roomName : String
-     * }
+     *
+     * @param {Object} fileData
+     *  fileData = {
+     *      userId : Number,
+     *      raw : {
+     *          name : String,
+     *          size : Number,
+     *          type : String,
+     *          source : String
+     *      },
+     *      store : String,
+     *      type : String,
+     *      time : Number,
+     *      room : String,
+     *      name : String,
+     *      deleted : Boolean
+     *  }
      */
-    typeMessage : function(data){
-        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${data.roomName}"]`).elem();
-        const writing = CHAT.Components.Timer.writing;
+    dbFile : function(fileData){
+        const box = HD.DOM(CHAT.DOM.box).filter(`[data-room="${fileData.room}"]`).elem();
 
         if (box){
-            writing.event = true;
-            writing.message = data.message;
-            if (!writing.timerID){
-                CHAT.Components.Notification.stillWrite(box, data.userId);
-                writing.timerID = setInterval(function(){
-                    if (!writing.event){
-                        CHAT.Components.Notification.stopWrite(box, data.userId, writing.message);
-                    }
-                    writing.event = false;
-                }, writing.interval);
-            }
+            CHAT.Components.Transfer.appendFile(box, fileData, true)
+                .then(function(){
+                    CHAT.Components.Box.scrollToBottom(box);
+                })
+                .catch(function(error){
+                    HD.Log.error(error);
+                });
         }
     }
 

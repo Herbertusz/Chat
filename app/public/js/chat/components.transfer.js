@@ -16,8 +16,8 @@ CHAT.Components.Transfer = {
      */
     initMessage : function(){
         // Üzenet gépelése
-        CHAT.DOM.inBox(CHAT.DOM.textarea).event('keyup', function(event){
-            const Box = HD.DOM(this).ancestors(CHAT.DOM.box);
+        CHAT.DOM.inBox(CHAT.DOM.textarea).event('keyup', function(target, event){
+            const Box = HD.DOM(target).ancestors(CHAT.DOM.box);
 
             if (event.which !== HD.Misc.keys.ENTER){
                 CHAT.Events.Client.typeMessage(Box.elem());
@@ -25,8 +25,8 @@ CHAT.Components.Transfer = {
         });
 
         // Üzenetküldés indítása ENTER leütésére
-        CHAT.DOM.inBox(CHAT.DOM.textarea).event('keydown', function(event){
-            const Box = HD.DOM(this).ancestors(CHAT.DOM.box);
+        CHAT.DOM.inBox(CHAT.DOM.textarea).event('keydown', function(target, event){
+            const Box = HD.DOM(target).ancestors(CHAT.DOM.box);
 
             if (event.which === HD.Misc.keys.ENTER){
                 if (!event.shiftKey && Box.descendants(CHAT.DOM.sendSwitch).prop('checked')){
@@ -37,14 +37,25 @@ CHAT.Components.Transfer = {
         });
 
         // Üzenetküldés indítása gombnyomásra
-        CHAT.DOM.inBox(CHAT.DOM.sendButton).event('click', function(){
-            const Box = HD.DOM(this).ancestors(CHAT.DOM.box);
+        CHAT.DOM.inBox(CHAT.DOM.sendButton).event('click', function(target){
+            const Box = HD.DOM(target).ancestors(CHAT.DOM.box);
             CHAT.Events.Client.sendMessage(Box.elem());
         });
 
         // Üzenetküldés módja
-        CHAT.DOM.inBox(CHAT.DOM.sendSwitch).event('change', function(){
-            CHAT.Events.Client.sendMethod(this);
+        CHAT.DOM.inBox(CHAT.DOM.sendSwitch).event('change', function(target){
+            CHAT.Events.Client.sendMethod(target);
+        });
+
+        // Előredefiniált karakterlánc beszúrás
+        CHAT.DOM.inBox(CHAT.DOM.imageReplacementToggle).event('click', function(target){
+            HD.DOM(target).neighbours(CHAT.DOM.box, CHAT.DOM.imageReplacementList).class('toggle', 'active');
+        });
+        CHAT.DOM.inBox(`${CHAT.DOM.imageReplacementItems}`).event('click', function(target){
+            const Item = HD.DOM(target);
+
+            CHAT.Components.Transfer.insertText(Item.ancestors(CHAT.DOM.box).elem(), Item.data('string'));
+            CHAT.DOM.inBox(CHAT.DOM.imageReplacementList).class('remove', 'active');
         });
     },
 
@@ -53,15 +64,15 @@ CHAT.Components.Transfer = {
      */
     initFile : function(){
         // Fájlküldés (hagyományos)
-        CHAT.DOM.inBox(CHAT.DOM.fileTrigger).event('click', function(){
-            const Trigger = HD.DOM(this);
+        CHAT.DOM.inBox(CHAT.DOM.fileTrigger).event('click', function(target){
+            const Trigger = HD.DOM(target);
 
             if (!Trigger.dataBool('disabled')){
-                Trigger.ancestors(CHAT.DOM.box).descendants(CHAT.DOM.file).trigger('click');
+                Trigger.neighbours(CHAT.DOM.box, CHAT.DOM.file).trigger('click');
             }
         });
-        CHAT.DOM.inBox(CHAT.DOM.file).event('change', function(){
-            const Box = HD.DOM(this).ancestors(CHAT.DOM.box);
+        CHAT.DOM.inBox(CHAT.DOM.file).event('change', function(target){
+            const Box = HD.DOM(target).ancestors(CHAT.DOM.box);
             const files = Box.descendants(CHAT.DOM.file).elem().files;
 
             if (files.length > 0){
@@ -90,24 +101,24 @@ CHAT.Components.Transfer = {
             CHAT.DOM.inBox(CHAT.DOM.dropFile)
                 .event(
                     'drag dragstart dragend dragover dragenter dragleave drop',
-                    function(event){
+                    function(target, event){
                         event.preventDefault();
                         if (event.type !== 'dragover'){
                             event.stopPropagation();
                         }
                     }
                 )
-                .event('dragenter', function(){
-                    HD.DOM(this).class('add', 'drop-active', 'drop-highlight');
+                .event('dragenter', function(target){
+                    HD.DOM(target).class('add', 'drop-active', 'drop-highlight');
                 })
-                .event('dragleave', function(){
-                    HD.DOM(this).class('remove', 'drop-highlight');
+                .event('dragleave', function(target){
+                    HD.DOM(target).class('remove', 'drop-highlight');
                 })
                 .event('dragend drop', function(){
                     CHAT.DOM.inBox(CHAT.DOM.dropFile).class('remove', 'drop-active', 'drop-highlight');
                 })
-                .event('drop', function(event){
-                    const Box = HD.DOM(this).ancestors(CHAT.DOM.box);
+                .event('drop', function(target, event){
+                    const Box = HD.DOM(target).ancestors(CHAT.DOM.box);
                     const files = event.dataTransfer.files;
                     CHAT.Events.Client.sendFile(Box.elem(), files);
                 });
@@ -135,6 +146,18 @@ CHAT.Components.Transfer = {
     },
 
     /**
+     * Karakterlánc beszúrása a szövegmezőbe
+     * @param {HTMLElement} box
+     * @param {String} text
+     */
+    insertText : function(box, text){
+        const textarea = HD.DOM(box).descendants(CHAT.DOM.textarea).elem();
+
+        textarea.value += ` ${text}`;
+        textarea.focus();
+    },
+
+    /**
      * Módosítások az elküldött szövegben
      * @param {String} message
      * @returns {String}
@@ -144,7 +167,7 @@ CHAT.Components.Transfer = {
         if (CHAT.Config.textTransfer.escapeHTML){
             message = CHAT.Components.Transfer.escapeHtml(message);
         }
-        const messageArray = message.split(HD.String.createRegExp(disablePattern));
+        const messageArray = message.split(new RegExp(disablePattern));
         if (CHAT.Config.textTransfer.imageReplacement.allowed){
             let image;
             const images = CHAT.Config.textTransfer.imageReplacement.images;
@@ -165,9 +188,9 @@ CHAT.Components.Transfer = {
         if (CHAT.Config.textTransfer.stringReplacement.allowed){
             const strings = CHAT.Config.textTransfer.stringReplacement.strings;
             strings.forEach(function(str){
-                messageArray[0] = messageArray[0].replace(HD.String.createRegExp(str[0]), str[1]);
+                messageArray[0] = messageArray[0].replace(new RegExp(str[0], 'g'), str[1]);
                 if (messageArray.length > 1){
-                    messageArray[2] = messageArray[2].replace(HD.String.createRegExp(str[0]), str[1]);
+                    messageArray[2] = messageArray[2].replace(new RegExp(str[0], 'g'), str[1]);
                 }
             });
         }
@@ -181,12 +204,12 @@ CHAT.Components.Transfer = {
      * @param {Object} data
      * @param {Boolean} [highlighted=false]
      * @description
-     * data = {
-     *     userId : Number,
-     *     message : String,
-     *     time : Number,
-     *     roomName : String
-     * }
+     *  data = {
+     *      userId : Number,
+     *      message : String,
+     *      time : Number,
+     *      room : String
+     *  }
      */
     appendUserMessage : function(box, data, highlighted = false){
         const time = HD.DateTime.formatMS('Y-m-d H:i:s', data.time);
@@ -226,27 +249,31 @@ CHAT.Components.Transfer = {
      * @param {Boolean} [highlighted=false]
      * @returns {Promise}
      * @description
-     * data = {
-     *     userId : Number,
-     *     fileData : {
-     *         name : String,
-     *         size : Number,
-     *         type : String
-     *     },
-     *     file : String,
-     *     store : String,
-     *     type : String,
-     *     time : Number,
-     *     roomName : String,
-     *     fileName : String
-     * }
+     *  data = {
+     *      userId : Number,
+     *      raw : {
+     *          name : String,
+     *          size : Number,
+     *          type : String,
+     *          source : String
+     *      },
+     *      store : String,
+     *      type : String,
+     *      time : Number,
+     *      room : String,
+     *      name : String,
+     *      deleted : Boolean
+     *  }
      */
     appendFile : function(box, data, highlighted = false){
         let tpl, imgSrc;
         const List = HD.DOM(box).descendants(CHAT.DOM.list);
         const time = HD.DateTime.formatMS('Y-m-d H:i:s', data.time);
         const userName = CHAT.Components.User.getName(data.userId);
-        const fileSrc = data.store === 'upload' ? `/chat/file/${HD.DOM(box).data('room')}/${data.file}` : data.file;
+        const download = data.store === 'base64' ? `download="${data.raw.name}"` : ``;  // Chrome base64 restriction
+        const fileSrc = data.store === 'upload' ?
+            `/chat/file/${HD.DOM(box).data('room')}/${data.raw.source}` :
+            data.raw.source;
 
         const ListItem = HD.DOM(`
             <li>
@@ -257,23 +284,24 @@ CHAT.Components.Transfer = {
             </li>
         `);
         const tplError = `
-            <a href="${data.file}" target="_blank">${CHAT.Labels.file.error}</a>
+            <a href="${fileSrc}" target="_blank">${CHAT.Labels.file.error}</a>
         `;
 
         if (data.type === 'image'){
             imgSrc = fileSrc;
             tpl = `
-                <a class="image" href="${fileSrc}" target="_blank">
-                    <img class="send-image" alt="${data.fileData.name}" src="${imgSrc}" />
+                <a class="image" href="${fileSrc}" target="_blank" ${download}>
+                    <img class="send-image" alt="${data.raw.name}" src="${imgSrc}" />
                 </a>
             `;
         }
         else {
             imgSrc = '/images/filetypes.png';
             tpl = `
-                <a class="file" href="${fileSrc}" target="_blank" title="${CHAT.Labels.file.types[data.type]}">
+                <a class="file" href="${fileSrc}" target="_blank"
+                    title="${CHAT.Labels.file.types[data.type]}" ${download}>
                     <span class="filetype filetype-${data.type}"></span>
-                    <span class="text">${data.fileData.name}</span>
+                    <span class="text">${data.raw.name}</span>
                 </a>
             `;
         }
@@ -298,19 +326,28 @@ CHAT.Components.Transfer = {
     /**
      * Folyamatjelzők kezelése
      * @param {HTMLElement} box
-     * @param {String} direction
-     * @param {Number} percent
      * @param {Number|null} barId - ha újat kell létrehozni, akkor null, egyébként egy létező progressbar id-ja
-     * @param {Boolean} [cancelable=true]
+     * @param {Object} options
      * @returns {Number|null}
+     * @description
+     *  options = {
+     *      direction : String,
+     *      percent : Number,
+     *      cancelable : Boolean,
+     *      end : Boolean
+     *  }
      */
-    progressbar : function(box, direction, percent, barId, cancelable = true){
-        percent = Math.round(percent * 100);
+    progressbar : function(box, barId, options){
+        options = Object.assign({
+            cancelable : true,
+            end : false
+        }, options);
+        const percent = Math.round(options.percent * 100);
         const List = HD.DOM(box).descendants(CHAT.DOM.list);
         const tpl = `
             <li>
                 <div class="progressbar" data-id="{BARID}">
-                    <span class="label">${CHAT.Labels.file[direction]}</span>
+                    <span class="label">${CHAT.Labels.file[options.direction]}</span>
                     <span title="${CHAT.Labels.file.cancel}">
                         <svg class="cancel"><use xlink:href="#cross"></use></svg>
                     </span>
@@ -328,11 +365,11 @@ CHAT.Components.Transfer = {
             barId = HD.Number.getUniqueId();
             List.elem().innerHTML += tpl.replace('{BARID}', barId.toString());
             CHAT.Components.Box.scrollToBottom(box, true);
-            if (cancelable){
-                List.descendants('.cancel').event('click', function(){
-                    const Progressbar = HD.DOM(this).ancestors('.progressbar');
+            if (options.cancelable){
+                List.descendants('.cancel').event('click', function(target){
+                    const Progressbar = HD.DOM(target).ancestors('.progressbar');
                     CHAT.Events.Client.abortFile(Progressbar.elem());
-                    HD.DOM(this).class('add', 'hidden');
+                    HD.DOM(target).class('add', 'hidden');
                 });
             }
             else {
@@ -342,18 +379,23 @@ CHAT.Components.Transfer = {
         }
         else {
             const Progressbar = List.descendants('.progressbar').filter(`[data-id="${barId}"]`);
-            if (direction === 'abort'){
-                Progressbar.descendants('.label').elem().innerHTML = CHAT.Labels.file[direction];
+            if (options.direction === 'abort' || options.direction === 'forceAbort'){
+                Progressbar.descendants('.label').elem().innerHTML = CHAT.Labels.file[options.direction];
                 Progressbar.descendants('.line').class('add', 'aborted');
             }
             else {
                 if (percent === 100){
-                    Progressbar.descendants('.label').elem().innerHTML = CHAT.Labels.file[`${direction}End`];
+                    Progressbar.descendants('.label').elem().innerHTML = CHAT.Labels.file[`${options.direction}End`];
                     Progressbar.descendants('.line').class('add', 'finished');
                     Progressbar.descendants('.cancel').class('add', 'hidden');
                 }
                 Progressbar.descendants('.line').css({'width' : `${percent}%`});
                 Progressbar.descendants('.numeric').elem().innerHTML = CHAT.Labels.file.percent(percent);
+            }
+            if (options.end){
+                Progressbar.ancestors('li').css({
+                    display : 'none'
+                });
             }
             return null;
         }

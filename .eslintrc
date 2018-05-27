@@ -10,8 +10,7 @@
   "env": {
     "browser": true,
     "node": true,
-    "es6": true,
-    "jquery": true
+    "es6": true
   },
   "rules": {
     // POSSIBLE ERRORS
@@ -156,7 +155,7 @@
     // disallow the use of eval()-like methods
     "no-implied-eval": "error",
     // disallow this keywords outside of classes or class-like objects
-    "no-invalid-this": "off",
+    "no-invalid-this": "warn",
     // disallow the use of the __iterator__ property
     "no-iterator": "error",
     // disallow labeled statements
@@ -423,7 +422,8 @@
         "code": 120,
         "tabWidth": 4,
         "ignoreUrls": true,
-        "ignorePattern": "/.*?/g"
+        "ignoreRegExpLiterals": true,
+        "ignoreStrings": true
       }
     ],
     // enforce a maximum depth that callbacks can be nested
@@ -651,7 +651,7 @@
     "generator-star-spacing": [
       "warn",
       {
-        "before": true,
+        "before": false,
         "after": false
       }
     ],

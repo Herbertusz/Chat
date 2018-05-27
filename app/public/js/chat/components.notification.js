@@ -32,35 +32,44 @@ CHAT.Components.Notification = {
             });
 
         // Helyi értesítés eltüntetése
-        CHAT.DOM.inBox(CHAT.DOM.list).event('scroll', function(){
-            if (this.scrollHeight - this.offsetHeight - this.scrollTop < CHAT.Config.notification.local.scroll){
-                HD.DOM(this).ancestors(CHAT.DOM.box).descendants(CHAT.DOM.localNotification).class('add', 'hidden');
+        CHAT.DOM.inBox(CHAT.DOM.list).event('scroll', function(target){
+            if (target.scrollHeight - target.offsetHeight - target.scrollTop < CHAT.Config.notification.local.scroll){
+                HD.DOM(target).neighbours(CHAT.DOM.box, CHAT.DOM.localNotification).class('add', 'hidden');
             }
         });
         // Hibaüzenet eltüntetése
-        CHAT.DOM.inBox(CHAT.DOM.errorClose).event('click', function(){
-            HD.DOM(this).ancestors(CHAT.DOM.box).descendants(CHAT.DOM.error).class('add', 'hidden');
+        HD.DOM(CHAT.DOM.globalError.close).event('click', function(target){
+            HD.DOM(target)
+                .ancestors(CHAT.DOM.outerContainer)
+                .descendants(CHAT.DOM.globalError.container)
+                .class('add', 'hidden');
+        });
+        CHAT.DOM.inBox(CHAT.DOM.boxError.close).event('click', function(target){
+            HD.DOM(target).neighbours(CHAT.DOM.box, CHAT.DOM.boxError.container).class('add', 'hidden');
         });
     },
 
     /**
      * Hibaüzenetek jelzése
-     * @param {HTMLElement} box
      * @param {Array} errors
+     * @param {HTMLElement} [box=null] - ha null, a hibaüzenet globális, egyébként csatornához tartozik
      */
-    error : function(box, errors){
-        const Box = HD.DOM(box);
+    error : function(errors, box = null){
+        const Box = box ? HD.DOM(box) : HD.DOM(CHAT.DOM.outerContainer);
+        const display = box ? CHAT.DOM.boxError : CHAT.DOM.globalError;
         const errorMessages = [];
 
         errors.forEach(function(error){
             errorMessages.push(CHAT.Labels.error[error.type](error.value, error.restrict));
         });
-        Box.descendants(CHAT.DOM.errorList).elem().innerHTML = errorMessages.join('<br />');
-        Box.descendants(CHAT.DOM.error).class('remove', 'hidden');
-        setTimeout(function(){
-            Box.descendants(CHAT.DOM.error).class('add', 'hidden');
-            Box.descendants(CHAT.DOM.errorList).elem().innerHTML = '';
-        }, CHAT.Config.box.error.messageWait);
+        Box.descendants(display.list).elem().innerHTML = errorMessages.join('<br />');
+        Box.descendants(display.container).class('remove', 'hidden');
+        if (CHAT.Config.box.error.messageWait){
+            setTimeout(function(){
+                Box.descendants(display.container).class('add', 'hidden');
+                Box.descendants(display.list).elem().innerHTML = '';
+            }, CHAT.Config.box.error.messageWait);
+        }
     },
 
     /**
@@ -101,13 +110,13 @@ CHAT.Components.Notification = {
      * @param {HTMLElement|Boolean} [box]
      * @param {Object} [data={}]
      * @description
-     * data = {
-     *     type : String,   // 'message'|'file'|'create'|'join'|'leave'|
-     *                      // 'forceJoinYou'|'forceJoinOther'|'forceLeaveYou'|'forceLeaveOther'
-     *     fromId : Number,
-     *     toId : Number,
-     *     local : Boolean
-     * }
+     *  data = {
+     *      type : String,   // 'message'|'file'|'create'|'join'|'leave'|
+     *                       // 'forceJoinYou'|'forceJoinOther'|'forceLeaveYou'|'forceLeaveOther'
+     *      fromId : Number,
+     *      toId : Number,
+     *      local : Boolean
+     *  }
      */
     trigger : function(box, data = {}){
         const conf = CHAT.Config.notification;
@@ -211,10 +220,11 @@ CHAT.Components.Notification = {
                 LocalNotification.descendants(CHAT.DOM.text).elem().innerHTML = tpl;
                 LocalNotification.class('remove', 'hidden');
 
-                LocalNotification.event('click', function(){
+                LocalNotification.event('click', function(target){
+                    const Target = HD.DOM(target);
                     list.scrollTop = list.scrollHeight;
-                    HD.DOM(this).class('add', 'hidden');
-                    HD.DOM(this).descendants(CHAT.DOM.text).elem().innerHTML = '';
+                    Target.class('add', 'hidden');
+                    Target.descendants(CHAT.DOM.text).elem().innerHTML = '';
                 });
             }
         }

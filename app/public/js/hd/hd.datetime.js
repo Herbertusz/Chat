@@ -254,7 +254,7 @@ HD.DateTime = {
 
     /**
      * A PHP date() függvényének implementációja
-     * @copyright http://phpjs.org/functions/date (módosított)
+     * @copyright http://phpjs.org/functions/date (módosított ES2015+)
      * @param {String} format
      * @param {Number} timestamp
      * @returns {String}

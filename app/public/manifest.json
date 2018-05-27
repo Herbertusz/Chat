@@ -1,0 +1,15 @@
+{
+  "short_name": "HD-chat",
+  "name": "HD-chat",
+  "icons": [
+    {
+      "src": "images/appicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "theme_color": "#cccccc",
+  "display": "standalone"
+}

@@ -11,7 +11,9 @@ router.get('/', function(req, res){
         userName : '',
         error : null
     };
-    res.redirect('/');
+    req.session.save(function(){
+        res.redirect('/');
+    });
 });
 
 module.exports = router;

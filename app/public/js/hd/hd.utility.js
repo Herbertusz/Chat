@@ -69,6 +69,16 @@ HD.Misc = {
      */
     defined : function(param){
         return typeof param !== 'undefined';
+    },
+
+    /**
+     * Változó deklarálása ha nem deklarált
+     * @param {*} param - változó
+     * @param {*} value - alapértelmezett érték
+     * @returns {*} új érték
+     */
+    define : function(param, value){
+        return typeof param !== 'undefined' ? param : value;
     }
 
 };
@@ -267,7 +277,7 @@ HD.String = {
 
     /**
      * Karakterlánc átalakítása RegExp objektummá
-     * @param {String} str - pl.: '/x/gi'
+     * @param {String} str - regexp literál pl.: '/x/gi'
      * @returns {RegExp}
      */
     createRegExp : function(str){
@@ -343,34 +353,36 @@ HD.String = {
             ret += chars[Math.floor(Math.random() * chars.length)];
         }
         return ret;
-    }
+    },
 
-    // /**
-    //  * Jelszó kódolása
-    //  * @param {String} pwd - kódolandó jelszó
-    //  * @param {String} [salt] - só
-    //  * @returns {String} kódolt jelszó
-    //  */
-    // hash : function(pwd, salt){
-    //     var sha1 = (s) => s;
-    //     var PROJECT_NAME = '';
-    //
-    //     if (typeof salt === 'undefined'){
-    //         pwd = sha1(pwd);
-    //     }
-    //     else {
-    //         let i;
-    //         let salt2 = '';
-    //         const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    //         const salt1 = salt;
-    //         const salt2_original = PROJECT_NAME;
-    //         for (i = 0; i < salt2_original.length; i++){
-    //             salt2 += chars[chars.indexOf(salt2_original[i]) + 1 % chars.length];
-    //         }
-    //         pwd = sha1(salt1 + pwd + salt2);
-    //     }
-    //     return pwd;
-    // }
+    /**
+     * Jelszó kódolása
+     * @param {String} pwd - kódolandó jelszó
+     * @param {String} [salt] - só
+     * @returns {String} kódolt jelszó
+     * TODO: sha1 függvény
+     * TODO: tesztelés
+     */
+    hash : function(pwd, salt){
+        const sha1 = (s) => s;
+        const PROJECT_NAME = '';
+
+        if (typeof salt === 'undefined'){
+            pwd = sha1(pwd);
+        }
+        else {
+            let i;
+            let salt2 = '';
+            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const salt1 = salt;
+            const salt2_original = PROJECT_NAME;
+            for (i = 0; i < salt2_original.length; i++){
+                salt2 += chars[chars.indexOf(salt2_original[i]) + 1 % chars.length];
+            }
+            pwd = sha1(salt1 + pwd + salt2);
+        }
+        return pwd;
+    }
 
 };
 
@@ -385,7 +397,8 @@ HD.Function = {
      * @param {*} param - paraméter
      * @param {*} value - alapértelmezett érték
      * @returns {*} ezt kell értékül adni a paraméternek
-     * @example par = HD.Function.param(par, 0);
+     * @example
+     *  par = HD.Function.param(par, 0);
      */
     param : function(param, value){
         if (typeof param === 'undefined'){
@@ -401,14 +414,14 @@ HD.Function = {
      * @param {Object} params - argumentumok adatai
      * @returns {Array} paraméterek értékei
      * @example
-     * HD.Function.multiParam({
-     *     sql      : [sql, 'string'],
-     *     binds    : [binds, 'object', {}],
-     *     run      : [run, 'boolean', true],
-     *     preserve : [preserve, 'boolean', false],
-     *     callback : [callback, 'function']
-     * });
-     * név : [érték, typus, alapértelmezett érték]
+     *  HD.Function.multiParam({
+     *      sql      : [sql, 'string'],
+     *      binds    : [binds, 'object', {}],
+     *      run      : [run, 'boolean', true],
+     *      preserve : [preserve, 'boolean', false],
+     *      callback : [callback, 'function']
+     *  });
+     *  név : [érték, típus, alapértelmezett érték]
      */
     multiParam : function(params){
         const newParams = [];
@@ -504,7 +517,7 @@ HD.Array = {
      * @param {Array} arr - tömb
      * @returns {Array}
      * @example
-     * [[1,2],[3,4],[5,6]] -> [[1,3,5],[2,4,6]]
+     *  [[1,2],[3,4],[5,6]] -> [[1,3,5],[2,4,6]]
      */
     rotate : function(arr){
         let i, j;
@@ -525,6 +538,20 @@ HD.Array = {
  * @type {Object}
  */
 HD.Object = {
+
+    /**
+     * Objektum iterálhatóvá tétele
+     * @param {Object} obj
+     * @returns {Object}
+     */
+    iterable : function(obj){
+        obj[Symbol.iterator] = function*(){
+            for (const i in obj){
+                yield obj[i];
+            }
+        };
+        return obj;
+    },
 
     /**
      * Egyszintű keresés objektumban callback függvény alapján

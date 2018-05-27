@@ -4,6 +4,14 @@
  * @description Idő alapú számláló
  * @requires HD.DateTime
  * @example
+ *  Óra:
+ *   const clock = new HD.DateTime.Timer(1);
+ *   clock
+ *       .set(Math.round(Date.now() / 1000))
+ *       .start(function(){
+ *           elementDisplay.innerHTML = this.get('hh:mm:ss');
+ *       });
+ *  // ----------------------------------------------------------------
  *  Visszaszámláló:
  *   const countDown = new HD.DateTime.Timer(-1);
  *   countDown.set('35:20:00:00'); // Fixen 35 nap 20 óra; az alábbi egy életszerűbb példa:
@@ -16,18 +24,8 @@
  *           this.stop();
  *       });
  *  // ----------------------------------------------------------------
- *  Óra:
- *   const clock = new HD.DateTime.Timer(1);
- *   clock
- *       .set(Math.round(Date.now() / 1000))
- *       .start(function(){
- *           elementDisplay.innerHTML = this.get('hh:mm:ss');
- *       });
- *  // ----------------------------------------------------------------
  *  Stopper (tizedmásodperc pontosságú):
- *   // Biztosítani kell, hogy a belső számláló másodpercenként lépjen,
- *   // különben a get() metódus makróinak jelentése változik
- *   const stopWatch = new HD.DateTime.Timer(0.1, 100);
+ *   const stopWatch = new HD.DateTime.Timer(0.1);
  *   elementStart.addEventListener('click', function(){
  *       stopWatch.start(function(){
  *           elementDisplay.innerHTML = this.get('mm:ss.') + Math.round(this.get() * 10) % 10;
@@ -52,10 +50,10 @@ if (typeof global !== 'undefined'){
 /**
  * Időmérő objektum (Module minta)
  * @param {Number} add - lépegetés (pl: stoppernél 1, visszaszámlálónál -1)
- * @param {Number} [stepInterval=1000] - lépések között eltelt idő (ms)
+ * @param {Number} [stepInterval=null] - lépések között eltelt idő (ms)
  * @returns {Object} timer felület
  */
-HD.DateTime.Timer = function(add, stepInterval = 1000){
+HD.DateTime.Timer = function(add, stepInterval = null){
 
     /**
      * Eltelt időegység (másodpercben)
@@ -81,13 +79,14 @@ HD.DateTime.Timer = function(add, stepInterval = 1000){
     /**
      * Eseménykezelők
      * @type {Array}
-     * @description szerkezet: [
-     *     {
-     *         value : Number,     // érték
-     *         handler : Function, // eseménykezelő
-     *         context : Object    // this = Timer
-     *     }
-     * ]
+     * @description
+     *  events = [
+     *      {
+     *          value : Number,     // érték
+     *          handler : Function, // eseménykezelő
+     *          context : Object    // this = Timer
+     *      }
+     *  ]
      */
     const events = [];
 
@@ -163,10 +162,10 @@ HD.DateTime.Timer = function(add, stepInterval = 1000){
          */
         start : function(callback){
             if (!run){
-                callback.call(this);
+                callback.call(this, this);
                 timerID = setInterval(function(){
                     step();
-                    callback.call(this);
+                    callback.call(this, this);
                 }.bind(this), stepInterval);
                 run = true;
             }
@@ -225,6 +224,10 @@ HD.DateTime.Timer = function(add, stepInterval = 1000){
         }
 
     };
+
+    if (stepInterval === null){
+        stepInterval = 1000 * add;
+    }
 
     return Interface;
 

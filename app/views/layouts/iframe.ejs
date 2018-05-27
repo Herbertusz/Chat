@@ -1,9 +1,11 @@
 <% /* global CHAT layout */ %>
 <!DOCTYPE html>
-<html>
+<html lang="hu">
     <head>
         <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="icon" type="image/png" href="/favicon.png" />
+        <link rel="manifest" href="/manifest.json" />
         <link rel="stylesheet" href="/css/bootstrap.min.css" />
         <link rel="stylesheet" href="/css/common.css" />
         <link rel="stylesheet" href="/css/layout.css" />
@@ -21,7 +23,6 @@
                 })()
             };
         </script>
-        <script src="/js/libs/jquery.min.js"></script>
         <script src="/js/hd/hd.js"></script>
         <script src="/js/hd/hd.utility.js"></script>
         <script src="/js/hd/hd.math.js"></script>
@@ -32,9 +33,8 @@
 
         <% if (page.split('/').pop() === 'chat'){ %>
             <link rel="stylesheet" href="/css/chat.css" />
-            <script src="/js/libs/jquery.idle-timer.js"></script>
             <script src="/socket.io/socket.io.js"></script>
-            <script src="/js/compress/lz-string.min.js"></script>
+            <script src="/js/libs/lz-string.min.js"></script>
             <script src="/js/chat/init.js"></script>
             <script src="/js/chat/labels.js"></script>
             <script src="/js/chat/filetransfer.js"></script>

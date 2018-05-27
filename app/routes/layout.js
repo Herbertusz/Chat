@@ -7,7 +7,7 @@
 const ENV = require.main.require('../app/env.js');
 const Config = require.main.require('../app/config/config.js');
 const Labels = require.main.require('../app/public/js/chat/labels.js');
-const CHAT = Object.assign({}, Config, Labels);
+const CHAT = Object.assign({}, Config, Labels);  // TODO: nincs erre jobb módszer?
 
 module.exports = function(app){
 

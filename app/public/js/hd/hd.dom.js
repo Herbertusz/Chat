@@ -4,7 +4,7 @@
  * @description DOM-kezelő
  * @requires HD.Misc.switching
  * @example
- *  HD.DOM('.class').event('click', function(target){...});
+ *  HD.DOM('.class').event('click', function(target, event){...});
  *  HD.DOM('.class').descendants('button').data('clickable', 'true').trigger('click');
  *  const cloneElement = HD.DOM('.class').filter('[data-disabled]').clone(true).elem();
  */
@@ -93,9 +93,11 @@ HD.DOM = function(identifier){
      */
     const matches = function(element, selector){
         const p = Element.prototype;
-        const f = p.matches || p.webkitMatchesSelector || p.mozMatchesSelector || p.msMatchesSelector || function(s){
-            return [].indexOf.call(document.querySelectorAll(s), this) !== -1;
-        };
+        const f = p.matches ||
+            p.webkitMatchesSelector ||
+            p.mozMatchesSelector ||
+            p.msMatchesSelector ||
+            p.oMatchesSelector;
         return f.call(element, selector);
     };
 
@@ -111,11 +113,11 @@ HD.DOM = function(identifier){
                     // HTML kód
                     const div = document.createElement('div');
                     div.innerHTML = ident;
-                    return Array.from(div.children);
+                    return [...div.children];
                 }
                 else {
                     // Szelektor
-                    return Array.from(document.querySelectorAll(ident));
+                    return [...document.querySelectorAll(ident)];
                 }
             }
             else if (typeof ident === 'object'){
@@ -133,7 +135,7 @@ HD.DOM = function(identifier){
                 }
                 else if (ident instanceof NodeList || ident instanceof HTMLCollection){
                     // Elemlista
-                    return Array.from(ident);
+                    return [...ident];
                 }
                 else if (ident === null){
                     return [];
@@ -172,7 +174,7 @@ HD.DOM = function(identifier){
             let elements = [];
 
             this.elements.forEach(function(elem){
-                elements = elements.concat(Array.from(elem.querySelectorAll(selector)));
+                elements = elements.concat([...elem.querySelectorAll(selector)]);
             });
             return HD.DOM(elements);
         },
@@ -193,6 +195,16 @@ HD.DOM = function(identifier){
                 parent = parent.parentNode;
             }
             return HD.DOM(elements);
+        },
+
+        /**
+         * Keresés a környező elemek közt
+         * @param {String} ancestorSelector
+         * @param {String} descendantSelector
+         * @returns {Object}
+         */
+        neighbours : function(ancestorSelector, descendantSelector){
+            return this.ancestors(ancestorSelector).descendants(descendantSelector);
         },
 
         /**
@@ -530,7 +542,7 @@ HD.DOM = function(identifier){
             this.elements.forEach(function(target){
                 eventNames.split(' ').forEach(function(eventName){
                     target.addEventListener(eventName, function(event){
-                        handler.call(target, event);
+                        handler.call(target, target, event);
                     }, false);
                     HD.DOM.eventListeners.push({
                         target : target,
@@ -604,14 +616,14 @@ HD.DOM = function(identifier){
  * Csatolt eseménykezelők belső tárolása
  * @type {Array.<Object>}
  * @description
- * eventListeners = [
- *     {
- *         target : HTMLElement,
- *         eventName : String,
- *         handler : Function
- *     },
- *     ...
- * ]
+ *  eventListeners = [
+ *      {
+ *          target : HTMLElement,
+ *          eventName : String,
+ *          handler : Function
+ *      },
+ *      ...
+ *  ]
  */
 HD.DOM.eventListeners = [];
 
@@ -619,15 +631,15 @@ HD.DOM.eventListeners = [];
  * Csatolt adatok típusainak belső tárolása
  * @type {Array.<Object>}
  * @description
- * dataObjects = [
- *     {
- *         element : HTMLElement,
- *         type : String,
- *         name : String,
- *         value : *
- *     },
- *     ...
- * ]
+ *  dataObjects = [
+ *      {
+ *          element : HTMLElement,
+ *          type : String,
+ *          name : String,
+ *          value : *
+ *      },
+ *      ...
+ *  ]
  */
 HD.DOM.dataObjects = [];
 
@@ -636,12 +648,12 @@ HD.DOM.dataObjects = [];
  * @param {Object} options
  * @returns {Promise|null}
  * @description
- * options = {
- *     method : String ('GET'|'POST'|'PUT'|'DELETE'|...)
- *     url : String
- *     data : String
- *     callback : Function
- * }
+ *  options = {
+ *      method : String ('GET'|'POST'|'PUT'|'DELETE'|...)
+ *      url : String
+ *      data : String
+ *      callback : Function
+ *  }
  */
 HD.DOM.ajax = function(options){
     let promise = null;
@@ -662,12 +674,12 @@ HD.DOM.ajax = function(options){
             xhr.onerror = function(){
                 reject({
                     name : 'XHR error',
-                    message : `Url: ${options.url}; Data: ${options.data}`
+                    message : `Url: ${options.url}; Data: ${data}`
                 });
             };
         });
     }
-    xhr.send(options.data);
+    xhr.send(data);
     return promise;
 };
 
@@ -677,10 +689,10 @@ HD.DOM.ajax = function(options){
  * @param {HTMLElement} [elem=document.body] - egy DOM elem
  * @returns {Object} egérpozíció
  * @description
- * return = {
- *     x : Number,
- *     y : Number
- * }
+ *  return = {
+ *      x : Number,
+ *      y : Number
+ *  }
  */
 HD.DOM.getMousePosition = function(event, elem = document.body){
     const offset = {x : 0, y : 0};

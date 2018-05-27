@@ -27,7 +27,19 @@ HD.Log = {
         HD.DOM.ajax({
             method : 'POST',
             url : '/chat/clientlog',
-            data : `name=${errorName}&message=${errorMessage}&stack=${errorStack}`
+            data : `type=error&name=${errorName}&message=${errorMessage}&stack=${errorStack}`
+        });
+    },
+
+    /**
+     * Nem hiba jellegű log fájlba írása
+     * @param {String} message
+     */
+    info : function(message){
+        HD.DOM.ajax({
+            method : 'POST',
+            url : '/chat/clientlog',
+            data : `type=info&message=${message}`
         });
     }
 

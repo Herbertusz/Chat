@@ -9,7 +9,19 @@ var CHAT = global.CHAT || {};
 CHAT.Config = {
 
     // Alapértelmezett szöveg a title tegben
-    defaultTitle : 'Chat',
+    defaultTitle : 'HD-Chat',
+
+    // Csatorna-műveletek
+    room : {
+        // Felhasználók maximális száma egy csatornában (falsy érték: tetszőleges)
+        maxUsers : false,
+        // Új user hozzáadásának engedélyezése
+        forceJoin : true,
+        // User kidobásának engedélyezése
+        forceLeave : true,
+        // User kidobása a csatornákból kapcsolat megszakadása (pl. elnavigáléás, frissítés) esetén
+        leaveOnDisconnect : false
+    },
 
     // Felhasználó állapotai
     status : {
@@ -23,9 +35,9 @@ CHAT.Config = {
         inactive : ['idle', 'away', 'inv', 'off'],
         // Tétlen állapot érzékelése
         idle : {
-            // Tételen állapot érzékelésének engedélyezése
+            // Tétlen állapot érzékelésének engedélyezése
             allowed : true,
-            // Idle állapot figyelmen kívül hagyása ezeknél az állapotoknál (megjelenítéshez)
+            // Tétlen állapot figyelmen kívül hagyása ezeknél az állapotoknál (megjelenítéshez)
             except : ['inv', 'away'],
             // Várakozás tétlen állpotba állítás előtt ms-ban (5 perc)
             time : 300000,
@@ -50,8 +62,8 @@ CHAT.Config = {
         },
         // Hibaüzenetek
         error : {
-            // Hibaüzenet eltüntetése előtt eltelt idő
-            messageWait : 6000
+            // Hibaüzenet eltüntetése előtt eltelt idő ms-ban (falsy érték esetén nem tűnik el)
+            messageWait : false
         }
     },
 
@@ -131,23 +143,22 @@ CHAT.Config = {
             allowed : true,
             // Képekre cserélendő karakterláncok
             images : {
-                ':)'       : '/images/emoticons/01.gif',
-                ':D'       : '/images/emoticons/02.gif',
-                ':]'       : '/images/emoticons/03.gif',
-                '8)'       : '/images/emoticons/04.gif',
-                ';)'       : '/images/emoticons/05.gif',
-                ':?'       : '/images/emoticons/06.gif',
-                '8|'       : '/images/emoticons/07.gif',
-                'X('       : '/images/emoticons/08.gif',
-                ':('       : '/images/emoticons/09.gif',
-                ';('       : '/images/emoticons/10.gif',
-                ':like'    : '/images/emoticons/11.gif',
-                ':dislike' : '/images/emoticons/12.gif',
-                ':bug'     : '/images/emoticons/13.gif',
-                ':i'       : '/images/emoticons/14.gif',
-                ':w'       : '/images/emoticons/15.gif',
-                ':q'       : '/images/emoticons/16.gif',
-                ':alien'   : '/images/emoticons/17.gif'
+                ':)' : '/images/emoticons/01.gif',
+                ':D' : '/images/emoticons/02.gif',
+                ':]' : '/images/emoticons/03.gif',
+                '8)' : '/images/emoticons/04.gif',
+                ';)' : '/images/emoticons/05.gif',
+                ':?' : '/images/emoticons/06.gif',
+                '8|' : '/images/emoticons/07.gif',
+                'X(' : '/images/emoticons/08.gif',
+                ':(' : '/images/emoticons/09.gif',
+                ';(' : '/images/emoticons/10.gif',
+                ':+' : '/images/emoticons/11.gif',
+                ':-' : '/images/emoticons/12.gif',
+                ':b' : '/images/emoticons/13.gif',
+                ':i' : '/images/emoticons/14.gif',
+                ':w' : '/images/emoticons/15.gif',
+                ':q' : '/images/emoticons/16.gif'
             }
         },
 
@@ -185,9 +196,14 @@ CHAT.Config = {
         // Fájlátvitel engedélyezése
         allowed : true,
 
-        // Fájl átviteli módja
-        // 'upload': feltöltés szerverre; 'base64': base64 string átvitele; 'zip': tömörített base64 átvitele
-        store : 'upload',
+        // Fájl átviteli módja a fájl méretétől föggően (növekvő sorrendben kell megadni)
+        // 'base64': base64 string átvitele; 'zip': tömörített base64 átvitele; 'upload': feltöltés szerverre
+        // Javaslat: 'base64': <5MB
+        store : {
+            base64 :       1024 * 1024,  // 0 MB - 1 MB
+            // zip    :   2 * 1024 * 1024,  // 1 MB - 2 MB  // TODO
+            upload : 100 * 1024 * 1024   // 2 MB - 100 MB
+        },
 
         // Egyszerre több fájl átvitelének engedélyezése
         multiple : true,
@@ -214,19 +230,15 @@ CHAT.Config = {
         typeFallback : {
             text : ['log', 'ini'],
             zip  : ['7z', 'ace', 'cab', 'gz', 'rar', 'tgz', 'zip'],
-            exec : ['bat', 'sh'],
+            exec : ['bat', 'sh', 'reg'],
             code : [
                 'asm', 'asp', 'awk', 'c', 'cpp', 'css', 'h', 'hpp', 'htc', 'htm', 'html', 'inc',
                 'java', 'js', 'jsp', 'php', 'pl', 'pm', 'sh', 'sql', 'src', 'xmd', 'xml', 'xsl'
             ]
         },
 
-        // Engedélyezett fájltípusok a types tulajdonságban definiáltak közül
-        allowedTypes : ['image', 'text', 'pdf', 'doc', 'xls', 'ppt', 'zip', 'audio', 'video', 'exec', 'code', 'file'],
-
-        // Fájl maximális mérete
-        // Javaslat: 'upload': <100MB; 'base64': <5MB
-        maxSize : 100 * 1024 * 1024
+        // Engedélyezett fájltípusok a types és typeFallback tulajdonságban definiáltak közül
+        allowedTypes : ['image', 'text', 'pdf', 'doc', 'xls', 'ppt', 'zip', 'audio', 'video', 'exec', 'code', 'file']
 
     }
 

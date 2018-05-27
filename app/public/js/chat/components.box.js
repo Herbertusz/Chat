@@ -12,6 +12,63 @@ CHAT.Components = CHAT.Components || {};
 CHAT.Components.Box = {
 
     /**
+     * Csatorna módosítása
+     * @param {String} operation - művelet ('add'|'remove')
+     * @param {String} room - csatorna azonosító
+     * @param {Number} userId - user azonosító
+     */
+    roomUpdate : function(operation, room, userId){
+        let userIdIndex = -1;
+
+        if (!room){
+            // összes csatorna
+            CHAT.State.rooms.forEach(function(roomData){
+                CHAT.Components.Box.roomUpdate(operation, roomData.name, userId);
+            });
+            return;
+        }
+        const roomIndex = CHAT.State.rooms.findIndex(function(roomData){
+            return roomData.name === room;
+        });
+        if (roomIndex > -1){
+            if (operation === 'add'){
+                userIdIndex = CHAT.State.rooms[roomIndex].userIds.indexOf(userId);
+                if (userIdIndex === -1){
+                    CHAT.State.rooms[roomIndex].userIds.push(userId);
+                }
+            }
+            else if (operation === 'remove'){
+                userIdIndex = CHAT.State.rooms[roomIndex].userIds.indexOf(userId);
+                if (userIdIndex > -1){
+                    CHAT.State.rooms[roomIndex].userIds.splice(userIdIndex, 1);
+                }
+                CHAT.Components.Box.roomGarbageCollect();
+            }
+        }
+    },
+
+    /**
+     * Csatornák törlése, melyekben nincs user, vagy csak offline userek vannak
+     * @returns {Array<String>} törölt csatornák azonosítói
+     */
+    roomGarbageCollect : function(){
+        const deleted = [];
+        const onlineUserIds = [];
+        let key;
+
+        for (key in CHAT.State.connectedUsers){
+            onlineUserIds.push(CHAT.State.connectedUsers[key].id);
+        }
+        CHAT.State.rooms.forEach(function(room, index){
+            if (room.userIds.length === 0 || HD.Math.Set.intersection(room.userIds, onlineUserIds).length === 0){
+                deleted.push(room.name);
+                CHAT.State.rooms.splice(index, 1);
+            }
+        });
+        return deleted;
+    },
+
+    /**
      * Doboz scrollozása az aljára
      * @param {HTMLElement} box - Chat-doboz
      * @param {Boolean} [conditional=false]
@@ -42,8 +99,8 @@ CHAT.Components.Box = {
             mouse : {x : 0, y : 0}
         };
 
-        Mover.event('mousedown', function(event){
-            const element = HD.DOM(this).ancestors(CHAT.DOM.box).elem();
+        Mover.event('mousedown', function(target, event){
+            const element = HD.DOM(target).ancestors(CHAT.DOM.box).elem();
             event.preventDefault();
             drag.element = element;
             drag.active = true;
@@ -54,14 +111,14 @@ CHAT.Components.Box = {
             HD.DOM(CHAT.DOM.box).css({zIndex : 0});
             HD.DOM(drag.element).css({zIndex : 1000});
         });
-        Container.event('mouseup', function(event){
+        Container.event('mouseup', function(target, event){
             if (drag.active){
                 event.preventDefault();
                 drag.element = null;
                 drag.active = false;
             }
         });
-        Container.event('mousemove', function(event){
+        Container.event('mousemove', function(target, event){
             if (drag.active){
                 const element = drag.element;
                 element.style.left = `${drag.box.x + event.pageX - drag.mouse.x}px`;
@@ -95,12 +152,12 @@ CHAT.Components.Box = {
         if (!rest.maxWidth) rest.maxWidth = Infinity;
         if (!rest.maxHeight) rest.maxHeight = Infinity;
 
-        Resizer.all.event('mousedown', function(event){
-            const element = HD.DOM(this).ancestors(CHAT.DOM.box).elem();
+        Resizer.all.event('mousedown', function(target, event){
+            const element = HD.DOM(target).ancestors(CHAT.DOM.box).elem();
             const size = element.getBoundingClientRect();
             event.preventDefault();
             drag.element = element;
-            drag.trigger = HD.DOM(this).data('direction');
+            drag.trigger = HD.DOM(target).data('direction');
             drag.active = true;
             drag.box.x = element.offsetLeft;
             drag.box.y = element.offsetTop;
@@ -116,14 +173,14 @@ CHAT.Components.Box = {
                 zIndex : 1000
             });
         });
-        Container.event('mouseup', function(event){
+        Container.event('mouseup', function(target, event){
             if (drag.active){
                 event.preventDefault();
                 drag.element = null;
                 drag.active = false;
             }
         });
-        Container.event('mousemove', function(event){
+        Container.event('mousemove', function(target, event){
             if (drag.active){
                 const element = drag.element;
                 let l, t, w, h;
@@ -193,17 +250,19 @@ CHAT.Components.Box = {
                 height : '100%'
             },
             screen : {
+                left : 0,
+                top : 0,
                 width : '100%',
                 height : '100%'
             }
         };
 
-        CHAT.DOM.inBox(`${CHAT.DOM.clickResize} .toggle`).event('click', function(){
-            HD.DOM(this).ancestors(CHAT.DOM.clickResize).descendants('.actions').class('toggle', 'active');
+        CHAT.DOM.inBox(`${CHAT.DOM.clickResize} .toggle`).event('click', function(target){
+            HD.DOM(target).neighbours(CHAT.DOM.clickResize, '.actions').class('toggle', 'active');
         });
 
-        Resizers.event('click', function(){
-            const Trigger = HD.DOM(this);
+        Resizers.event('click', function(target){
+            const Trigger = HD.DOM(target);
             const Box = Trigger.ancestors(CHAT.DOM.box);
             const size = Trigger.data('resize');
             if (size === 'box'){
@@ -269,14 +328,31 @@ CHAT.Components.Box = {
     roomEvents : function(){
         // Csatorna létrehozása
         HD.DOM(CHAT.DOM.start).event('click', function(){
-            const room = CHAT.Events.Client.createRoom();
-            HD.DOM(CHAT.DOM.userSelect).prop('checked', false).trigger('change');
-            CHAT.DOM.setTitle(`[data-room="${room}"]`);
+            const userIds = CHAT.Components.User.getSelectedUserIds();
+
+            CHAT.Components.Box.userRestriction('create', userIds)
+                .then(function(permission){
+                    if (permission){
+                        const room = CHAT.Events.Client.createRoom(userIds);
+                        HD.DOM(CHAT.DOM.userSelect).prop('checked', false).trigger('change');
+                        CHAT.DOM.setTitle(`[data-room="${room}"]`);
+                    }
+                    else {
+                        CHAT.Components.Notification.error([{
+                            type : 'maxUsers',
+                            value : CHAT.Config.room.maxUsers
+                        }]);
+                    }
+                })
+                .catch(function(error){
+                    HD.Log.error(error);
+                });
+
         });
 
         // Kilépés csatornából
-        CHAT.DOM.inBox(CHAT.DOM.close).event('click', function(){
-            CHAT.Events.Client.leaveRoom(HD.DOM(this).ancestors(CHAT.DOM.box).elem());
+        CHAT.DOM.inBox(CHAT.DOM.close).event('click', function(target){
+            CHAT.Events.Client.leaveRoom(HD.DOM(target).ancestors(CHAT.DOM.box).elem());
         });
 
         // User hozzáadása csatornához
@@ -291,21 +367,36 @@ CHAT.Components.Box = {
                 CHAT.DOM.inBox(CHAT.DOM.addUser).class('add', 'hidden');
             }
         });
-        CHAT.DOM.inBox(CHAT.DOM.addUser).event('click', function(){
-            const Add = HD.DOM(this);
+        CHAT.DOM.inBox(CHAT.DOM.addUser).event('click', function(target){
+            const Add = HD.DOM(target);
+            const Box = Add.ancestors(CHAT.DOM.box);
+            const room = Box.data('room');
+            const userIds = CHAT.Components.User.getSelectedUserIds();
 
-            if (!Add.dataBool('disabled')){
-                HD.DOM(CHAT.DOM.selectedUsers).elements.forEach(function(selectedUser){
-                    CHAT.Events.Client.forceJoinRoom(Add.elem(), Number(selectedUser.value));
+            CHAT.Components.Box.userRestriction('add', userIds, room)
+                .then(function(permission){
+                    if (permission && !Add.dataBool('disabled')){
+                        HD.DOM(CHAT.DOM.selectedUsers).elements.forEach(function(selectedUser){
+                            CHAT.Events.Client.forceJoinRoom(Add.elem(), Number(selectedUser.value));
+                        });
+                        HD.DOM(CHAT.DOM.userSelect).prop('checked', false).trigger('change');
+                        CHAT.DOM.setTitle(CHAT.DOM.box);
+                    }
+                    else {
+                        CHAT.Components.Notification.error([{
+                            type : 'maxUsers',
+                            value : CHAT.Config.room.maxUsers
+                        }], Box.elem());
+                    }
+                })
+                .catch(function(error){
+                    HD.Log.error(error);
                 });
-                HD.DOM(CHAT.DOM.userSelect).prop('checked', false).trigger('change');
-                CHAT.DOM.setTitle(CHAT.DOM.box);
-            }
         });
 
         // User kidobása csatornából
-        CHAT.DOM.inBox(CHAT.DOM.userThrow).event('click', function(){
-            const Remove = HD.DOM(this);
+        CHAT.DOM.inBox(CHAT.DOM.userThrow).event('click', function(target){
+            const Remove = HD.DOM(target);
 
             if (!Remove.dataBool('disabled')){
                 CHAT.Events.Client.forceLeaveRoom(Remove.elem());
@@ -314,17 +405,37 @@ CHAT.Components.Box = {
     },
 
     /**
+     * Felhasználók kiválasztásának korlátozásai
+     * @param {String} operation - művelet ('create'|'add')
+     * @param {Array} userIds - userId-k
+     * @param {String} [room=''] - csatorna azonosító
+     * @returns {Promise} megadott művelet lefuttatása engedélyezett
+     */
+    userRestriction : function(operation, userIds, room = ''){
+        return HD.DOM.ajax({
+            method : 'POST',
+            url : '/chat/getrestrictions',
+            data : `operation=${operation}&triggerUserId=${CHAT.userId}&userIds=${userIds.toString()}&room=${room}`
+        }).then(function(resp){
+            resp = JSON.parse(resp);
+            return resp.permission;
+        }).catch(function(error){
+            HD.Log.error(error);
+        });
+    },
+
+    /**
      * Doboz kitöltése DB-ből származó adatokkal
      * @param {HTMLElement} box
-     * @param {String} roomName
+     * @param {String} room
      * @returns {Promise}
      */
-    fill : function(box, roomName){
+    fill : function(box, room){
 
         HD.DOM.ajax({
             method : 'POST',
             url : '/chat/getroommessages',
-            data : `roomName=${roomName}`
+            data : `room=${room}`
         }).then(function(resp){
             resp = JSON.parse(resp);
             let sequence = Promise.resolve();
@@ -340,12 +451,15 @@ CHAT.Components.Box = {
              *             room : String,
              *             message : String|undefined,
              *             file : Object|undefined {
-             *                 name : String,
-             *                 size : Number,
-             *                 type : String,
-             *                 mainType : String,
+             *                 raw : {
+             *                     name : String,
+             *                     size : Number,
+             *                     type : String,
+             *                     source : String
+             *                 },
              *                 store : String,
-             *                 data : String,
+             *                 type : String,
+             *                 name : String,
              *                 deleted : Boolean
              *             },
              *             created : String
@@ -365,7 +479,7 @@ CHAT.Components.Box = {
                                 userId : msgData.userId,
                                 time : timestamp,
                                 message : msgData.message,
-                                roomName : roomName
+                                room : room
                             }, msgData.userId === CHAT.userId);
                             return Promise.resolve();
                         }
@@ -373,18 +487,20 @@ CHAT.Components.Box = {
                             // fájlküldés
                             data = {
                                 userId : msgData.userId,
-                                fileData : {
-                                    name : msgData.file.name,
-                                    size : msgData.file.size,
-                                    type : msgData.file.type,
-                                    deleted : msgData.file.deleted
+                                raw : {
+                                    name : msgData.file.raw.name,
+                                    size : msgData.file.raw.size,
+                                    type : msgData.file.raw.type,
+                                    source : msgData.file.raw.source
                                 },
-                                file : null,
-                                type : msgData.file.mainType,
+                                store : msgData.file.store,
+                                type : msgData.file.type,
                                 time : timestamp,
-                                roomName : roomName
+                                room : room,
+                                name : msgData.file.name,
+                                deleted : msgData.file.deleted
                             };
-                            return CHAT.FileTransfer.action('receive', [box, data, msgData]);
+                            return CHAT.FileTransfer.action('receive', [box, data]);
                         }
                         else {
                             // esemény
@@ -395,6 +511,8 @@ CHAT.Components.Box = {
                         HD.Log.error(error);
                     });
             });
+        }).catch(function(error){
+            HD.Log.error(error);
         });
 
     }

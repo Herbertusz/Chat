@@ -23,6 +23,19 @@ CHAT.Components.User = {
     },
 
     /**
+     * User-listában kiválasztott userId-k
+     * @returns {Array}
+     */
+    getSelectedUserIds : function(){
+        const userIds = [];
+        HD.DOM(CHAT.DOM.selectedUsers).elements.forEach(function(selectedUser){
+            const userId = Number(selectedUser.value);
+            userIds.push(userId);
+        });
+        return userIds;
+    },
+
+    /**
      * User-sáv görgetése
      * @deprecated nincs használva, helyette a CHAT.Components.User.openList használandó
      */
@@ -33,24 +46,24 @@ CHAT.Components.User = {
             x : 0
         };
 
-        CHAT.DOM.inBox(CHAT.DOM.users).event('mousedown', function(event){
+        CHAT.DOM.inBox(CHAT.DOM.users).event('mousedown', function(target, event){
             event.preventDefault();
             userDrag.active = true;
             userDrag.x = event.pageX;
         });
-        CHAT.DOM.inBox(CHAT.DOM.users).event('mouseup mouseleave', function(event){
+        CHAT.DOM.inBox(CHAT.DOM.users).event('mouseup mouseleave', function(target, event){
             event.preventDefault();
             userDrag.active = false;
             userDrag.moving = false;
         });
-        CHAT.DOM.inBox(CHAT.DOM.users).event('mousemove', function(event){
+        CHAT.DOM.inBox(CHAT.DOM.users).event('mousemove', function(target, event){
             if (userDrag.active){
                 if (userDrag.moving){
-                    this.scrollLeft = userDrag.x - event.pageX;
+                    target.scrollLeft = userDrag.x - event.pageX;
                 }
                 else {
                     userDrag.moving = true;
-                    userDrag.x = this.scrollLeft + event.pageX;
+                    userDrag.x = target.scrollLeft + event.pageX;
                 }
             }
         });
@@ -60,9 +73,9 @@ CHAT.Components.User = {
      * User-sáv lenyíló lista
      */
     openList : function(){
-        CHAT.DOM.inBox(CHAT.DOM.userItems).event('click', function(){
-            const Trigger = HD.DOM(this);
-            if (this.classList.contains('current')){
+        CHAT.DOM.inBox(CHAT.DOM.userItems).event('click', function(target){
+            const Trigger = HD.DOM(target);
+            if (target.classList.contains('current')){
                 const List = Trigger.ancestors(CHAT.DOM.users);
                 List.dataBool('active', !List.dataBool('active'));
                 Trigger.descendants(CHAT.DOM.userDropdown).class('toggle', 'active');
@@ -110,6 +123,7 @@ CHAT.Components.User = {
                 UserElem.descendants('.name').elem().innerHTML = CHAT.Components.User.getName(currentUserId);
             }
         });
+        CHAT.DOM.setTitle(to);
     },
 
     /**
@@ -168,17 +182,17 @@ CHAT.Components.User = {
      * @param {Number} userId
      * @returns {Object}
      * @description
-     * returns = {
-     *     status : String   // user státusz (CHAT.Labels.status.online + offline)
-     *     isIdle : Boolean  // user tétlen státuszban van
-     * }
+     *  returns = {
+     *      status : String   // user státusz (CHAT.Labels.status.online + offline)
+     *      isIdle : Boolean  // user tétlen státuszban van
+     *  }
      */
     getStatusDetails : function(userId){
         const statusObj = {
             status : CHAT.Config.status.offline[0],
             isIdle : false
         };
-        const connectedUsers = HD.DOM(CHAT.DOM.online).dataObj('connected-users');
+        const connectedUsers = CHAT.State.connectedUsers;
 
         for (const socketId in connectedUsers){
             if (connectedUsers[socketId].id === userId){
@@ -195,10 +209,10 @@ CHAT.Components.User = {
      * @param {Object} statusObj
      * @returns {String}
      * @description
-     * statusObj = {
-     *     status : String   // user státusz (CHAT.Labels.status.online + offline)
-     *     isIdle : Boolean  // user tétlen státuszban van
-     * }
+     *  statusObj = {
+     *      status : String   // user státusz (CHAT.Labels.status.online + offline)
+     *      isIdle : Boolean  // user tétlen státuszban van
+     *  }
      */
     getStatusIcon : function(statusObj){
         let statusIcon;
@@ -218,15 +232,15 @@ CHAT.Components.User = {
      * Státuszok frissítése
      * @param {Object} connectedUsers
      * @description
-     * connectedUsers = {
-     *     <socket.id> : {
-     *         id : Number,      // user azonosító
-     *         name : String,    // user login név
-     *         status : String,  // user státusz (CHAT.Labels.status.online + offline)
-     *         isIdle : Boolean  // user tétlen státuszban van
-     *     },
-     *     ...
-     * }
+     *  connectedUsers = {
+     *      <socket.id> : {
+     *          id : Number,      // user azonosító
+     *          name : String,    // user login név
+     *          status : String,  // user státusz (CHAT.Labels.status.online + offline)
+     *          isIdle : Boolean  // user tétlen státuszban van
+     *      },
+     *      ...
+     *  }
      */
     updateStatuses : function(connectedUsers){
         const onlineUserStatuses = {};
@@ -258,20 +272,20 @@ CHAT.Components.User = {
      * @param {String} newStatus
      * @returns {Object}
      * @description
-     * return = {
-     *     <socket.id> : {
-     *         id : Number,      // user azonosító
-     *         name : String,    // user login név
-     *         status : String,  // user státusz (CHAT.Labels.status.online + offline)
-     *         isIdle : Boolean  // user tétlen státuszban van
-     *     },
-     *     ...
-     * }
+     *  return = {
+     *      <socket.id> : {
+     *          id : Number,      // user azonosító
+     *          name : String,    // user login név
+     *          status : String,  // user státusz (CHAT.Labels.status.online + offline)
+     *          isIdle : Boolean  // user tétlen státuszban van
+     *      },
+     *      ...
+     *  }
      */
     changeStatus : function(newStatus){
         let socketId;
         let thisSocket = null;
-        const connectedUsers = HD.DOM(CHAT.DOM.online).dataObj('connected-users');
+        const connectedUsers = CHAT.State.connectedUsers;
 
         for (socketId in connectedUsers){
             if (connectedUsers[socketId].id === CHAT.userId){
@@ -290,7 +304,7 @@ CHAT.Components.User = {
                 connectedUsers[thisSocket].status = newStatus;
             }
         }
-        HD.DOM(CHAT.DOM.online).dataObj('connected-users', connectedUsers);
+        CHAT.State.connectedUsers = connectedUsers;
         CHAT.Components.User.updateStatuses(connectedUsers);
         return connectedUsers;
     },
@@ -300,22 +314,33 @@ CHAT.Components.User = {
      */
     statusEvents : function(){
         // Státusz megváltoztatása
-        HD.DOM(CHAT.DOM.online).descendants(CHAT.DOM.statusChange).event('change', function(){
-            const connectedUsers = CHAT.Components.User.changeStatus(this.value);
+        HD.DOM(CHAT.DOM.online).descendants(CHAT.DOM.statusChange).event('change', function(target){
+            const connectedUsers = CHAT.Components.User.changeStatus(target.value);
             CHAT.socket.emit('statusChanged', connectedUsers, CHAT.userId);
         });
 
-        // Tétlen állapot TODO: saját kód
+        // Tétlen állapot
         if (CHAT.Config.status.idle.allowed){
-            $(CHAT.DOM.idleCheck).idleTimer(CHAT.Components.Timer.idle);
-            $(CHAT.DOM.idleCheck).on('idle.idleTimer', function(){
+            const startIdle = function(){
                 const connectedUsers = CHAT.Components.User.changeStatus('idle');
                 CHAT.socket.emit('statusChanged', connectedUsers, CHAT.userId);
-            });
-            $(CHAT.DOM.idleCheck).on('active.idleTimer', function(){
+            };
+            const endIdle = function(){
                 const connectedUsers = CHAT.Components.User.changeStatus('notidle');
                 CHAT.socket.emit('statusChanged', connectedUsers, CHAT.userId);
+            };
+            const startIdleCounter = function(){
+                CHAT.Components.Timer.idle = setTimeout(function(){
+                    startIdle();
+                }, CHAT.Config.status.idle.time);
+            };
+
+            HD.DOM(CHAT.DOM.idleCheck).event('mousemove mousedown wheel keydown touchstart touchmove', function(elem){
+                endIdle();
+                clearTimeout(CHAT.Components.Timer.idle);
+                startIdleCounter();
             });
+            startIdleCounter();
         }
     },
 
@@ -344,6 +369,11 @@ CHAT.Components.User = {
                 data : `userId=${userId}`
             }).then(function(resp){
                 const lastChange = JSON.parse(resp).status;
+
+                // A user nem létezik
+                if (lastChange === null){
+                    return;
+                }
 
                 // A user offline, és még sose lépett be
                 if (
@@ -384,14 +414,14 @@ CHAT.Components.User = {
                         CHAT.Components.Timer.counters[timerId]
                             .stop()
                             .set(Math.round(time / 1000))
-                            .start(function(){
-                                if (this.get() < 60){
+                            .start(function(timer){
+                                if (timer.get() < 60){
                                     display.innerHTML = CHAT.Labels.time.lessThanMin;
                                 }
                                 else {
-                                    display.innerHTML = CHAT.Components.User.timerDisplay(this.get('D:h:m:s'));
+                                    display.innerHTML = CHAT.Components.User.timerDisplay(timer.get('D:h:m:s'));
                                 }
-                                // display.innerHTML = this.get('D nap, hh:mm:ss'); // debug mód
+                                // display.innerHTML = timer.get('D nap, hh:mm:ss'); // debug mód
                             });
                     }
                     else if (statuses.inactive.indexOf(prevStatus) > -1 && statuses.active.indexOf(nextStatus) > -1){

@@ -41,6 +41,8 @@
  *  carousel.init();
  */
 
+/* global $ */
+
 'use strict';
 
 var HD = window.HD || {};
@@ -56,22 +58,23 @@ HD.Site.Slideshow = function(options){
     /**
      * Alapértelmezett beállítások
      * @type {Object}
-     * @description szerkezet: {
-     *     items : String,           // Léptetendő elemek szelektora
-     *     stepper : {
-     *         left : jQuery,        // Balra léptető elem
-     *         right : jQuery        // Jobbra léptető elem
-     *     },
-     *     jumpers : {
-     *         elements : jQuery,    // Megadott sorszámú helyre léptető elemek
-     *         activeClass : String  // Aktív elem CSS class-a
-     *     },
-     *     default : Function,       // Alapértelmezett művelet
-     *     timeout : Number,         // A default metódus lefuttatásának periódusideje
-     *     cycle : Boolean,          // Ciklikus léptetés
-     *     dataItem : String,        // Elemek data-* attribútumának neve (névütközés esetén cserélhető)
-     *     dataJumper : String       // Jumperek data-* attribútumának neve (névütközés esetén cserélhető)
-     * }
+     * @description
+     *  defaultOptions = {
+     *      items : String,           // Léptetendő elemek szelektora
+     *      stepper : {
+     *          left : jQuery,        // Balra léptető elem
+     *          right : jQuery        // Jobbra léptető elem
+     *      },
+     *      jumpers : {
+     *          elements : jQuery,    // Megadott sorszámú helyre léptető elemek
+     *          activeClass : String  // Aktív elem CSS class-a
+     *      },
+     *      default : Function,       // Alapértelmezett művelet
+     *      timeout : Number,         // A default metódus lefuttatásának periódusideje
+     *      cycle : Boolean,          // Ciklikus léptetés
+     *      dataItem : String,        // Elemek data-* attribútumának neve (névütközés esetén cserélhető)
+     *      dataJumper : String       // Jumperek data-* attribútumának neve (névütközés esetén cserélhető)
+     *  }
      */
     const defaultOptions = {
         items : '',
@@ -233,8 +236,8 @@ HD.Site.Slideshow = function(options){
             const $stepperright = options.stepper.right ? $(options.stepper.right) : null;
             const $jumpers = setJumper(current);
 
-            $items.each(function(index){
-                $(this).data(options.dataItem, index);
+            $items.each(function(index, elem){
+                $(elem).data(options.dataItem, index);
             });
             if ($stepperleft && $stepperleft.length > 0){
                 $stepperleft.click(function(){
@@ -247,13 +250,13 @@ HD.Site.Slideshow = function(options){
                 });
             }
             if ($jumpers && $jumpers.length > 0){
-                $jumpers.click(function(){
+                $jumpers.click(function(event){
                     let num = 0;
                     if (typeof $jumpers.data(options.dataJumper) !== 'undefined'){
-                        num = $(this).data(options.dataJumper);
+                        num = $(event.target).data(options.dataJumper);
                     }
                     else {
-                        num = $jumpers.index(this);
+                        num = $jumpers.index(event.target);
                     }
                     Interface.step(num);
                 });

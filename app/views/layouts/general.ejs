@@ -1,9 +1,11 @@
 <% /* global CHAT layout */ %>
 <!DOCTYPE html>
-<html>
+<html lang="hu">
     <head>
         <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="icon" type="image/png" href="/favicon.png" />
+        <link rel="manifest" href="/manifest.json" />
         <link rel="stylesheet" href="/css/bootstrap.min.css" />
         <link rel="stylesheet" href="/css/common.css" />
         <link rel="stylesheet" href="/css/layout.css" />
@@ -21,7 +23,6 @@
                 })()
             };
         </script>
-        <script src="/js/libs/jquery.min.js"></script>
         <script src="/js/hd/hd.js"></script>
         <script src="/js/hd/hd.utility.js"></script>
         <script src="/js/hd/hd.math.js"></script>
@@ -33,9 +34,9 @@
         <script>
             HD.DOM(document).event('DOMContentLoaded', function(){
 
-                HD.DOM('.menupoint').event('mouseover', function(event){
+                HD.DOM('.menupoint').event('mouseover', function(target, event){
                     const elem = event.currentTarget;
-                    const id = HD.DOM('.menupoint').elements.findIndex(elem => this === elem);
+                    const id = HD.DOM('.menupoint').elements.findIndex(elem => target === elem);
                     const original = HD.Math.Animation.stop(`menuout-${id}`) || 0;
                     HD.Math.Animation.run(`menuover-${id}`, {
                         action : function(value){
@@ -53,9 +54,9 @@
                         easing : 'linear'
                     });
                 });
-                HD.DOM('.menupoint').event('mouseout', function(event){
+                HD.DOM('.menupoint').event('mouseout', function(target, event){
                     const elem = event.currentTarget;
-                    const id = HD.DOM('.menupoint').elements.findIndex(elem => this === elem);
+                    const id = HD.DOM('.menupoint').elements.findIndex(elem => target === elem);
                     const original = HD.Math.Animation.stop(`menuover-${id}`);
                     HD.Math.Animation.run(`menuout-${id}`, {
                         action : function(value){
@@ -79,9 +80,8 @@
 
         <% if (page.split('/').pop() === 'chat' && login){ %>
             <link rel="stylesheet" href="/css/chat.css" />
-            <script src="/js/libs/jquery.idle-timer.js"></script>
             <script src="/socket.io/socket.io.js"></script>
-            <script src="/js/compress/lz-string.min.js"></script>
+            <script src="/js/libs/lz-string.min.js"></script>
             <script src="/js/chat/init.js"></script>
             <script src="/js/chat/labels.js"></script>
             <script src="/js/chat/filetransfer.js"></script>
@@ -97,7 +97,7 @@
             <title><%- CHAT.Config.defaultTitle %></title>
         <% } else if (page.split('/').pop() === 'videochat'){ %>
             <link rel="stylesheet" href="/css/videochat.css" />
-            <script src="/js/compress/lz-string.min.js"></script>
+            <script src="/js/libs/lz-string.min.js"></script>
             <script src="/socket.io/socket.io.js"></script>
             <script src="/js/videochat/webcam.js"></script>
             <!-- <script src="/js/libs/rmc3.js"></script> -->
@@ -146,15 +146,18 @@
             <% } else { %>
                 <div class="login">
                     Üdvözöljük, <strong><%- userName %></strong>
-                    <a href="/logout">Kijelentkezés</a>
+                    | <a href="/logout">Kijelentkezés</a>
                 </div>
             <% } %>
 
             <%- include(page) %>
 
             <footer>
-                <a class="html5logo" href="http://www.w3.org/html/logo/">
-                    <img src="https://www.w3.org/html/logo/badge/html5-badge-h-connectivity-css3-device-multimedia-performance-semantics.png" width="293" height="64" alt="HTML5 Powered with Connectivity / Realtime, CSS3 / Styling, Device Access, Multimedia, Performance &amp; Integration, and Semantics" title="HTML5 Powered with Connectivity / Realtime, CSS3 / Styling, Device Access, Multimedia, Performance &amp; Integration, and Semantics" />
+                <a class="html5logo" href="http://www.w3.org/html/logo">
+                    <img src="https://www.w3.org/html/logo/badge/html5-badge-h-connectivity-css3-graphics-multimedia-performance-semantics.png" width="293" height="64" alt="HTML5 Powered with Connectivity / Realtime, CSS3 / Styling, Device Access, Multimedia, Performance &amp; Integration, and Semantics" title="HTML5 Powered with Connectivity / Realtime, CSS3 / Styling, Graphics, 3D &amp; Effects, Multimedia, Performance &amp; Integration, and Semantics" />
+                </a>
+                <a class="vanilla-js" href="http://vanilla-js.com">
+                    <img src="/images/button.png" alt="Vanilla JS" title="Powered by Vanilla JS" />
                 </a>
             </footer>
 

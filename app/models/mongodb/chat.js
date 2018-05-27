@@ -46,13 +46,13 @@ const Model = function(db){
 
         /**
          * Egy csatorna átviteleinek lekérdezése
-         * @param {String} roomName
+         * @param {String} room
          * @param {Function} [callback]
          * @returns {Promise}
          */
-        getRoomMessages : function(roomName, callback = () => {}){
+        getRoomMessages : function(room, callback = () => {}){
             return db.collection('chat_messages')
-                .find({'room' : roomName})
+                .find({'room' : room})
                 .sort({'created' : 1})
                 .toArray()
                 .then(function(messages){
@@ -84,24 +84,21 @@ const Model = function(db){
 
         /**
          * Egy fájl adatainak lekérése csatorna és fájlnév alapján
-         * @param {String} roomName
+         * @param {String} room
          * @param {String} fileName
          * @param {Function} [callback]
          */
-        getFile : function(roomName, fileName, callback = () => {}){
+        getFile : function(room, fileName, callback = () => {}){
             return db.collection('chat_messages')
                 .find({
-                    'room' : roomName,
-                    'file.data' : fileName
+                    'room' : room,
+                    'file.name' : fileName
                 })
                 .toArray()
                 .then(function(files){
                     let ret = false;
                     if (files.length){
-                        const file = files[0];
-                        ret = Object.assign(file.file, {
-                            room : file.room
-                        });
+                        ret = files[0].file;
                     }
                     callback(ret);
                     return ret;
@@ -114,22 +111,21 @@ const Model = function(db){
         /**
          * Esemény beszúrása adatbázisba
          * @param {String} eventName
-         * @param {String} roomName
          * @param {Object} data
          * @param {Function} [callback]
          * @returns {Promise}
          * @description
-         * data = {
-         *     // TODO
-         * }
+         *  data = {
+         *      triggerId : Number,     // eseményt kiváltó userId
+         *      userId : Number|Array,  // eseményt elszenvedő userId(k)
+         *      room : String           // csatorna azonosító
+         *  }
          */
-        setEvent : function(eventName, roomName, data, callback = () => {}){
-            const insertData = {
+        setEvent : function(eventName, data, callback = () => {}){
+            const insertData = Object.assign({
                 'event' : eventName,
-                'room' : roomName,
-                'data' : data,
                 'created' : Date.now()
-            };
+            }, data);
 
             return db.collection('chat_messages')
                 .insertOne(insertData)
@@ -149,9 +145,12 @@ const Model = function(db){
          * @param {Function} [callback]
          * @returns {Promise}
          * @description
-         * data = {
-         *     // TODO
-         * }
+         *  data = {
+         *      userId : Number,   // üzenetet küldő user
+         *      room : String,     // csatorna azonosító
+         *      message : String,  // üzenet
+         *      time : Number      // timestamp
+         *  }
          */
         setMessage : function(data, callback = () => {}){
             let insertData;
@@ -185,24 +184,42 @@ const Model = function(db){
          * @param {Function} [callback]
          * @returns {Promise}
          * @description
-         * data = {
-         *     // TODO
-         * }
+         *  data = {
+         *      userId : Number,
+         *      file = {
+         *          userId : Number,
+         *          raw : {
+         *              name : String,
+         *              size : Number,
+         *              type : String,
+         *              source : String
+         *          },
+         *          store : String,
+         *          type : String,
+         *          time : Number,
+         *          room : String,
+         *          name : String,
+         *          deleted : Boolean
+         *      }
+         *  }
          */
         setFile : function(data, callback = () => {}){
             return this.setMessage({
                 'userId' : data.userId,
-                'room' : data.room,
+                'room' : data.file.room,
                 'file' : {
-                    'name' : data.fileData.name,
-                    'size' : data.fileData.size,
-                    'type' : data.fileData.type,
-                    'mainType' : data.mainType,
-                    'store' : data.store,
-                    'data' : data.file,
+                    'raw' : {
+                        'name' : data.file.raw.name,
+                        'size' : data.file.raw.size,
+                        'type' : data.file.raw.type,
+                        'source' : data.file.raw.source
+                    },
+                    'store' : data.file.store,
+                    'type' : data.file.type,
+                    'name' : data.file.name,
                     'deleted' : false
                 },
-                'created' : data.time
+                'created' : data.file.time
             }, function(messageId){
                 callback(messageId);
             });
@@ -219,7 +236,7 @@ const Model = function(db){
                 .find({'$and' : [
                     {'file' : {'$exists' : true}},
                     {'file.store' : 'upload'},
-                    {'file.data' : fileName}
+                    {'file.name' : fileName}
                 ]}, {
                     'file' : 1
                 })
@@ -228,7 +245,7 @@ const Model = function(db){
                 .then(function(docs){
                     let url = '';
                     if (docs.length){
-                        url = docs[0].file.data;
+                        url = docs[0].file.name;
                         db.collection('chat_messages')
                             .updateOne({
                                 '_id' : docs[0]._id
@@ -248,14 +265,14 @@ const Model = function(db){
 
         /**
          * Egy csatornához tartozó fájlok töröltre állítása
-         * @param {String} roomName
+         * @param {String} room
          * @param {Function} [callback]
          * @returns {Promise}
          */
-        deleteRoomFiles : function(roomName, callback = () => {}){
+        deleteRoomFiles : function(room, callback = () => {}){
             return db.collection('chat_messages')
                 .find({'$and' : [
-                    {'room' : roomName},
+                    {'room' : room},
                     {'file' : {'$exists' : true}},
                     {'file.store' : 'upload'}
                 ]}, {
@@ -265,7 +282,7 @@ const Model = function(db){
                 .then(function(docs){
                     const urls = [];
                     docs.forEach(function(doc){
-                        urls.push(doc.file.data);
+                        urls.push(doc.file.name);
                         db.collection('chat_messages')
                             .updateOne({
                                 '_id' : doc._id
@@ -277,93 +294,6 @@ const Model = function(db){
                     });
                     callback(urls);
                     return urls;
-                })
-                .catch(function(error){
-                    log.error(error);
-                });
-        },
-
-        /**
-         * Állapotváltozások lekérdezése
-         * @param {Function} [callback]
-         */
-        getStatuses : function(callback = () => {}){
-            return db.collection('chat_statuses')
-                .find()
-                .toArray()
-                .then(function(statuses){
-                    callback(statuses);
-                    return statuses;
-                })
-                .catch(function(error){
-                    log.error(error);
-                });
-        },
-
-        /**
-         * Felhasználó utolsó állapotváltozásának lekérdezése
-         * @param {Number} userId
-         * @param {Function} [callback]
-         */
-        getLastStatus : function(userId, callback = () => {}){
-            return db.collection('chat_statuses')
-                .find({'userId' : userId})
-                .sort({'created' : -1})
-                .limit(1)
-                .toArray()
-                .then(function(statuses){
-                    let status;
-                    if (statuses.length === 0){
-                        status = {
-                            userId : userId,
-                            type : null,
-                            prevStatus : null,
-                            nextStatus : null,
-                            created : Date.now()
-                        };
-                    }
-                    else {
-                        status = statuses[0];
-                    }
-                    callback(status);
-                    return status;
-                })
-                .catch(function(error){
-                    log.error(error);
-                });
-        },
-
-        /**
-         * Felhasználó állapotváltozásának eltárolása (időméréshez)
-         * @param {Object} data
-         * @param {Function} [callback]
-         * @returns {Promise}
-         * @description
-         * data = {
-         *     userId : Number,
-         *     prevStatus : String,
-         *     nextStatus : String
-         * }
-         */
-        setStatus : function(data, callback = () => {}){
-            const insertData = {
-                userId : data.userId,
-                type : data.type,
-                prevStatus : data.prevStatus,
-                nextStatus : data.nextStatus,
-                created : Date.now()
-            };
-
-            return db.collection('chat_statuses')
-                .deleteMany({'userId' : data.userId})
-                .then(function(result){
-                    return db.collection('chat_statuses')
-                        .insertOne(insertData);
-                })
-                .then(function(result){
-                    const statusId = result.insertedId;
-                    callback(statusId);
-                    return statusId;
                 })
                 .catch(function(error){
                     log.error(error);

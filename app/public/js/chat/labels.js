@@ -36,13 +36,14 @@ CHAT.Labels = {
         chatStart : 'Chat',
         sendMessage : 'Küldés',
         sendFile : 'Fájlküldés',
+        smiley : 'Emoticon beszúrása',
         leave : 'Kilépés',
         minimize : 'Összecsukás',
         resize : {
             toggle : 'Átméretezés',
             box : 'Doboz méret',
             container : 'Konténer méret',
-            window : 'Teljes window méret',
+            window : 'Teljes ablak méret',
             screen : 'Teljes képernyő méret'
         },
         sound : 'Hangos értesítések',
@@ -65,10 +66,11 @@ CHAT.Labels = {
         send : 'Fájlküldés...',
         get : 'Fájlfogadás...',
         abort : 'Fájlátvitel megszakítva',
+        forceAbort : 'A fájlátvitelt a rendszer megszakította',
         sendEnd : 'Fájlküldés befejeződött',
         getEnd : 'Fájlfogadás befejeződött',
         cancel : 'Megszakítás',
-        percent : (percent) => `${percent}%`,
+        percent : (p) => `${p}%`,
         error : 'Hiba a fájl betöltése közben',
         deleted : 'A fájlküldés meg lett szakítva vagy a fájl törölve lett',
         types : {
@@ -165,16 +167,25 @@ CHAT.Labels = {
     },
     // Idő kijelzése
     time : {
+        // Idő mértékegységek
         idleTimer : ['nap', 'óra', 'perc', 'másodperc'],
+        // Még sosem volt aktív
         notYetOnline : '-',
+        // Kevesebb, mint 1 perce volt aktív
         lessThanMin : 'most'
     },
     // Hibaüzenetek
     error : {
+        maxUsers : (maxUser) =>
+            `Legfeljebb ${maxUser} felhasználó lehet egy csatornában!`,
+        fileAllowed : () =>
+            `Fájlfeltöltés nincs engedélyezve!`,
         fileSize : (size, maxSize) =>
-            `Túl nagy a fájl mérete (${HD.Number.displaySize(size)}, max: ${HD.Number.displaySize(maxSize)})`,
+            `Túl nagy a fájl mérete (${HD.Number.displaySize(size)})!
+            Maximális méret: ${HD.Number.displaySize(maxSize)}.`,
         fileType : (type, allowedTypes) =>
-            `Nem megfelelő a fájl típusa (${type}, megengedett typusok: ${allowedTypes.join(', ')})`
+            `Nem megfelelő a fájl típusa (${CHAT.Labels.file.types[type]})!
+            Megengedett típusok: ${allowedTypes.map(t => CHAT.Labels.file.types[t]).join(', ')}.`
     }
 };
 

@@ -40,7 +40,9 @@ router.post('/', function(req, res){
                         error : 'Nem jó!!!'
                     };
                 }
-                res.redirect('/');
+                req.session.save(function(){
+                    res.redirect('/');
+                });
             })
             .catch(function(error){
                 log.error(error);

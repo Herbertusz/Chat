@@ -14,7 +14,7 @@ const FileStore = require('session-file-store')(sessionModule);
 const log = require.main.require('../libs/log.js');
 const ENV = require.main.require('../app/env.js');
 
-let io, server, session, DB;
+let socket, server, session, DB;
 
 if (ENV.DBDRIVER === 'mongodb'){
     DB = require('mongodb').MongoClient;
@@ -65,8 +65,8 @@ const connectPromise = DB
 
         // Websocket
         server = http.createServer(app);
-        io = require.main.require('../app/websocket.js')(server, session, app);
-        app.set('io', io);
+        socket = require.main.require('../app/websocket.js')(server, session, app);
+        app.set('socket', socket);
 
         // Route
         const routes = [

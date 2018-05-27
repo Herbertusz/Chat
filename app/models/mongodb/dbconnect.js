@@ -7,37 +7,13 @@
 const ENV = require.main.require('../app/env.js');
 let dbUrl;
 
-const connections = {
-    dev : {
-        host : ENV.IPADDRESS,
-        port : 27017,
-        user : '',
-        pass : '',
-        app : 'chat'
-    },
-    test : {
-        host : ENV.IPADDRESS,
-        port : 27017,
-        user : 'chat',
-        pass : 'bALtiGqzKfSqdAN',
-        app : 'chat'
-    },
-    prod : {
-        host : ENV.IPADDRESS,
-        port : 27017,
-        user : 'chat',
-        pass : 'bALtiGqzKfSqdAN',
-        app : 'chat'
-    }
-};
+const connection = ENV.DB.mongodb;
 
-const dbConn = connections[ENV.PROJECT];
-
-if (dbConn.user.length > 0){
-    dbUrl = `mongodb://${dbConn.user}:${dbConn.pass}@${dbConn.host}:${dbConn.port}/${dbConn.app}`;
+if (connection.user.length > 0){
+    dbUrl = `mongodb://${connection.user}:${connection.pass}@${connection.host}:${connection.port}/${connection.app}`;
 }
 else {
-    dbUrl = `mongodb://${dbConn.host}:${dbConn.port}/${dbConn.app}`;
+    dbUrl = `mongodb://${connection.host}:${connection.port}/${connection.app}`;
 }
 
 module.exports = dbUrl;
