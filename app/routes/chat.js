@@ -134,7 +134,8 @@ router.post('/getroommessages', function(req, res){
 // Felhasználó állapota
 router.post('/getstatus', function(req, res){
 
-    UserModel.getStatus(Number(req.body.userId))
+    UserModel
+        .getStatus(Number(req.body.userId))
         .then(function(status){
             res.send({status});
         })

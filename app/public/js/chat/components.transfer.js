@@ -167,7 +167,7 @@ CHAT.Components.Transfer = {
         if (CHAT.Config.textTransfer.escapeHTML){
             message = CHAT.Components.Transfer.escapeHtml(message);
         }
-        const messageArray = message.split(new RegExp(disablePattern));
+        const messageArray = message.split(HD.String.createRegExp(disablePattern));
         if (CHAT.Config.textTransfer.imageReplacement.allowed){
             let image;
             const images = CHAT.Config.textTransfer.imageReplacement.images;
@@ -188,9 +188,9 @@ CHAT.Components.Transfer = {
         if (CHAT.Config.textTransfer.stringReplacement.allowed){
             const strings = CHAT.Config.textTransfer.stringReplacement.strings;
             strings.forEach(function(str){
-                messageArray[0] = messageArray[0].replace(new RegExp(str[0], 'g'), str[1]);
+                messageArray[0] = messageArray[0].replace(HD.String.createRegExp(str[0]), str[1]);
                 if (messageArray.length > 1){
-                    messageArray[2] = messageArray[2].replace(new RegExp(str[0], 'g'), str[1]);
+                    messageArray[2] = messageArray[2].replace(HD.String.createRegExp(str[0]), str[1]);
                 }
             });
         }
@@ -270,10 +270,13 @@ CHAT.Components.Transfer = {
         const List = HD.DOM(box).descendants(CHAT.DOM.list);
         const time = HD.DateTime.formatMS('Y-m-d H:i:s', data.time);
         const userName = CHAT.Components.User.getName(data.userId);
-        const download = data.store === 'base64' ? `download="${data.raw.name}"` : ``;  // Chrome base64 restriction
         const fileSrc = data.store === 'upload' ?
             `/chat/file/${HD.DOM(box).data('room')}/${data.raw.source}` :
             data.raw.source;
+        // Chrome base64 restriction
+        const download = data.store === 'base64' ?
+            `onclick="HD.DOM.openBase64('${fileSrc}')"` :
+            `href="${fileSrc}" target="_blank"`;
 
         const ListItem = HD.DOM(`
             <li>
@@ -290,7 +293,7 @@ CHAT.Components.Transfer = {
         if (data.type === 'image'){
             imgSrc = fileSrc;
             tpl = `
-                <a class="image" href="${fileSrc}" target="_blank" ${download}>
+                <a class="image" ${download}>
                     <img class="send-image" alt="${data.raw.name}" src="${imgSrc}" />
                 </a>
             `;
@@ -298,8 +301,7 @@ CHAT.Components.Transfer = {
         else {
             imgSrc = '/images/filetypes.png';
             tpl = `
-                <a class="file" href="${fileSrc}" target="_blank"
-                    title="${CHAT.Labels.file.types[data.type]}" ${download}>
+                <a class="file" ${download} title="${CHAT.Labels.file.types[data.type]}">
                     <span class="filetype filetype-${data.type}"></span>
                     <span class="text">${data.raw.name}</span>
                 </a>

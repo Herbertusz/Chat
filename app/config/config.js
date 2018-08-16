@@ -168,14 +168,11 @@ CHAT.Config = {
             allowed : true,
             // Karakterlánc cserék
             strings : [
-                [/\*\*(.*?)\*\*/g,                 '<strong>$1</strong>'],
-                [/__(.*?)__/g,                     '<em>$1</em>'],
-                [/--(.*?)--/g,                     '<span style="text-decoration: line-through;">$1</span>'],
-                [/\[color=(.*?)](.*?)\[\/color]/g, '<span style="color: $1;">$2</span>'],
-                [
-                    /((https?:)?\/\/(www\.)?([-a-zA-Z0-9@:%._+~#=]{2,256})\.([a-z]{2,6})\b([-a-zA-Z0-9@:%_+.~#?&/=]*))/g,
-                    '<a href="$1" target="_blank">$1</a>'
-                ]
+                [/\*\*(.*?)\*\*/g,                             '<strong>$1</strong>'],
+                [/__(.*?)__/g,                                 '<em>$1</em>'],
+                [/--(.*?)--/g,                                 '<span style="text-decoration: line-through;">$1</span>'],
+                [/\[color=(.*?)](.*?)\[\/color]/g,             '<span style="color: $1;">$2</span>'],
+                [/((https?:)?\/\/[-a-zA-Z0-9@:%_+.~#?&/=]+)/g, '<a href="$1" target="_blank">$1</a>']
             ]
         },
 
